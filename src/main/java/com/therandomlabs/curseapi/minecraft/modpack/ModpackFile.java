@@ -1,6 +1,8 @@
 package com.therandomlabs.curseapi.minecraft.modpack;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import com.therandomlabs.curseapi.CurseFile;
 import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.utils.collection.ImmutableList;
@@ -22,7 +24,14 @@ public class ModpackFile extends CurseFile {
 		super(file);
 		this.type = type;
 		this.relatedFiles = new ImmutableList<>(relatedFiles);
-		this.alternatives = CurseFileList.ofUnsorted(alternatives).
+
+		final List<CurseFile> filteredAlternatives = new ArrayList<>(alternatives.length);
+		for(CurseFile alternative : alternatives) {
+			if(alternative.project().id() != file.project().id()) {
+				filteredAlternatives.add(alternative);
+			}
+		}
+		this.alternatives = CurseFileList.ofUnsorted(filteredAlternatives).
 				sortedByProjectTitle().filterDuplicateProjects();
 	}
 
