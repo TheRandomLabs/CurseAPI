@@ -2,13 +2,14 @@ package com.therandomlabs.curseapi.minecraft.modpack;
 
 import java.util.Collection;
 import com.therandomlabs.curseapi.CurseFile;
+import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 
 public class ModpackFile extends CurseFile {
 	private final FileType type;
 	private final TRLList<String> relatedFiles;
-	private final TRLList<CurseFile> alternatives;
+	private final CurseFileList alternatives;
 
 	public ModpackFile(CurseFile file, FileType type, Collection<String> relatedFiles,
 			Collection<CurseFile> alternatives) {
@@ -21,7 +22,8 @@ public class ModpackFile extends CurseFile {
 		super(file);
 		this.type = type;
 		this.relatedFiles = new ImmutableList<>(relatedFiles);
-		this.alternatives = new ImmutableList<>(alternatives);
+		this.alternatives = CurseFileList.ofUnsorted(alternatives).
+				sortedByProjectTitle().filterDuplicateProjects();
 	}
 
 	public FileType getType() {
@@ -32,7 +34,7 @@ public class ModpackFile extends CurseFile {
 		return relatedFiles;
 	}
 
-	public TRLList<CurseFile> getAlternatives() {
+	public CurseFileList getAlternatives() {
 		return alternatives;
 	}
 
