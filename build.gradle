@@ -1,0 +1,23 @@
+apply plugin: "java"
+
+repositories {
+	jcenter()
+	maven {
+		url "https://jitpack.io"
+	}
+}
+
+dependencies {
+	compile "com.github.jhy:jsoup:master-SNAPSHOT"
+	compile "com.github.google:gson:master-SNAPSHOT"
+	compile "com.github.TheRandomLabs:TRLUtils:master-SNAPSHOT"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = "sources"
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives sourcesJar
+}
