@@ -28,6 +28,11 @@ public final class CurseEventHandling {
 		public void postDownloadDocument(String url) {
 			getLogger().debug("Downloaded document: "+ url);
 		}
+
+		@Override
+		public void retryingJSON(int retryingIn) {
+			getLogger().debug("Failed to retrieve JSON. Retrying in %s seconds...", retryingIn);
+		}
 	};
 	private static final List<CurseEventHandler> eventHandlers = new ArrayList<>(5);
 

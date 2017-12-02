@@ -10,6 +10,7 @@ public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
 
 	private static int threads = Runtime.getRuntime().availableProcessors();
+	private static int maxRetries = 5;
 
 	private CurseAPI() {}
 
@@ -20,6 +21,15 @@ public final class CurseAPI {
 	public static void setMaximumThreads(int threads) {
 		Assertions.positive(threads, "threads", false);
 		CurseAPI.threads = threads;
+	}
+
+	public static int getMaximumRetries() {
+		return maxRetries;
+	}
+
+	public static void setMaximumRetries(int retries) {
+		Assertions.positive(retries, "retries", false);
+		maxRetries = retries;
 	}
 
 	public static void clearAllCache() {

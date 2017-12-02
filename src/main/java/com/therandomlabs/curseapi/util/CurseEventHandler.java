@@ -12,11 +12,5 @@ public interface CurseEventHandler {
 
 	default void postDownloadDocument(String url) throws CurseException {}
 
-	default void register() throws CurseException {
-		CurseEventHandling.register(this);
-	}
-
-	default void unregister() throws CurseException {
-		CurseEventHandling.unregister(this);
-	}
+	default void retryingJSON(int retryingIn) throws CurseException {}
 }

@@ -1,12 +1,12 @@
 package com.therandomlabs.curseapi.widget;
 
-import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -49,11 +49,12 @@ public final class WidgetAPI {
 
 			if(info.error != null) {
 				int tries = 0;
-				while(info.error != null && info.error.equals("in_queue") && tries++ < 5) {
+				while(info.error != null && info.error.equals("in_queue") &&
+						tries++ < CurseAPI.getMaximumRetries()) {
 					//This means this JSON isn't in the database. It should be pretty soon though,
 					//so we try again.
 
-					getLogger().warning("Failed to retrieve JSON. Trying again in 5 seconds...");
+					CurseEventHandling.forEach(handler -> handler.retryingJSON(5));
 
 					try {
 						Thread.sleep(5000L);

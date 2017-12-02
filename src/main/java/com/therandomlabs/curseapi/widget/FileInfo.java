@@ -14,6 +14,21 @@ public final class FileInfo implements Cloneable {
 	public int downloads;
 	public String uploaded_at;
 
+	public FileInfo() {}
+
+	public FileInfo(int id, URL url, String name, ReleaseType type,
+			String[] versions, String filesize, int downloads, String uploadedAt) {
+		this.id = id;
+		this.url = url;
+		this.name = name;
+		this.type = type;
+		version = versions[0];
+		this.filesize = filesize;
+		this.versions = versions;
+		this.downloads = downloads;
+		uploaded_at = uploadedAt;
+	}
+
 	@Override
 	public FileInfo clone() {
 		final FileInfo info = new FileInfo();

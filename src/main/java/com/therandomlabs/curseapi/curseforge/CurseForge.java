@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.DocumentUtils;
@@ -131,8 +132,14 @@ public final class CurseForge {
 
 	public static URL toNewCurseForgeProject(URL url) throws CurseException {
 		CurseException.validateProject(url);
+
+		final Elements viewOnCurse = DocumentUtils.get(url).getElementsByClass("view-on-curse");
+		if(viewOnCurse.isEmpty()) {
+			return null;
+		}
+
 		return URLUtils.url(
-				DocumentUtils.getValue(url, "class=view-on-curse;attr=href;absUrl=href"));
+					DocumentUtils.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
 	}
 
 	public static URL fromID(int projectID) throws CurseException {

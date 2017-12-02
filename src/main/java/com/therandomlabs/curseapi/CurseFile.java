@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.DocumentUtils;
+import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
@@ -110,7 +111,7 @@ public class CurseFile {
 	}
 
 	public ZonedDateTime uploadTime() {
-		return ZonedDateTime.parse(widgetInfo.uploaded_at);
+		return MiscUtils.parseTime(widgetInfo.uploaded_at);
 	}
 
 	public String fileSize() {

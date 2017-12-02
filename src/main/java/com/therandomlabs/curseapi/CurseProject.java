@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,13 +12,18 @@ import java.util.Locale;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
 import com.therandomlabs.curseapi.util.DocumentUtils;
+import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.widget.DownloadInfo;
+import com.therandomlabs.curseapi.widget.DownloadsInfo;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.curseapi.widget.MemberInfo;
 import com.therandomlabs.curseapi.widget.ProjectInfo;
+import com.therandomlabs.curseapi.widget.URLInfo;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
@@ -26,7 +32,7 @@ import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
-//TODO Images, Issues, Source, Pages, Wiki
+//TODO Images, Issues, Source, Pages, Wiki, Avatar
 public class CurseProject {
 	private static final TRLList<CurseProject> projects = new TRLList<>(100);
 
@@ -62,6 +68,18 @@ public class CurseProject {
 
 	public String urlString() {
 		return url.toString();
+	}
+
+	public URL newCurseForgeURL() {
+		return newCurseForgeURL;
+	}
+
+	public String newCurseForgeURLString() {
+		return newCurseForgeURL.toString();
+	}
+
+	public boolean hasNewCurseForgePage() {
+		return newCurseForgeURL != null;
 	}
 
 	public CurseForgeSite site() {
@@ -112,15 +130,21 @@ public class CurseProject {
 		return widgetInfo.downloads.total;
 	}
 
-	public ZonedDateTime lastUpdateTime() {
-		return ZonedDateTime.parse(widgetInfo.files[0].uploaded_at);
+	public ZonedDateTime lastUpdateTime() throws CurseException {
+		if(widgetInfo.files == null) {
+			reloadFiles();
+		}
+		return MiscUtils.parseTime(widgetInfo.files[0].uploaded_at);
 	}
 
 	public ZonedDateTime creationTime() {
-		return ZonedDateTime.parse(widgetInfo.created_at);
+		return MiscUtils.parseTime(widgetInfo.created_at);
 	}
 
-	public ReleaseType releaseType() {
+	public ReleaseType releaseType() throws CurseException {
+		if(widgetInfo.files == null) {
+			reloadFiles();
+		}
 		return widgetInfo.files[0].type;
 	}
 
@@ -223,8 +247,71 @@ public class CurseProject {
 	}
 
 	public void reloadWidgetInfo() throws CurseException {
-		widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
 		thumbnail = null;
+
+		if(newCurseForgeURL == null) {
+			final int id = CurseForge.getID(url);
+			final Game game = CurseForgeSite.valueOf(url).getGame();
+			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
+
+			final URLInfo urls = new URLInfo();
+			urls.project = url;
+			urls.curseforge = null;
+
+			final String title =
+					DocumentUtils.getValue(url, "class=project-title;class=overflow-tip;text");
+
+			URL donate = null;
+
+			try {
+				donate = URLUtils.url(
+						DocumentUtils.getValue(url, "class=icon-donate;attr=href;absUrl=href"));
+			} catch(CurseException ex) {}
+
+			final String license = DocumentUtils.getValue(url, "class=info-data=4;tag=a;text");
+
+			final List<MemberInfo> memberInfos = new ArrayList<>();
+			final Elements projectMembers =
+					DocumentUtils.get(url).getElementsByClass("project-members");
+
+			for(Element member : projectMembers) {
+				final MemberInfo memberInfo = new MemberInfo();
+
+				memberInfo.title = DocumentUtils.getValue(member, "class=title;text");
+				memberInfo.username = DocumentUtils.getValue(member, "tag=span;text");
+
+				memberInfos.add(memberInfo);
+			}
+
+			final MemberInfo[] members = memberInfos.toArray(new MemberInfo[0]);
+
+			final DownloadsInfo downloads = new DownloadsInfo();
+			downloads.total = Integer.parseInt(
+					DocumentUtils.getValue(url, "class=info-data=3;text").replaceAll(",", ""));
+
+			final URL thumbnail = URLUtils.url(
+					DocumentUtils.getValue(url, "class=avatar-wrapper;tag=img;attr=src"));
+
+			final List<String> categoryList = new ArrayList<>();
+			final Elements categoryElements =
+					DocumentUtils.get(url).getElementsByClass("project-categories");
+
+			for(Element category : categoryElements) {
+				categoryList.add(DocumentUtils.getValue(category, "tag=a;attr=title"));
+			}
+
+			final String[] categories = categoryList.toArray(new String[0]);
+
+			final String createdAt = DocumentUtils.getValue(url,
+					"class=standard-date;attr=data-epoch");
+			final String description = DocumentUtils.getValue(url, "tag=meta=5;attr=content");
+			final String lastFetch = Long.toString(Instant.now().getEpochSecond());
+
+			widgetInfo = new ProjectInfo(id, game, type, urls, title, donate, license, members,
+					downloads, thumbnail, categories, createdAt, description, lastFetch);
+		} else {
+			widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
+		}
 	}
 
 	public ProjectInfo widgetInfo() {
@@ -232,16 +319,72 @@ public class CurseProject {
 	}
 
 	public void reloadFiles() throws CurseException {
-		final List<CurseFile> files = new ArrayList<>(widgetInfo.versions.size());
-		for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {
-			for(FileInfo info : entry.getValue()) {
-				files.add(new CurseFile(this, info));
+		final List<CurseFile> files;
+
+		if(newCurseForgeURL == null) {
+			files = DocumentUtils.<CurseFile>iteratePages(url + "/files?",
+					this::documentToCurseFiles, null, null);
+
+			widgetInfo.files = new FileInfo[files.size()];
+			for(int i = 0; i < files.size(); i++) {
+				widgetInfo.files[i] = files.get(i).widgetInfo();
+			}
+
+			widgetInfo.download = DownloadInfo.fromFileInfo(widgetInfo.files[0]);
+		} else {
+			files = new ArrayList<>(widgetInfo.versions.size());
+			for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {
+				for(FileInfo info : entry.getValue()) {
+					files.add(new CurseFile(this, info));
+				}
 			}
 		}
 
 		//Should already be sorted by newest
 		this.files = CurseFileList.ofUnsorted(files);
 		this.files.sortType = CurseFileList.SortType.NEWEST;
+	}
+
+	private void documentToCurseFiles(Element document, List<CurseFile> files)
+			throws CurseException {
+		try {
+			for(Element file : document.getElementsByClass("project-file-list-item")) {
+				final int id = Integer.parseInt(ArrayUtils.last(
+						DocumentUtils.getValue(file, "class=twitch-link;attr=href").split("/")));
+
+				final URL url = URLUtils.url(
+						DocumentUtils.getValue(file, "class=twitch-link;attr=href;absUrl=href"));
+
+				final String name =
+						DocumentUtils.getValue(file, "class=twitch-link;text");
+
+				//<div class="alpha-phase tip">
+				final ReleaseType type = ReleaseType.fromName(DocumentUtils.getValue(file,
+						"class=project-file-release-type;class=tip;class").
+						split("-")[0]);
+
+				final String[] versions =
+						//<div>1.11.2</div><div>1.11</div><div>1.10.2</div><div>1.10
+						DocumentUtils.getValue(file, "class=additional-versions;attr=title").
+						split("</div><div>");
+				versions[0] = versions[0].substring("<div>".length());
+
+				final String filesize =
+						DocumentUtils.getValue(file, "class=project-file-size;text");
+
+				final int downloads = Integer.parseInt(
+						DocumentUtils.getValue(file, "class=project-file-downloads;text").
+						replaceAll(",", ""));
+
+				final String uploadedAt = DocumentUtils.getValue(file,
+						"class=standard-date;attr=data-epoch");
+
+				files.add(new CurseFile(this, new FileInfo(id, url, name, type, versions, filesize,
+						downloads, uploadedAt)));
+			}
+		} catch(NumberFormatException ex) {
+			throw new CurseException(ex);
+		}
 	}
 
 	public void clearRelationCache() {
@@ -296,11 +439,11 @@ public class CurseProject {
 			baseURL += "?filter-related-" + relationName + "=" + relationType.ordinal() + "&";
 		}
 
-		return DocumentUtils.iteratePages(baseURL, this::documentToRelations, onRelationAdd,
-				stopSwitch);
+		return DocumentUtils.iteratePages(baseURL, CurseProject::documentToRelations,
+				onRelationAdd, stopSwitch);
 	}
 
-	private void documentToRelations(Element document, List<URL> relations)
+	private static void documentToRelations(Element document, List<URL> relations)
 			throws CurseException {
 		for(Element relation : document.getElementsByClass("project-list-item")) {
 			final String projectURL =

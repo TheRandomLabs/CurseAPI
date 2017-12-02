@@ -130,6 +130,9 @@ public final class DocumentUtils {
 					}
 				}
 				return values[0].equals("absUrl") ? absUrl : URLUtils.redirect(absUrl).toString();
+			case "class":
+				final int index = values.length < 2 ? 0 : Integer.parseInt(values[1]);
+				return element.classNames().toArray(new String[0])[index];
 			case "attr":
 				return element.attr(values[1]);
 			case "html":
