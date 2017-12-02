@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.therandomlabs.utils.wrapper.Wrapper;
 
 //CurseAPI Manifest Format
 public final class CAFormat {
+	public static final String IMPORT = "import";
+
 	public static final String NAME = "name";
 	public static final String DEFAULT_NAME = "CurseAPI Modpack";
 
@@ -55,20 +58,19 @@ public final class CAFormat {
 	public static final String SERVER_ONLY = "!s";
 	public static final String COMMENT = ":";
 	public static final String ALTERNATIVE = "|";
+	public static final String NEWER_THAN_OR_EQUAL_TO = ">";
+	public static final String OLDER_THAN_OR_EQUAL_TO = "<";
 
 	private CAFormat() {}
 
 	private static class FileData {
-		final Map<String, String> variables;
 		final FileType type;
 		final int projectID;
 		final int fileID;
 		final List<String> relatedFiles;
 		List<FileData> alternatives;
 
-		FileData(Map<String, String> variables, FileType type, int projectID, int fileID,
-				List<String> relatedFiles) {
-			this.variables = variables;
+		FileData(FileType type, int projectID, int fileID, List<String> relatedFiles) {
 			this.type = type;
 			this.projectID = projectID;
 			this.fileID = fileID;
@@ -107,7 +109,7 @@ public final class CAFormat {
 	}
 
 	public static Modpack toModpack(Path manifest) throws CurseException, IOException {
-		Map<String, String> variables = new HashMap<>();
+		final Map<String, String> variables = new HashMap<>();
 		final List<FileData> files = new ArrayList<>();
 
 		variables.put(NAME, DEFAULT_NAME);
@@ -120,21 +122,59 @@ public final class CAFormat {
 
 		final List<String> lines = Files.readAllLines(manifest);
 
-		for(String line : lines) {
-			line = line.trim();
+		for(int i = 0; i < lines.size(); i++) {
+			final String line = lines.get(i).trim();
 			if(line.isEmpty()) {
 				continue;
 			}
 
 			String[] data = StringUtils.splitWhitespace(line);
 
+			if(data[0].startsWith(NEWER_THAN_OR_EQUAL_TO)) {
+				if(data.length < 2) {
+					continue;
+				}
+
+				final String versionToCompare = data[0].substring(NEWER_THAN_OR_EQUAL_TO.length());
+				if(MinecraftVersion.fromString(versionToCompare).
+						compareTo(MinecraftVersion.fromString(variables.get(MINECRAFT))) >= 0) {
+					data = ArrayUtils.subArray(data, 1);
+				} else {
+					continue;
+				}
+			}
+
+			if(data[0].startsWith(OLDER_THAN_OR_EQUAL_TO)) {
+				if(data.length < 2) {
+					continue;
+				}
+
+				final String versionToCompare = data[0].substring(OLDER_THAN_OR_EQUAL_TO.length());
+				if(MinecraftVersion.fromString(versionToCompare).
+						compareTo(MinecraftVersion.fromString(variables.get(MINECRAFT))) <= 0) {
+					data = ArrayUtils.subArray(data, 1);
+				} else {
+					continue;
+				}
+			}
+
 			//Variables
 
 			if(data[0].equals(VARIABLE)) {
 				if(data.length > 2) {
-					variables = new HashMap<>(variables);
-					variables.put(data[1].toLowerCase(Locale.ENGLISH),
-							ArrayUtils.join(ArrayUtils.subArray(data, 2), " "));
+					final String lowerCase = data[1].toLowerCase(Locale.ENGLISH);
+					variables.put(lowerCase, ArrayUtils.join(ArrayUtils.subArray(data, 2), " "));
+
+					//Imports
+					if(lowerCase.equals(IMPORT)) {
+						final Path path = Paths.get(variables.get(IMPORT));
+						if(Files.exists(path)) {
+							//Do not import variables
+							Files.readAllLines(path).stream().
+									filter(string -> !string.startsWith(VARIABLE)).
+									forEach(lines::add);
+						}
+					}
 				}
 				continue;
 			}
@@ -156,11 +196,12 @@ public final class CAFormat {
 				variables.get(DESCRIPTION),
 				MinecraftVersion.fromString(variables.get(MINECRAFT)),
 				getForge(variables.get(MINECRAFT), variables.get(FORGE)),
-				toCurseFileList(files)
+				toCurseFileList(variables, files)
 		);
 	}
 
-	private static CurseFileList toCurseFileList(List<FileData> fileData) throws CurseException {
+	private static CurseFileList toCurseFileList(Map<String, String> variables,
+			List<FileData> fileData) throws CurseException {
 		final List<ModpackFile> files = new ArrayList<>(fileData.size());
 
 		final int threadCount = fileData.size() < CurseAPI.getMaximumThreads() ?
@@ -184,7 +225,7 @@ public final class CAFormat {
 
 				try {
 					for(int fileIndex = startIndex; fileIndex < endIndex; fileIndex++) {
-						final ModpackFile file = toModpackFile(fileData.get(fileIndex));
+						final ModpackFile file = toModpackFile(variables, fileData.get(fileIndex));
 						if(file != null) {
 							files.add(file);
 						}
@@ -211,13 +252,14 @@ public final class CAFormat {
 		return CurseFileList.ofUnsorted(files).sortedByProjectTitle().filterDuplicateProjects();
 	}
 
-	private static ModpackFile toModpackFile(FileData data) throws CurseException {
+	private static ModpackFile toModpackFile(Map<String, String> variables, FileData data)
+			throws CurseException {
 		final CurseProject project = CurseProject.fromID(data.projectID);
 
 		final CurseFile file;
 		if(data.fileID == 0) {
 			final CurseFileList list = project.files().filterMinimumStability(
-					ReleaseType.fromName(data.variables.get(MINIMUM_STABILITY)));
+					ReleaseType.fromName(variables.get(MINIMUM_STABILITY)));
 			if(list.isEmpty()) {
 				return null;
 			}
@@ -231,7 +273,7 @@ public final class CAFormat {
 		if(data.alternatives != null) {
 			alternatives = new ArrayList<>(data.alternatives.size());
 			for(FileData alternative : data.alternatives) {
-				alternatives.add(toModpackFile(alternative));
+				alternatives.add(toModpackFile(variables, alternative));
 			}
 		} else {
 			alternatives = ImmutableList.empty();
@@ -327,6 +369,6 @@ public final class CAFormat {
 			}
 		}
 
-		return new FileData(variables, type, projectID, fileID, relatedFiles);
+		return new FileData(type, projectID, fileID, relatedFiles);
 	}
 }
