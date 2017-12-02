@@ -258,7 +258,9 @@ public final class CAFormat {
 
 		final CurseFile file;
 		if(data.fileID == 0) {
-			final CurseFileList list = project.files().filterMinimumStability(
+			final CurseFileList list = project.files().
+					filterMCVersionGroup(variables.get(MINECRAFT)).
+					filterMinimumStability(
 					ReleaseType.fromName(variables.get(MINIMUM_STABILITY)));
 			if(list.isEmpty()) {
 				return null;
