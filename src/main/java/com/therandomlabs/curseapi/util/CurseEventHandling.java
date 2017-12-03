@@ -11,27 +11,53 @@ public final class CurseEventHandling {
 	public static final CurseEventHandler DEFAULT_EVENT_HANDLER = new CurseEventHandler() {
 		@Override
 		public void preRedirect(String url) {
-			getLogger().debug("Redirecting URL: " + url);
+			getLogger().info("Redirecting URL: " + url);
 		}
 
 		@Override
 		public void postRedirect(String originalURL, String redirectedURL) {
-			getLogger().debug("%s redirected to: %s", originalURL, redirectedURL);
+			getLogger().info("%s redirected to: %s", originalURL, redirectedURL);
 		}
 
 		@Override
 		public void preDownloadDocument(String url) {
-			getLogger().debug("Downloading document: " + url);
+			getLogger().info("Downloading document: " + url);
 		}
 
 		@Override
 		public void postDownloadDocument(String url) {
-			getLogger().debug("Downloaded document: "+ url);
+			getLogger().info("Downloaded document: "+ url);
 		}
 
 		@Override
 		public void retryingJSON(int retryingIn) {
-			getLogger().debug("Failed to retrieve JSON. Retrying in %s seconds...", retryingIn);
+			getLogger().info("Failed to retrieve JSON. Retrying in %s seconds...", retryingIn);
+		}
+
+		@Override
+		public void deleting(String fileName) {
+			getLogger().info("Deleting: " + fileName);
+		}
+
+		@Override
+		public void downloadingFile(String fileName) {
+			getLogger().info("Downloading: " + fileName);
+		}
+
+		@Override
+		public void extracting(String fileName) {
+			getLogger().info("Extracting: " + fileName);
+		}
+
+		@Override
+		public void downloadingMod(String modName, String fileName, int count, int total) {
+			getLogger().info("Downloading mod %s of %s, %s% (%s%)", count, total, modName,
+					fileName);
+		}
+
+		@Override
+		public void installingForge(String forgeVersion) {
+			getLogger().info("Installing Forge %s...", forgeVersion);
 		}
 	};
 	private static final List<CurseEventHandler> eventHandlers = new ArrayList<>(5);
