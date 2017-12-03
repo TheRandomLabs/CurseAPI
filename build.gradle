@@ -10,7 +10,9 @@ repositories {
 dependencies {
 	compile "com.github.jhy:jsoup:master-SNAPSHOT"
 	compile "com.github.google:gson:master-SNAPSHOT"
+	compile "net.lingala.zip4j:zip4j:1.2.4"
 	compile "com.github.TheRandomLabs:TRLUtils:master-SNAPSHOT"
+
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

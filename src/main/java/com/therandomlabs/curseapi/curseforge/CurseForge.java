@@ -142,8 +142,14 @@ public final class CurseForge {
 					DocumentUtils.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
 	}
 
+	public static URL getFileURL(int projectID, int fileID) throws CurseException {
+		Assertions.larger(projectID, "projectID",
+				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
+
+		return URLUtils.redirect(fromID(projectID) + "/files/" + projectID + "/download");
+	}
+
 	public static URL fromID(int projectID) throws CurseException {
-		//Smallest project ID is 10
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
 
