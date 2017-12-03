@@ -12,6 +12,14 @@ public final class ModpackInstaller {
 
 	private ModpackInstaller() {}
 
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread(ModpackInstaller::deleteTemporaryFiles));
+	}
+
+	public static void installModpack(InstallerConfig config) {
+
+	}
+
 	public static void deleteTemporaryFiles() {
 		for(Path path : temporaryFiles) {
 			try {

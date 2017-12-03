@@ -225,6 +225,10 @@ public final class CAFormat {
 
 				try {
 					for(int fileIndex = startIndex; fileIndex < endIndex; fileIndex++) {
+						if(exception.hasValue()) {
+							return;
+						}
+
 						final ModpackFile file = toModpackFile(variables, fileData.get(fileIndex));
 						if(file != null) {
 							files.add(file);

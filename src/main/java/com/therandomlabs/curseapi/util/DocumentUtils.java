@@ -232,8 +232,9 @@ public final class DocumentUtils {
 
 				try {
 					for(int page = startPage; page < endPage; page++) {
-						if(stopSwitch != null && stopSwitch.isStopped()) {
-							break;
+						if(exception.hasValue() ||
+								(stopSwitch != null && stopSwitch.isStopped())) {
+							return;
 						}
 						documentToList.documentToList(get(url + page), data);
 					}
