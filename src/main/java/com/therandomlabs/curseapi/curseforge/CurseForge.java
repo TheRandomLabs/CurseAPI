@@ -146,7 +146,7 @@ public final class CurseForge {
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
 
-		return URLUtils.redirect(fromID(projectID) + "/files/" + projectID + "/download");
+		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
 	}
 
 	public static URL fromID(int projectID) throws CurseException {

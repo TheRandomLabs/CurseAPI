@@ -34,6 +34,10 @@ public final class ModpackInfo implements Cloneable {
 		return info;
 	}
 
+	public String getForgeVersion() {
+		return minecraft.modLoaders[0].id.replaceAll("forge", minecraft.version.toString());
+	}
+
 	public TRLList<ModpackFileInfo> getClientMods() {
 		return Arrays.stream(files).filter(file -> file.type != FileType.SERVER_ONLY).
 				collect(TRLCollectors.toImmutableList());

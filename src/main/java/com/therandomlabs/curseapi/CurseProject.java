@@ -340,8 +340,7 @@ public class CurseProject {
 			}
 		}
 
-		//Should already be sorted by newest
-		this.files = CurseFileList.ofUnsorted(files);
+		this.files = CurseFileList.of(files);
 		this.files.sortType = CurseFileList.SortType.NEWEST;
 	}
 

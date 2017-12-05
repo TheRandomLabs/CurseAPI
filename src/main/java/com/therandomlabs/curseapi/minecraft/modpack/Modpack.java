@@ -8,8 +8,8 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.curseapi.minecraft.MinecraftForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
+import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.io.NIOUtils;
 
 public final class Modpack {
 	private final String name;
@@ -154,6 +154,6 @@ public final class Modpack {
 	}
 
 	public static Modpack fromManifest(Path manifest) throws CurseException, IOException {
-		return new Gson().fromJson(NIOUtils.readFile(manifest), ModpackInfo.class).toModpack();
+		return MiscUtils.fromJson(manifest, ModpackInfo.class).toModpack();
 	}
 }

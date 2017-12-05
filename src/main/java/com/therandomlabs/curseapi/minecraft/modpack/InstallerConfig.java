@@ -11,9 +11,10 @@ import com.therandomlabs.utils.number.NumberUtils;
 public final class InstallerConfig {
 	public String installTo;
 	public String modpack;
+	public String dataFile = "curseapi_installer_data.json";
 	public boolean isServer;
 	public boolean installForge = true;
-	public boolean deleteOldForgeVersions = true;
+	public boolean deleteOldForgeVersion = true;
 	public boolean createEULA = true;
 	public boolean createServerStarters = true;
 
@@ -22,16 +23,19 @@ public final class InstallerConfig {
 	private boolean isPath;
 	private boolean isInvalid;
 
+	boolean isLocal;
+	boolean shouldInstallForge = true;
+
 	public InstallerConfig() {}
 
 	public InstallerConfig(Path installTo, String modpack, boolean isServer,
-			boolean installForge, boolean deleteOldForgeVersions, boolean createEULA,
+			boolean installForge, boolean deleteOldForgeVersion, boolean createEULA,
 			boolean createServerStarters) {
 		this.installTo = installTo.toString();
 		this.modpack = modpack;
 		this.isServer = isServer;
 		this.installForge = installForge;
-		this.deleteOldForgeVersions = deleteOldForgeVersions;
+		this.deleteOldForgeVersion = deleteOldForgeVersion;
 		this.createEULA = createEULA;
 		this.createServerStarters = createServerStarters;
 	}

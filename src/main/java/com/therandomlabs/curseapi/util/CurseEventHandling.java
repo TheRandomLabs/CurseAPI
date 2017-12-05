@@ -11,27 +11,27 @@ public final class CurseEventHandling {
 	public static final CurseEventHandler DEFAULT_EVENT_HANDLER = new CurseEventHandler() {
 		@Override
 		public void preRedirect(String url) {
-			getLogger().info("Redirecting URL: " + url);
+			getLogger().debug("Redirecting URL: " + url);
 		}
 
 		@Override
 		public void postRedirect(String originalURL, String redirectedURL) {
-			getLogger().info("%s redirected to: %s", originalURL, redirectedURL);
+			getLogger().debug("%s redirected to: %s", originalURL, redirectedURL);
 		}
 
 		@Override
 		public void preDownloadDocument(String url) {
-			getLogger().info("Downloading document: " + url);
+			getLogger().debug("Downloading document: " + url);
 		}
 
 		@Override
 		public void postDownloadDocument(String url) {
-			getLogger().info("Downloaded document: "+ url);
+			getLogger().debug("Downloaded document: "+ url);
 		}
 
 		@Override
 		public void retryingJSON(int retryingIn) {
-			getLogger().info("Failed to retrieve JSON. Retrying in %s seconds...", retryingIn);
+			getLogger().debug("Failed to retrieve JSON. Retrying in %s seconds...", retryingIn);
 		}
 
 		@Override
@@ -51,7 +51,7 @@ public final class CurseEventHandling {
 
 		@Override
 		public void downloadingMod(String modName, String fileName, int count, int total) {
-			getLogger().info("Downloading mod %s of %s, %s% (%s%)", count, total, modName,
+			getLogger().info("Downloading mod %s of %s, %s: %s", count, total, modName,
 					fileName);
 		}
 
