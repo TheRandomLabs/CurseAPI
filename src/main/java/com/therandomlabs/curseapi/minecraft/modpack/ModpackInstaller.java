@@ -199,11 +199,11 @@ public final class ModpackInstaller {
 				Files.deleteIfExists(Paths.get(config.installTo, "mods",
 						oldData.minecraftVersion, path.getFileName().toString()));
 			}
+		}
 
-			for(String file : oldData.installedFiles) {
-				CurseEventHandling.forEach(handler -> handler.deleting(file));
-				Files.deleteIfExists(Paths.get(config.installTo, file));
-			}
+		for(String file : oldData.installedFiles) {
+			CurseEventHandling.forEach(handler -> handler.deleting(file));
+			Files.deleteIfExists(Paths.get(config.installTo, file));
 		}
 	}
 
