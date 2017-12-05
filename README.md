@@ -14,7 +14,7 @@ Example Gradle buildscript:
 	dependencies {
 		compile "com.github.jhy:jsoup:master-SNAPSHOT"
 		compile "com.github.google:gson:master-SNAPSHOT"
-		compile "net.lingala.zip4j:zip4j:1.2.4"
+		compile "net.lingala.zip4j:zip4j:1.3.2"
 		compile "com.github.TheRandomLabs:TRLUtils:master-SNAPSHOT"
 		compile "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
 	}

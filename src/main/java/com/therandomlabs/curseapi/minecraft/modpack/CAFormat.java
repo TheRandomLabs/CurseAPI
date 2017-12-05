@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFile;
@@ -60,6 +61,7 @@ public final class CAFormat {
 	public static final String ALTERNATIVE = "|";
 	public static final String NEWER_THAN_OR_EQUAL_TO = ">";
 	public static final String OLDER_THAN_OR_EQUAL_TO = "<";
+	public static final String REMOVE_PROJECT_ID = "-";
 
 	private CAFormat() {}
 
@@ -158,7 +160,16 @@ public final class CAFormat {
 				}
 			}
 
-			//Variables
+			if(data[0].equals(REMOVE_PROJECT_ID)) {
+				final int id = NumberUtils.parseInt(data[0].substring(1), 0);
+				if(id >= CurseAPI.MIN_PROJECT_ID) {
+					for(int j = 0; j < files.size(); j++) {
+						if(files.get(j).projectID == id) {
+							files.remove(j--);
+						}
+					}
+				}
+			}
 
 			if(data[0].equals(VARIABLE)) {
 				if(data.length > 2) {
@@ -170,9 +181,9 @@ public final class CAFormat {
 						final Path path = Paths.get(variables.get(IMPORT));
 						if(Files.exists(path)) {
 							//Do not import variables
-							Files.readAllLines(path).stream().
+							lines.addAll(i + 1, Files.readAllLines(path).stream().
 									filter(string -> !string.startsWith(VARIABLE)).
-									forEach(lines::add);
+									collect(Collectors.toList()));
 						}
 					}
 				}
