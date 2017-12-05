@@ -1,11 +1,15 @@
 package com.therandomlabs.curseapi.minecraft.modpack;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.curseapi.minecraft.MinecraftForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
+import com.therandomlabs.utils.collection.TRLList;
+import com.therandomlabs.utils.io.NIOUtils;
 
 public final class Modpack {
 	private final String name;
@@ -14,7 +18,13 @@ public final class Modpack {
 	private final String description;
 	private final MinecraftVersion minecraftVersion;
 	private final String forgeVersion;
+
 	private final CurseFileList files;
+	private final CurseFileList clientMods;
+	private final CurseFileList serverMods;
+
+	private final TRLList<String> clientOnlyFiles;
+	private final TRLList<String> serverOnlyFiles;
 
 	public Modpack(String name, String version, String author, String description,
 			MinecraftVersion minecraftVersion, String forgeVersion, CurseFileList files)
@@ -34,6 +44,18 @@ public final class Modpack {
 		}
 
 		this.files = files;
+		clientMods = files.filter(file -> ((ModpackFile) file).getType() != FileType.SERVER_ONLY);
+		serverMods = files.filter(file -> ((ModpackFile) file).getType() != FileType.CLIENT_ONLY);
+
+		final TRLList<String> clientOnlyFiles = new TRLList<>();
+		clientMods.stream().filter(file -> ((ModpackFile) file).getType() == FileType.CLIENT_ONLY).
+				forEach(file -> clientOnlyFiles.addAll(((ModpackFile) file).getRelatedFiles()));
+		this.clientOnlyFiles = clientOnlyFiles.toImmutableList();
+
+		final TRLList<String> serverOnlyFiles = new TRLList<>();
+		serverMods.stream().filter(file -> ((ModpackFile) file).getType() == FileType.SERVER_ONLY).
+				forEach(file -> serverOnlyFiles.addAll(((ModpackFile) file).getRelatedFiles()));
+		this.serverOnlyFiles = serverOnlyFiles.toImmutableList();
 	}
 
 	public String getName() {
@@ -64,8 +86,24 @@ public final class Modpack {
 		return "forge-" + forgeVersion.split("-")[1];
 	}
 
-	public CurseFileList getFiles() {
+	public CurseFileList getMods() {
 		return files;
+	}
+
+	public CurseFileList getClientMods() {
+		return clientMods;
+	}
+
+	public CurseFileList getServerMods() {
+		return serverMods;
+	}
+
+	public TRLList<String> getClientOnlyFiles() {
+		return clientOnlyFiles;
+	}
+
+	public TRLList<String> getServerOnlyFiles() {
+		return serverOnlyFiles;
 	}
 
 	public String toJson() {
@@ -113,5 +151,9 @@ public final class Modpack {
 		info.primary = true;
 
 		return new ModLoaderInfo[] {info};
+	}
+
+	public static Modpack fromManifest(Path manifest) throws CurseException, IOException {
+		return new Gson().fromJson(NIOUtils.readFile(manifest), ModpackInfo.class).toModpack();
 	}
 }
