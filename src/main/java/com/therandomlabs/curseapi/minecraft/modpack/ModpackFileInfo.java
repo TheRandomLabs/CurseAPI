@@ -9,7 +9,7 @@ import com.therandomlabs.curseapi.util.CloneException;
 import com.therandomlabs.utils.collection.ImmutableList;
 
 public final class ModpackFileInfo implements Cloneable {
-	public String title = "Unknown";
+	public String title = "Unknown Title";
 	public int projectID;
 	public int fileID;
 	public FileType type = FileType.NORMAL;

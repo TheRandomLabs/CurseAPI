@@ -50,9 +50,13 @@ public final class CurseEventHandling {
 		}
 
 		@Override
-		public void downloadingMod(String modName, String fileName, int count, int total) {
-			getLogger().info("Downloading mod %s of %s, %s: %s", count, total, modName,
-					fileName);
+		public void downloadingMod(String modName, int count, int total) {
+			getLogger().info("Downloading mod %s of %s: %s", count, total, modName);
+		}
+
+		@Override
+		public void downloadedMod(String modName, String fileName) {
+			getLogger().info("Downloaded mod %s: %s", modName, fileName);
 		}
 
 		@Override

@@ -20,8 +20,9 @@ public interface CurseEventHandler {
 
 	default void extracting(String fileName) throws CurseException {}
 
-	default void downloadingMod(String modName, String fileName, int count, int total)
-			throws CurseException {}
+	default void downloadingMod(String modName, int count, int total) throws CurseException {}
+
+	default void downloadedMod(String modName, String fileName) throws CurseException {}
 
 	default void installingForge(String forgeVersion) throws CurseException {}
 }

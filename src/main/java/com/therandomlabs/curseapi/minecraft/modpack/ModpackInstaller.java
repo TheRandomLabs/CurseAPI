@@ -336,19 +336,22 @@ public final class ModpackInstaller {
 
 	private static void downloadMod(InstallerConfig config, InstallerData data,
 			ModpackFileInfo mod, int count, int total) throws CurseException, IOException {
-		final URL url = CurseForge.getFileURL(mod.projectID, mod.fileID);
-		final String fileName = NetworkUtils.getFileName(url);
+		CurseEventHandling.forEach(handler -> handler.downloadingMod(mod.title, count, total));
 
-		CurseEventHandling.forEach(
-				handler -> handler.downloadingMod(mod.title, fileName, count, total));
+		final URL url = CurseForge.getFileURL(mod.projectID, mod.fileID);
+
+		final Path location = Paths.get(config.installTo).relativize(
+				NIOUtils.downloadToDirectory(url, Paths.get(config.installTo, "mods")));
 
 		final ModData modData = new ModData();
 
 		modData.projectID = mod.projectID;
 		modData.fileID = mod.fileID;
-		modData.location = Paths.get(config.installTo).relativize(
-				NIOUtils.downloadToDirectory(url, Paths.get(config.installTo, "mods"))).toString().
-				replaceAll(IOConstants.LINE_SEPARATOR, IOConstants.LINE_SEPARATOR_UNIX);
+		modData.location = location.toString().replaceAll(IOConstants.LINE_SEPARATOR,
+				IOConstants.LINE_SEPARATOR_UNIX);
+
+		CurseEventHandling.forEach(handler -> handler.downloadedMod(mod.title,
+				location.getFileName().toString()));
 
 		data.mods.add(modData);
 	}
