@@ -23,6 +23,7 @@ import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.ThreadWithIndexValues;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
+import com.therandomlabs.utils.io.IOConstants;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -117,7 +118,7 @@ public final class ModpackInstaller {
 
 		final Path mods = Paths.get(config.installTo, "mods");
 		if(!Files.exists(mods)) {
-			Files.createDirectory(mods);
+			Files.createDirectories(mods);
 		}
 
 		deleteOldFiles(config, data, manifest);
@@ -213,10 +214,6 @@ public final class ModpackInstaller {
 		final List<String> filesToIgnore = config.isServer ?
 				manifest.getClientOnlyFiles() : manifest.getServerOnlyFiles();
 
-		if(!Files.exists(installTo)) {
-			Files.createDirectories(installTo);
-		}
-
 		Files.walkFileTree(overrides, new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attributes)
@@ -244,7 +241,8 @@ public final class ModpackInstaller {
 						}
 					}
 
-					data.installedFiles.add(relativized);
+					data.installedFiles.add(relativized.replaceAll(IOConstants.LINE_SEPARATOR,
+							IOConstants.LINE_SEPARATOR_UNIX));
 				}
 
 				return FileVisitResult.CONTINUE;
@@ -344,14 +342,15 @@ public final class ModpackInstaller {
 		CurseEventHandling.forEach(
 				handler -> handler.downloadingMod(mod.title, fileName, count, total));
 
-		final ModData ModData = new ModData();
+		final ModData modData = new ModData();
 
-		ModData.projectID = mod.projectID;
-		ModData.fileID = mod.fileID;
-		ModData.location = Paths.get(config.installTo).relativize(
-				NIOUtils.downloadToDirectory(url, Paths.get(config.installTo, "mods"))).toString();
+		modData.projectID = mod.projectID;
+		modData.fileID = mod.fileID;
+		modData.location = Paths.get(config.installTo).relativize(
+				NIOUtils.downloadToDirectory(url, Paths.get(config.installTo, "mods"))).toString().
+				replaceAll(IOConstants.LINE_SEPARATOR, IOConstants.LINE_SEPARATOR_UNIX);
 
-		data.mods.add(ModData);
+		data.mods.add(modData);
 	}
 
 	private static void installForge(InstallerConfig config, InstallerData data,
