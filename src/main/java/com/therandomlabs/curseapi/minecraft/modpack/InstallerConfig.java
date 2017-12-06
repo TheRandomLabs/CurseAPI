@@ -3,7 +3,6 @@ package com.therandomlabs.curseapi.minecraft.modpack;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.utils.number.NumberUtils;
@@ -12,11 +11,14 @@ public final class InstallerConfig {
 	public String installTo;
 	public String modpack;
 	public String dataFile = "curseapi_installer_data.json";
+	public String[] modSources;
+	public boolean redownloadAll;
 	public boolean isServer;
 	public boolean installForge = true;
 	public boolean deleteOldForgeVersion = true;
 	public boolean createEULA = true;
 	public boolean createServerStarters = true;
+	public int threads;
 
 	private boolean isProjectAndFileID;
 	private boolean isURL;
@@ -25,20 +27,6 @@ public final class InstallerConfig {
 
 	boolean isLocal;
 	boolean shouldInstallForge = true;
-
-	public InstallerConfig() {}
-
-	public InstallerConfig(Path installTo, String modpack, boolean isServer,
-			boolean installForge, boolean deleteOldForgeVersion, boolean createEULA,
-			boolean createServerStarters) {
-		this.installTo = installTo.toString();
-		this.modpack = modpack;
-		this.isServer = isServer;
-		this.installForge = installForge;
-		this.deleteOldForgeVersion = deleteOldForgeVersion;
-		this.createEULA = createEULA;
-		this.createServerStarters = createServerStarters;
-	}
 
 	public boolean isModpackProjectAndFileID() {
 		getModpackType();

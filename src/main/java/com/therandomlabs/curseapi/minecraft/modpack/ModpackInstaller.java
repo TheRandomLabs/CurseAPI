@@ -26,7 +26,6 @@ import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.io.IOConstants;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.Assertions;
-import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -132,6 +131,8 @@ public final class ModpackInstaller {
 				new ImmutableList<>(new Gson().toJson(data)));
 	}
 
+	//TODO config.modSources
+
 	private static void deleteOldFiles(InstallerConfig config, InstallerData data,
 			ModpackInfo manifest) throws CurseException, IOException {
 		final Path dataPath = Paths.get(config.installTo, config.dataFile);
@@ -148,6 +149,30 @@ public final class ModpackInstaller {
 					"versions",
 					oldData.minecraftVersion + "-forge" + oldData.forgeVersion
 			));
+		}
+
+		getModsToKeep(config, oldData, data, manifest);
+
+		for(InstallerData.ModData mod : oldData.mods) {
+			CurseEventHandling.forEach(handler -> handler.deleting(mod.location));
+
+			final Path path = Paths.get(config.installTo, mod.location);
+			if(!Files.deleteIfExists(path)) {
+				Files.deleteIfExists(Paths.get(config.installTo, "mods",
+						oldData.minecraftVersion, path.getFileName().toString()));
+			}
+		}
+
+		for(String file : oldData.installedFiles) {
+			CurseEventHandling.forEach(handler -> handler.deleting(file));
+			Files.deleteIfExists(Paths.get(config.installTo, file));
+		}
+	}
+
+	private static void getModsToKeep(InstallerConfig config, InstallerData oldData,
+			InstallerData data, ModpackInfo manifest) {
+		if(config.redownloadAll) {
+			return;
 		}
 
 		final List<InstallerData.ModData> modsToKeep = new ArrayList<>();
@@ -191,21 +216,6 @@ public final class ModpackInstaller {
 		}
 
 		manifest.files = newFiles.toArray(new ModpackFileInfo[0]);
-
-		for(InstallerData.ModData mod : oldData.mods) {
-			CurseEventHandling.forEach(handler -> handler.deleting(mod.location));
-
-			final Path path = Paths.get(config.installTo, mod.location);
-			if(!Files.deleteIfExists(path)) {
-				Files.deleteIfExists(Paths.get(config.installTo, "mods",
-						oldData.minecraftVersion, path.getFileName().toString()));
-			}
-		}
-
-		for(String file : oldData.installedFiles) {
-			CurseEventHandling.forEach(handler -> handler.deleting(file));
-			Files.deleteIfExists(Paths.get(config.installTo, file));
-		}
 	}
 
 	private static void copyNewFiles(Path overrides, InstallerConfig config, InstallerData data,
@@ -282,8 +292,9 @@ public final class ModpackInstaller {
 			return;
 		}
 
-		final int threadCount = manifest.files.length < CurseAPI.getMaximumThreads() ?
-				manifest.files.length : CurseAPI.getMaximumThreads();
+		final int maxThreads = config.threads != 0 ? config.threads : CurseAPI.getMaximumThreads();
+		final int threadCount = manifest.files.length < maxThreads ?
+				manifest.files.length : maxThreads;
 		final Thread[] threads = new Thread[threadCount];
 		final int increment = manifest.files.length / threadCount;
 
@@ -351,7 +362,7 @@ public final class ModpackInstaller {
 				IOConstants.LINE_SEPARATOR_UNIX);
 
 		CurseEventHandling.forEach(handler -> handler.downloadedMod(mod.title,
-				location.getFileName().toString()));
+				location.getFileName().toString(), count));
 
 		data.mods.add(modData);
 	}
@@ -359,7 +370,9 @@ public final class ModpackInstaller {
 	private static void installForge(InstallerConfig config, InstallerData data,
 			ModpackInfo manifest) throws IOException {
 		data.minecraftVersion = manifest.minecraft.version.toString();
-		data.forgeVersion = "blah";
+		data.forgeVersion = manifest.getForgeVersion();
+
+
 	}
 
 	private static void createEULAAndServerStarters(InstallerConfig config, InstallerData data)

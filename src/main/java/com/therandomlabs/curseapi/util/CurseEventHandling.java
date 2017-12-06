@@ -4,11 +4,15 @@ import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.util.ArrayList;
 import java.util.List;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.minecraft.modpack.ModpackFileInfo;
 import com.therandomlabs.utils.runnable.RunnableWithInputAndThrowable;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
 public final class CurseEventHandling {
-	public static final CurseEventHandler DEFAULT_EVENT_HANDLER = new CurseEventHandler() {
+	public static final CurseEventHandler DEFAULT_EVENT_HANDLER = new DefaultCurseEventHandler();
+	private static final List<CurseEventHandler> eventHandlers = new ArrayList<>(5);
+
+	public static class DefaultCurseEventHandler implements CurseEventHandler {
 		@Override
 		public void preRedirect(String url) {
 			getLogger().debug("Redirecting URL: " + url);
@@ -51,20 +55,31 @@ public final class CurseEventHandling {
 
 		@Override
 		public void downloadingMod(String modName, int count, int total) {
-			getLogger().info("Downloading mod %s of %s: %s", count, total, modName);
+			if(modName.equals(ModpackFileInfo.UNKNOWN_TITLE)) {
+				getLogger().info("Downloading mod %s of %s...", count, total, modName);
+			} else {
+				getLogger().info("Downloading mod %s of %s: %s", count, total, modName);
+			}
+
+			getLogger().flush();
 		}
 
 		@Override
-		public void downloadedMod(String modName, String fileName) {
-			getLogger().info("Downloaded mod %s: %s", modName, fileName);
+		public void downloadedMod(String modName, String fileName, int count) {
+			if(modName.equals(ModpackFileInfo.UNKNOWN_TITLE)) {
+				getLogger().info("Downloaded mod %s: %s", modName, fileName);
+			} else {
+				getLogger().info("Downloaded mod: " + fileName);
+			}
+
+			getLogger().flush();
 		}
 
 		@Override
 		public void installingForge(String forgeVersion) {
 			getLogger().info("Installing Forge %s...", forgeVersion);
 		}
-	};
-	private static final List<CurseEventHandler> eventHandlers = new ArrayList<>(5);
+	}
 
 	private CurseEventHandling() {}
 
@@ -85,13 +100,13 @@ public final class CurseEventHandling {
 			throws CurseException {
 		final Wrapper<CurseException> exception = new Wrapper<>();
 
-		eventHandlers.forEach(eventHandler -> {
+		for(CurseEventHandler eventHandler : eventHandlers) {
 			try {
 				consumer.run(eventHandler);
 			} catch(CurseException ex) {
 				exception.set(ex);
 			}
-		});
+		}
 
 		if(exception.hasValue()) {
 			throw exception.get();

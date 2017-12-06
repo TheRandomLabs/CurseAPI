@@ -9,7 +9,7 @@ import com.therandomlabs.utils.misc.Assertions;
 public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
 
-	private static int threads = Runtime.getRuntime().availableProcessors();
+	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
 	private static int maxRetries = 5;
 
 	private CurseAPI() {}
