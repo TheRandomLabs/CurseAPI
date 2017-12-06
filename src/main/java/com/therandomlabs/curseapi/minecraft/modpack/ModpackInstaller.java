@@ -292,7 +292,7 @@ public final class ModpackInstaller {
 			return;
 		}
 
-		final int maxThreads = config.threads != 0 ? config.threads : CurseAPI.getMaximumThreads();
+		final int maxThreads = config.threads > 0 ? config.threads : CurseAPI.getMaximumThreads();
 		final int threadCount = manifest.files.length < maxThreads ?
 				manifest.files.length : maxThreads;
 		final Thread[] threads = new Thread[threadCount];
