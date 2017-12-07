@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.minecraft.modpack;
 
+import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
@@ -120,8 +121,15 @@ public final class ModpackInstaller {
 			Files.createDirectories(mods);
 		}
 
+		final List<String> filesToIgnore = config.isServer ?
+				manifest.getClientOnlyFiles() : manifest.getServerOnlyFiles();
+
+		getLogger().info(filesToIgnore);
+
+		filterMods(config, manifest);
 		deleteOldFiles(config, data, manifest);
-		copyNewFiles(Paths.get(directory.toString(), manifest.overrides), config, data, manifest);
+		copyNewFiles(Paths.get(directory.toString(), manifest.overrides), config, data, manifest,
+				filesToIgnore);
 		downloadMods(config, data, manifest);
 		installForge(config, data, manifest);
 		createEULAAndServerStarters(config, data);
@@ -132,6 +140,20 @@ public final class ModpackInstaller {
 	}
 
 	//TODO config.modSources
+
+	private static void filterMods(InstallerConfig config, ModpackInfo manifest) {
+		final List<ModpackFileInfo> mods = new ArrayList<>(manifest.files.length);
+		final FileType typeToRemove =
+				config.isServer ? FileType.CLIENT_ONLY : FileType.SERVER_ONLY;
+
+		for(ModpackFileInfo mod : manifest.files) {
+			if(mod.type != typeToRemove) {
+				mods.add(mod);
+			}
+		}
+
+		manifest.files = mods.toArray(new ModpackFileInfo[0]);
+	}
 
 	private static void deleteOldFiles(InstallerConfig config, InstallerData data,
 			ModpackInfo manifest) throws CurseException, IOException {
@@ -167,6 +189,8 @@ public final class ModpackInstaller {
 			CurseEventHandling.forEach(handler -> handler.deleting(file));
 			Files.deleteIfExists(Paths.get(config.installTo, file));
 		}
+
+		NIOUtils.deleteDirectory(Paths.get(config.installTo), NIOUtils.DELETE_EMPTY_DIRECTORIES);
 	}
 
 	private static void getModsToKeep(InstallerConfig config, InstallerData oldData,
@@ -219,18 +243,17 @@ public final class ModpackInstaller {
 	}
 
 	private static void copyNewFiles(Path overrides, InstallerConfig config, InstallerData data,
-			ModpackInfo manifest) throws IOException {
+			ModpackInfo manifest, List<String> filesToIgnore) throws IOException {
 		final Path installTo = Paths.get(config.installTo);
-		final List<String> filesToIgnore = config.isServer ?
-				manifest.getClientOnlyFiles() : manifest.getServerOnlyFiles();
 
 		Files.walkFileTree(overrides, new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attributes)
 					throws IOException {
-				if(!shouldSkip(file)) {
-					final String relativized = overrides.relativize(file).normalize().toString();
-					final Path newFile = Paths.get(installTo.toString(), relativized);
+				final Path relativized = relativize(file);
+
+				if(!shouldSkip(relativized)) {
+					final Path newFile = Paths.get(installTo.toString(), relativized.toString());
 
 					final String name = file.getFileName().toString();
 					if(name.endsWith(".cfg") || name.endsWith(".json") || name.endsWith(".txt")) {
@@ -251,8 +274,8 @@ public final class ModpackInstaller {
 						}
 					}
 
-					data.installedFiles.add(relativized.replaceAll(IOConstants.LINE_SEPARATOR,
-							IOConstants.LINE_SEPARATOR_UNIX));
+					data.installedFiles.add(relativized.toString().replaceAll(
+							IOConstants.LINE_SEPARATOR, IOConstants.LINE_SEPARATOR_UNIX));
 				}
 
 				return FileVisitResult.CONTINUE;
@@ -261,27 +284,32 @@ public final class ModpackInstaller {
 			@Override
 			public FileVisitResult preVisitDirectory(Path directory,
 					BasicFileAttributes attributes) throws IOException {
+				directory = relativize(directory);
+
 				if(!shouldSkip(directory)) {
-					final Path relativized = Paths.get(installTo.toString(),
-							overrides.relativize(directory).normalize().toString());
-					if(!relativized.toString().isEmpty()) {
-						if(!Files.isDirectory(relativized)) {
-							Files.deleteIfExists(relativized);
-							Files.createDirectory(relativized);
-						}
+					final Path path = Paths.get(installTo.toString(), directory.toString());
+
+					if(!Files.isDirectory(path)) {
+						Files.deleteIfExists(path);
+						Files.createDirectory(path);
 					}
 				}
+
 				return FileVisitResult.CONTINUE;
 			}
 
 			private boolean shouldSkip(Path path) {
 				for(String fileName : filesToIgnore) {
-					final Path toIgnore = Paths.get(installTo.toString(), "config", fileName);
+					final Path toIgnore = Paths.get("config", fileName);
 					if(path.equals(toIgnore) || NIOUtils.isParent(toIgnore, path)) {
 						return true;
 					}
 				}
 				return false;
+			}
+
+			private Path relativize(Path path) {
+				return overrides.relativize(path).normalize();
 			}
 		});
 	}
@@ -372,12 +400,20 @@ public final class ModpackInstaller {
 		data.minecraftVersion = manifest.minecraft.version.toString();
 		data.forgeVersion = manifest.getForgeVersion();
 
+		if(!config.shouldInstallForge) {
+			return;
+		}
 
+		//TODO
 	}
 
 	private static void createEULAAndServerStarters(InstallerConfig config, InstallerData data)
 			throws IOException {
+		if(!config.isServer) {
+			return;
+		}
 
+		//TODO
 	}
 
 	//public static void createZip(Path directory, Path zip) throws IOException {

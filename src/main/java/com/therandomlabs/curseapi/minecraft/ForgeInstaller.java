@@ -36,8 +36,8 @@ public class ForgeInstaller {
 		return download(MinecraftForge.getLatestVersion(version), location);
 	}
 
-	public static ForgeInstaller downloadLatestToDirectory(MinecraftVersion version, Path directory)
-			throws CurseException, IOException {
+	public static ForgeInstaller downloadLatestToDirectory(MinecraftVersion version,
+			Path directory) throws CurseException, IOException {
 		return downloadToDirectory(MinecraftForge.getLatestVersion(version), directory);
 	}
 
@@ -51,5 +51,5 @@ public class ForgeInstaller {
 		return downloadToDirectory(MinecraftForge.getRecommendedVersion(version), directory);
 	}
 
-	//TODO
+
 }
