@@ -18,8 +18,9 @@ public final class ModpackFileInfo implements Cloneable {
 
 	public ModpackFileInfo() {}
 
-	ModpackFileInfo(int projectID, int fileID, FileType type,
+	public ModpackFileInfo(String title, int projectID, int fileID, FileType type,
 			String[] relatedFiles, AlternativeFileInfo[] alternatives) {
+		this.title = title;
 		this.projectID = projectID;
 		this.fileID = fileID;
 		this.type = type;

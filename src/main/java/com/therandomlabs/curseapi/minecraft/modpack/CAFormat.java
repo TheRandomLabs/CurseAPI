@@ -316,8 +316,8 @@ public final class CAFormat {
 			alternatives = ImmutableList.empty();
 		}
 
-		return new ModpackFileInfo(data.projectID, file.id(), data.type, data.relatedFiles,
-				alternatives.toArray(new AlternativeFileInfo[0]));
+		return new ModpackFileInfo(project.title(), data.projectID, file.id(), data.type,
+				data.relatedFiles, alternatives.toArray(new AlternativeFileInfo[0]));
 	}
 
 	private static String getForge(String minecraft, String forge) throws CurseException {
