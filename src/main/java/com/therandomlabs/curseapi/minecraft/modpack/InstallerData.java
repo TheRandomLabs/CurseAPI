@@ -9,6 +9,29 @@ public final class InstallerData implements Cloneable {
 		public int projectID;
 		public int fileID;
 		public String location;
+		public String[] relatedFiles;
+
+		@Override
+		public boolean equals(Object object) {
+			if(this == object) {
+				return true;
+			}
+
+			if(object instanceof ModData) {
+				return ((ModData) object).fileID == fileID;
+			}
+
+			if(object instanceof ModpackFileInfo) {
+				return ((ModpackFileInfo) object).fileID == fileID;
+			}
+
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return fileID;
+		}
 
 		@Override
 		public ModData clone() {
@@ -17,6 +40,7 @@ public final class InstallerData implements Cloneable {
 			data.projectID = projectID;
 			data.fileID = fileID;
 			data.location = location;
+			data.relatedFiles = relatedFiles;
 
 			return data;
 		}

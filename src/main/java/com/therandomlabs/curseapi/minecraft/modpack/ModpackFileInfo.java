@@ -1,12 +1,10 @@
 package com.therandomlabs.curseapi.minecraft.modpack;
 
-import java.util.List;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFile;
 import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.CloneException;
-import com.therandomlabs.utils.collection.ImmutableList;
 
 public final class ModpackFileInfo implements Cloneable {
 	public static final String UNKNOWN_TITLE = "Unknown Name";
@@ -17,6 +15,35 @@ public final class ModpackFileInfo implements Cloneable {
 	public FileType type = FileType.NORMAL;
 	public String[] relatedFiles = new String[0];
 	public AlternativeFileInfo[] alternatives = new AlternativeFileInfo[0];
+
+	public ModpackFileInfo() {}
+
+	ModpackFileInfo(int projectID, int fileID, FileType type,
+			String[] relatedFiles, AlternativeFileInfo[] alternatives) {
+		this.projectID = projectID;
+		this.fileID = fileID;
+		this.type = type;
+		this.relatedFiles = relatedFiles;
+		this.alternatives = alternatives;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if(object instanceof ModpackFileInfo) {
+			return ((ModpackFileInfo) object).fileID == fileID;
+		}
+
+		if(object instanceof InstallerData.ModData) {
+			return ((InstallerData.ModData) object).fileID == fileID;
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return fileID;
+	}
 
 	@Override
 	public ModpackFileInfo clone() {
@@ -32,54 +59,23 @@ public final class ModpackFileInfo implements Cloneable {
 		return info;
 	}
 
-	public static ModpackFileInfo[] fromCurseFiles(CurseFile[] files) {
-		return fromCurseFiles(new ImmutableList<>(files));
-	}
+	public AlternativeFileInfo toAlternative() {
+		final AlternativeFileInfo info = new AlternativeFileInfo();
 
-	public static ModpackFileInfo[] fromCurseFiles(List<? extends CurseFile> files) {
-		final ModpackFileInfo[] infos = new ModpackFileInfo[files.size()];
+		info.title = title;
+		info.projectID = projectID;
+		info.fileID = fileID;
+		info.type = type;
+		info.relatedFiles = relatedFiles.clone();
 
-		for(int i = 0; i < infos.length; i++) {
-			final CurseFile file = files.get(i);
-			final ModpackFileInfo info = new ModpackFileInfo();
-
-			info.title = file.project().title();
-			info.projectID = file.project().id();
-			info.fileID = file.id();
-
-			if(file instanceof ModpackFile) {
-				final ModpackFile modpackFile = (ModpackFile) file;
-				info.type = modpackFile.getType();
-				info.relatedFiles = modpackFile.getRelatedFiles().toArray(new String[0]);
-				info.alternatives = AlternativeFileInfo.fromArray(
-						fromCurseFiles(modpackFile.getAlternatives()));
-			}
-
-			infos[i] = info;
-		}
-
-		return infos;
+		return info;
 	}
 
 	public static CurseFile[] toCurseFiles(ModpackFileInfo[] files) throws CurseException {
 		final CurseFile[] curseFiles = new CurseFile[files.length];
 
 		for(int i = 0; i < files.length; i++) {
-			curseFiles[i] = new ModpackFile(
-					CurseProject.fromID(files[i].projectID).fileFromID(files[i].fileID),
-					files[i].type, files[i].relatedFiles, toCurseFiles(files[i].alternatives));
-		}
-
-		return curseFiles;
-	}
-
-	private static CurseFile[] toCurseFiles(AlternativeFileInfo[] files) throws CurseException {
-		final CurseFile[] curseFiles = new CurseFile[files.length];
-
-		for(int i = 0; i < files.length; i++) {
-			curseFiles[i] = new ModpackFile(
-					CurseProject.fromID(files[i].projectID).fileFromID(files[i].fileID),
-					files[i].type, files[i].relatedFiles, new CurseFile[0]);
+			curseFiles[i] = CurseProject.fromID(files[i].projectID).fileFromID(files[i].fileID);
 		}
 
 		return curseFiles;

@@ -69,10 +69,10 @@ public final class CAFormat {
 		final FileType type;
 		final int projectID;
 		final int fileID;
-		final List<String> relatedFiles;
-		List<FileData> alternatives;
+		final String[] relatedFiles;
+		FileData[] alternatives;
 
-		FileData(FileType type, int projectID, int fileID, List<String> relatedFiles) {
+		FileData(FileType type, int projectID, int fileID, String[] relatedFiles) {
 			this.type = type;
 			this.projectID = projectID;
 			this.fileID = fileID;
@@ -98,11 +98,11 @@ public final class CAFormat {
 		return toModpack(manifest).toPrettyJsonWithTabs();
 	}
 
-	public static ModpackInfo toModpackInfo(File manifest) throws CurseException, IOException {
+	public static ModpackManifest toModpackInfo(File manifest) throws CurseException, IOException {
 		return toModpackInfo(manifest.toPath());
 	}
 
-	public static ModpackInfo toModpackInfo(Path manifest) throws CurseException, IOException {
+	public static ModpackManifest toModpackInfo(Path manifest) throws CurseException, IOException {
 		return toModpack(manifest).toModpackInfo();
 	}
 
@@ -195,7 +195,7 @@ public final class CAFormat {
 			final List<FileData> alternatives = new ArrayList<>();
 			final FileData file = getFile(data, variables, alternatives);
 			if(file != null) {
-				file.alternatives = alternatives;
+				file.alternatives = alternatives.toArray(new FileData[0]);
 				files.add(file);
 			}
 		}
@@ -207,13 +207,13 @@ public final class CAFormat {
 				variables.get(DESCRIPTION),
 				MinecraftVersion.fromString(variables.get(MINECRAFT)),
 				getForge(variables.get(MINECRAFT), variables.get(FORGE)),
-				toCurseFileList(variables, files)
+				getFiles(variables, files)
 		);
 	}
 
-	private static CurseFileList toCurseFileList(Map<String, String> variables,
+	private static ModpackFileInfo[] getFiles(Map<String, String> variables,
 			List<FileData> fileData) throws CurseException {
-		final List<ModpackFile> files = new ArrayList<>(fileData.size());
+		final List<ModpackFileInfo> files = new ArrayList<>(fileData.size());
 
 		final int threadCount = fileData.size() < CurseAPI.getMaximumThreads() ?
 				fileData.size() : CurseAPI.getMaximumThreads();
@@ -240,7 +240,8 @@ public final class CAFormat {
 							return;
 						}
 
-						final ModpackFile file = toModpackFile(variables, fileData.get(fileIndex));
+						final ModpackFileInfo file =
+								toModpackFile(variables, fileData.get(fileIndex));
 						if(file != null) {
 							files.add(file);
 						}
@@ -264,10 +265,29 @@ public final class CAFormat {
 			throw exception.get();
 		}
 
-		return CurseFileList.ofUnsorted(files).sortedByProjectTitle().filterDuplicateProjects();
+		files.sort((file1, file2) -> file1.title.compareTo(file2.title));
+
+		//Remove duplicate projects
+
+		final List<ModpackFileInfo> duplicates = new ArrayList<>();
+		for(ModpackFileInfo file : files) {
+			for(ModpackFileInfo file2 : files) {
+				if(file != file2 && file.projectID == file2.projectID) {
+					//Prefer the newer file
+					if(file.fileID > file2.fileID) {
+						duplicates.add(file2);
+					} else {
+						duplicates.add(file);
+					}
+				}
+			}
+		}
+		files.removeAll(duplicates);
+
+		return files.toArray(new ModpackFileInfo[0]);
 	}
 
-	private static ModpackFile toModpackFile(Map<String, String> variables, FileData data)
+	private static ModpackFileInfo toModpackFile(Map<String, String> variables, FileData data)
 			throws CurseException {
 		final CurseProject project = CurseProject.fromID(data.projectID);
 
@@ -286,17 +306,18 @@ public final class CAFormat {
 			file = project.fileFromID(data.fileID);
 		}
 
-		final List<CurseFile> alternatives;
+		final List<AlternativeFileInfo> alternatives;
 		if(data.alternatives != null) {
-			alternatives = new ArrayList<>(data.alternatives.size());
+			alternatives = new ArrayList<>(data.alternatives.length);
 			for(FileData alternative : data.alternatives) {
-				alternatives.add(toModpackFile(variables, alternative));
+				alternatives.add(toModpackFile(variables, alternative).toAlternative());
 			}
 		} else {
 			alternatives = ImmutableList.empty();
 		}
 
-		return new ModpackFile(file, data.type, data.relatedFiles, alternatives);
+		return new ModpackFileInfo(data.projectID, file.id(), data.type, data.relatedFiles,
+				alternatives.toArray(new AlternativeFileInfo[0]));
 	}
 
 	private static String getForge(String minecraft, String forge) throws CurseException {
@@ -386,6 +407,6 @@ public final class CAFormat {
 			}
 		}
 
-		return new FileData(type, projectID, fileID, relatedFiles);
+		return new FileData(type, projectID, fileID, relatedFiles.toArray(new String[0]));
 	}
 }

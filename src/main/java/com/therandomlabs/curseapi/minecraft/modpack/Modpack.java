@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.minecraft.modpack;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.therandomlabs.curseapi.CurseException;
@@ -9,6 +10,8 @@ import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.curseapi.minecraft.MinecraftForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.MiscUtils;
+import com.therandomlabs.utils.collection.ImmutableList;
+import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 
 public final class Modpack {
@@ -16,23 +19,33 @@ public final class Modpack {
 	private final String version;
 	private final String author;
 	private final String description;
+	private final String overrides;
 	private final MinecraftVersion minecraftVersion;
 	private final String forgeVersion;
 
-	private final CurseFileList files;
-	private final CurseFileList clientMods;
-	private final CurseFileList serverMods;
+	private TRLList<ModpackFileInfo> mods;
+	private final TRLList<ModpackFileInfo> originalMods;
+	private final TRLList<ModpackFileInfo> clientMods;
+	private final TRLList<ModpackFileInfo> serverMods;
 
 	private final TRLList<String> clientOnlyFiles;
 	private final TRLList<String> serverOnlyFiles;
 
 	public Modpack(String name, String version, String author, String description,
-			MinecraftVersion minecraftVersion, String forgeVersion, CurseFileList files)
+			MinecraftVersion minecraftVersion, String forgeVersion, ModpackFileInfo[] files)
 			throws CurseException {
+		this(name, version, author, description, "Overrides", minecraftVersion, forgeVersion,
+				files);
+	}
+
+	public Modpack(String name, String version, String author, String description,
+			String overrides, MinecraftVersion minecraftVersion, String forgeVersion,
+			ModpackFileInfo[] files) throws CurseException {
 		this.name = name;
 		this.version = version;
 		this.author = author;
 		this.description = description;
+		this.overrides = overrides;
 		this.minecraftVersion = minecraftVersion;
 
 		if(forgeVersion.equals("latest")) {
@@ -43,18 +56,23 @@ public final class Modpack {
 			this.forgeVersion = forgeVersion;
 		}
 
-		this.files = files;
-		clientMods = files.filter(file -> ((ModpackFile) file).getType() != FileType.SERVER_ONLY);
-		serverMods = files.filter(file -> ((ModpackFile) file).getType() != FileType.CLIENT_ONLY);
+		mods = new TRLList<>(files);
+		originalMods = mods.toImmutableList();
+		clientMods = mods.stream().
+				filter(file -> file.type != FileType.SERVER_ONLY).
+				collect(TRLCollectors.toArrayList());
+		serverMods = new ImmutableList<>(files).stream().
+				filter(file -> file.type != FileType.CLIENT_ONLY).
+				collect(TRLCollectors.toArrayList());
 
 		final TRLList<String> clientOnlyFiles = new TRLList<>();
-		clientMods.stream().filter(file -> ((ModpackFile) file).getType() == FileType.CLIENT_ONLY).
-				forEach(file -> clientOnlyFiles.addAll(((ModpackFile) file).getRelatedFiles()));
+		clientMods.stream().filter(file -> file.type == FileType.CLIENT_ONLY).
+				forEach(file -> clientOnlyFiles.addAll(file.relatedFiles));
 		this.clientOnlyFiles = clientOnlyFiles.toImmutableList();
 
 		final TRLList<String> serverOnlyFiles = new TRLList<>();
-		serverMods.stream().filter(file -> ((ModpackFile) file).getType() == FileType.SERVER_ONLY).
-				forEach(file -> serverOnlyFiles.addAll(((ModpackFile) file).getRelatedFiles()));
+		serverMods.stream().filter(file -> file.type == FileType.SERVER_ONLY).
+				forEach(file -> serverOnlyFiles.addAll(file.relatedFiles));
 		this.serverOnlyFiles = serverOnlyFiles.toImmutableList();
 	}
 
@@ -66,12 +84,20 @@ public final class Modpack {
 		return version;
 	}
 
+	public String getFullName() {
+		return name + " " + version;
+	}
+
 	public String getAuthor() {
 		return author;
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getOverrides() {
+		return overrides;
 	}
 
 	public MinecraftVersion getMinecraftVersion() {
@@ -86,16 +112,48 @@ public final class Modpack {
 		return "forge-" + forgeVersion.split("-")[1];
 	}
 
-	public CurseFileList getMods() {
-		return files;
+	public TRLList<ModpackFileInfo> getMods() {
+		return mods;
 	}
 
-	public CurseFileList getClientMods() {
+	public CurseFileList getCurseFileList() throws CurseException {
+		return ModpackFileInfo.toCurseFileList(mods.toArray(new ModpackFileInfo[0]));
+	}
+
+	public TRLList<ModpackFileInfo> getOriginalMods() {
+		return originalMods;
+	}
+
+	public TRLList<ModpackFileInfo> getClientMods() {
 		return clientMods;
 	}
 
-	public CurseFileList getServerMods() {
+	public TRLList<ModpackFileInfo> getServerMods() {
 		return serverMods;
+	}
+
+	public void filterModsForClient() {
+		filterMods(FileType.SERVER_ONLY);
+	}
+
+	public void filterModsForServer() {
+		filterMods(FileType.CLIENT_ONLY);
+	}
+
+	private void filterMods(FileType typeToRemove) {
+		final TRLList<ModpackFileInfo> mods = new TRLList<>(this.mods.size());
+
+		for(ModpackFileInfo mod : this.mods) {
+			if(mod.type != typeToRemove) {
+				mods.add(mod);
+			}
+		}
+
+		this.mods = mods;
+	}
+
+	public void removeMods(Collection<?> mods) {
+		this.mods.removeAll(mods);
 	}
 
 	public TRLList<String> getClientOnlyFiles() {
@@ -118,8 +176,8 @@ public final class Modpack {
 		return toPrettyJson().replaceAll("  ", "\t");
 	}
 
-	public ModpackInfo toModpackInfo() {
-		final ModpackInfo info = new ModpackInfo();
+	public ModpackManifest toModpackInfo() {
+		final ModpackManifest info = new ModpackManifest();
 
 		info.manifestType = "minecraftModpack";
 		info.manifestVersion = 1;
@@ -127,7 +185,7 @@ public final class Modpack {
 		info.version = version;
 		info.author = author;
 		info.description = description;
-		info.files = ModpackFileInfo.fromCurseFiles(files);
+		info.files = mods.toArray(new ModpackFileInfo[0]);
 		info.overrides = "Overrides";
 		info.minecraft = toMinecraftInfo();
 
@@ -154,6 +212,6 @@ public final class Modpack {
 	}
 
 	public static Modpack fromManifest(Path manifest) throws CurseException, IOException {
-		return MiscUtils.fromJson(manifest, ModpackInfo.class).toModpack();
+		return MiscUtils.fromJson(manifest, ModpackManifest.class).toModpack();
 	}
 }

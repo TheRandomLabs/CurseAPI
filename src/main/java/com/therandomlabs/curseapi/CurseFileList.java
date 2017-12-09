@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
-import com.therandomlabs.curseapi.minecraft.modpack.ModpackFile;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
@@ -106,12 +105,12 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 
 	public CurseFileList sortedByNewest() {
 		return sorted(SortType.NEWEST,
-				(file1, file2) -> file2.uploadTime().compareTo(file1.uploadTime()));
+				(file1, file2) -> Integer.compare(file1.id(), file2.id()));
 	}
 
 	public CurseFileList sortedByOldest() {
 		return sorted(SortType.OLDEST,
-				(file1, file2) -> file1.uploadTime().compareTo(file2.uploadTime()));
+				(file1, file2) -> Integer.compare(file2.id(), file1.id()));
 	}
 
 	public CurseFileList sortedByProjectTitle() {
@@ -136,12 +135,8 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 		for(int i = 0; i < files.length; i++) {
 			CurseFile file = files[i];
 
-			//Prefer ModpackFile if it's a duplicate
 			if(i != files.length - 1 && files[i + 1].id() == file.id()) {
-				if(!(file instanceof ModpackFile)) {
-					file = files[i + 1];
-				}
-				i++;
+				continue;
 			}
 
 			fileList.add(file);
@@ -186,12 +181,7 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 		for(int i = 0; i < files.size(); i++) {
 			for(int j = 0; j < files.size(); j++) {
 				if(i != j && files.get(i).id() == files.get(j).id()) {
-					//Prefer ModpackFile
-					if(files.get(i) instanceof ModpackFile) {
-						duplicates.add(files.get(j));
-					} else {
-						duplicates.add(files.get(i));
-					}
+					duplicates.add(files.get(i));
 				}
 			}
 		}
