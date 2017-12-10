@@ -42,6 +42,7 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 
 	public CurseFileList filterVersions(MinecraftVersion... versions) {
 		final Set<MinecraftVersion> versionSet = new HashSet<>();
+
 		for(MinecraftVersion version : versions) {
 			if(version.isGroup()) {
 				versionSet.addAll(version.getVersions());
@@ -49,6 +50,7 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 				versionSet.add(version);
 			}
 		}
+
 		return filterVersions(CollectionUtils.stringify(versionSet));
 	}
 
@@ -64,9 +66,11 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 		if(type == ReleaseType.ALPHA) {
 			return this;
 		}
+
 		if(type == ReleaseType.BETA) {
 			return filterReleaseTypes(ReleaseType.RELEASE, ReleaseType.BETA);
 		}
+
 		return filterReleaseTypes(ReleaseType.RELEASE);
 	}
 
@@ -105,12 +109,12 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 
 	public CurseFileList sortedByNewest() {
 		return sorted(SortType.NEWEST,
-				(file1, file2) -> Integer.compare(file1.id(), file2.id()));
+				(file1, file2) -> Integer.compare(file2.id(), file1.id()));
 	}
 
 	public CurseFileList sortedByOldest() {
 		return sorted(SortType.OLDEST,
-				(file1, file2) -> Integer.compare(file2.id(), file1.id()));
+				(file1, file2) -> Integer.compare(file1.id(), file2.id()));
 	}
 
 	public CurseFileList sortedByProjectTitle() {

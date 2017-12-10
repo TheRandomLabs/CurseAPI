@@ -54,6 +54,15 @@ public final class CAFormat {
 	public static final String DESCRIPTION = "description";
 	public static final String DEFAULT_DESCRIPTION = "No description provided.";
 
+	public static final String OPTIFINE = "optifine";
+	public static final String OPTIFINE_VERSION = "latest";
+
+	public static final String MINIMUM_RAM = "minimum_ram";
+	public static final String DEFAULT_MINIMUM_RAM = "2.5";
+
+	public static final String RECOMMENDED_RAM = "recommended_ram";
+	public static final String DEFAULT_RECOMMENDED_RAM = "4";
+
 	public static final String VARIABLE = "#";
 	public static final String CLIENT_ONLY = "!c";
 	public static final String SERVER_ONLY = "!s";
@@ -295,8 +304,7 @@ public final class CAFormat {
 		if(data.fileID == 0) {
 			final CurseFileList list = project.files().
 					filterMCVersionGroup(variables.get(MINECRAFT)).
-					filterMinimumStability(
-					ReleaseType.fromName(variables.get(MINIMUM_STABILITY)));
+					filterMinimumStability(ReleaseType.fromName(variables.get(MINIMUM_STABILITY)));
 			if(list.isEmpty()) {
 				return null;
 			}
