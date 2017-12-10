@@ -22,6 +22,7 @@ import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.ThreadWithIndexValues;
 import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.io.IOConstants;
 import com.therandomlabs.utils.io.NIOUtils;
@@ -32,6 +33,7 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 public final class ModpackInstaller {
+	public static final String MINECRAFT_VERSION = "::MINECRAFT_VERSION::";
 	public static final String MODPACK_NAME = "::MODPACK_NAME::";
 	public static final String MODPACK_VERSION = "::MODPACK_VERSION::";
 	public static final String FULL_MODPACK_NAME = "::FULL_MODPACK_NAME::";
@@ -128,6 +130,7 @@ public final class ModpackInstaller {
 		}
 
 		deleteOldFiles(config, data, modpack);
+		iterateModSources(config, data, modpack);
 		copyNewFiles(directory, config, data, modpack);
 		downloadMods(config, data, modpack);
 		installForge(config, data, modpack);
@@ -142,8 +145,6 @@ public final class ModpackInstaller {
 				new ImmutableList<>(new Gson().toJson(data)));
 	}
 
-	//TODO config.modSources
-
 	private static void deleteOldFiles(InstallerConfig config, InstallerData data, Modpack modpack)
 			throws CurseException, IOException {
 		final Path dataPath = Paths.get(config.installTo, config.dataFile);
@@ -152,9 +153,12 @@ public final class ModpackInstaller {
 		}
 
 		final InstallerData oldData = MiscUtils.fromJson(dataPath, InstallerData.class);
+
 		if(oldData.forgeVersion.equals(modpack.getForgeVersion())) {
+			//Forge should not be installed because it is already on the correct version
 			config.shouldInstallForge = false;
 		} else if(!config.isServer && config.deleteOldForgeVersion) {
+			//Delete old Forge
 			NIOUtils.deleteDirectoryIfExists(Paths.get(
 					config.installTo,
 					"versions",
@@ -164,20 +168,24 @@ public final class ModpackInstaller {
 
 		getModsToKeep(config, oldData, data, modpack);
 
+		//Deleting old mods that are no longer needed
 		for(InstallerData.ModData mod : oldData.mods) {
 			CurseEventHandling.forEach(handler -> handler.deleting(mod.location));
 
 			final Path path = Paths.get(config.installTo, mod.location);
 			if(!Files.deleteIfExists(path)) {
+				//Some mods are moved to mods/<version>/mod.jar
 				Files.deleteIfExists(Paths.get(config.installTo, "mods",
 						oldData.minecraftVersion, path.getFileName().toString()));
 			}
 
+			//Deleting related files
 			for(String relatedFile : mod.relatedFiles) {
 				Files.deleteIfExists(Paths.get(config.installTo, relatedFile));
 			}
 		}
 
+		//Deleting old installedFiles
 		for(String file : oldData.installedFiles) {
 			CurseEventHandling.forEach(handler -> handler.deleting(file));
 			Files.deleteIfExists(Paths.get(config.installTo, file));
@@ -191,10 +199,12 @@ public final class ModpackInstaller {
 			return;
 		}
 
-		//Get mods to keep
-
 		final List<InstallerData.ModData> modsToKeep = new ArrayList<>();
 		for(InstallerData.ModData oldMod : oldData.mods) {
+			if(ArrayUtils.contains(config.excludeProjectIDs, oldMod.projectID)) {
+				continue;
+			}
+
 			//InstallerData.ModData.equals(ModpackFileInfo) will return true if fileID is the same
 			if(modpack.getMods().contains(oldMod)) {
 				Path location = Paths.get(config.installTo, oldMod.location);
@@ -221,6 +231,11 @@ public final class ModpackInstaller {
 		modpack.removeMods(modsToKeep);
 	}
 
+	private static void iterateModSources(InstallerConfig config, InstallerData data,
+			Modpack modpack) throws IOException {
+		//TODO copy files, then modpack.removeMods
+	}
+
 	private static void copyNewFiles(Path modpackLocation, InstallerConfig config,
 			InstallerData data, Modpack modpack)
 			throws IOException {
@@ -233,74 +248,84 @@ public final class ModpackInstaller {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attributes)
 					throws IOException {
-				final Path relativized = relativize(file);
-
-				if(!shouldSkip(relativized)) {
-					final Path newFile = Paths.get(installTo.toString(), relativized.toString());
-
-					if(Files.isDirectory(newFile)) {
-						NIOUtils.deleteDirectory(newFile);
-					}
-
-					final String name = file.getFileName().toString();
-					if(name.endsWith(".cfg") || name.endsWith(".json") || name.endsWith(".txt")) {
-						final String toWrite = NIOUtils.readFile(file).
-								replaceAll(MODPACK_NAME, modpack.getName()).
-								replaceAll(MODPACK_VERSION, modpack.getVersion()).
-								replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
-								replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
-								System.lineSeparator();
-
-						NIOUtils.write(newFile, toWrite);
-					} else {
-						if(config.isLocal) {
-							Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-						} else {
-							Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-						}
-					}
-
-					data.installedFiles.add(StringUtils.replaceAll(relativized.toString(),
-							IOConstants.PATH_SEPARATOR, IOConstants.PATH_SEPARATOR_UNIX));
-				}
-
+				copyFile(overrides, installTo, filesToIgnore, config, data, modpack, file);
 				return FileVisitResult.CONTINUE;
 			}
 
 			@Override
 			public FileVisitResult preVisitDirectory(Path directory,
 					BasicFileAttributes attributes) throws IOException {
-				directory = relativize(directory);
-
-				if(!shouldSkip(directory)) {
-					final Path path = Paths.get(installTo.toString(), directory.toString());
-
-					if(Files.exists(path) && !Files.isDirectory(path)) {
-						Files.delete(path);
-					}
-
-					if(!Files.exists(path)) {
-						Files.createDirectory(path);
-					}
-				}
-
+				visitDirectory(overrides, installTo, filesToIgnore, directory);
 				return FileVisitResult.CONTINUE;
 			}
-
-			private boolean shouldSkip(Path path) {
-				for(String fileName : filesToIgnore) {
-					final Path toIgnore = Paths.get("config", fileName);
-					if(path.equals(toIgnore) || NIOUtils.isParent(toIgnore, path)) {
-						return true;
-					}
-				}
-				return false;
-			}
-
-			private Path relativize(Path path) {
-				return overrides.relativize(path).normalize();
-			}
 		});
+	}
+
+	static void copyFile(Path overrides, Path installTo, List<String> filesToIgnore,
+			InstallerConfig config, InstallerData data, Modpack modpack, Path file)
+			throws IOException {
+		final Path relativized = relativize(overrides, file);
+
+		if(!shouldSkip(filesToIgnore, relativized)) {
+			final Path newFile = Paths.get(installTo.toString(), relativized.toString());
+
+			if(Files.isDirectory(newFile)) {
+				NIOUtils.deleteDirectory(newFile);
+			}
+
+			final String name = file.getFileName().toString();
+			if(name.endsWith(".cfg") || name.endsWith(".json") || name.endsWith(".txt")) {
+				final String toWrite = NIOUtils.readFile(file).
+						replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
+						replaceAll(MODPACK_NAME, modpack.getName()).
+						replaceAll(MODPACK_VERSION, modpack.getVersion()).
+						replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
+						replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
+						System.lineSeparator();
+
+				NIOUtils.write(newFile, toWrite);
+			} else {
+				if(config.isLocal) {
+					Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+				} else {
+					Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+				}
+			}
+
+			data.installedFiles.add(StringUtils.replaceAll(relativized.toString(),
+					IOConstants.PATH_SEPARATOR, IOConstants.PATH_SEPARATOR_UNIX));
+		}
+	}
+
+	static void visitDirectory(Path overrides, Path installTo, List<String> filesToIgnore,
+			Path directory) throws IOException {
+		directory = relativize(overrides, directory);
+
+		if(!shouldSkip(filesToIgnore, directory)) {
+			final Path path = Paths.get(installTo.toString(), directory.toString());
+
+			if(Files.exists(path) && !Files.isDirectory(path)) {
+				Files.delete(path);
+			}
+
+			if(!Files.exists(path)) {
+				Files.createDirectory(path);
+			}
+		}
+	}
+
+	private static Path relativize(Path overrides, Path path) {
+		return overrides.relativize(path).normalize();
+	}
+
+	private static boolean shouldSkip(List<String> filesToIgnore, Path path) {
+		for(String fileName : filesToIgnore) {
+			final Path toIgnore = Paths.get("config", fileName);
+			if(path.equals(toIgnore) || NIOUtils.isParent(toIgnore, path)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void downloadMods(InstallerConfig config, InstallerData data, Modpack modpack)
@@ -421,6 +446,4 @@ public final class ModpackInstaller {
 			}
 		}
 	}
-
-	//TODO excluded project IDs, fix path separators
 }

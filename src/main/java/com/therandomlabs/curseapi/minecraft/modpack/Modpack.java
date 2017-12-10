@@ -104,6 +104,10 @@ public final class Modpack {
 		return minecraftVersion;
 	}
 
+	public String getMinecraftVersionString() {
+		return minecraftVersion.toString();
+	}
+
 	public String getForgeVersion() {
 		return forgeVersion;
 	}

@@ -12,6 +12,7 @@ public final class InstallerConfig {
 	public String modpack;
 	public String dataFile = "curseapi_installer_data.json";
 	public String[] modSources;
+	public int[] excludeProjectIDs;
 	public boolean redownloadAll;
 	public boolean isServer;
 	public boolean installForge = true;
