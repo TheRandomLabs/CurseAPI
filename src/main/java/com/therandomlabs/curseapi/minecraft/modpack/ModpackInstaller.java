@@ -1,7 +1,9 @@
 package com.therandomlabs.curseapi.minecraft.modpack;
 
+import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.MalformedInputException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -273,18 +275,32 @@ public final class ModpackInstaller {
 				NIOUtils.deleteDirectory(newFile);
 			}
 
+			boolean noReplace = true;
+
 			final String name = file.getFileName().toString();
 			if(name.endsWith(".cfg") || name.endsWith(".json") || name.endsWith(".txt")) {
-				final String toWrite = NIOUtils.readFile(file).
-						replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
-						replaceAll(MODPACK_NAME, modpack.getName()).
-						replaceAll(MODPACK_VERSION, modpack.getVersion()).
-						replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
-						replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
-						System.lineSeparator();
+				noReplace = false;
 
-				NIOUtils.write(newFile, toWrite);
-			} else {
+				try {
+					final String toWrite = NIOUtils.readFile(file).
+							replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
+							replaceAll(MODPACK_NAME, modpack.getName()).
+							replaceAll(MODPACK_VERSION, modpack.getVersion()).
+							replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
+							replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
+							System.lineSeparator();
+
+					NIOUtils.write(newFile, toWrite);
+				} catch(MalformedInputException ex) {
+					ex.printStackTrace();
+					getLogger().error("This exception was caused by the file: " + file);
+					getLogger().error("Make sure the file is encoded in UTF-8!");
+					getLogger().error("Variables in this file will not be processed.");
+					noReplace = true;
+				}
+			}
+
+			if(noReplace) {
 				if(config.isLocal) {
 					Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
 				} else {
