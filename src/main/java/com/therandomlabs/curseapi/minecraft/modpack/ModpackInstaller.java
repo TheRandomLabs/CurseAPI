@@ -251,7 +251,7 @@ public final class ModpackInstaller {
 								replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
 								System.lineSeparator();
 
-						Files.write(newFile, toWrite.getBytes());
+						NIOUtils.write(newFile, toWrite);
 					} else {
 						if(config.isLocal) {
 							Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);

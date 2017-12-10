@@ -22,10 +22,12 @@ import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.ThreadWithIndexValues;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
+import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.number.NumberUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
+//TODO plugin support - move OptiFine to a separate plugin
 //CurseAPI Manifest Format
 public final class CAFormat {
 	public static final String IMPORT = "import";
@@ -96,7 +98,7 @@ public final class CAFormat {
 
 	public static void writeCurseManifest(Path manifest, Path output)
 			throws CurseException, IOException {
-		Files.write(output, (toCurseManifest(manifest) + System.lineSeparator()).getBytes());
+		NIOUtils.write(output, toCurseManifest(manifest), true);
 	}
 
 	public static String toCurseManifest(File manifest) throws CurseException, IOException {
