@@ -36,6 +36,7 @@ import com.therandomlabs.utils.wrapper.Wrapper;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
+//https://github.com/google/gson/issues/395 may occur
 @SuppressWarnings("unused")
 public final class ModpackInstaller {
 	public static final String MINECRAFT_VERSION = "::MINECRAFT_VERSION::";
@@ -263,7 +264,7 @@ public final class ModpackInstaller {
 		//Remove from oldData so all the old mods can be safely removed
 		oldData.mods.removeAll(modsToKeep);
 		//Remove from modpack so they aren't redownloaded
-		modpack.removeMods(modsToKeep);
+		modpack.removeInstallerDataMods(modsToKeep);
 	}
 
 	private static boolean modpackContains(Modpack modpack, InstallerData.ModData data) {

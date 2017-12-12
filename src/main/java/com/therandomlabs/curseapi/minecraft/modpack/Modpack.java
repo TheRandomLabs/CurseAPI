@@ -177,8 +177,19 @@ public final class Modpack {
 		this.mods = mods;
 	}
 
-	public void removeMods(Collection<?> mods) {
+	public void removeMods(Collection<ModpackFileInfo> mods) {
 		this.mods.removeAll(mods);
+	}
+
+	public void removeInstallerDataMods(Collection<InstallerData.ModData> mods) {
+		for(int i = 0; i < this.mods.size(); i++) {
+			for(InstallerData.ModData mod : mods) {
+				if(this.mods.get(i).fileID == mod.fileID) {
+					this.mods.remove(i--);
+					break;
+				}
+			}
+		}
 	}
 
 	public TRLList<String> getClientOnlyFiles() {
