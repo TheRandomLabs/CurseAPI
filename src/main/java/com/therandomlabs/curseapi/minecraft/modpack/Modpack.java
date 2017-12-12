@@ -213,6 +213,9 @@ public final class Modpack {
 		info.files = mods.toArray(new ModpackFileInfo[0]);
 		info.overrides = "Overrides";
 		info.minecraft = toMinecraftInfo();
+		info.optifineVersion = optifineVersion;
+		info.minimumRam = minimumRam;
+		info.recommendedRam = recommendedRam;
 
 		return info;
 	}

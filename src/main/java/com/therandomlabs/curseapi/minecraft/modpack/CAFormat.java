@@ -59,7 +59,7 @@ public final class CAFormat {
 	public static final String DEFAULT_DESCRIPTION = "No description provided.";
 
 	public static final String OPTIFINE = "optifine";
-	public static final String OPTIFINE_VERSION = "latest";
+	public static final String DEFAULT_OPTIFINE = "latest";
 
 	public static final String MINIMUM_RAM = "minimum_ram";
 	public static final String DEFAULT_MINIMUM_RAM = "2.5";
@@ -135,6 +135,9 @@ public final class CAFormat {
 		variables.put(MINIMUM_STABILITY, DEFAULT_MINIMUM_STABILITY);
 		variables.put(AUTHOR, DEFAULT_AUTHOR);
 		variables.put(DESCRIPTION, DEFAULT_DESCRIPTION);
+		variables.put(OPTIFINE, DEFAULT_OPTIFINE);
+		variables.put(MINIMUM_RAM, DEFAULT_MINIMUM_RAM);
+		variables.put(RECOMMENDED_RAM, DEFAULT_RECOMMENDED_RAM);
 
 		final List<String> lines = Files.readAllLines(manifest);
 
@@ -239,7 +242,7 @@ public final class CAFormat {
 				MinecraftVersion.fromString(variables.get(MINECRAFT)),
 				getForge(variables.get(MINECRAFT), variables.get(FORGE)),
 				getFiles(variables, files),
-				variables.get(OPTIFINE_VERSION),
+				variables.get(OPTIFINE),
 				Double.parseDouble(variables.get(MINIMUM_RAM)),
 				Double.parseDouble(variables.get(RECOMMENDED_RAM))
 		);
