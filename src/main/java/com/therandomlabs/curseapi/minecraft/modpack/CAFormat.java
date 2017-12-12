@@ -21,14 +21,13 @@ import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.ReleaseType;
 import com.therandomlabs.curseapi.minecraft.MinecraftForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
-import com.therandomlabs.curseapi.util.ThreadWithIndexValues;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
+import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.number.NumberUtils;
-import com.therandomlabs.utils.wrapper.Wrapper;
 
 //TODO dependencies
 //CurseAPI Manifest Format
@@ -253,61 +252,19 @@ public final class CAFormat {
 			List<FileData> fileData) throws CurseException {
 		final List<ModpackFileInfo> files = new ArrayList<>(fileData.size());
 
-		final int threadCount = fileData.size() < CurseAPI.getMaximumThreads() ?
-				fileData.size() : CurseAPI.getMaximumThreads();
-		final Thread[] threads = new Thread[threadCount];
-		final int increment = fileData.size() / threadCount;
-
-		final Wrapper<CurseException> exception = new Wrapper<>();
-
-		for(int i = 0, j = 0; i < threadCount; i++, j += increment) {
-			threads[i] = new ThreadWithIndexValues(i, j, indexes -> {
-				final int threadIndex = indexes.value1();
-				final int startIndex = indexes.value2();
-
-				final int endIndex;
-				if(threadIndex == threadCount - 1) {
-					endIndex = fileData.size();
-				} else {
-					endIndex = startIndex + increment;
-				}
-
-				try {
-					for(int fileIndex = startIndex; fileIndex < endIndex; fileIndex++) {
-						if(exception.hasValue()) {
-							return;
-						}
-
-						final ModpackFileInfo file =
-								toModpackFile(variables, fileData.get(fileIndex));
-						if(file != null) {
-							files.add(file);
-						}
-					}
-				} catch(CurseException ex) {
-					exception.set(ex);
-				}
-			});
-			threads[i].start();
-		}
-
-		try {
-			for(Thread thread : threads) {
-				thread.join();
+		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), fileData.size(), index -> {
+			final ModpackFileInfo file = toModpackFile(variables, fileData.get(index));
+			if(file != null) {
+				files.add(file);
 			}
-		} catch(InterruptedException ex) {
-			throw new CurseException(ex);
-		}
-
-		if(exception.hasValue()) {
-			throw exception.get();
-		}
+		});
 
 		files.sort((file1, file2) -> file1.title.compareTo(file2.title));
 
 		//Remove duplicate projects
 
 		final List<ModpackFileInfo> duplicates = new ArrayList<>();
+
 		for(ModpackFileInfo file : files) {
 			for(ModpackFileInfo file2 : files) {
 				if(file != file2 && file.projectID == file2.projectID) {
@@ -320,6 +277,7 @@ public final class CAFormat {
 				}
 			}
 		}
+
 		files.removeAll(duplicates);
 
 		return files.toArray(new ModpackFileInfo[0]);

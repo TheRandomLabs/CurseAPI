@@ -13,15 +13,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
+import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
-import com.therandomlabs.utils.wrapper.Wrapper;
 
 public final class DocumentUtils {
 	private static final Map<String, Document> documents = new HashMap<>(50);
@@ -200,68 +201,30 @@ public final class DocumentUtils {
 		//Get number of pages from the first page
 		final int pages = getNumberOfPages(get(baseURL + 1));
 
-		final int threadCount =
-				pages < CurseAPI.getMaximumThreads() ? pages : CurseAPI.getMaximumThreads();
-		final Thread[] threads = new Thread[threadCount];
+		final String url = baseURL;
 
-		final int pageIncrement = pages / threadCount; //Rounded down by integer division
-
-		final Map<Integer, List<E>> allData = new HashMap<>(threadCount);
-
-		final Wrapper<CurseException> exception = new Wrapper<>();
-
-		for(int i = 0, j = 1; i < threadCount; i++, j += pageIncrement) {
-			final String url = baseURL;
-
-			final TRLList<E> data = new TRLList<>(23);
-			data.setOnAdd(onElementAdd);
-			allData.put(i, data);
-
-			threads[i] = new ThreadWithIndexValues(i, j, indexes -> {
-				final int threadIndex = indexes.value1();
-				final int startPage = indexes.value2();
-
-				final int endPage;
-				if(threadIndex == threadCount - 1) {
-					//This means that this is the last full batch of pages, so set endPage to the
-					//last page so we can do the last few pages as well
-					endPage = pages + 1;
-				} else {
-					endPage = startPage + pageIncrement;
-				}
-
-				try {
-					for(int page = startPage; page < endPage; page++) {
-						if(exception.hasValue() ||
-								(stopSwitch != null && stopSwitch.isStopped())) {
-							return;
-						}
-						documentToList.documentToList(get(url + page), data);
-					}
-				} catch(CurseException ex) {
-					exception.set(ex);
-				} catch(IndexOutOfBoundsException | NullPointerException |
-						NumberFormatException ex) {
-					exception.set(new CurseException(ex));
-				}
-			});
-			threads[i].start();
-		}
+		final Map<Integer, List<E>> allData = new HashMap<>();
 
 		try {
-			//Make sure all threads are complete before returning
-			for(Thread thread : threads) {
-				thread.join();
-			}
-		} catch(InterruptedException ex) {
+			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), pages, page -> {
+				final TRLList<E> data = new TRLList<>(CurseProject.RELATIONS_PER_PAGE);
+				data.setOnAdd(onElementAdd);
+				allData.put(page, data);
+
+				if(stopSwitch != null && stopSwitch.isStopped()) {
+					return;
+				}
+
+				documentToList.documentToList(get(url + (page + 1)), data);
+			});
+		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 			throw new CurseException(ex);
+		} catch(CurseException ex) {
+			throw ex;
 		}
 
-		if(exception.hasValue()) {
-			throw exception.get();
-		}
-
-		final TRLList<E> sortedList = new TRLList<>(allData.size() * 23);
+		final TRLList<E> sortedList =
+				new TRLList<>(allData.size() * CurseProject.RELATIONS_PER_PAGE);
 		for(int i = 0; i < allData.size(); i++) {
 			sortedList.addAll(allData.get(i));
 		}

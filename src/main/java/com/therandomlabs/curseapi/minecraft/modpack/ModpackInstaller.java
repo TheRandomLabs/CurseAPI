@@ -24,15 +24,14 @@ import com.therandomlabs.curseapi.minecraft.modpack.InstallerData.ModData;
 import com.therandomlabs.curseapi.util.CurseEventHandler;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.curseapi.util.MiscUtils;
-import com.therandomlabs.curseapi.util.ThreadWithIndexValues;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
+import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.IOConstants;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.Timer;
-import com.therandomlabs.utils.wrapper.Wrapper;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -414,58 +413,23 @@ public final class ModpackInstaller {
 			return;
 		}
 
-		//TODO move to TRLUtils
-
-		final int maxThreads = config.threads > 0 ? config.threads : CurseAPI.getMaximumThreads();
-		final int threadCount = modpack.getMods().size() < maxThreads ?
-				modpack.getMods().size() : maxThreads;
-		final Thread[] threads = new Thread[threadCount];
-		final int increment = modpack.getMods().size() / threadCount;
-
-		final Wrapper<Exception> exception = new Wrapper<>();
 		final AtomicInteger count = new AtomicInteger();
 
-		for(int i = 0, j = 0; i < threadCount; i++, j += increment) {
-			threads[i] = new ThreadWithIndexValues(i, j, indexes -> {
-				final int threadIndex = indexes.value1();
-				final int startIndex = indexes.value2();
-
-				final int endIndex;
-				if(threadIndex == threadCount - 1) {
-					endIndex = modpack.getMods().size();
-				} else {
-					endIndex = startIndex + increment;
-				}
-
-				try {
-					for(int fileIndex = startIndex; fileIndex < endIndex; fileIndex++) {
-						if(exception.hasValue()) {
-							return;
-						}
-
-						downloadMod(config, data, modpack.getMods().get(fileIndex),
-								count.incrementAndGet(), modpack.getMods().size());
-					}
-				} catch(CurseException | IOException ex) {
-					exception.set(ex);
-				}
-			});
-			threads[i].start();
-		}
-
+		final int size = modpack.getMods().size();
 		try {
-			for(Thread thread : threads) {
-				thread.join();
+			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), size, index ->
+					downloadMod(config, data, modpack.getMods().get(index),
+					count.incrementAndGet(), size));
+		} catch(Exception ex) {
+			if(ex instanceof CurseException) {
+				throw (CurseException) ex;
 			}
-		} catch(InterruptedException ex) {
-			throw new CurseException(ex);
-		}
 
-		if(exception.hasValue()) {
-			if(exception.get() instanceof CurseException) {
-				throw (CurseException) exception.get();
+			if(ex instanceof IOException) {
+				throw (IOException) ex;
 			}
-			throw (IOException) exception.get();
+
+			throw (RuntimeException) ex;
 		}
 	}
 

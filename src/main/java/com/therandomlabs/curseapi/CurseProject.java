@@ -32,8 +32,11 @@ import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
-//TODO Images, Issues, Source, Pages, Wiki, Avatar
+//TODO Images, Issues, Source, Pages, Wiki, Avatar, Get number of relations,
+//get relations on a specific page
 public class CurseProject {
+	public static final int RELATIONS_PER_PAGE = 20;
+
 	private static final TRLList<CurseProject> projects = new TRLList<>(100);
 
 	private URL url;
@@ -447,7 +450,7 @@ public class CurseProject {
 		for(Element relation : document.getElementsByClass("project-list-item")) {
 			final String projectURL =
 					DocumentUtils.getValue(relation, "class=name-wrapper;attr=href;absUrl=href");
-			//Some elements are empty
+			//Some elements are empty for some reason
 			if(!projectURL.isEmpty()) {
 				relations.add(URLUtils.url(projectURL));
 			}
