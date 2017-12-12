@@ -22,6 +22,9 @@ public final class Modpack {
 	private final String overrides;
 	private final MinecraftVersion minecraftVersion;
 	private final String forgeVersion;
+	private final String optifineVersion;
+	private final double minimumRam;
+	private final double recommendedRam;
 
 	private TRLList<ModpackFileInfo> mods;
 	private final TRLList<ModpackFileInfo> originalMods;
@@ -32,15 +35,17 @@ public final class Modpack {
 	private final TRLList<String> serverOnlyFiles;
 
 	public Modpack(String name, String version, String author, String description,
-			MinecraftVersion minecraftVersion, String forgeVersion, ModpackFileInfo[] files)
+			MinecraftVersion minecraftVersion, String forgeVersion, ModpackFileInfo[] files,
+			String optifineVersion, double minimumRam, double recommendedRam)
 			throws CurseException {
 		this(name, version, author, description, "Overrides", minecraftVersion, forgeVersion,
-				files);
+				files, optifineVersion, minimumRam, recommendedRam);
 	}
 
 	public Modpack(String name, String version, String author, String description,
 			String overrides, MinecraftVersion minecraftVersion, String forgeVersion,
-			ModpackFileInfo[] files) throws CurseException {
+			ModpackFileInfo[] files, String optifineVersion, double minimumRam,
+			double recommendedRam) throws CurseException {
 		this.name = name;
 		this.version = version;
 		this.author = author;
@@ -55,6 +60,10 @@ public final class Modpack {
 		} else {
 			this.forgeVersion = forgeVersion;
 		}
+
+		this.optifineVersion = optifineVersion;
+		this.minimumRam = minimumRam;
+		this.recommendedRam = recommendedRam;
 
 		mods = new TRLList<>(files);
 		originalMods = mods.toImmutableList();
@@ -110,6 +119,18 @@ public final class Modpack {
 
 	public String getForgeVersion() {
 		return forgeVersion;
+	}
+
+	public String getOptifineVersion() {
+		return optifineVersion;
+	}
+
+	public double getMinimumRam() {
+		return minimumRam;
+	}
+
+	public double getRecommendedRam() {
+		return recommendedRam;
 	}
 
 	public String getModLoader() {

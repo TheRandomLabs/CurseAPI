@@ -13,6 +13,9 @@ public final class ModpackManifest implements Cloneable {
 	public ModpackFileInfo[] files;
 	public String overrides;
 	public MinecraftInfo minecraft;
+	public String optifineVersion = "";
+	public double minimumRam = 2.5;
+	public double recommendedRam = 4.0;
 
 	@Override
 	public ModpackManifest clone() {
@@ -33,6 +36,7 @@ public final class ModpackManifest implements Cloneable {
 
 	public Modpack toModpack() throws CurseException {
 		return new Modpack(name, version, author, description, overrides, minecraft.version,
-				minecraft.modLoaders[0].id.substring(6), files);
+				minecraft.modLoaders[0].id.substring(6), files, optifineVersion, minimumRam,
+				recommendedRam);
 	}
 }

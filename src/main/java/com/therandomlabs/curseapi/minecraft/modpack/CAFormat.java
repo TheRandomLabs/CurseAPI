@@ -238,7 +238,10 @@ public final class CAFormat {
 				variables.get(DESCRIPTION),
 				MinecraftVersion.fromString(variables.get(MINECRAFT)),
 				getForge(variables.get(MINECRAFT), variables.get(FORGE)),
-				getFiles(variables, files)
+				getFiles(variables, files),
+				variables.get(OPTIFINE_VERSION),
+				Double.parseDouble(variables.get(MINIMUM_RAM)),
+				Double.parseDouble(variables.get(RECOMMENDED_RAM))
 		);
 	}
 
