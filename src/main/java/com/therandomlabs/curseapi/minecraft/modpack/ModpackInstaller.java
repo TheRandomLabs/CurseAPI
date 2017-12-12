@@ -325,7 +325,7 @@ public final class ModpackInstaller {
 		final String name = name(file);
 
 		try {
-			CurseEventHandling.forEach(handler -> toString(relativized));
+			CurseEventHandling.forEach(handler -> handler.copying(toString(relativized)));
 		} catch(CurseException ex) {
 			//It's just event handling, shouldn't matter too much ATM
 		}
