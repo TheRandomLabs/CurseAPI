@@ -492,9 +492,7 @@ public final class ModpackInstaller {
 	}
 
 	private static String toString(Path path) {
-		//TODO NIOUtils.ensureUnixPathSeparators
-		return StringUtils.replaceAll(path.toString(), IOConstants.PATH_SEPARATOR,
-				IOConstants.PATH_SEPARATOR_UNIX);
+		return NIOUtils.toStringWithUnixPathSeparators(path);
 	}
 
 	private static void deleteTemporaryFiles() {
