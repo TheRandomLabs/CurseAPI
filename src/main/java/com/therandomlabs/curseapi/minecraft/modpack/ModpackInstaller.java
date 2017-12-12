@@ -196,7 +196,7 @@ public final class ModpackInstaller {
 					)
 			);
 
-			CurseEventHandling.forEach(handler -> handler.deleting(oldForge.toString()));
+			CurseEventHandling.forEach(handler -> handler.deleting(toString(oldForge)));
 
 			NIOUtils.deleteDirectoryIfExists(oldForge);
 		}
@@ -325,7 +325,7 @@ public final class ModpackInstaller {
 		final String name = name(file);
 
 		try {
-			CurseEventHandling.forEach(handler -> handler.copying(name));
+			CurseEventHandling.forEach(handler -> toString(relativized));
 		} catch(CurseException ex) {
 			//It's just event handling, shouldn't matter too much ATM
 		}
