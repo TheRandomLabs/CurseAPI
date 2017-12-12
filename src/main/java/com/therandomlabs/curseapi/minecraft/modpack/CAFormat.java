@@ -154,7 +154,7 @@ public final class CAFormat {
 				}
 
 				final MinecraftVersion versionToCompare =
-						MinecraftVersion.fromString(data[0].substring(data[0].length()));
+						MinecraftVersion.fromString(data[0].substring(1));
 				final MinecraftVersion version =
 						MinecraftVersion.fromString(variables.get(MINECRAFT));
 				final int compare = versionToCompare.compareTo(version);
