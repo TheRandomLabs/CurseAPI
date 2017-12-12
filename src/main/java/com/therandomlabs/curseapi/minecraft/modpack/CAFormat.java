@@ -29,7 +29,6 @@ import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.number.NumberUtils;
 
-//TODO dependencies
 //CurseAPI Manifest Format
 public final class CAFormat {
 	public static final String IMPORT = "import";
