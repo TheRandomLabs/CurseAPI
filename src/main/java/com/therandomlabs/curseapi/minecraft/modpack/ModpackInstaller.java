@@ -324,6 +324,12 @@ public final class ModpackInstaller {
 
 		final String name = name(file);
 
+		try {
+			CurseEventHandling.forEach(handler -> handler.copying(name));
+		} catch(CurseException ex) {
+			//It's just event handling, shouldn't matter too much ATM
+		}
+
 		boolean variablesReplaced = shouldReplaceVariables(config.variableFileExtensions, name);
 
 		if(variablesReplaced) {

@@ -18,6 +18,8 @@ public interface CurseEventHandler {
 
 	default void deleting(String fileName) throws CurseException {}
 
+	default void copying(String fileName) throws CurseException {}
+
 	default void downloadingFile(String fileName) throws CurseException {}
 
 	default void extracting(String fileName) throws CurseException {}

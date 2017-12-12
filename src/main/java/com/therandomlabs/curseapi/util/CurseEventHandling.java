@@ -49,6 +49,11 @@ public final class CurseEventHandling {
 		}
 
 		@Override
+		public void copying(String fileName) {
+			getLogger().info("Copying: " + fileName);
+		}
+
+		@Override
 		public void downloadingFile(String fileName) {
 			getLogger().info("Downloading: " + fileName);
 		}
