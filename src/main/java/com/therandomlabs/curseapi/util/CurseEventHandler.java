@@ -14,6 +14,8 @@ public interface CurseEventHandler {
 
 	default void retryingJSON(int retryingIn) throws CurseException {}
 
+	default void autosavedInstallerData() throws CurseException {}
+
 	default void deleting(String fileName) throws CurseException {}
 
 	default void downloadingFile(String fileName) throws CurseException {}

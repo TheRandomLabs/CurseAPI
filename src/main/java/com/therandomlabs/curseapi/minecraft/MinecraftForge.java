@@ -60,4 +60,13 @@ public final class MinecraftForge {
 			throws CurseException, IOException {
 		return NIOUtils.downloadToDirectory(getInstallerURL(forgeVersion), directory);
 	}
+
+	public static String getInstalledDirectoryName(String minecraftVersion, String forgeVersion) {
+		return minecraftVersion + "-forge" + forgeVersion;
+	}
+
+	public static String getInstalledDirectoryName(MinecraftVersion minecraftVersion,
+			String forgeVersion) {
+		return getInstalledDirectoryName(minecraftVersion.toString(), forgeVersion);
+	}
 }

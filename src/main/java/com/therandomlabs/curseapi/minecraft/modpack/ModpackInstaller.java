@@ -19,21 +19,24 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.minecraft.MinecraftForge;
 import com.therandomlabs.curseapi.minecraft.modpack.InstallerData.ModData;
+import com.therandomlabs.curseapi.util.CurseEventHandler;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.ThreadWithIndexValues;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
-import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.io.IOConstants;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
+import com.therandomlabs.utils.misc.Timer;
 import com.therandomlabs.utils.wrapper.Wrapper;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
+@SuppressWarnings("unused")
 public final class ModpackInstaller {
 	public static final String MINECRAFT_VERSION = "::MINECRAFT_VERSION::";
 	public static final String MODPACK_NAME = "::MODPACK_NAME::";
@@ -48,6 +51,8 @@ public final class ModpackInstaller {
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread(ModpackInstaller::deleteTemporaryFiles));
 	}
+
+	//public static void createZip(Path directory, Path zip) throws IOException {
 
 	public static void installModpack(Path config)
 			throws CurseException, IOException, ZipException {
@@ -67,8 +72,10 @@ public final class ModpackInstaller {
 
 		if(config.isModpackURL()) {
 			if(CurseForge.isProject(config.modpack)) {
+				//Latest version of modpack
 				url(config, CurseProject.fromURL(config.modpack).files().get(0).fileURL());
 			} else {
+				//Direct link
 				url(config, URLUtils.url(config.modpack));
 			}
 		}
@@ -76,7 +83,7 @@ public final class ModpackInstaller {
 		if(config.isModpackPath()) {
 			final Path path = Paths.get(config.modpack);
 			if(Files.isDirectory(path)) {
-				config.isLocal = true;
+				config.shouldKeepModpack = true;
 				directory(config, path);
 			} else {
 				zipFile(config, path);
@@ -88,30 +95,33 @@ public final class ModpackInstaller {
 
 	private static void url(InstallerConfig config, URL url)
 			throws CurseException, IOException, ZipException {
-		final Path location = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
+		final Path downloadedModpack = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
 				String.valueOf(System.nanoTime()));
-		temporaryFiles.add(location);
-		NIOUtils.download(url, location);
 
-		zipFile(config, location);
+		temporaryFiles.add(downloadedModpack);
+
+		NIOUtils.download(url, downloadedModpack);
+
+		zipFile(config, downloadedModpack);
 	}
 
-	private static void zipFile(InstallerConfig config, Path zipFile)
+	private static void zipFile(InstallerConfig config, Path modpackZip)
 			throws CurseException, IOException, ZipException {
-		Assertions.file(zipFile);
+		Assertions.file(modpackZip);
 
-		final ZipFile zip = new ZipFile(zipFile.toFile());
+		final ZipFile zip = new ZipFile(modpackZip.toFile());
 		if(!zip.isValidZipFile()) {
 			throw new CurseException("Invalid zip file");
 		}
 
-		final Path location = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
-				zipFile.getFileName().toString() + System.nanoTime());
-		temporaryFiles.add(location);
+		final Path extractLocation = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
+				name(modpackZip) + System.nanoTime());
 
-		zip.extractAll(location.toString());
+		temporaryFiles.add(extractLocation);
 
-		directory(config, location);
+		zip.extractAll(extractLocation.toString());
+
+		directory(config, extractLocation);
 	}
 
 	private static void directory(InstallerConfig config, Path directory)
@@ -120,18 +130,31 @@ public final class ModpackInstaller {
 		final Modpack modpack = Modpack.fromManifest(manifestPath);
 		final InstallerData data = new InstallerData();
 
-		final Path mods = Paths.get(config.installTo, "mods");
-		if(!Files.exists(mods)) {
-			Files.createDirectories(mods);
+		final Path modsDirectory = installTo(config, "mods");
+		if(!Files.exists(modsDirectory)) {
+			Files.createDirectories(modsDirectory);
 		}
 
 		if(config.isServer) {
-			modpack.filterModsForServer();
+			modpack.removeClientOnlyMods();
 		} else {
-			modpack.filterModsForClient();
+			modpack.removeServerOnlyMods();
 		}
 
-		deleteOldFiles(config, data, modpack);
+		final Path dataFile = installTo(config, config.dataFile);
+
+		Assertions.positive(config.autosaveInterval, "autosaveInterval", false);
+		final Timer autosaver = new Timer(() -> {
+			try {
+				NIOUtils.write(dataFile, new Gson().toJson(data));
+				CurseEventHandling.forEach(CurseEventHandler::autosavedInstallerData);
+			} catch(CurseException | IOException ex) {
+				//Doesn't matter; this is just autosave anyway
+				ex.printStackTrace();
+			}
+		}, config.autosaveInterval);
+
+		deleteOldFiles(config, data, modpack, autosaver);
 		iterateModSources(config, data, modpack);
 		copyNewFiles(directory, config, data, modpack);
 		downloadMods(config, data, modpack);
@@ -142,100 +165,120 @@ public final class ModpackInstaller {
 		//modpack versions
 		NIOUtils.deleteDirectory(Paths.get(config.installTo), NIOUtils.DELETE_EMPTY_DIRECTORIES);
 
-		//Write data
-		Files.write(Paths.get(config.installTo, config.dataFile),
-				new ImmutableList<>(new Gson().toJson(data)));
+		//Last save
+		autosaver.stop();
+		NIOUtils.write(dataFile, new Gson().toJson(data));
+
+		deleteTemporaryFiles();
 	}
 
-	private static void deleteOldFiles(InstallerConfig config, InstallerData data, Modpack modpack)
-			throws CurseException, IOException {
-		final Path dataPath = Paths.get(config.installTo, config.dataFile);
+	private static void deleteOldFiles(InstallerConfig config, InstallerData data, Modpack modpack,
+			Timer autosaver) throws CurseException, IOException {
+		final Path dataPath = installTo(config, config.dataFile);
 		if(!Files.exists(dataPath)) {
+			autosaver.start();
 			return;
 		}
 
 		final InstallerData oldData = MiscUtils.fromJson(dataPath, InstallerData.class);
+		autosaver.start();
 
 		if(oldData.forgeVersion.equals(modpack.getForgeVersion())) {
 			//Forge should not be installed because it is already on the correct version
 			config.shouldInstallForge = false;
 		} else if(!config.isServer && config.deleteOldForgeVersion) {
 			//Delete old Forge
-			NIOUtils.deleteDirectoryIfExists(Paths.get(
-					config.installTo,
-					"versions",
-					oldData.minecraftVersion + "-forge" + oldData.forgeVersion
-			));
+			final Path oldForge = installTo(
+					config, "versions", MinecraftForge.getInstalledDirectoryName(
+							oldData.minecraftVersion,
+							oldData.forgeVersion
+					)
+			);
+
+			CurseEventHandling.forEach(handler -> handler.deleting(oldForge.toString()));
+
+			NIOUtils.deleteDirectoryIfExists(oldForge);
 		}
 
-		getModsToKeep(config, oldData, data, modpack);
+		removeModsToKeepFromData(config, oldData, data, modpack);
 
 		//Deleting old mods that are no longer needed
 		for(InstallerData.ModData mod : oldData.mods) {
 			CurseEventHandling.forEach(handler -> handler.deleting(mod.location));
 
-			final Path path = Paths.get(config.installTo, mod.location);
-			if(!Files.deleteIfExists(path)) {
+			final Path modLocation = installTo(config, mod.location);
+			if(!Files.deleteIfExists(modLocation)) {
 				//Some mods are moved to mods/<version>/mod.jar
-				Files.deleteIfExists(Paths.get(config.installTo, "mods",
-						oldData.minecraftVersion, path.getFileName().toString()));
+				Files.deleteIfExists(
+						installTo(config, "mods", oldData.minecraftVersion, name(modLocation)));
 			}
 
 			//Deleting related files
 			for(String relatedFile : mod.relatedFiles) {
-				Files.deleteIfExists(Paths.get(config.installTo, relatedFile));
+				Files.deleteIfExists(installTo(config, relatedFile));
 			}
 		}
 
-		//Deleting old installedFiles
+		//Deleting old installedFiles - if they're needed, they'll be copied back anyway
 		for(String file : oldData.installedFiles) {
 			CurseEventHandling.forEach(handler -> handler.deleting(file));
-			Files.deleteIfExists(Paths.get(config.installTo, file));
+			Files.deleteIfExists(installTo(config, file));
 		}
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
-	private static void getModsToKeep(InstallerConfig config, InstallerData oldData,
+	private static void removeModsToKeepFromData(InstallerConfig config, InstallerData oldData,
 			InstallerData data, Modpack modpack) {
 		if(config.redownloadAll) {
 			return;
 		}
 
 		final List<InstallerData.ModData> modsToKeep = new ArrayList<>();
-		for(InstallerData.ModData oldMod : oldData.mods) {
-			if(ArrayUtils.contains(config.excludeProjectIDs, oldMod.projectID)) {
+		for(InstallerData.ModData mod : oldData.mods) {
+			//This mod shouldn't be kept since its project ID has been excluded
+			if(ArrayUtils.contains(config.excludeProjectIDs, mod.projectID)) {
 				continue;
 			}
 
-			//InstallerData.ModData.equals(ModpackFileInfo) will return true if fileID is the same
-			if(modpack.getMods().contains(oldMod)) {
-				Path location = Paths.get(config.installTo, oldMod.location);
-				final Path location2 = Paths.get(config.installTo, "mods",
-						oldData.minecraftVersion, location.getFileName().toString());
+			if(modpackContains(modpack, mod)) {
+				Path modLocation = installTo(config, mod.location);
+				final Path modLocation2 =
+						installTo(config, "mods", oldData.minecraftVersion, name(modLocation));
 
-				if(Files.exists(location2)) {
-					oldMod.location =
-							"mods/" + oldData.minecraftVersion + "/" + location.getFileName();
-					location = location2;
+				boolean exists = Files.exists(modLocation2);
+
+				if(exists) {
+					//Some mods are moved to mods/<version>/mod.jar
+					mod.location = "mods/" + oldData.minecraftVersion + "/" + name(modLocation);
+				} else {
+					exists = Files.exists(modLocation);
 				}
 
-				if(Files.exists(location)) {
-					modsToKeep.add(oldMod);
-					data.mods.add(oldMod);
+				if(exists) {
+					modsToKeep.add(mod);
+					data.mods.add(mod);
 				}
 			}
 		}
 
-		//Remove mods to keep from oldData.mods because later we're going to be deleting
-		//all files from oldData
+		//Remove from oldData so all the old mods can be safely removed
 		oldData.mods.removeAll(modsToKeep);
-		//Remove them from the modpack as well so they aren't redownloaded
+		//Remove from modpack so they aren't redownloaded
 		modpack.removeMods(modsToKeep);
+	}
+
+	private static boolean modpackContains(Modpack modpack, InstallerData.ModData data) {
+		for(ModpackFileInfo mod : modpack.getMods()) {
+			if(mod.projectID == data.projectID) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void iterateModSources(InstallerConfig config, InstallerData data,
 			Modpack modpack) throws IOException {
 		//TODO copy files, then modpack.removeMods
+
 	}
 
 	private static void copyNewFiles(Path modpackLocation, InstallerConfig config,
@@ -268,65 +311,79 @@ public final class ModpackInstaller {
 			throws IOException {
 		final Path relativized = relativize(overrides, file);
 
-		if(!shouldSkip(filesToIgnore, relativized)) {
-			final Path newFile = Paths.get(installTo.toString(), relativized.toString());
-
-			if(Files.isDirectory(newFile)) {
-				NIOUtils.deleteDirectory(newFile);
-			}
-
-			boolean noReplace = true;
-
-			final String name = file.getFileName().toString();
-			if(name.endsWith(".cfg") || name.endsWith(".json") || name.endsWith(".txt")) {
-				noReplace = false;
-
-				try {
-					final String toWrite = NIOUtils.readFile(file).
-							replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
-							replaceAll(MODPACK_NAME, modpack.getName()).
-							replaceAll(MODPACK_VERSION, modpack.getVersion()).
-							replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
-							replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
-							System.lineSeparator();
-
-					NIOUtils.write(newFile, toWrite);
-				} catch(MalformedInputException ex) {
-					ex.printStackTrace();
-					getLogger().error("This exception was caused by the file: " + file);
-					getLogger().error("Make sure the file is encoded in UTF-8!");
-					getLogger().error("Variables in this file will not be processed.");
-					noReplace = true;
-				}
-			}
-
-			if(noReplace) {
-				if(config.isLocal) {
-					Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-				} else {
-					Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-				}
-			}
-
-			data.installedFiles.add(StringUtils.replaceAll(relativized.toString(),
-					IOConstants.PATH_SEPARATOR, IOConstants.PATH_SEPARATOR_UNIX));
+		if(shouldSkip(filesToIgnore, relativized)) {
+			return;
 		}
+
+		final Path newFile = installTo(config, relativized);
+
+		if(Files.isDirectory(newFile)) {
+			NIOUtils.deleteDirectory(newFile);
+		}
+
+		final String name = name(file);
+
+		boolean variablesReplaced = shouldReplaceVariables(config.variableFileExtensions, name);
+
+		if(variablesReplaced) {
+			try {
+				//Replace variables
+				final String toWrite = NIOUtils.readFile(file).
+						replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
+						replaceAll(MODPACK_NAME, modpack.getName()).
+						replaceAll(MODPACK_VERSION, modpack.getVersion()).
+						replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
+						replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
+						System.lineSeparator();
+
+				NIOUtils.write(newFile, toWrite);
+			} catch(MalformedInputException ex) {
+				ex.printStackTrace();
+				getLogger().error("This exception was caused by the file: " + file);
+				getLogger().error("Make sure the file is encoded in UTF-8!");
+				getLogger().error("Variables in this file will not be processed.");
+				variablesReplaced = false;
+			}
+		}
+
+		if(!variablesReplaced) {
+			if(config.shouldKeepModpack) {
+				Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+			}
+		}
+
+		data.installedFiles.add(toString(relativized));
+	}
+
+	private static boolean shouldReplaceVariables(String[] variableFileExtensions, String name) {
+		for(String extension : variableFileExtensions) {
+			if(name.endsWith("." + extension)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static void visitDirectory(Path overrides, Path installTo, List<String> filesToIgnore,
 			Path directory) throws IOException {
 		directory = relativize(overrides, directory);
 
-		if(!shouldSkip(filesToIgnore, directory)) {
-			final Path path = Paths.get(installTo.toString(), directory.toString());
+		if(shouldSkip(filesToIgnore, directory)) {
+			return;
+		}
 
-			if(Files.exists(path) && !Files.isDirectory(path)) {
-				Files.delete(path);
-			}
+		final Path installToPath = Paths.get(installTo.toString(), directory.toString());
 
-			if(!Files.exists(path)) {
-				Files.createDirectory(path);
-			}
+		//Make sure installToPath is a directory that exists
+
+		if(Files.exists(installToPath) && !Files.isDirectory(installToPath)) {
+			Files.delete(installToPath);
+		}
+
+		if(!Files.exists(installToPath)) {
+			Files.createDirectory(installToPath);
 		}
 	}
 
@@ -349,6 +406,8 @@ public final class ModpackInstaller {
 		if(modpack.getMods().isEmpty()) {
 			return;
 		}
+
+		//TODO move to TRLUtils
 
 		final int maxThreads = config.threads > 0 ? config.threads : CurseAPI.getMaximumThreads();
 		final int threadCount = modpack.getMods().size() < maxThreads ?
@@ -409,19 +468,19 @@ public final class ModpackInstaller {
 
 		final URL url = CurseForge.getFileURL(mod.projectID, mod.fileID);
 
-		final Path location = Paths.get(config.installTo).relativize(
-				NIOUtils.downloadToDirectory(url, Paths.get(config.installTo, "mods")));
+		final Path downloaded = NIOUtils.downloadToDirectory(url, installTo(config, "mods"));
+
+		final Path relativizedLocation = Paths.get(config.installTo).relativize(downloaded);
 
 		final ModData modData = new ModData();
 
 		modData.projectID = mod.projectID;
 		modData.fileID = mod.fileID;
-		modData.location = StringUtils.replaceAll(location.toString(), IOConstants.PATH_SEPARATOR,
-				IOConstants.PATH_SEPARATOR_UNIX);
+		modData.location = toString(relativizedLocation);
 		modData.relatedFiles = mod.relatedFiles;
 
-		CurseEventHandling.forEach(handler -> handler.downloadedMod(mod.title,
-				location.getFileName().toString(), count));
+		CurseEventHandling.forEach(
+				handler -> handler.downloadedMod(mod.title, name(downloaded), count));
 
 		data.mods.add(modData);
 	}
@@ -447,9 +506,27 @@ public final class ModpackInstaller {
 		//TODO
 	}
 
-	//public static void createZip(Path directory, Path zip) throws IOException {
+	private static String name(Path path) {
+		//Mainly to make SpotBugs happy
+		final Path name = path.getFileName();
+		return name == null ? "" : name.toString();
+	}
 
-	public static void deleteTemporaryFiles() {
+	private static Path installTo(InstallerConfig config, Path path) {
+		return installTo(config, path.toString());
+	}
+
+	private static Path installTo(InstallerConfig config, String... paths) {
+		return Paths.get(config.installTo, paths);
+	}
+
+	private static String toString(Path path) {
+		//TODO NIOUtils.ensureUnixPathSeparators
+		return StringUtils.replaceAll(path.toString(), IOConstants.PATH_SEPARATOR,
+				IOConstants.PATH_SEPARATOR_UNIX);
+	}
+
+	private static void deleteTemporaryFiles() {
 		for(int i = 0; i < temporaryFiles.size(); i++) {
 			try {
 				if(Files.isDirectory(temporaryFiles.get(i))) {

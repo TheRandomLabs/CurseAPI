@@ -29,24 +29,6 @@ public final class ModpackFileInfo implements Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if(object instanceof ModpackFileInfo) {
-			return ((ModpackFileInfo) object).fileID == fileID;
-		}
-
-		if(object instanceof InstallerData.ModData) {
-			return ((InstallerData.ModData) object).fileID == fileID;
-		}
-
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return fileID;
-	}
-
-	@Override
 	public ModpackFileInfo clone() {
 		final ModpackFileInfo info = new ModpackFileInfo();
 

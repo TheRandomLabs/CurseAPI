@@ -136,15 +136,15 @@ public final class Modpack {
 		return serverMods;
 	}
 
-	public void filterModsForClient() {
-		filterMods(FileType.SERVER_ONLY);
+	public void removeServerOnlyMods() {
+		removeMods(FileType.SERVER_ONLY);
 	}
 
-	public void filterModsForServer() {
-		filterMods(FileType.CLIENT_ONLY);
+	public void removeClientOnlyMods() {
+		removeMods(FileType.CLIENT_ONLY);
 	}
 
-	private void filterMods(FileType typeToRemove) {
+	private void removeMods(FileType typeToRemove) {
 		final TRLList<ModpackFileInfo> mods = new TRLList<>(this.mods.size());
 
 		for(ModpackFileInfo mod : this.mods) {

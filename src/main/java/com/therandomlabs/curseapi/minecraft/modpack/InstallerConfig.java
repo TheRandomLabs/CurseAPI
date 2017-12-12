@@ -8,11 +8,12 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.utils.number.NumberUtils;
 
 public final class InstallerConfig {
-	public String installTo;
+	public String installTo = ".";
 	public String modpack;
 	public String dataFile = "curseapi_installer_data.json";
-	public String[] modSources;
-	public int[] excludeProjectIDs;
+	public String[] modSources = new String[0];
+	public String[] variableFileExtensions = new String[] {"cfg", "json", "txt"};
+	public int[] excludeProjectIDs = new int[0];
 	public boolean redownloadAll;
 	public boolean isServer;
 	public boolean installForge = true;
@@ -20,13 +21,14 @@ public final class InstallerConfig {
 	public boolean createEULA = true;
 	public boolean createServerStarters = true;
 	public int threads;
+	public long autosaveInterval = 3000L;
 
 	private boolean isProjectAndFileID;
 	private boolean isURL;
 	private boolean isPath;
 	private boolean isInvalid;
 
-	boolean isLocal;
+	boolean shouldKeepModpack;
 	boolean shouldInstallForge = true;
 
 	public boolean isModpackProjectAndFileID() {

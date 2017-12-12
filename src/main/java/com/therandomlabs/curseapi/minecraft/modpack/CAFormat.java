@@ -2,6 +2,8 @@ package com.therandomlabs.curseapi.minecraft.modpack;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,10 +26,10 @@ import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
+import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.number.NumberUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
-//TODO plugin support - move OptiFine to a separate plugin
 //CurseAPI Manifest Format
 public final class CAFormat {
 	public static final String IMPORT = "import";
@@ -72,6 +74,7 @@ public final class CAFormat {
 	public static final String ALTERNATIVE = "|";
 	public static final String NEWER_THAN_OR_EQUAL_TO = ">";
 	public static final String OLDER_THAN_OR_EQUAL_TO = "<";
+	public static final String EQUAL_TO = "=";
 	public static final String REMOVE_PROJECT_ID = "-";
 
 	private CAFormat() {}
@@ -143,32 +146,37 @@ public final class CAFormat {
 
 			String[] data = StringUtils.splitWhitespace(line);
 
-			if(data[0].startsWith(NEWER_THAN_OR_EQUAL_TO)) {
+			if(data[0].startsWith(NEWER_THAN_OR_EQUAL_TO) ||
+					data[0].startsWith(OLDER_THAN_OR_EQUAL_TO) ||
+					data[0].startsWith(EQUAL_TO)) {
 				if(data.length < 2) {
 					continue;
 				}
 
-				final String versionToCompare = data[0].substring(NEWER_THAN_OR_EQUAL_TO.length());
-				if(MinecraftVersion.fromString(versionToCompare).
-						compareTo(MinecraftVersion.fromString(variables.get(MINECRAFT))) >= 0) {
-					data = ArrayUtils.subArray(data, 1);
-				} else {
-					continue;
-				}
-			}
+				final MinecraftVersion versionToCompare =
+						MinecraftVersion.fromString(data[0].substring(data[0].length()));
+				final MinecraftVersion version =
+						MinecraftVersion.fromString(variables.get(MINECRAFT));
+				final int compare = versionToCompare.compareTo(version);
 
-			if(data[0].startsWith(OLDER_THAN_OR_EQUAL_TO)) {
-				if(data.length < 2) {
+				boolean matches = false;
+
+				switch(data[0]) {
+				case NEWER_THAN_OR_EQUAL_TO:
+					matches = compare >= 0;
+					break;
+				case OLDER_THAN_OR_EQUAL_TO:
+					matches = compare <= 0;
+					break;
+				case EQUAL_TO:
+					matches = compare == 0;
+				}
+
+				if(!matches) {
 					continue;
 				}
 
-				final String versionToCompare = data[0].substring(OLDER_THAN_OR_EQUAL_TO.length());
-				if(MinecraftVersion.fromString(versionToCompare).
-						compareTo(MinecraftVersion.fromString(variables.get(MINECRAFT))) <= 0) {
-					data = ArrayUtils.subArray(data, 1);
-				} else {
-					continue;
-				}
+				data = ArrayUtils.subArray(data, 1);
 			}
 
 			if(data[0].equals(REMOVE_PROJECT_ID)) {
@@ -189,13 +197,25 @@ public final class CAFormat {
 
 					//Imports
 					if(lowerCase.equals(IMPORT)) {
-						final Path path = Paths.get(variables.get(IMPORT));
-						if(Files.exists(path)) {
-							//Do not import variables
-							lines.addAll(i + 1, Files.readAllLines(path).stream().
-									filter(string -> !string.startsWith(VARIABLE)).
-									collect(Collectors.toList()));
+						final String importLocation = variables.get(IMPORT);
+						List<String> toImport = null;
+
+						try {
+							final String string = NetworkUtils.read(new URL(importLocation));
+							toImport =
+									new ImmutableList<>(StringUtils.NEWLINE_REGEX.split(string));
+						} catch(MalformedURLException ex) {
+							toImport = Files.readAllLines(Paths.get(importLocation));
 						}
+
+						if(toImport == null) {
+							continue;
+						}
+
+						//Do not import variables
+						lines.addAll(i + 1, toImport.stream().
+								filter(string -> !string.startsWith(VARIABLE)).
+								collect(Collectors.toList()));
 					}
 				}
 				continue;

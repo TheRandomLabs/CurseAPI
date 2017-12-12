@@ -39,6 +39,11 @@ public final class CurseEventHandling {
 		}
 
 		@Override
+		public void autosavedInstallerData() {
+			getLogger().debug("Autosaved installer data.");
+		}
+
+		@Override
 		public void deleting(String fileName) {
 			getLogger().info("Deleting: " + fileName);
 		}
