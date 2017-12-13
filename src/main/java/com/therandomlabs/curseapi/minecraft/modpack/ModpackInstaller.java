@@ -268,7 +268,7 @@ public final class ModpackInstaller {
 
 	private static boolean modpackContains(Modpack modpack, InstallerData.ModData data) {
 		for(ModpackFileInfo mod : modpack.getMods()) {
-			if(mod.projectID == data.projectID) {
+			if(mod.projectID == data.projectID || mod.fileID == data.fileID) {
 				return true;
 			}
 		}
