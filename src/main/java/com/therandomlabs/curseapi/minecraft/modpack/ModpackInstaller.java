@@ -267,8 +267,8 @@ public final class ModpackInstaller {
 	}
 
 	private static boolean modpackContains(Modpack modpack, InstallerData.ModData data) {
-		for(ModpackFileInfo mod : modpack.getMods()) {
-			if(mod.projectID == data.projectID || mod.fileID == data.fileID) {
+		for(ModInfo mod : modpack.getMods()) {
+			if(mod.projectID == data.projectID && mod.fileID == data.fileID) {
 				return true;
 			}
 		}
@@ -415,11 +415,13 @@ public final class ModpackInstaller {
 
 		final AtomicInteger count = new AtomicInteger();
 
+		final int threads = config.threads > 0 ? config.threads : CurseAPI.getMaximumThreads();
+
 		final int size = modpack.getMods().size();
 		try {
-			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), size, index ->
+			ThreadUtils.splitWorkload(threads, size, index ->
 					downloadMod(config, data, modpack.getMods().get(index),
-					count.incrementAndGet(), size));
+							count.incrementAndGet(), size));
 		} catch(Exception ex) {
 			if(ex instanceof CurseException) {
 				throw (CurseException) ex;
@@ -434,7 +436,7 @@ public final class ModpackInstaller {
 	}
 
 	private static void downloadMod(InstallerConfig config, InstallerData data,
-			ModpackFileInfo mod, int count, int total) throws CurseException, IOException {
+			ModInfo mod, int count, int total) throws CurseException, IOException {
 		CurseEventHandling.forEach(handler -> handler.downloadingMod(mod.title, count, total));
 
 		final URL url = CurseForge.getFileURL(mod.projectID, mod.fileID);

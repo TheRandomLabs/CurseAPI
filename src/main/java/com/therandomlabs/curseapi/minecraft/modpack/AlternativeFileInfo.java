@@ -8,8 +8,8 @@ public final class AlternativeFileInfo implements Cloneable {
 	public String[] relatedFiles = new String[0];
 
 	@Override
-	public ModpackFileInfo clone() {
-		final ModpackFileInfo info = new ModpackFileInfo();
+	public ModInfo clone() {
+		final ModInfo info = new ModInfo();
 
 		info.title = title;
 		info.projectID = projectID;
@@ -20,7 +20,7 @@ public final class AlternativeFileInfo implements Cloneable {
 		return info;
 	}
 
-	static AlternativeFileInfo[] fromArray(ModpackFileInfo[] files) {
+	static AlternativeFileInfo[] fromArray(ModInfo[] files) {
 		final AlternativeFileInfo[] alternatives = new AlternativeFileInfo[files.length];
 
 		for(int i = 0; i < files.length; i++) {

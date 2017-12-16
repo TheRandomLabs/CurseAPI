@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.jsoup.nodes.Element;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
@@ -17,7 +18,7 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 
-//TODO Changelog, Uploaded by, Additional Files
+//TODO Uploaded by, Additional Files
 public class CurseFile {
 	private final CurseProject project;
 	private final FileInfo widgetInfo;
@@ -120,6 +121,18 @@ public class CurseFile {
 
 	public int downloads() {
 		return widgetInfo.downloads;
+	}
+
+	public String md5() throws CurseException {
+		return DocumentUtils.getValue(url, "class=md5;text");
+	}
+
+	public Element changelogHTML() throws CurseException {
+		return DocumentUtils.get(url, "class=logbox");
+	}
+
+	public String changelog() throws CurseException {
+		return DocumentUtils.getValue(url, "class=logbox;text");
 	}
 
 	public CurseProject project() {

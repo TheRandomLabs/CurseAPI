@@ -6,7 +6,7 @@ import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.CloneException;
 
-public final class ModpackFileInfo implements Cloneable {
+public final class ModInfo implements Cloneable {
 	public static final String UNKNOWN_TITLE = "Unknown Name";
 
 	public String title = UNKNOWN_TITLE;
@@ -16,9 +16,9 @@ public final class ModpackFileInfo implements Cloneable {
 	public String[] relatedFiles = new String[0];
 	public AlternativeFileInfo[] alternatives = new AlternativeFileInfo[0];
 
-	public ModpackFileInfo() {}
+	public ModInfo() {}
 
-	public ModpackFileInfo(String title, int projectID, int fileID, FileType type,
+	public ModInfo(String title, int projectID, int fileID, FileType type,
 			String[] relatedFiles, AlternativeFileInfo[] alternatives) {
 		this.title = title;
 		this.projectID = projectID;
@@ -29,8 +29,21 @@ public final class ModpackFileInfo implements Cloneable {
 	}
 
 	@Override
-	public ModpackFileInfo clone() {
-		final ModpackFileInfo info = new ModpackFileInfo();
+	public boolean equals(Object anotherObject) {
+		if(anotherObject instanceof ModInfo) {
+			return ((ModInfo) anotherObject).fileID == fileID;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return fileID;
+	}
+
+	@Override
+	public ModInfo clone() {
+		final ModInfo info = new ModInfo();
 
 		info.title = title;
 		info.projectID = projectID;
@@ -54,7 +67,7 @@ public final class ModpackFileInfo implements Cloneable {
 		return info;
 	}
 
-	public static CurseFile[] toCurseFiles(ModpackFileInfo[] files) throws CurseException {
+	public static CurseFile[] toCurseFiles(ModInfo[] files) throws CurseException {
 		final CurseFile[] curseFiles = new CurseFile[files.length];
 
 		for(int i = 0; i < files.length; i++) {
@@ -64,7 +77,7 @@ public final class ModpackFileInfo implements Cloneable {
 		return curseFiles;
 	}
 
-	public static CurseFileList toCurseFileList(ModpackFileInfo[] files) throws CurseException {
+	public static CurseFileList toCurseFileList(ModInfo[] files) throws CurseException {
 		return CurseFileList.of(toCurseFiles(files));
 	}
 }

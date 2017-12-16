@@ -36,6 +36,26 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 		super(files);
 	}
 
+	public CurseFileList newerThan(CurseFile oldFile) {
+		return filter(file -> file.id() > oldFile.id());
+	}
+
+	public CurseFileList newerThanOrEqualTo(CurseFile oldFile) {
+		return filter(file -> file.id() >= oldFile.id());
+	}
+
+	public CurseFileList olderThan(CurseFile newFile) {
+		return filter(file -> file.id() < newFile.id());
+	}
+
+	public CurseFileList olderThanOrEqualTo(CurseFile newFile) {
+		return filter(file -> file.id() <= newFile.id());
+	}
+
+	public CurseFileList between(CurseFile oldFile, CurseFile newFile) {
+		return filter(file -> file.id() > oldFile.id() && file.id() <= newFile.id());
+	}
+
 	public CurseFileList filterMCVersionGroup(String version) {
 		return filterVersions(MinecraftVersion.groupFromString(version));
 	}

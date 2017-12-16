@@ -4,7 +4,7 @@ import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.util.ArrayList;
 import java.util.List;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.minecraft.modpack.ModpackFileInfo;
+import com.therandomlabs.curseapi.minecraft.modpack.ModInfo;
 import com.therandomlabs.utils.runnable.RunnableWithInputAndThrowable;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
@@ -65,7 +65,7 @@ public final class CurseEventHandling {
 
 		@Override
 		public void downloadingMod(String modName, int count, int total) {
-			if(modName.equals(ModpackFileInfo.UNKNOWN_TITLE)) {
+			if(modName.equals(ModInfo.UNKNOWN_TITLE)) {
 				getLogger().info("Downloading mod %s of %s...", count, total, modName);
 			} else {
 				getLogger().info("Downloading mod %s of %s: %s", count, total, modName);
@@ -76,7 +76,7 @@ public final class CurseEventHandling {
 
 		@Override
 		public void downloadedMod(String modName, String fileName, int count) {
-			if(modName.equals(ModpackFileInfo.UNKNOWN_TITLE)) {
+			if(modName.equals(ModInfo.UNKNOWN_TITLE)) {
 				getLogger().info("Downloaded mod %s: %s", modName, fileName);
 			} else {
 				getLogger().info("Downloaded mod: " + fileName);

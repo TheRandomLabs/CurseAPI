@@ -171,8 +171,12 @@ public class CurseProject {
 		return widgetInfo.description;
 	}
 
-	public String descriptionHTML() throws CurseException {
-		return DocumentUtils.getValue(url, "class=project-description;html");
+	public Element fullDescriptionHTML() throws CurseException {
+		return DocumentUtils.get(url, "class=project-description");
+	}
+
+	public String fullDescription() throws CurseException {
+		return DocumentUtils.getValue(url, "class=project-description;text");
 	}
 
 	public List<String> categories() {

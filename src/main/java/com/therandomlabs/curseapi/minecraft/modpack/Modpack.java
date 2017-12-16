@@ -26,16 +26,16 @@ public final class Modpack {
 	private final double minimumRam;
 	private final double recommendedRam;
 
-	private TRLList<ModpackFileInfo> mods;
-	private final TRLList<ModpackFileInfo> originalMods;
-	private final TRLList<ModpackFileInfo> clientMods;
-	private final TRLList<ModpackFileInfo> serverMods;
+	private TRLList<ModInfo> mods;
+	private final TRLList<ModInfo> originalMods;
+	private final TRLList<ModInfo> clientMods;
+	private final TRLList<ModInfo> serverMods;
 
 	private final TRLList<String> clientOnlyFiles;
 	private final TRLList<String> serverOnlyFiles;
 
 	public Modpack(String name, String version, String author, String description,
-			MinecraftVersion minecraftVersion, String forgeVersion, ModpackFileInfo[] files,
+			MinecraftVersion minecraftVersion, String forgeVersion, ModInfo[] files,
 			String optifineVersion, double minimumRam, double recommendedRam)
 			throws CurseException {
 		this(name, version, author, description, "Overrides", minecraftVersion, forgeVersion,
@@ -44,7 +44,7 @@ public final class Modpack {
 
 	public Modpack(String name, String version, String author, String description,
 			String overrides, MinecraftVersion minecraftVersion, String forgeVersion,
-			ModpackFileInfo[] files, String optifineVersion, double minimumRam,
+			ModInfo[] files, String optifineVersion, double minimumRam,
 			double recommendedRam) throws CurseException {
 		this.name = name;
 		this.version = version;
@@ -137,23 +137,23 @@ public final class Modpack {
 		return "forge-" + forgeVersion.split("-")[1];
 	}
 
-	public TRLList<ModpackFileInfo> getMods() {
+	public TRLList<ModInfo> getMods() {
 		return mods;
 	}
 
 	public CurseFileList getCurseFileList() throws CurseException {
-		return ModpackFileInfo.toCurseFileList(mods.toArray(new ModpackFileInfo[0]));
+		return ModInfo.toCurseFileList(mods.toArray(new ModInfo[0]));
 	}
 
-	public TRLList<ModpackFileInfo> getOriginalMods() {
+	public TRLList<ModInfo> getOriginalMods() {
 		return originalMods;
 	}
 
-	public TRLList<ModpackFileInfo> getClientMods() {
+	public TRLList<ModInfo> getClientMods() {
 		return clientMods;
 	}
 
-	public TRLList<ModpackFileInfo> getServerMods() {
+	public TRLList<ModInfo> getServerMods() {
 		return serverMods;
 	}
 
@@ -166,9 +166,9 @@ public final class Modpack {
 	}
 
 	private void removeMods(FileType typeToRemove) {
-		final TRLList<ModpackFileInfo> mods = new TRLList<>(this.mods.size());
+		final TRLList<ModInfo> mods = new TRLList<>(this.mods.size());
 
-		for(ModpackFileInfo mod : this.mods) {
+		for(ModInfo mod : this.mods) {
 			if(mod.type != typeToRemove) {
 				mods.add(mod);
 			}
@@ -177,7 +177,7 @@ public final class Modpack {
 		this.mods = mods;
 	}
 
-	public void removeMods(Collection<ModpackFileInfo> mods) {
+	public void removeMods(Collection<ModInfo> mods) {
 		this.mods.removeAll(mods);
 	}
 
@@ -221,7 +221,7 @@ public final class Modpack {
 		info.version = version;
 		info.author = author;
 		info.description = description;
-		info.files = mods.toArray(new ModpackFileInfo[0]);
+		info.files = mods.toArray(new ModInfo[0]);
 		info.overrides = "Overrides";
 		info.minecraft = toMinecraftInfo();
 		info.optifineVersion = optifineVersion;

@@ -247,12 +247,12 @@ public final class CAFormat {
 		);
 	}
 
-	private static ModpackFileInfo[] getFiles(Map<String, String> variables,
+	private static ModInfo[] getFiles(Map<String, String> variables,
 			List<FileData> fileData) throws CurseException {
-		final List<ModpackFileInfo> files = new ArrayList<>(fileData.size());
+		final List<ModInfo> files = new ArrayList<>(fileData.size());
 
 		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), fileData.size(), index -> {
-			final ModpackFileInfo file = toModpackFile(variables, fileData.get(index));
+			final ModInfo file = toModpackFile(variables, fileData.get(index));
 			if(file != null) {
 				files.add(file);
 			}
@@ -262,10 +262,10 @@ public final class CAFormat {
 
 		//Remove duplicate projects
 
-		final List<ModpackFileInfo> duplicates = new ArrayList<>();
+		final List<ModInfo> duplicates = new ArrayList<>();
 
-		for(ModpackFileInfo file : files) {
-			for(ModpackFileInfo file2 : files) {
+		for(ModInfo file : files) {
+			for(ModInfo file2 : files) {
 				if(file != file2 && file.projectID == file2.projectID) {
 					//Prefer the newer file
 					if(file.fileID > file2.fileID) {
@@ -279,10 +279,10 @@ public final class CAFormat {
 
 		files.removeAll(duplicates);
 
-		return files.toArray(new ModpackFileInfo[0]);
+		return files.toArray(new ModInfo[0]);
 	}
 
-	private static ModpackFileInfo toModpackFile(Map<String, String> variables, FileData data)
+	private static ModInfo toModpackFile(Map<String, String> variables, FileData data)
 			throws CurseException {
 		final CurseProject project = CurseProject.fromID(data.projectID);
 
@@ -310,7 +310,7 @@ public final class CAFormat {
 			alternatives = ImmutableList.empty();
 		}
 
-		return new ModpackFileInfo(project.title(), data.projectID, file.id(), data.type,
+		return new ModInfo(project.title(), data.projectID, file.id(), data.type,
 				data.relatedFiles, alternatives.toArray(new AlternativeFileInfo[0]));
 	}
 
