@@ -58,6 +58,10 @@ public final class ModpackManifest implements Cloneable {
 			return project;
 		}
 
+		public String getModTitle() throws CurseException {
+			return getProject().title();
+		}
+
 		public ModInfo getOldMod() {
 			return oldMod;
 		}
@@ -266,7 +270,7 @@ public final class ModpackManifest implements Cloneable {
 			string.append("Updated:");
 
 			for(UpdateInfo updated : changelog.getUpdated()) {
-				string.append(newline).append("\t").append(updated.getOldMod().title).append(':');
+				string.append(newline).append("\t").append(updated.getModTitle()).append(':');
 
 				for(Map.Entry<String, String> modChangelog : updated.getChangelog().entrySet()) {
 					string.append(newline).append("\t\t").append(modChangelog.getKey()).
