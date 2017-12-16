@@ -277,14 +277,14 @@ public final class ModpackManifest implements Cloneable {
 						string.append(newline).append("\t\t\t").append(line);
 					}
 				}
-			}
 
-			string.append(newline);
+				string.append(newline);
+			}
 		}
 
-		string.append("Downgraded:");
-
 		if(!changelog.getDowngraded().isEmpty()) {
+			string.append(newline).append("Downgraded:");
+
 			for(UpdateInfo downgraded : changelog.getDowngraded()) {
 				string.append(newline).append("\t").append("- From ").
 						append(downgraded.getOldModName()).append(" to ").
