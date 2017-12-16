@@ -127,7 +127,7 @@ public final class ModpackInstaller {
 	private static void directory(InstallerConfig config, Path directory)
 			throws CurseException, IOException {
 		final Path manifestPath = Paths.get(directory.toString(), "manifest.json");
-		final Modpack modpack = Modpack.fromManifest(manifestPath);
+		final Modpack modpack = Modpack.from(manifestPath);
 		final InstallerData data = new InstallerData();
 
 		final Path modsDirectory = installTo(config, "mods");

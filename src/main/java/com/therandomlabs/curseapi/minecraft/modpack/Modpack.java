@@ -9,7 +9,6 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFileList;
 import com.therandomlabs.curseapi.minecraft.MinecraftForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
-import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
@@ -250,7 +249,7 @@ public final class Modpack {
 		return new ModLoaderInfo[] {info};
 	}
 
-	public static Modpack fromManifest(Path manifest) throws CurseException, IOException {
-		return MiscUtils.fromJson(manifest, ModpackManifest.class).toModpack();
+	public static Modpack from(Path manifest) throws CurseException, IOException {
+		return ModpackManifest.from(manifest).toModpack();
 	}
 }

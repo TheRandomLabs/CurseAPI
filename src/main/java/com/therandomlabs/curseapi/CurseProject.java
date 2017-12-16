@@ -345,6 +345,7 @@ public class CurseProject {
 					files.add(new CurseFile(this, info));
 				}
 			}
+			files.sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
 		}
 
 		this.files = CurseFileList.of(files);
