@@ -284,10 +284,12 @@ public final class ModpackManifest implements Cloneable {
 
 				string.append(newline);
 			}
+
+			string.append(newline);
 		}
 
 		if(!changelog.getDowngraded().isEmpty()) {
-			string.append(newline).append("Downgraded:");
+			string.append("Downgraded:");
 
 			for(UpdateInfo downgraded : changelog.getDowngraded()) {
 				string.append(newline).append("\t").append("- From ").
@@ -295,21 +297,21 @@ public final class ModpackManifest implements Cloneable {
 						append(downgraded.getNewModName());
 			}
 
-			string.append(newline);
+			string.append(newline).append(newline);
 		}
 
 		if(!changelog.getRemoved().isEmpty()) {
-			string.append(newline).append("Removed:");
+			string.append("Removed:");
 
 			for(ModInfo removed : changelog.getRemoved()) {
 				string.append(newline).append("\t").append("- ").append(removed.title);
 			}
 
-			string.append(newline);
+			string.append(newline).append(newline);
 		}
 
 		if(!changelog.getAdded().isEmpty()) {
-			string.append(newline).append("Added:");
+			string.append("Added:");
 
 			for(ModInfo added : changelog.getAdded()) {
 				string.append(newline).append("\t").append("- ").append(added.title);
@@ -318,7 +320,11 @@ public final class ModpackManifest implements Cloneable {
 			string.append(newline);
 		}
 
-		return string.toString();
+		final String toString = string.toString();
+		if(toString.endsWith(newline + newline)) {
+			return toString.substring(0, toString.length() - newline.length());
+		}
+		return toString;
 	}
 
 	public static ModpackManifest from(Path manifest) throws IOException {
