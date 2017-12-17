@@ -66,6 +66,7 @@ public final class CAFormat {
 	public static final String RECOMMENDED_RAM = "recommended_ram";
 	public static final String DEFAULT_RECOMMENDED_RAM = "4";
 
+	//TODO change to chars
 	public static final String VARIABLE = "#";
 	public static final String CLIENT_ONLY = "!c";
 	public static final String SERVER_ONLY = "!s";
@@ -163,12 +164,12 @@ public final class CAFormat {
 
 				boolean matches = false;
 
-				switch(data[0]) {
+				switch(data[0].substring(0, 1)) {
 				case NEWER_THAN_OR_EQUAL_TO:
-					matches = compare <= 0;
+					matches = compare >= 0;
 					break;
 				case OLDER_THAN_OR_EQUAL_TO:
-					matches = compare >= 0;
+					matches = compare <= 0;
 					break;
 				case EQUAL_TO:
 					matches = compare == 0;
