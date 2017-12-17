@@ -165,10 +165,10 @@ public final class CAFormat {
 
 				switch(data[0]) {
 				case NEWER_THAN_OR_EQUAL_TO:
-					matches = compare >= 0;
+					matches = compare <= 0;
 					break;
 				case OLDER_THAN_OR_EQUAL_TO:
-					matches = compare <= 0;
+					matches = compare >= 0;
 					break;
 				case EQUAL_TO:
 					matches = compare == 0;
