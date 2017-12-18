@@ -40,6 +40,7 @@ public final class DocumentUtils {
 	private static class FormattingVisitor implements NodeVisitor {
 		private final int maxWidth;
 		private int width = 0;
+		private int h3s;
 
 		private final StringBuilder text = new StringBuilder();
 
@@ -50,6 +51,10 @@ public final class DocumentUtils {
 		//Hit when the node is first seen
 		@Override
 		public void head(Node node, int depth) {
+			if(h3s > 1) {
+				return;
+			}
+
 			final String name = node.nodeName();
 
 			if(node instanceof TextNode) {
@@ -61,12 +66,21 @@ public final class DocumentUtils {
 				append("  ");
 			} else if(StringUtil.in(name, "p", "h1", "h2", "h3", "h4", "h5", "tr")) {
 				append("\n");
+
+				if(name.equals("h3")) {
+					//Just for you, JEI, and your ridiculously long changelogs.
+					h3s++;
+				}
 			}
 		}
 
 		//Hit when all of the node's children (if any) have been visited
 		@Override
 		public void tail(Node node, int depth) {
+			if(h3s > 1) {
+				return;
+			}
+
 			final String name = node.nodeName();
 
 			if(StringUtil.in(name, "br", "dd", "dt", "p", "h1", "h2", "h3", "h4", "h5")) {
@@ -117,8 +131,9 @@ public final class DocumentUtils {
 
 		@Override
 		public String toString() {
-			final String string = text.toString();
-			return string.startsWith("\n") ? string.substring("\n".length()) : string;
+			//I'm looking at you, Speiger.
+			final String string = text.toString().replaceAll("\n\n\n", "\n");
+			return string.startsWith("\n") ? string.substring(1) : string;
 		}
 	}
 

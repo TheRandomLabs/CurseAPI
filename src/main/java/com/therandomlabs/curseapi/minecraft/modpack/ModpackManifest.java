@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -97,7 +97,7 @@ public final class ModpackManifest implements Cloneable {
 				return Collections.emptyMap();
 			}
 
-			final Map<String, String> changelog = new HashMap<>();
+			final Map<String, String> changelog = new LinkedHashMap<>();
 
 			final CurseFileList files = getProject().files().filterMCVersionGroup(mcVersion).
 					between(getOldModFile(), getNewModFile());
