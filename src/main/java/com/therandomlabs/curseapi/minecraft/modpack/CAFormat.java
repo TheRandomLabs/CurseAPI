@@ -66,16 +66,15 @@ public final class CAFormat {
 	public static final String RECOMMENDED_RAM = "recommended_ram";
 	public static final String DEFAULT_RECOMMENDED_RAM = "4";
 
-	//TODO change to chars
-	public static final String VARIABLE = "#";
+	public static final char VARIABLE = '#';
 	public static final String CLIENT_ONLY = "!c";
 	public static final String SERVER_ONLY = "!s";
-	public static final String COMMENT = ":";
-	public static final String ALTERNATIVE = "|";
-	public static final String NEWER_THAN_OR_EQUAL_TO = ">";
-	public static final String OLDER_THAN_OR_EQUAL_TO = "<";
-	public static final String EQUAL_TO = "=";
-	public static final String REMOVE_PROJECT_ID = "-";
+	public static final char COMMENT = ':';
+	public static final char ALTERNATIVE = '|';
+	public static final char NEWER_THAN_OR_EQUAL_TO = '>';
+	public static final char OLDER_THAN_OR_EQUAL_TO = '<';
+	public static final char EQUAL_TO = '=';
+	public static final char REMOVE_PROJECT_ID = '-';
 
 	private CAFormat() {}
 
@@ -148,10 +147,10 @@ public final class CAFormat {
 			}
 
 			String[] data = StringUtils.splitWhitespace(line);
+			char operator = data[0].charAt(0);
 
-			if(data[0].startsWith(NEWER_THAN_OR_EQUAL_TO) ||
-					data[0].startsWith(OLDER_THAN_OR_EQUAL_TO) ||
-					data[0].startsWith(EQUAL_TO)) {
+			if(operator == NEWER_THAN_OR_EQUAL_TO || operator == OLDER_THAN_OR_EQUAL_TO ||
+					operator == EQUAL_TO) {
 				if(data.length < 2) {
 					continue;
 				}
@@ -164,7 +163,7 @@ public final class CAFormat {
 
 				boolean matches = false;
 
-				switch(data[0].substring(0, 1)) {
+				switch(operator) {
 				case NEWER_THAN_OR_EQUAL_TO:
 					matches = compare >= 0;
 					break;
@@ -182,7 +181,7 @@ public final class CAFormat {
 				data = ArrayUtils.subArray(data, 1);
 			}
 
-			if(data[0].equals(REMOVE_PROJECT_ID)) {
+			if(data[0].equals(String.valueOf(REMOVE_PROJECT_ID))) {
 				final int id = NumberUtils.parseInt(data[0].substring(1), 0);
 				if(id >= CurseAPI.MIN_PROJECT_ID) {
 					for(int j = 0; j < files.size(); j++) {
@@ -193,7 +192,7 @@ public final class CAFormat {
 				}
 			}
 
-			if(data[0].equals(VARIABLE)) {
+			if(data[0].equals(String.valueOf(VARIABLE))) {
 				if(data.length > 2) {
 					final String lowerCase = data[1].toLowerCase(Locale.ENGLISH);
 					variables.put(lowerCase, ArrayUtils.join(ArrayUtils.subArray(data, 2), " "));
@@ -217,7 +216,7 @@ public final class CAFormat {
 
 						//Do not import variables
 						lines.addAll(i + 1, toImport.stream().
-								filter(string -> !string.startsWith(VARIABLE)).
+								filter(string -> string.charAt(0) != VARIABLE).
 								collect(Collectors.toList()));
 					}
 				}
@@ -340,11 +339,15 @@ public final class CAFormat {
 
 		int dataIndex;
 		for(dataIndex = 0; dataIndex < data.length; dataIndex++) {
-			if(data[dataIndex].startsWith(COMMENT)) {
+			if(data[dataIndex].charAt(0) == COMMENT) {
 				break;
 			}
 
-			if(data[dataIndex].equals(ALTERNATIVE)) {
+			//TODO better alternative syntax
+			//mods can declare dependencies as project IDs
+			//dependencies, e.g. if mod A is chosen, remove dependency B
+			//optional mods with dependencies
+			if(data[dataIndex].equals(String.valueOf(ALTERNATIVE))) {
 				if(dataIndex != data.length - 1) {
 					final FileData file = getFile(
 							ArrayUtils.subArray(data, dataIndex + 1), variables, alternatives);

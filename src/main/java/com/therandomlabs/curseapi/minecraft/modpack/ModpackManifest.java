@@ -278,7 +278,11 @@ public final class ModpackManifest implements Cloneable {
 
 					final String[] lines = StringUtils.NEWLINE.split(modChangelog.getValue());
 					for(String line : lines) {
-						string.append(newline).append("\t\t\t").append(line);
+						string.append(newline);
+
+						if(!line.trim().isEmpty()) {
+							string.append("\t\t\t").append(line);
+						}
 					}
 				}
 

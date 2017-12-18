@@ -159,24 +159,28 @@ public class CurseProject {
 		return widgetInfo.donate.toString();
 	}
 
-	public String license() {
+	public String licenseName() {
 		return widgetInfo.license;
 	}
 
-	public String licenseHTML() throws CurseException {
-		return DocumentUtils.get(urlString() + "/license").html();
+	public Element licenseHTML() throws CurseException {
+		return DocumentUtils.get(urlString() + "/license");
 	}
 
-	public String description() {
+	public String licenseText() throws CurseException {
+		return DocumentUtils.getPlainText(licenseHTML());
+	}
+
+	public String shortDescription() {
 		return widgetInfo.description;
 	}
 
-	public Element fullDescriptionHTML() throws CurseException {
+	public Element descriptionHTML() throws CurseException {
 		return DocumentUtils.get(url, "class=project-description");
 	}
 
-	public String fullDescription() throws CurseException {
-		return DocumentUtils.getValue(url, "class=project-description;text");
+	public String description() throws CurseException {
+		return DocumentUtils.getPlainText(descriptionHTML());
 	}
 
 	public List<String> categories() {

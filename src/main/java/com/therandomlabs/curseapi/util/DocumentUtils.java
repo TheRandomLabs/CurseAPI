@@ -8,9 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
+import org.jsoup.select.NodeTraversor;
+import org.jsoup.select.NodeVisitor;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseProject;
@@ -28,6 +33,124 @@ public final class DocumentUtils {
 	private static final Map<String, Document> documents = new HashMap<>(50);
 
 	private DocumentUtils() {}
+
+	//Taken and adapted from
+	//https://github.com/jhy/jsoup/blob/master/src/main/java/org/jsoup/examples/
+	//HtmlToPlainText.java
+	private static class FormattingVisitor implements NodeVisitor {
+		private final int maxWidth;
+		private int width = 0;
+
+		private final StringBuilder text = new StringBuilder();
+
+		FormattingVisitor(int maxWidth) {
+			this.maxWidth = maxWidth < 1 ? Integer.MAX_VALUE : maxWidth;
+		}
+
+		//Hit when the node is first seen
+		@Override
+		public void head(Node node, int depth) {
+			final String name = node.nodeName();
+
+			if(node instanceof TextNode) {
+				//TextNodes carry all user-readable text in the DOM.
+				append(((TextNode) node).text());
+			} else if(name.equals("li")) {
+				append("\n * ");
+			} else if(name.equals("dt")) {
+				append("  ");
+			} else if(StringUtil.in(name, "p", "h1", "h2", "h3", "h4", "h5", "tr")) {
+				append("\n");
+			}
+		}
+
+		//Hit when all of the node's children (if any) have been visited
+		@Override
+		public void tail(Node node, int depth) {
+			final String name = node.nodeName();
+
+			if(StringUtil.in(name, "br", "dd", "dt", "p", "h1", "h2", "h3", "h4", "h5")) {
+				append("\n");
+			} else if(name.equals("a")) {
+				append(String.format(" <%s>", absUrl(node.attr("href"))));
+			}
+		}
+
+		//Appends text to the StringBuilder with a simple word wrap method
+		private void append(String string) {
+			if(string.startsWith("\n")) {
+				//Reset counter if the string starts with a newline.
+				width = 0;
+			}
+
+			if(string.equals(" ") && (text.length() == 0 ||
+					StringUtil.in(text.substring(text.length() - 1), " ", "\n"))) {
+				//Don't accumulate long runs of empty spaces
+				return;
+			}
+
+			if(string.length() + width > maxWidth) {
+				//Needs to be wrapped
+				final String[] words = string.split("\\s+");
+				for(int i = 0; i < words.length; i++) {
+					final String word = words[i];
+
+					//If this isn't the last word, insert a space
+					if(i < words.length - 1) {
+						string += ' ';
+					}
+
+					//Wrap and reset counter
+					if(string.length() + width > maxWidth) {
+						text.append("\n").append(word);
+						width = word.length();
+					} else {
+						text.append(word);
+						width += word.length();
+					}
+				}
+			} else {
+				text.append(string);
+				width += string.length();
+			}
+		}
+
+		@Override
+		public String toString() {
+			final String string = text.toString();
+			return string.startsWith("\n") ? string.substring("\n".length()) : string;
+		}
+	}
+
+	public static String getPlainText(Element element) {
+		return getPlainText(element, -1);
+	}
+
+	public static String getPlainText(Element element, int maxLineWidth) {
+		final FormattingVisitor formatter = new FormattingVisitor(maxLineWidth);
+		NodeTraversor.traverse(formatter, element);
+		return formatter.toString();
+	}
+
+	//Jsoup's absUrl doesn't seem to work properly, so we do it ourselves
+	public static String absUrl(String url) {
+		//Too short to be a URL
+		if(url.length() < 5) {
+			return url;
+		}
+
+		try {
+			new URL(url);
+		} catch(MalformedURLException ex) {
+			if(ex.getMessage().contains("no protocol")) {
+				url = "https:" + url;
+			} else {
+				return url;
+			}
+		}
+
+		return url;
+	}
 
 	public static Document get(String url) throws CurseException {
 		return get(URLUtils.url(url));
@@ -114,22 +237,7 @@ public final class DocumentUtils {
 			case "redirectAbsUrl":
 			case "absUrl":
 				//Jsoup seems to have trouble with absUrl, so we do it manually
-				String absUrl = element.attr(values[1]);
-
-				//Too short to be a URL
-				if(absUrl.length() < 5) {
-					return absUrl;
-				}
-
-				try {
-					new URL(absUrl);
-				} catch(MalformedURLException ex) {
-					if(ex.getMessage().contains("no protocol")) {
-						absUrl = "https:" + absUrl;
-					} else {
-						throw new CurseException(ex);
-					}
-				}
+				final String absUrl = absUrl(element.attr(values[1]));
 				return values[0].equals("absUrl") ? absUrl : URLUtils.redirect(absUrl).toString();
 			case "class":
 				final int index = values.length < 2 ? 0 : Integer.parseInt(values[1]);

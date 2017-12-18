@@ -132,7 +132,7 @@ public class CurseFile {
 	}
 
 	public String changelog() throws CurseException {
-		return DocumentUtils.getValue(url, "class=logbox;text");
+		return DocumentUtils.getPlainText(changelogHTML());
 	}
 
 	public CurseProject project() {
