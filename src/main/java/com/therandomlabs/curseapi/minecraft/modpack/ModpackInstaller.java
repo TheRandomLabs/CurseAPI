@@ -27,16 +27,13 @@ import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.concurrent.ThreadUtils;
-import com.therandomlabs.utils.io.IOConstants;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.Assertions;
-import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.Timer;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 //https://github.com/google/gson/issues/395 may occur
-@SuppressWarnings("unused")
 public final class ModpackInstaller {
 	public static final String MINECRAFT_VERSION = "::MINECRAFT_VERSION::";
 	public static final String MODPACK_NAME = "::MODPACK_NAME::";
@@ -52,7 +49,70 @@ public final class ModpackInstaller {
 		Runtime.getRuntime().addShutdownHook(new Thread(ModpackInstaller::deleteTemporaryFiles));
 	}
 
-	//public static void createZip(Path directory, Path zip) throws IOException {
+	public static void createZip(Path directory, Path zipLocation) throws IOException {
+		createZip(directory, zipLocation, "cfg", "json", "txt");
+	}
+
+	public static void createZip(Path directory, Path zipLocation,
+			String... variableFileExtensions) throws IOException {
+		final ModpackManifest manifest =
+				ModpackManifest.from(Paths.get(directory.toString(), "manifest.json"));
+		final Path overrides = Paths.get(directory.toString(), manifest.overrides);
+		final Path installTo = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
+				name(zipLocation) + System.nanoTime());
+
+
+		/*final Path relativized = relativize(overrides, file);
+
+		if(shouldSkip(filesToIgnore, relativized)) {
+			return;
+		}
+
+		final Path newFile = installTo(config, relativized);
+
+		if(Files.isDirectory(newFile)) {
+			NIOUtils.deleteDirectory(newFile);
+		}
+
+		final String name = name(file);
+
+		try {
+			CurseEventHandling.forEach(handler -> handler.copying(toString(relativized)));
+		} catch(CurseException ex) {
+			//It's just event handling, shouldn't matter too much ATM
+		}
+
+		boolean variablesReplaced = shouldReplaceVariables(config.variableFileExtensions, name);
+
+		if(variablesReplaced) {
+			try {
+				//Replace variables
+				final String toWrite = NIOUtils.readFile(file).
+						replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
+						replaceAll(MODPACK_NAME, modpack.getName()).
+						replaceAll(MODPACK_VERSION, modpack.getVersion()).
+						replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
+						replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
+						System.lineSeparator();
+
+				NIOUtils.write(newFile, toWrite);
+			} catch(MalformedInputException ex) {
+				ex.printStackTrace();
+				getLogger().error("This exception was caused by the file: " + file);
+				getLogger().error("Make sure the file is encoded in UTF-8!");
+				getLogger().error("Variables in this file will not be processed.");
+				variablesReplaced = false;
+			}
+		}
+
+		if(!variablesReplaced) {
+			if(config.shouldKeepModpack) {
+				Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+			}
+		}*/
+	}
 
 	public static void installModpack(Path config)
 			throws CurseException, IOException, ZipException {
@@ -276,7 +336,7 @@ public final class ModpackInstaller {
 	}
 
 	private static void iterateModSources(InstallerConfig config, InstallerData data,
-			Modpack modpack) throws IOException {
+			Modpack modpack) {
 		//TODO copy files, then modpack.removeMods
 
 	}
@@ -458,8 +518,7 @@ public final class ModpackInstaller {
 		data.mods.add(modData);
 	}
 
-	private static void installForge(InstallerConfig config, InstallerData data, Modpack modpack)
-			throws IOException {
+	private static void installForge(InstallerConfig config, InstallerData data, Modpack modpack) {
 		data.minecraftVersion = modpack.getMinecraftVersion().toString();
 		data.forgeVersion = modpack.getForgeVersion();
 
@@ -471,7 +530,7 @@ public final class ModpackInstaller {
 	}
 
 	private static void createEULAAndServerStarters(InstallerConfig config, InstallerData data,
-			Modpack modpack) throws IOException {
+			Modpack modpack) {
 		if(!config.isServer) {
 			return;
 		}

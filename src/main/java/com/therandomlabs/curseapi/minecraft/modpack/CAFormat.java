@@ -33,6 +33,10 @@ import com.therandomlabs.utils.number.NumberUtils;
 public final class CAFormat {
 	public static final String IMPORT = "import";
 
+	public static final String LIGHTCHOCOLATE = "lightchocolate";
+	public static final String LIGHTCHOCOLATE_URL =
+			"https://raw.githubusercontent.com/TheRandomLabs/LightChocolate/master/manifest.txt";
+
 	public static final String NAME = "name";
 	public static final String DEFAULT_NAME = "CurseAPI Modpack";
 
@@ -199,13 +203,17 @@ public final class CAFormat {
 
 					//Imports
 					if(lowerCase.equals(IMPORT)) {
-						final String importLocation = variables.get(IMPORT);
+						String importLocation = variables.get(IMPORT);
+
+						if(importLocation.equalsIgnoreCase(LIGHTCHOCOLATE)) {
+							importLocation = LIGHTCHOCOLATE_URL;
+						}
+
 						List<String> toImport = null;
 
 						try {
 							final String string = NetworkUtils.read(new URL(importLocation));
-							toImport =
-									new ImmutableList<>(StringUtils.NEWLINE_REGEX.split(string));
+							toImport = new ImmutableList<>(string.split("\n"));
 						} catch(MalformedURLException ex) {
 							toImport = Files.readAllLines(Paths.get(importLocation));
 						}
@@ -216,7 +224,8 @@ public final class CAFormat {
 
 						//Do not import variables
 						lines.addAll(i + 1, toImport.stream().
-								filter(string -> string.charAt(0) != VARIABLE).
+								filter(string -> string.length() != 0 &&
+								string.charAt(0) != VARIABLE).
 								collect(Collectors.toList()));
 					}
 				}
