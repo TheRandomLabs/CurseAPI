@@ -212,12 +212,17 @@ public final class ModpackInstaller {
 			throw new CurseException("Invalid zip file");
 		}
 
-		final Path extractLocation = NIOUtils.TEMP_DIRECTORY.get().
+		Path extractLocation = NIOUtils.TEMP_DIRECTORY.get().
 				resolve(name(modpackZip) + System.nanoTime());
 
 		temporaryFiles.add(extractLocation);
 
 		zip.extractAll(extractLocation.toString());
+
+		final List<Path> files = NIOUtils.list(extractLocation);
+		if(files.size() == 1 && Files.isDirectory(files.get(0))) {
+			extractLocation = files.get(0);
+		}
 
 		directory(config, extractLocation);
 	}
