@@ -32,6 +32,8 @@ import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.Timer;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 
 //https://github.com/google/gson/issues/395 may occur
 public final class ModpackInstaller {
@@ -49,69 +51,102 @@ public final class ModpackInstaller {
 		Runtime.getRuntime().addShutdownHook(new Thread(ModpackInstaller::deleteTemporaryFiles));
 	}
 
-	public static void createZip(Path directory, Path zipLocation) throws IOException {
-		createZip(directory, zipLocation, "cfg", "json", "txt");
+	public static void createZip(Path path, Path zipLocation)
+			throws CurseException, IOException, ZipException {
+		createZip(path, zipLocation, "cfg", "json", "txt");
 	}
 
-	public static void createZip(Path directory, Path zipLocation,
-			String... variableFileExtensions) throws IOException {
-		final ModpackManifest manifest =
-				ModpackManifest.from(Paths.get(directory.toString(), "manifest.json"));
-		final Path overrides = Paths.get(directory.toString(), manifest.overrides);
-		final Path installTo = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
-				name(zipLocation) + System.nanoTime());
+	public static void createZip(Path path, Path zipLocation,
+			String... variableFileExtensions) throws CurseException, IOException, ZipException {
+		final Path directory;
+		final Path manifest;
 
-
-		/*final Path relativized = relativize(overrides, file);
-
-		if(shouldSkip(filesToIgnore, relativized)) {
-			return;
+		if(Files.isDirectory(path)) {
+			directory = path;
+			manifest = directory.resolve("manifest.json");
+		} else {
+			directory = path.getParent();
+			manifest = path;
 		}
 
-		final Path newFile = installTo(config, relativized);
+		final Modpack modpack = Modpack.from(manifest);
 
-		if(Files.isDirectory(newFile)) {
-			NIOUtils.deleteDirectory(newFile);
-		}
+		final Path overrides = directory.resolve(modpack.getOverrides());
 
+		final Path copyTo = NIOUtils.TEMP_DIRECTORY.get().
+				resolve(name(zipLocation) + System.nanoTime()).resolve(modpack.getOverrides());
+
+		final Path copyToParent = copyTo.getParent();
+		Files.createDirectory(copyToParent);
+		temporaryFiles.add(copyToParent);
+
+		final Path newManifest = copyToParent.resolve("manifest.json");
+
+		Files.copy(manifest, newManifest, StandardCopyOption.REPLACE_EXISTING);
+
+		Files.walkFileTree(overrides, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attributes)
+					throws IOException {
+				copyFile(overrides, copyTo, file, modpack, variableFileExtensions);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult preVisitDirectory(Path directory,
+					BasicFileAttributes attributes) throws IOException {
+				visitDirectory(overrides, copyTo, directory);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+
+		createZip(newManifest, copyTo, new ZipFile(zipLocation.toFile()));
+
+		deleteTemporaryFiles();
+	}
+
+
+	static void copyFile(Path overrides, Path copyTo, Path file, Modpack modpack,
+			String[] variableFileExtensions) throws IOException {
+		final Path relativized = relativize(overrides, file);
+		final Path newFile =  copyTo.resolve(relativized.toString());
 		final String name = name(file);
 
-		try {
-			CurseEventHandling.forEach(handler -> handler.copying(toString(relativized)));
-		} catch(CurseException ex) {
-			//It's just event handling, shouldn't matter too much ATM
-		}
+		//TODO logging
 
-		boolean variablesReplaced = shouldReplaceVariables(config.variableFileExtensions, name);
-
+		boolean variablesReplaced = shouldReplaceVariables(variableFileExtensions, name);
 		if(variablesReplaced) {
-			try {
-				//Replace variables
-				final String toWrite = NIOUtils.readFile(file).
-						replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
-						replaceAll(MODPACK_NAME, modpack.getName()).
-						replaceAll(MODPACK_VERSION, modpack.getVersion()).
-						replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
-						replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
-						System.lineSeparator();
-
-				NIOUtils.write(newFile, toWrite);
-			} catch(MalformedInputException ex) {
-				ex.printStackTrace();
-				getLogger().error("This exception was caused by the file: " + file);
-				getLogger().error("Make sure the file is encoded in UTF-8!");
-				getLogger().error("Variables in this file will not be processed.");
-				variablesReplaced = false;
-			}
+			variablesReplaced = replaceVariablesAndCopy(file, newFile, modpack);
 		}
 
 		if(!variablesReplaced) {
-			if(config.shouldKeepModpack) {
-				Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-			} else {
-				Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-			}
-		}*/
+			Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	static void visitDirectory(Path overrides, Path copyTo, Path directory) throws IOException {
+		copyTo = copyTo.resolve(relativize(overrides, directory).toString());
+
+		//Make sure copyTo is a directory that exists
+
+		if(Files.exists(copyTo) && !Files.isDirectory(copyTo)) {
+			Files.delete(copyTo);
+		}
+
+		if(!Files.exists(copyTo)) {
+			Files.createDirectory(copyTo);
+		}
+	}
+
+	private static void createZip(Path manifest, Path overrides, ZipFile zipFile)
+			throws ZipException {
+		final ZipParameters parameters = new ZipParameters();
+
+		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+
+		zipFile.addFile(manifest.toFile(), parameters);
+		zipFile.addFolder(overrides.toFile(), parameters);
 	}
 
 	public static void installModpack(Path config)
@@ -155,8 +190,8 @@ public final class ModpackInstaller {
 
 	private static void url(InstallerConfig config, URL url)
 			throws CurseException, IOException, ZipException {
-		final Path downloadedModpack = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
-				String.valueOf(System.nanoTime()));
+		final Path downloadedModpack = NIOUtils.TEMP_DIRECTORY.get().
+				resolve("CurseAPI_Modpack.zip" + System.nanoTime());
 
 		temporaryFiles.add(downloadedModpack);
 
@@ -174,8 +209,8 @@ public final class ModpackInstaller {
 			throw new CurseException("Invalid zip file");
 		}
 
-		final Path extractLocation = Paths.get(NIOUtils.TEMP_DIRECTORY.toString(),
-				name(modpackZip) + System.nanoTime());
+		final Path extractLocation = NIOUtils.TEMP_DIRECTORY.get().
+				resolve(name(modpackZip) + System.nanoTime());
 
 		temporaryFiles.add(extractLocation);
 
@@ -186,7 +221,7 @@ public final class ModpackInstaller {
 
 	private static void directory(InstallerConfig config, Path directory)
 			throws CurseException, IOException {
-		final Path manifestPath = Paths.get(directory.toString(), "manifest.json");
+		final Path manifestPath = directory.resolve("manifest.json");
 		final Modpack modpack = Modpack.from(manifestPath);
 		final InstallerData data = new InstallerData();
 
@@ -344,7 +379,7 @@ public final class ModpackInstaller {
 	private static void copyNewFiles(Path modpackLocation, InstallerConfig config,
 			InstallerData data, Modpack modpack)
 			throws IOException {
-		final Path overrides = Paths.get(modpackLocation.toString(), modpack.getOverrides());
+		final Path overrides = modpackLocation.resolve(modpack.getOverrides());
 		final Path installTo = Paths.get(config.installTo);
 		final List<String> filesToIgnore =
 				config.isServer ? modpack.getClientOnlyFiles() : modpack.getServerOnlyFiles();
@@ -390,26 +425,12 @@ public final class ModpackInstaller {
 		}
 
 		boolean variablesReplaced = shouldReplaceVariables(config.variableFileExtensions, name);
-
 		if(variablesReplaced) {
-			try {
-				//Replace variables
-				final String toWrite = NIOUtils.readFile(file).
-						replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
-						replaceAll(MODPACK_NAME, modpack.getName()).
-						replaceAll(MODPACK_VERSION, modpack.getVersion()).
-						replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
-						replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
-						System.lineSeparator();
+			variablesReplaced = replaceVariablesAndCopy(file, newFile, modpack);
+		}
 
-				NIOUtils.write(newFile, toWrite);
-			} catch(MalformedInputException ex) {
-				ex.printStackTrace();
-				getLogger().error("This exception was caused by the file: " + file);
-				getLogger().error("Make sure the file is encoded in UTF-8!");
-				getLogger().error("Variables in this file will not be processed.");
-				variablesReplaced = false;
-			}
+		if(!variablesReplaced) {
+			Files.copy(file, newFile, StandardCopyOption.REPLACE_EXISTING);
 		}
 
 		if(!variablesReplaced) {
@@ -440,7 +461,7 @@ public final class ModpackInstaller {
 			return;
 		}
 
-		final Path installToPath = Paths.get(installTo.toString(), directory.toString());
+		final Path installToPath = installTo.resolve(directory.toString());
 
 		//Make sure installToPath is a directory that exists
 
@@ -451,6 +472,30 @@ public final class ModpackInstaller {
 		if(!Files.exists(installToPath)) {
 			Files.createDirectory(installToPath);
 		}
+	}
+
+	private static boolean replaceVariablesAndCopy(Path file, Path newFile, Modpack modpack)
+			throws IOException {
+		try {
+			final String toWrite = NIOUtils.readFile(file).
+					replaceAll(MINECRAFT_VERSION, modpack.getMinecraftVersionString()).
+					replaceAll(MODPACK_NAME, modpack.getName()).
+					replaceAll(MODPACK_VERSION, modpack.getVersion()).
+					replaceAll(FULL_MODPACK_NAME, modpack.getFullName()).
+					replaceAll(MODPACK_AUTHOR, modpack.getAuthor()) +
+					System.lineSeparator();
+
+			NIOUtils.write(newFile, toWrite);
+		} catch(MalformedInputException ex) {
+			ex.printStackTrace();
+			getLogger().error("This exception was caused by the file: " + file);
+			getLogger().error("Make sure the file is encoded in UTF-8!");
+			getLogger().error("Variables in this file will not be processed.");
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static Path relativize(Path overrides, Path path) {
@@ -560,10 +605,11 @@ public final class ModpackInstaller {
 		for(int i = 0; i < temporaryFiles.size(); i++) {
 			try {
 				if(Files.isDirectory(temporaryFiles.get(i))) {
-					NIOUtils.deleteDirectoryIfExists(temporaryFiles.get(i--));
+					NIOUtils.deleteDirectoryIfExists(temporaryFiles.get(i));
 				} else {
-					Files.deleteIfExists(temporaryFiles.get(i--));
+					Files.deleteIfExists(temporaryFiles.get(i));
 				}
+				temporaryFiles.remove(i--);
 			} catch(IOException ex) {
 				ex.printStackTrace();
 			}

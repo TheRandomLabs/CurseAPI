@@ -37,6 +37,11 @@ public final class CAFormat {
 	public static final String LIGHTCHOCOLATE_URL =
 			"https://raw.githubusercontent.com/TheRandomLabs/LightChocolate/master/manifest.txt";
 
+	public static final String DARKCHOCOLATE = "darkchocolate";
+	public static final String DARKCHOCOLATE_URL =
+			"https://raw.githubusercontent.com/TheRandomLabs/LightChocolate/master/" +
+			"DarkChocolate/manifest.txt";
+
 	public static final String NAME = "name";
 	public static final String DEFAULT_NAME = "CurseAPI Modpack";
 
@@ -186,7 +191,7 @@ public final class CAFormat {
 			}
 
 			if(data[0].equals(String.valueOf(REMOVE_PROJECT_ID))) {
-				final int id = NumberUtils.parseInt(data[0].substring(1), 0);
+				final int id = NumberUtils.parseInt(data[1], 0);
 				if(id >= CurseAPI.MIN_PROJECT_ID) {
 					for(int j = 0; j < files.size(); j++) {
 						if(files.get(j).projectID == id) {
@@ -207,6 +212,8 @@ public final class CAFormat {
 
 						if(importLocation.equalsIgnoreCase(LIGHTCHOCOLATE)) {
 							importLocation = LIGHTCHOCOLATE_URL;
+						} else if(importLocation.equalsIgnoreCase(DARKCHOCOLATE)) {
+							importLocation = DARKCHOCOLATE_URL;
 						}
 
 						List<String> toImport = null;
@@ -238,6 +245,14 @@ public final class CAFormat {
 			final FileData file = getFile(data, variables, alternatives);
 			if(file != null) {
 				file.alternatives = alternatives.toArray(new FileData[0]);
+
+				for(FileData fileToCheck : files) {
+					if(fileToCheck.projectID == file.projectID) {
+						files.remove(fileToCheck);
+						break;
+					}
+				}
+
 				files.add(file);
 			}
 		}
@@ -261,7 +276,7 @@ public final class CAFormat {
 		final List<ModInfo> files = new ArrayList<>(fileData.size());
 
 		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), fileData.size(), index -> {
-			final ModInfo file = toModpackFile(variables, fileData.get(index));
+			final ModInfo file = toModInfo(variables, fileData.get(index));
 			if(file != null) {
 				files.add(file);
 			}
@@ -291,7 +306,7 @@ public final class CAFormat {
 		return files.toArray(new ModInfo[0]);
 	}
 
-	private static ModInfo toModpackFile(Map<String, String> variables, FileData data)
+	private static ModInfo toModInfo(Map<String, String> variables, FileData data)
 			throws CurseException {
 		final CurseProject project = CurseProject.fromID(data.projectID);
 
@@ -313,7 +328,7 @@ public final class CAFormat {
 		if(data.alternatives != null) {
 			alternatives = new ArrayList<>(data.alternatives.length);
 			for(FileData alternative : data.alternatives) {
-				alternatives.add(toModpackFile(variables, alternative).toAlternative());
+				alternatives.add(toModInfo(variables, alternative).toAlternative());
 			}
 		} else {
 			alternatives = ImmutableList.empty();
