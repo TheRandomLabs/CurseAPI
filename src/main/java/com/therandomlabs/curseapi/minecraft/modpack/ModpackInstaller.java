@@ -510,10 +510,9 @@ public final class ModpackInstaller {
 		return overrides.relativize(path).normalize();
 	}
 
-	private static boolean shouldSkip(List<String> filesToIgnore, Path path) throws IOException {
-		path = path.toRealPath();
+	private static boolean shouldSkip(List<String> filesToIgnore, Path path) {
 		for(String fileName : filesToIgnore) {
-			final Path toIgnore = Paths.get("config", fileName).toRealPath();
+			final Path toIgnore = Paths.get("config", fileName).normalize();
 			if(path.equals(toIgnore) || NIOUtils.isParent(toIgnore, path)) {
 				return true;
 			}
