@@ -156,6 +156,8 @@ public final class ModpackInstaller {
 
 	public static void installModpack(InstallerConfig config)
 			throws CurseException, IOException, ZipException {
+		config.getInstallTo();
+
 		if(config.isModpackInvalid()) {
 			throw new CurseException("Invalid modpack: " + config.modpack);
 		}

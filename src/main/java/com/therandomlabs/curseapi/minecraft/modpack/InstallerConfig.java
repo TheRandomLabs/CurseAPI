@@ -5,9 +5,12 @@ import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.minecraft.Minecraft;
 import com.therandomlabs.utils.number.NumberUtils;
 
 public final class InstallerConfig {
+	public static final String MCDIR = "::MCDIR::";
+
 	public String installTo = ".";
 	public String modpack;
 	public String dataFile = "curseapi_installer_data.json";
@@ -49,6 +52,12 @@ public final class InstallerConfig {
 	public boolean isModpackInvalid() {
 		getModpackType();
 		return isInvalid;
+	}
+
+	void getInstallTo() {
+		if(installTo.equals(MCDIR)) {
+			installTo = Minecraft.getDirectory().toString();
+		}
 	}
 
 	private void getModpackType() {
