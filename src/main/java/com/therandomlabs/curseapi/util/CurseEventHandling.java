@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi.util;
 
 import static com.therandomlabs.utils.logging.Logging.getLogger;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import com.therandomlabs.curseapi.CurseException;
@@ -61,6 +62,11 @@ public final class CurseEventHandling {
 		@Override
 		public void extracting(String fileName) {
 			getLogger().info("Extracting: " + fileName);
+		}
+
+		@Override
+		public void downloadingFromURL(URL url) {
+			getLogger().info("Downloading: " + url);
 		}
 
 		@Override

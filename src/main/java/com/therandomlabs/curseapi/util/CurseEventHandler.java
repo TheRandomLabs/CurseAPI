@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.util;
 
+import java.net.URL;
 import com.therandomlabs.curseapi.CurseException;
 
 @SuppressWarnings("unused")
@@ -23,6 +24,8 @@ public interface CurseEventHandler {
 	default void downloadingFile(String fileName) throws CurseException {}
 
 	default void extracting(String fileName) throws CurseException {}
+
+	default void downloadingFromURL(URL url) throws CurseException {}
 
 	default void downloadingMod(String modName, int count, int total) throws CurseException {}
 

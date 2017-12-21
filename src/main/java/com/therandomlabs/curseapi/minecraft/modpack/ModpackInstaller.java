@@ -197,6 +197,7 @@ public final class ModpackInstaller {
 
 		temporaryFiles.add(downloadedModpack);
 
+		CurseEventHandling.forEach(handler -> handler.downloadingFromURL(url));
 		NIOUtils.download(url, downloadedModpack);
 
 		zipFile(config, downloadedModpack);
