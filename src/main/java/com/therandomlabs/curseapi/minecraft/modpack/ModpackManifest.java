@@ -1,7 +1,6 @@
 package com.therandomlabs.curseapi.minecraft.modpack;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -32,9 +31,7 @@ public final class ModpackManifest implements Cloneable {
 	public double minimumRam = 2.5;
 	public double recommendedRam = 4.0;
 
-	public static class UpdateInfo implements Cloneable, Serializable {
-		private static final long serialVersionUID = 7002390917108852490L;
-
+	public static class UpdateInfo implements Cloneable {
 		private CurseProject project;
 
 		private final String mcVersion;
@@ -119,9 +116,7 @@ public final class ModpackManifest implements Cloneable {
 		}
 	}
 
-	public static class Changelog implements Serializable {
-		private static final long serialVersionUID = 2442877055944479055L;
-
+	public static class Changelog {
 		private final ModpackManifest oldManifest;
 		private final ModpackManifest newManifest;
 
@@ -227,7 +222,7 @@ public final class ModpackManifest implements Cloneable {
 			} catch(CurseException ex) {
 				ex.printStackTrace();
 			}
-			return null;
+			return "";
 		}
 	}
 
