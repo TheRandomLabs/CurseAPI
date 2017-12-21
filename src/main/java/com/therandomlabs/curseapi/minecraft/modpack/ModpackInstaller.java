@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.google.gson.Gson;
+import com.google.gson.stream.MalformedJsonException;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseProject;
@@ -257,7 +258,12 @@ public final class ModpackInstaller {
 			}
 		}, config.autosaveInterval);
 
-		deleteOldFiles(config, data, modpack, autosaver);
+		try {
+			deleteOldFiles(config, data, modpack, autosaver);
+		} catch(MalformedJsonException ex) {
+			getLogger().warning("Invalid data file!");
+		}
+
 		iterateModSources(config, data, modpack);
 		copyNewFiles(directory, config, data, modpack);
 		downloadMods(config, data, modpack);
@@ -285,6 +291,11 @@ public final class ModpackInstaller {
 
 		final InstallerData oldData = MiscUtils.fromJson(dataPath, InstallerData.class);
 		autosaver.start();
+
+		if(oldData.forgeVersion == null) {
+			getLogger().warning("Invalid data file!");
+			return;
+		}
 
 		if(oldData.forgeVersion.equals(modpack.getForgeVersion())) {
 			//Forge should not be installed because it is already on the correct version
