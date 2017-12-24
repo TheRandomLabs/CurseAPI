@@ -39,7 +39,6 @@ Example Gradle buildscript:
 		}
 	}
 
-Documentation is not complete yet, but a lot of the methods should be self-explanatory.
 The CurseForge class is for basic methods, mainly to do with URLs.
 Use CurseProject instead where possible.
 
@@ -54,6 +53,7 @@ Features:
 
 Planned features:
 * More project and file details
+* Documentation and a wiki.
 
 Example:
 
