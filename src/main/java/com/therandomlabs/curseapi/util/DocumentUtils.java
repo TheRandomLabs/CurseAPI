@@ -357,4 +357,12 @@ public final class DocumentUtils {
 	public static void clearDocumentCache() {
 		documents.clear();
 	}
+
+	public static void clearDocumentCache(String url) {
+		documents.remove(url);
+	}
+
+	public static void clearDocumentCache(URL url) {
+		clearDocumentCache(url.toString());
+	}
 }

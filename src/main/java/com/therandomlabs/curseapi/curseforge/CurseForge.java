@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.curseforge;
 
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,15 @@ public final class CurseForge {
 	}
 
 	public static boolean isProject(String url) throws CurseException {
-		return isProject(URLUtils.url(url));
+		URL urlObject = null;
+
+		try {
+			urlObject = new URL(url);
+		} catch(MalformedURLException ex) {
+			return false;
+		}
+
+		return isProject(urlObject);
 	}
 
 	public static boolean isProject(URL url) throws CurseException {

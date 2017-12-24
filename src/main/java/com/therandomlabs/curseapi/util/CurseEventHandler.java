@@ -14,22 +14,4 @@ public interface CurseEventHandler {
 	default void postDownloadDocument(String url) throws CurseException {}
 
 	default void retryingJSON(int retryingIn) throws CurseException {}
-
-	default void autosavedInstallerData() throws CurseException {}
-
-	default void deleting(String fileName) throws CurseException {}
-
-	default void copying(String fileName) throws CurseException {}
-
-	default void downloadingFile(String fileName) throws CurseException {}
-
-	default void extracting(String fileName) throws CurseException {}
-
-	default void downloadingFromURL(URL url) throws CurseException {}
-
-	default void downloadingMod(String modName, int count, int total) throws CurseException {}
-
-	default void downloadedMod(String modName, String fileName, int count) throws CurseException {}
-
-	default void installingForge(String forgeVersion) throws CurseException {}
 }

@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -31,10 +32,13 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
+import com.therandomlabs.utils.throwable.ThrowableHandling;
 
-//TODO Images, Issues, Source, Pages, Wiki, Avatar, Get number of relations,
+//TODO Images, Issues, Source, Pages, Wiki, Get number of relations,
 //get relations on a specific page
 public class CurseProject {
+	public static final URL PLACEHOLDER_THUMBNAIL;
+
 	public static final int RELATIONS_PER_PAGE = 20;
 
 	private static final TRLList<CurseProject> projects = new TRLList<>(100);
@@ -42,11 +46,23 @@ public class CurseProject {
 	private URL url;
 	private URL newCurseForgeURL;
 	private ProjectInfo widgetInfo;
-	private BufferedImage thumbnail;
 	private CurseFileList files;
 
 	private final Map<RelationType, List<URL>> dependencies = new HashMap<>();
 	private final Map<RelationType, List<URL>> dependents = new HashMap<>();
+
+	static {
+		URL placeholder = null;
+
+		try {
+			placeholder = new URL(
+					"https://media-elerium.cursecdn.com/avatars/0/93/635227964539626926.png");
+		} catch(MalformedURLException ex) {
+			ThrowableHandling.handleUnexpected(ex);
+		}
+
+		PLACEHOLDER_THUMBNAIL = placeholder;
+	}
 
 	private CurseProject(int id) throws CurseException {
 		this(CurseForge.fromID(id));
@@ -57,7 +73,7 @@ public class CurseProject {
 
 		this.url = url;
 		this.newCurseForgeURL = CurseForge.toNewCurseForgeProject(url);
-		reloadWidgetInfo();
+		reloadWidgetInfo(true);
 		projects.add(this);
 	}
 
@@ -85,6 +101,10 @@ public class CurseProject {
 		return newCurseForgeURL != null;
 	}
 
+	public String slug() {
+		return ArrayUtils.last(url.getPath().split("/"));
+	}
+
 	public CurseForgeSite site() {
 		return CurseForgeSite.valueOf(url);
 	}
@@ -101,6 +121,18 @@ public class CurseProject {
 		return widgetInfo.type;
 	}
 
+	public URL avatarURL() throws CurseException {
+		return URLUtils.url(avatarURLString());
+	}
+
+	public String avatarURLString() throws CurseException {
+		return DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=href");
+	}
+
+	public BufferedImage avatar() throws CurseException, IOException {
+		return ImageIO.read(NetworkUtils.download(avatarURL()));
+	}
+
 	public URL thumbnailURL() {
 		return widgetInfo.thumbnail;
 	}
@@ -109,12 +141,8 @@ public class CurseProject {
 		return widgetInfo.thumbnail.toString();
 	}
 
-	public BufferedImage thumbnail(boolean reload) throws IOException {
-		if(thumbnail == null || reload) {
-			thumbnail = ImageIO.read(NetworkUtils.download(thumbnailURL()));
-		}
-
-		return thumbnail;
+	public BufferedImage thumbnail() throws IOException {
+		return ImageIO.read(NetworkUtils.download(thumbnailURL()));
 	}
 
 	public List<MemberInfo> members() throws CurseException {
@@ -257,10 +285,8 @@ public class CurseProject {
 		newCurseForgeURL = CurseForge.toNewCurseForgeProject(url);
 	}
 
-	public void reloadWidgetInfo() throws CurseException {
-		thumbnail = null;
-
-		if(newCurseForgeURL == null) {
+	public void reloadWidgetInfo(boolean getManually) throws CurseException {
+		if(getManually || newCurseForgeURL == null) {
 			final int id = CurseForge.getID(url);
 			final Game game = CurseForgeSite.valueOf(url).getGame();
 			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
@@ -300,8 +326,13 @@ public class CurseProject {
 			downloads.total = Integer.parseInt(
 					DocumentUtils.getValue(url, "class=info-data=3;text").replaceAll(",", ""));
 
-			final URL thumbnail = URLUtils.url(
-					DocumentUtils.getValue(url, "class=avatar-wrapper;tag=img;attr=src"));
+			URL thumbnail = null;
+			try {
+				thumbnail = URLUtils.url(
+						DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=src"));
+			} catch(CurseException ex) {
+				thumbnail = PLACEHOLDER_THUMBNAIL;
+			}
 
 			final List<String> categoryList = new ArrayList<>();
 			final Elements categoryElements =
@@ -322,6 +353,11 @@ public class CurseProject {
 					downloads, thumbnail, categories, createdAt, description, lastFetch);
 		} else {
 			widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
+
+			//So == can be used
+			if(widgetInfo.thumbnail.equals(PLACEHOLDER_THUMBNAIL)) {
+				widgetInfo.thumbnail = PLACEHOLDER_THUMBNAIL;
+			}
 		}
 	}
 
@@ -343,6 +379,11 @@ public class CurseProject {
 
 			widgetInfo.download = DownloadInfo.fromFileInfo(widgetInfo.files[0]);
 		} else {
+			//versions should never be null, isEmpty should be safe to call
+			if(widgetInfo.versions.isEmpty()) {
+				reloadWidgetInfo(false);
+			}
+
 			files = new ArrayList<>(widgetInfo.versions.size());
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {
 				for(FileInfo info : entry.getValue()) {
