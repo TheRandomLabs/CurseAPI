@@ -12,9 +12,6 @@ Example Gradle buildscript:
 	}
 
 	dependencies {
-		compile "com.github.jhy:jsoup:master-SNAPSHOT"
-		compile "com.github.google:gson:master-SNAPSHOT"
-		compile "com.github.TheRandomLabs:TRLUtils:master-SNAPSHOT"
 		compile "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
 	}
 
