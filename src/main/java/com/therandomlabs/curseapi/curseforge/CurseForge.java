@@ -175,7 +175,7 @@ public final class CurseForge {
 			if(ex.getCause() instanceof FileNotFoundException) {
 				CurseException.invalidProjectID(projectID);
 			}
-			throw ex;
+			CurseException.invalidProjectID(projectID, ex);
 		}
 
 		return project;

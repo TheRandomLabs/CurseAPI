@@ -50,6 +50,10 @@ public class CurseException extends Exception {
 		throw new CurseException("Invalid project ID: " + id);
 	}
 
+	public static void invalidProjectID(int id, Throwable throwable) throws CurseException {
+		throw new CurseException("Invalid project ID: " + id, throwable);
+	}
+
 	public static boolean isUnavailable(Throwable throwable) {
 		return throwable instanceof SocketTimeoutException ||
 				throwable instanceof UnknownHostException;

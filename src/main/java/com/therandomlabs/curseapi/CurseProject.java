@@ -379,7 +379,6 @@ public class CurseProject {
 
 			widgetInfo.download = DownloadInfo.fromFileInfo(widgetInfo.files[0]);
 		} else {
-			//versions should never be null, isEmpty should be safe to call
 			if(widgetInfo.versions.isEmpty()) {
 				reloadWidgetInfo(false);
 			}
