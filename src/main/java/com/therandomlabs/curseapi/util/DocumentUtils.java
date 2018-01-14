@@ -169,35 +169,42 @@ public final class DocumentUtils {
 		return url;
 	}
 
+	public static String read(String url) throws CurseException, IOException {
+		return read(URLUtils.url(url));
+	}
+
+	public static String read(URL url) throws CurseException, IOException {
+		CurseEventHandling.forEach(eventHandler ->
+				eventHandler.preDownloadDocument(url.toString()));
+
+		final String string = NetworkUtils.read(url);
+
+		CurseEventHandling.forEach(eventHandler ->
+				eventHandler.postDownloadDocument(url.toString()));
+
+		return string;
+	}
+
 	public static Document get(String url) throws CurseException {
 		return get(URLUtils.url(url));
 	}
 
 	public static Document get(URL url) throws CurseException {
-		final String urlString = url.toString();
-
-		if(documents.containsKey(urlString)) {
-			return documents.get(urlString);
+		if(documents.containsKey(url.toString())) {
+			return documents.get(url.toString());
 		}
 
 		try {
-			CurseEventHandling.forEach(eventHandler ->
-					eventHandler.preDownloadDocument(urlString));
-
-			final String html = NetworkUtils.read(url);
-
-			CurseEventHandling.forEach(eventHandler ->
-					eventHandler.postDownloadDocument(urlString));
-
+			final String html = read(url);
 			if(html == null) {
 				CurseException.unavailable();
 			}
 
 			final Document document = Jsoup.parse(html);
-			documents.put(urlString, document);
+			documents.put(url.toString(), document);
 			return document;
 		} catch(IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("An error occurred while reading from the URL: " + url, ex);
 		}
 	}
 
