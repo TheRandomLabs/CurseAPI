@@ -229,7 +229,28 @@ public class CurseProject {
 				return file;
 			}
 		}
-		return null;
+		throw new CurseException(this + " does not have a file with the ID: " + id);
+	}
+
+	public CurseFile closestFileToID(int id, boolean preferOlder) throws CurseException {
+		CurseFile lastFile = null;
+
+		for(CurseFile file : files()) {
+			if(file.id() == id) {
+				return file;
+			}
+
+			if(file.id() > id) {
+				if(preferOlder) {
+					return lastFile == null ? file : lastFile;
+				}
+				return file;
+			}
+
+			lastFile = file;
+		}
+
+		return lastFile;
 	}
 
 	public CurseFile recommendedDownload() throws CurseException {
