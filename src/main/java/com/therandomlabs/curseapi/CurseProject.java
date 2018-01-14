@@ -240,11 +240,11 @@ public class CurseProject {
 				return file;
 			}
 
-			if(file.id() > id) {
+			if(file.id() < id) {
 				if(preferOlder) {
-					return lastFile == null ? file : lastFile;
+					return file;
 				}
-				return file;
+				return lastFile == null ? file : lastFile;
 			}
 
 			lastFile = file;
