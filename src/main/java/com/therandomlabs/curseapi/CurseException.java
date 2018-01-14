@@ -8,8 +8,8 @@ import com.therandomlabs.curseapi.curseforge.CurseForge;
 
 public class CurseException extends Exception {
 	private static final String UNAVAILABLE_MESSAGE = "Curse and/or CurseForge seems to be " +
-			"unavailable. This could be due to a bug in CurseAPI, or simply because the system " +
-			"cannot connect to the internet.";
+			"unavailable. This could be due to a bug in CurseAPI, because Curse is not working " +
+			"as intended, or because Java or the system cannot access the internet.";
 	private static final long serialVersionUID = -7778596309352978036L;
 
 	public static final int CURSE_MODS = 0;

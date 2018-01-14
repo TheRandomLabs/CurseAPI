@@ -60,6 +60,8 @@ public final class DocumentUtils {
 			if(node instanceof TextNode) {
 				//TextNodes carry all user-readable text in the DOM.
 				append(((TextNode) node).text());
+			} else if(name.equals("a")) {
+				append("[");
 			} else if(name.equals("li")) {
 				append("\n * ");
 			} else if(name.equals("dt")) {
@@ -68,7 +70,7 @@ public final class DocumentUtils {
 				append("\n");
 
 				if(name.equals("h3")) {
-					//Just for you, JEI, and your ridiculously long changelogs.
+					//Just for you, mezz, and your ridiculously long changelogs.
 					h3s++;
 				}
 			}
@@ -86,7 +88,7 @@ public final class DocumentUtils {
 			if(StringUtil.in(name, "br", "dd", "dt", "p", "h1", "h2", "h3", "h4", "h5")) {
 				append("\n");
 			} else if(name.equals("a")) {
-				append(String.format(" <%s>", absUrl(node.attr("href"))));
+				append(String.format("](%s)", absUrl(node.attr("href"))));
 			}
 		}
 

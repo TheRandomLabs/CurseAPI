@@ -29,8 +29,6 @@ public class CurseFile {
 
 	private final URL url;
 
-	private URL fileURL;
-
 	protected CurseFile(CurseProject project, FileInfo widgetInfo) throws CurseException {
 		this.project = project;
 		this.widgetInfo = widgetInfo;
@@ -75,12 +73,8 @@ public class CurseFile {
 	}
 
 	public URL fileURL() throws CurseException {
-		if(fileURL == null) {
-			fileURL = URLUtils.url(DocumentUtils.getValue(url,
-					"class=fa-icon-download;redirectAbsUrl=href"));
-		}
-
-		return fileURL;
+		return URLUtils.url(DocumentUtils.getValue(url,
+				"class=fa-icon-download;redirectAbsUrl=href"));
 	}
 
 	public String fileURLString() throws CurseException {
@@ -135,6 +129,14 @@ public class CurseFile {
 		return DocumentUtils.getPlainText(changelogHTML());
 	}
 
+	public String uploader() throws CurseException {
+		return DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
+	}
+
+	public URL uploaderURL() throws CurseException {
+		return URLUtils.url(DocumentUtils.getValue(url, "class=user-tag;tag=a=1;absUrl=href"));
+	}
+
 	public CurseProject project() {
 		return project;
 	}
@@ -143,16 +145,16 @@ public class CurseFile {
 		return widgetInfo.clone();
 	}
 
-	public InputStream download() throws IOException {
-		return NetworkUtils.download(fileURL);
+	public InputStream download() throws CurseException, IOException {
+		return NetworkUtils.download(fileURL());
 	}
 
-	public Path download(Path location) throws IOException {
-		return NIOUtils.download(fileURL, location);
+	public Path download(Path location) throws CurseException, IOException {
+		return NIOUtils.download(fileURL(), location);
 	}
 
-	public Path downloadToDirectory(Path directory) throws IOException {
-		return NIOUtils.downloadToDirectory(fileURL, directory);
+	public Path downloadToDirectory(Path directory) throws CurseException, IOException {
+		return NIOUtils.downloadToDirectory(fileURL(), directory);
 	}
 
 	@Override
