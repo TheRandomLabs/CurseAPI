@@ -38,8 +38,8 @@ public class CurseFile {
 		if(project.game() == Game.MINECRAFT) {
 			final TRLList<MinecraftVersion> minecraftVersions =
 					CollectionUtils.convert(gameVersions, MinecraftVersion::fromString);
+			minecraftVersions.removeIf(version -> version == null);
 			minecraftVersions.sort();
-			minecraftVersions.removeAll(null);
 			this.minecraftVersions = minecraftVersions.toImmutableList();
 			minecraftVersion = minecraftVersions.get(0);
 		} else {
