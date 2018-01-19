@@ -2,8 +2,10 @@ package com.therandomlabs.curseapi.curseforge;
 
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -14,6 +16,7 @@ import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.Assertions;
+import com.therandomlabs.utils.misc.StringUtils;
 
 public final class CurseForge {
 	public static final String HOST = "www.curseforge.com";
@@ -155,7 +158,17 @@ public final class CurseForge {
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
 
-		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
+		try {
+			final URL url = URLUtils.redirect(fromID(projectID) + "/files/" + fileID +
+					"/download");
+
+			//Some redirected URLs have a space in the file names
+			final String fileName = ArrayUtils.last(StringUtils.split(url.getPath(), '/'));
+			final String encoded = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
+			return new URL(url.toString().replace(fileName, encoded));
+		} catch(IOException ex) {
+			throw new CurseException(ex);
+		}
 	}
 
 	public static URL fromID(int projectID) throws CurseException {

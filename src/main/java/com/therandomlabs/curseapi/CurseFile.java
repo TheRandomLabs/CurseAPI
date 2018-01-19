@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.List;
 import org.jsoup.nodes.Element;
+import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
@@ -76,8 +77,7 @@ public class CurseFile {
 	}
 
 	public URL fileURL() throws CurseException {
-		return URLUtils.url(DocumentUtils.getValue(url,
-				"class=fa-icon-download;redirectAbsUrl=href"));
+		return CurseForge.getFileURL(project.id(), widgetInfo.id);
 	}
 
 	public String fileURLString() throws CurseException {
