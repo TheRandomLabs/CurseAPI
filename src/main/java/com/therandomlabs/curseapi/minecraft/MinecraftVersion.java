@@ -11,6 +11,10 @@ import com.therandomlabs.utils.collection.TRLList;
  * @author TheRandomLabs
  */
 public enum MinecraftVersion {
+	@SerializedName("1.13-Group")
+	V1_13_GROUP,
+	@SerializedName("1.13-Snapshot")
+	V1_13_SNAPSHOT(V1_13_GROUP),
 	@SerializedName("1.12-Group")
 	V1_12_GROUP,
 	@SerializedName("1.12.2")
