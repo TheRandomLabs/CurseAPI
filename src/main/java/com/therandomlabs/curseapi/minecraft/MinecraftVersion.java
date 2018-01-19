@@ -65,8 +65,8 @@ public enum MinecraftVersion {
 	V1_5_2(V1_5_GROUP),
 	@SerializedName("1.5.1")
 	V1_5_1(V1_5_GROUP),
-	@SerializedName("1.5")
-	V1_5(V1_5_GROUP),
+	@SerializedName("1.5.0")
+	V1_5_0(V1_5_GROUP),
 	@SerializedName("1.4-Group")
 	V1_4_GROUP,
 	@SerializedName("1.4.7")
