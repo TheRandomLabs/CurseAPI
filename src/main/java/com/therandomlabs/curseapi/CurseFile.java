@@ -36,9 +36,12 @@ public class CurseFile {
 		gameVersions = new ImmutableList<>(widgetInfo.versions);
 
 		if(project.game() == Game.MINECRAFT) {
-			minecraftVersion = MinecraftVersion.fromString(widgetInfo.version);
-			minecraftVersions = CollectionUtils.convert(gameVersions,
-					MinecraftVersion::fromString).toImmutableList();
+			final TRLList<MinecraftVersion> minecraftVersions =
+					CollectionUtils.convert(gameVersions, MinecraftVersion::fromString);
+			minecraftVersions.sort();
+			minecraftVersions.removeAll(null);
+			this.minecraftVersions = minecraftVersions.toImmutableList();
+			minecraftVersion = minecraftVersions.get(0);
 		} else {
 			minecraftVersion = null;
 			minecraftVersions = null;
