@@ -3,8 +3,8 @@ package com.therandomlabs.curseapi.util;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -14,7 +14,7 @@ public final class URLUtils {
 	public static final Pattern COOKIE_TEST =
 			Pattern.compile("\\?cookieTest\\=*(?=&)|\\?cookieTest\\=[^&]*");
 
-	private static final Map<String, String> redirectionCache = new HashMap<>(50);
+	private static final Map<String, String> redirectionCache = new ConcurrentHashMap<>(50);
 
 	private URLUtils() {}
 

@@ -2,8 +2,8 @@ package com.therandomlabs.curseapi.widget;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -21,7 +21,7 @@ public final class WidgetAPI {
 	 */
 	public static final String WIDGET_API_URL = "https://api.cfwidget.com/";
 
-	private static final Map<String, ProjectInfo> cache = new HashMap<>(50);
+	private static final Map<String, ProjectInfo> cache = new ConcurrentHashMap<>(50);
 
 	private WidgetAPI() {}
 

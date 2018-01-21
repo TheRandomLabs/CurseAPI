@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.imageio.ImageIO;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -28,7 +29,6 @@ import com.therandomlabs.curseapi.widget.URLInfo;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
-import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
@@ -41,7 +41,7 @@ public class CurseProject {
 
 	public static final int RELATIONS_PER_PAGE = 20;
 
-	private static final TRLList<CurseProject> projects = new TRLList<>(100);
+	private static final List<CurseProject> projects = new CopyOnWriteArrayList<>();
 
 	private URL url;
 	private URL newCurseForgeURL;

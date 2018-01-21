@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -25,7 +25,7 @@ public final class CurseForge {
 	public static final Pattern UNREDIRECTED_PROJECT_PATH_PATTERN =
 			Pattern.compile("^/projects/[0-9]+");
 
-	private static final Map<String, Boolean> validPaths = new HashMap<>(50);
+	private static final Map<String, Boolean> validPaths = new ConcurrentHashMap<>(50);
 
 	private CurseForge() {}
 

@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
@@ -30,7 +31,7 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
 public final class DocumentUtils {
-	private static final Map<String, Document> documents = new HashMap<>(50);
+	private static final Map<String, Document> documents = new ConcurrentHashMap<>(50);
 
 	private DocumentUtils() {}
 
