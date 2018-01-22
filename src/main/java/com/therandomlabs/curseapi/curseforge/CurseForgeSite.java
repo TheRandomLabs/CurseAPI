@@ -120,13 +120,13 @@ public enum CurseForgeSite {
 	}
 
 	/**
-	 * Returns the URL to the project on this site with the specified path.
-	 * @param path a path.
-	 * @return the URL to the project on this site with the specified path.
+	 * Returns the URL to the project on this site with the specified slug.
+	 * @param path a slug.
+	 * @return the URL to the project on this site with the specified slug.
 	 * @throws CurseException if something goes wrong.
 	 */
-	public URL getProjectURLByPath(String path) throws CurseException {
-		final URL project = URLUtils.url("https://" + host + "/projects/" + path);
+	public URL getProjectURLBySlug(String slug) throws CurseException {
+		final URL project = URLUtils.url("https://" + host + "/projects/" + slug);
 		CurseException.validateProject(project);
 		return project;
 	}

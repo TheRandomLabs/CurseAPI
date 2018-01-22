@@ -568,12 +568,12 @@ public class CurseProject {
 		return new CurseProject(url);
 	}
 
-	public static CurseProject fromPath(String site, String path) throws CurseException {
-		return fromPath(CurseForgeSite.valueOf(site.toUpperCase(Locale.ENGLISH)), path);
+	public static CurseProject fromSlug(String site, String slug) throws CurseException {
+		return fromSlug(CurseForgeSite.valueOf(site.toUpperCase(Locale.ENGLISH)), slug);
 	}
 
-	public static CurseProject fromPath(CurseForgeSite site, String path) throws CurseException {
-		return fromURL(site.getURL() + "projects/" + path);
+	public static CurseProject fromSlug(CurseForgeSite site, String slug) throws CurseException {
+		return fromURL(site.getURL() + "projects/" + slug);
 	}
 
 	public static void clearProjectCache() {

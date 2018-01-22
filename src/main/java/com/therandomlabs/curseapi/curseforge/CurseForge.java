@@ -21,9 +21,12 @@ import com.therandomlabs.utils.misc.StringUtils;
 public final class CurseForge {
 	public static final String HOST = "www.curseforge.com";
 	public static final String URL = "https://" + HOST + "/";
-	public static final Pattern PROJECT_PATH_PATTERN = Pattern.compile("^/projects/.*.[a-zA-Z].*");
+	public static final Pattern PROJECT_PATH_PATTERN =
+			Pattern.compile("^/projects/[a-zA-Z]+[a-zA-Z|0-9|\\-]*$");
 	public static final Pattern UNREDIRECTED_PROJECT_PATH_PATTERN =
-			Pattern.compile("^/projects/[0-9]+");
+			Pattern.compile("^/projects/[0-9]+$");
+	public static final Pattern FILE_PATH_PATTERN =
+			Pattern.compile("^/projects/[a-zA-Z]+[a-zA-Z|0-9|\\-]*/files/[0-9]+$");
 
 	private static final Map<String, Boolean> validPaths = new ConcurrentHashMap<>(50);
 
@@ -85,6 +88,48 @@ public final class CurseForge {
 
 		validPaths.put(path, true);
 		return true;
+	}
+
+	public static boolean isFile(String url) throws CurseException {
+		URL urlObject = null;
+
+		try {
+			urlObject = new URL(url);
+		} catch(MalformedURLException ex) {
+			return false;
+		}
+
+		return isFile(urlObject);
+	}
+
+	public static boolean isFile(URL url) throws CurseException {
+		String path = url.getPath();
+
+		try {
+			if(!is(url) || !FILE_PATH_PATTERN.matcher(path).matches()) {
+				return false;
+			}
+
+			//Ensure that this is actually a file
+			DocumentUtils.get(url, "class=project-file-release-type;index=0");
+		} catch(IndexOutOfBoundsException | NullPointerException ex) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public static URL getProjectURLFromFile(URL url) throws CurseException {
+		if(!isFile(url)) {
+			return null;
+		}
+
+		try {
+			return new URL(url.getProtocol(), url.getHost(),
+					"projects/" + url.getPath().split("/")[1]);
+		} catch(MalformedURLException ex) {
+			throw new CurseException(ex);
+		}
 	}
 
 	public static boolean isUnredirected(String url) throws CurseException {
