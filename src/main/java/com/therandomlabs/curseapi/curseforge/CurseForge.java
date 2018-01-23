@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -27,8 +25,6 @@ public final class CurseForge {
 			Pattern.compile("^/projects/[0-9]+$");
 	public static final Pattern FILE_PATH_PATTERN =
 			Pattern.compile("^/projects/[a-zA-Z]+[a-zA-Z|0-9|\\-]*/files/[0-9]+$");
-
-	private static final Map<String, Boolean> validPaths = new ConcurrentHashMap<>(50);
 
 	private CurseForge() {}
 
@@ -73,20 +69,14 @@ public final class CurseForge {
 				return false;
 			}
 
-			if(validPaths.containsKey(path)) {
-				return validPaths.get(path);
-			}
-
 			//CurseForge project titles:
 			//<h1 class="project-title">
 			//The index=0 is to ensure that it has child elements
 			DocumentUtils.get(url, "class=project-title;index=0");
 		} catch(IndexOutOfBoundsException | NullPointerException ex) {
-			validPaths.put(path, false);
 			return false;
 		}
 
-		validPaths.put(path, true);
 		return true;
 	}
 
@@ -160,20 +150,14 @@ public final class CurseForge {
 				return false;
 			}
 
-			if(validPaths.containsKey(path)) {
-				return validPaths.get(path);
-			}
-
 			//Curse Mods project overviews:
 			//<div id="project-overview" class="overview">
 			//The index=0 is to ensure that it has child elements
 			DocumentUtils.get(url, "class=overview;index=0");
 		} catch(IndexOutOfBoundsException | NullPointerException ex) {
-			validPaths.put(path, false);
 			return false;
 		}
 
-		validPaths.put(path, true);
 		return true;
 	}
 
@@ -214,6 +198,15 @@ public final class CurseForge {
 		} catch(IOException ex) {
 			throw new CurseException(ex);
 		}
+	}
+
+	public static int getFileID(String url) throws CurseException {
+		return getFileID(URLUtils.url(url));
+	}
+
+	public static int getFileID(URL url) throws CurseException {
+		CurseException.validateFile(url);
+		return Integer.parseInt(ArrayUtils.last(StringUtils.split(url.getPath(), '/')));
 	}
 
 	public static URL fromID(int projectID) throws CurseException {
@@ -266,9 +259,5 @@ public final class CurseForge {
 		} catch(NumberFormatException ex) {
 			throw new CurseException(ex);
 		}
-	}
-
-	public static void clearAvailabilityCache() {
-		validPaths.clear();
 	}
 }

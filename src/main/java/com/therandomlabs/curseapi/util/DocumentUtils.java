@@ -31,7 +31,7 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
 public final class DocumentUtils {
-	private static final Map<String, Document> documents = new ConcurrentHashMap<>(50);
+	private static final Map<String, Document> documents = new ConcurrentHashMap<>(150);
 
 	private DocumentUtils() {}
 

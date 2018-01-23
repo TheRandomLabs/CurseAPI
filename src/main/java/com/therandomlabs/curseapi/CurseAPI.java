@@ -1,6 +1,5 @@
 package com.therandomlabs.curseapi;
 
-import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
@@ -33,7 +32,6 @@ public final class CurseAPI {
 	}
 
 	public static void clearAllCache() {
-		CurseForge.clearAvailabilityCache();
 		CurseProject.clearProjectCache();
 		DocumentUtils.clearDocumentCache();
 		URLUtils.clearRedirectionCache();

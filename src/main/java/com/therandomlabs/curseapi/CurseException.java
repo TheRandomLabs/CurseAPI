@@ -40,6 +40,12 @@ public class CurseException extends Exception {
 		}
 	}
 
+	public static void validateFile(URL url) throws CurseException {
+		if(!CurseForge.isFile(url)) {
+			throw new CurseException("The following URL is not a valid CurseForge file: " + url);
+		}
+	}
+
 	public static void invalidPath(String path, MalformedURLException exception)
 			throws CurseException {
 		throw new CurseException("The following URL is not a valid  project path: " + path,
