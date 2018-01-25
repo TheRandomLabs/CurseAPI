@@ -220,11 +220,19 @@ public class CurseProject {
 			reloadFiles();
 		}
 
+		return files.clone();
+	}
+
+	private CurseFileList filesDirect() throws CurseException {
+		if(files == null) {
+			reloadFiles();
+		}
+
 		return files;
 	}
 
 	public CurseFile fileFromID(int id) throws CurseException {
-		for(CurseFile file : files()) {
+		for(CurseFile file : filesDirect()) {
 			if(file.id() == id) {
 				return file;
 			}
@@ -235,7 +243,7 @@ public class CurseProject {
 	public CurseFile closestFileToID(int id, boolean preferOlder) throws CurseException {
 		CurseFile lastFile = null;
 
-		for(CurseFile file : files()) {
+		for(CurseFile file : filesDirect()) {
 			if(file.id() == id) {
 				return file;
 			}

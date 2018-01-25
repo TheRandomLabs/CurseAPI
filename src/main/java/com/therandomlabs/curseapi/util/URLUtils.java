@@ -40,7 +40,8 @@ public final class URLUtils {
 		try {
 			CurseEventHandling.forEach(eventHandler -> eventHandler.preRedirect(urlString));
 
-			final URL redirected = stripCookieTestString(NetworkUtils.getRedirectedURL(url));
+			final URL redirected = stripCookieTestString(
+					NetworkUtils.getRedirectedURL(url, NetworkUtils.DEFAULT_REDIRECTIONS, false));
 			final String redirectedString = redirected.toString();
 
 			CurseEventHandling.forEach(eventHandler ->

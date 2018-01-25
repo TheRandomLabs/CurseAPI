@@ -2,10 +2,8 @@ package com.therandomlabs.curseapi.curseforge;
 
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.regex.Pattern;
 import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -186,18 +184,7 @@ public final class CurseForge {
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
-
-		try {
-			final URL url = URLUtils.redirect(fromID(projectID) + "/files/" + fileID +
-					"/download");
-
-			//Some redirected URLs have a space in the file names
-			final String fileName = ArrayUtils.last(StringUtils.split(url.getPath(), '/'));
-			final String encoded = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
-			return new URL(url.toString().replace(fileName, encoded));
-		} catch(IOException ex) {
-			throw new CurseException(ex);
-		}
+		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
 	}
 
 	public static int getFileID(String url) throws CurseException {

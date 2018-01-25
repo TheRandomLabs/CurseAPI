@@ -15,7 +15,7 @@ import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 
-public class CurseFileList extends ImmutableList<CurseFile> {
+public class CurseFileList extends TRLList<CurseFile> {
 	private static final long serialVersionUID = 8733576650037056459L;
 
 	public static final CurseFileList EMPTY = new CurseFileList();
@@ -103,43 +103,41 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 	}
 
 	public CurseFileList filter(Predicate<? super CurseFile> predicate) {
-		return isEmpty() ? this : stream().filter(predicate).collect(toCurseFileList());
+		removeIf(file -> !predicate.test(file));
+		return this;
 	}
 
 	public CurseFileList filterDuplicateProjects() {
-		final List<CurseFile> files = new TRLList<>(toArray());
 		final List<CurseFile> duplicates = new ArrayList<>();
 
-		for(int i = 0; i < files.size(); i++) {
-			for(int j = 0; j < files.size(); j++) {
-				if(i != j && files.get(i).project().id() == files.get(j).project().id()) {
+		for(int i = 0; i < size(); i++) {
+			for(int j = 0; j < size(); j++) {
+				if(i != j && get(i).project().id() == get(j).project().id()) {
 					//Prefer newest
-					if(files.get(i).uploadTime().compareTo(files.get(j).uploadTime()) > 0) {
-						duplicates.add(files.get(j));
+					if(get(j).id() > get(i).id()) {
+						duplicates.add(get(j));
 					} else {
-						duplicates.add(files.get(i));
+						duplicates.add(get(i));
 					}
 				}
 			}
 		}
 
-		files.removeAll(duplicates);
-		return new CurseFileList(files);
+		removeAll(duplicates);
+		return this;
 	}
 
 	public CurseFileList sortedByNewest() {
-		return sorted(SortType.NEWEST,
-				(file1, file2) -> Integer.compare(file2.id(), file1.id()));
+		return sorted(SortType.NEWEST, (file1, file2) -> Integer.compare(file2.id(), file1.id()));
 	}
 
 	public CurseFileList sortedByOldest() {
-		return sorted(SortType.OLDEST,
-				(file1, file2) -> Integer.compare(file1.id(), file2.id()));
+		return sorted(SortType.OLDEST, (file1, file2) -> Integer.compare(file1.id(), file2.id()));
 	}
 
 	public CurseFileList sortedByProjectTitle() {
-		return sorted(SortType.PROJECT_TITLE, (file1, file2) ->
-				file1.project().title().compareTo(file2.project().title()));
+		return sorted(SortType.PROJECT_TITLE,
+				(file1, file2) -> file1.project().title().compareTo(file2.project().title()));
 	}
 
 	public CurseFileList sorted(Comparator<? super CurseFile> comparator) {
@@ -176,8 +174,13 @@ public class CurseFileList extends ImmutableList<CurseFile> {
 		return toArray(new CurseFile[0]);
 	}
 
+	@Override
+	public CurseFileList clone() {
+		return new CurseFileList(toArray());
+	}
+
 	public static Collector<CurseFile, ?, CurseFileList> toCurseFileList() {
-		return TRLCollectors.toImmutableCollection(CurseFileList::new, false);
+		return TRLCollectors.toCollection(CurseFileList::new);
 	}
 
 	public static CurseFileList of(Collection<? extends CurseFile> files) {
