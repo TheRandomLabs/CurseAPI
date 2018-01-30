@@ -14,18 +14,18 @@ public final class ProjectType {
 		@SerializedName("Bukkit Plugins")
 		public static final ProjectType BUKKIT_PLUGINS = get("Bukkit Plugins", "projects");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		Bukkit() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.BUKKIT);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.BUKKIT, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.BUKKIT, sitePath);
 		}
 	}
 
@@ -43,18 +43,18 @@ public final class ProjectType {
 		@SerializedName("Worlds")
 		public static final ProjectType WORLDS = get("Worlds", "worlds");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		Minecraft() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.MINECRAFT);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.MINECRAFT, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.MINECRAFT, sitePath);
 		}
 	}
 
@@ -62,18 +62,18 @@ public final class ProjectType {
 		@SerializedName("Modpacks")
 		public static final ProjectType MODPACKS = get("Modpacks", "modpacks");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		FeedTheBeast() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.FEED_THE_BEAST);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.FEED_THE_BEAST, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.FEED_THE_BEAST, sitePath);
 		}
 	}
 
@@ -81,18 +81,18 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "addons");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		WowAce() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.WOW_ACE);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.WOW_ACE, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.WOW_ACE, sitePath);
 		}
 	}
 
@@ -102,18 +102,18 @@ public final class ProjectType {
 		@SerializedName("Maps")
 		public static final ProjectType MAPS = get("Maps", "maps");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		SCIIMapster() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.SC_II_MAPSTER);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.SC_II_MAPSTER, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.SC_II_MAPSTER, sitePath);
 		}
 	}
 
@@ -123,18 +123,18 @@ public final class ProjectType {
 		@SerializedName("Shareables")
 		public static final ProjectType SHAREABLES = get("Shareables", "ksp-shareables");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		KerbalSpaceProgram() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.KERBAL_SPACE_PROGRAM);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.KERBAL_SPACE_PROGRAM, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.KERBAL_SPACE_PROGRAM, sitePath);
 		}
 	}
 
@@ -142,18 +142,18 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "ws-addons");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		WildStar() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.WILDSTAR);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.WILDSTAR, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.WILDSTAR, sitePath);
 		}
 	}
 
@@ -161,18 +161,18 @@ public final class ProjectType {
 		@SerializedName("Maps")
 		public static final ProjectType MAPS = get("Maps", "maps");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		Terraria() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.TERRARIA);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.TERRARIA, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.TERRARIA, sitePath);
 		}
 	}
 
@@ -182,18 +182,18 @@ public final class ProjectType {
 		@SerializedName("Skins")
 		public static final ProjectType SKINS = get("Skins", "wot-skins");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		WorldOfTanks() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.WORLD_OF_TANKS);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.WORLD_OF_TANKS, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.WORLD_OF_TANKS, sitePath);
 		}
 	}
 
@@ -201,18 +201,18 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "addons");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		Rift() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.RIFT);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.RIFT, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.RIFT, sitePath);
 		}
 	}
 
@@ -220,18 +220,18 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "addons");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		RunesOfMagic() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.RUNES_OF_MAGIC);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.RUNES_OF_MAGIC, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.RUNES_OF_MAGIC, sitePath);
 		}
 	}
 
@@ -239,18 +239,18 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "mods");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		Skyrim() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.SKYRIM);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.SKYRIM, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.SKYRIM, sitePath);
 		}
 	}
 
@@ -258,18 +258,18 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "tsw-mods");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		TheSecretWorld() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.THE_SECRET_WORLD);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.THE_SECRET_WORLD, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.THE_SECRET_WORLD, sitePath);
 		}
 	}
 
@@ -277,19 +277,18 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "teso-addons");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		TheElderScrollsOnline() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.THE_ELDER_SCROLLS_ONLINE);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.THE_ELDER_SCROLLS_ONLINE, sitePath,
-					values);
+			return new ProjectType(name, CurseForgeSite.THE_ELDER_SCROLLS_ONLINE, sitePath);
 		}
 	}
 
@@ -297,18 +296,18 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "tswl-mods");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		SecretWorldLegends() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.SECRET_WORLD_LEGENDS);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.SECRET_WORLD_LEGENDS, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.SECRET_WORLD_LEGENDS, sitePath);
 		}
 	}
 
@@ -316,34 +315,49 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "dd-mods");
 
-		private static final List<ProjectType> values = new TRLList<>();
+		DarkestDungeon() {}
 
 		public static ProjectType[] values() {
-			return values.toArray(new ProjectType[0]);
+			return ProjectType.values(CurseForgeSite.DARKEST_DUNGEON);
 		}
 
 		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values, name);
+			return ProjectType.valueOf(values(), name);
 		}
 
 		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.DARKEST_DUNGEON, sitePath, values);
+			return new ProjectType(name, CurseForgeSite.DARKEST_DUNGEON, sitePath);
 		}
 	}
 
 	private static final List<ProjectType> values = new TRLList<>();
 
+	static {
+		//Initialize all project types
+		new Bukkit();
+		new Minecraft();
+		new KerbalSpaceProgram();
+		new WildStar();
+		new Terraria();
+		new WorldOfTanks();
+		new Rift();
+		new RunesOfMagic();
+		new Skyrim();
+		new TheSecretWorld();
+		new TheElderScrollsOnline();
+		new SecretWorldLegends();
+		new DarkestDungeon();
+	}
+
 	final String name;
 	private final CurseForgeSite site;
 	private final String sitePath;
 
-	ProjectType(String name, CurseForgeSite site, String sitePath,
-			Collection<ProjectType> values) {
+	ProjectType(String name, CurseForgeSite site, String sitePath) {
 		this.name = name;
 		this.site = site;
 		this.sitePath = sitePath;
 		values.add(this);
-		ProjectType.values.add(this);
 	}
 
 	public CurseForgeSite getSite() {
@@ -378,7 +392,11 @@ public final class ProjectType {
 	}
 
 	public static ProjectType get(CurseForgeSite site, String name) {
-		return valueOf(new ImmutableList<>(values(site)), name);
+		return valueOf(values(site), name);
+	}
+
+	static ProjectType valueOf(ProjectType[] values, String name) {
+		return valueOf(new ImmutableList<>(values), name);
 	}
 
 	static ProjectType valueOf(Collection<ProjectType> values, String name) {

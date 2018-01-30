@@ -120,8 +120,8 @@ public class CurseProject {
 		return widgetInfo.game;
 	}
 
-	public String type() {
-		return widgetInfo.type;
+	public ProjectType type() {
+		return ProjectType.get(site(), widgetInfo.type);
 	}
 
 	public URL avatarURL() throws CurseException {
