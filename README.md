@@ -54,6 +54,6 @@ Planned features:
 
 Example:
 
-	getLogger().info(CurseProject.fromPath("minecraft", "endercore").dependents(RelationType.REQUIRED_LIBRARY));
+	getLogger().info(CurseProject.fromSlug("minecraft", "endercore").dependents(RelationType.REQUIRED_LIBRARY));
 
 The above code should print a list of mods that require EnderCore.
