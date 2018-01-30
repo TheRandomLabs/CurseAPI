@@ -48,7 +48,7 @@ public class CurseException extends Exception {
 
 	public static void invalidPath(String path, MalformedURLException exception)
 			throws CurseException {
-		throw new CurseException("The following URL is not a valid  project path: " + path,
+		throw new CurseException("The following URL is not a valid project path: " + path,
 				exception);
 	}
 

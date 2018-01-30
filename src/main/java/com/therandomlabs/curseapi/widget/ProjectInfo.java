@@ -35,7 +35,7 @@ public final class ProjectInfo implements Cloneable {
 
 	public ProjectInfo(int id, Game game, String type, URLInfo urls, String title, URL donate,
 			String license, MemberInfo[] members, DownloadsInfo downloads, URL thumbnail,
-			String[] categories, String createdAt, String description, String lastFetch) {
+			String createdAt, String description, String lastFetch) {
 		this.id = id;
 		this.game = game;
 		this.type = type;
@@ -48,7 +48,6 @@ public final class ProjectInfo implements Cloneable {
 		versions = new HashMap<>(0);
 		this.downloads = downloads;
 		this.thumbnail = thumbnail;
-		this.categories = categories;
 		this.created_at = createdAt;
 		this.description = description;
 		this.last_fetch = lastFetch;

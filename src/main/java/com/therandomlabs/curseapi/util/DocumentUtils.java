@@ -89,7 +89,7 @@ public final class DocumentUtils {
 			if(StringUtil.in(name, "br", "dd", "dt", "p", "h1", "h2", "h3", "h4", "h5")) {
 				append("\n");
 			} else if(name.equals("a")) {
-				append(String.format("](%s)", absUrl(node.attr("href"))));
+				append(String.format("](%s)", node.absUrl("href")));
 			}
 		}
 
@@ -150,26 +150,6 @@ public final class DocumentUtils {
 		return formatter.toString();
 	}
 
-	//Jsoup's absUrl doesn't seem to work properly, so we do it ourselves
-	public static String absUrl(String url) {
-		//Too short to be a URL
-		if(url.length() < 5) {
-			return url;
-		}
-
-		try {
-			new URL(url);
-		} catch(MalformedURLException ex) {
-			if(ex.getMessage().contains("no protocol")) {
-				url = "https:" + url;
-			} else {
-				return url;
-			}
-		}
-
-		return url;
-	}
-
 	public static String read(String url) throws CurseException, IOException {
 		return read(URLUtils.url(url));
 	}
@@ -202,6 +182,7 @@ public final class DocumentUtils {
 			}
 
 			final Document document = Jsoup.parse(html);
+			document.setBaseUri(url.toString());
 			documents.put(url.toString(), document);
 			return document;
 		} catch(IOException ex) {
@@ -261,8 +242,7 @@ public final class DocumentUtils {
 			switch(values[0]) {
 			case "redirectAbsUrl":
 			case "absUrl":
-				//Jsoup seems to have trouble with absUrl, so we do it manually
-				final String absUrl = absUrl(element.attr(values[1]));
+				final String absUrl = element.absUrl(values[1]);
 				return values[0].equals("absUrl") ? absUrl : URLUtils.redirect(absUrl).toString();
 			case "class":
 				final int index = values.length < 2 ? 0 : Integer.parseInt(values[1]);

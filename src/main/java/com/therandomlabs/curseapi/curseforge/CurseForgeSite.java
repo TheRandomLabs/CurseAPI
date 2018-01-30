@@ -6,7 +6,9 @@ import java.net.URL;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
+import com.therandomlabs.curseapi.ProjectType;
 import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.utils.throwable.ThrowableHandling;
 
 public enum CurseForgeSite {
 	BUKKIT("dev.bukkit.org", Game.MINECRAFT),
@@ -23,8 +25,8 @@ public enum CurseForgeSite {
 	RUNES_OF_MAGIC("rom", Game.RUNES_OF_MAGIC),
 	SKYRIM("www.skyrimforge.com", Game.SKYRIM),
 	THE_SECRET_WORLD("tsw", Game.THE_SECRET_WORLD),
-	THE_ELDER_SCROLLS("teso", Game.THE_ELDER_SCROLLS),
-	SECRET_WORLD_LEGENDS("tswl", Game.SECRET_WORLD_LEGENDS),
+	THE_ELDER_SCROLLS_ONLINE("teso", Game.THE_ELDER_SCROLLS),
+	SECRET_WORLD_LEGENDS("swl", Game.SECRET_WORLD_LEGENDS),
 	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON);
 
 	/**
@@ -36,6 +38,7 @@ public enum CurseForgeSite {
 	 */
 	public static final String HOST_PATTERN_STRING;
 
+	private final String subdomain;
 	private final String host;
 	private final String patternString;
 	private final Pattern pattern;
@@ -57,7 +60,8 @@ public enum CurseForgeSite {
 	}
 
 	CurseForgeSite(String name, Game game) {
-		host = name.contains(".") ? name : name + ".curseforge.com";
+		subdomain = name.contains(".") ? null : name;
+		host = subdomain == null ? name : name + ".curseforge.com";
 		patternString = "^" + host.replaceAll("\\.", "\\.") + "$";
 		pattern = Pattern.compile(patternString);
 
@@ -107,6 +111,15 @@ public enum CurseForgeSite {
 		return url;
 	}
 
+	public URL getURL(ProjectType projectType) {
+		try {
+			return new URL("https://" + host + '/' + projectType.getSitePath());
+		} catch(MalformedURLException ex) {
+			ThrowableHandling.handleUnexpected(ex);
+		}
+		return null;
+	}
+
 	public String getURLString() {
 		return url.toString();
 	}
@@ -141,9 +154,24 @@ public enum CurseForgeSite {
 	 * @return the {@link CurseForgeSite} that matches {@code url}'s host,
 	 * or {@code null} if {@code url} isn't a CurseForge site.
 	 */
-	public static CurseForgeSite valueOf(URL url) {
+	public static CurseForgeSite fromURL(URL url) {
 		for(CurseForgeSite site : values()) {
 			if(site.pattern.matcher(url.getHost()).matches()) {
+				return site;
+			}
+		}
+		return null;
+	}
+
+	public static CurseForgeSite fromString(String string) {
+		for(CurseForgeSite site : values()) {
+			if(site.toString().equalsIgnoreCase(string)) {
+				return site;
+			}
+			if(site.subdomain != null && site.subdomain.equalsIgnoreCase(string)) {
+				return site;
+			}
+			if(site.host.equalsIgnoreCase(string)) {
 				return site;
 			}
 		}
