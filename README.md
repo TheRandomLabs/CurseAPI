@@ -46,6 +46,7 @@ Features:
 * Getting file details, including name, game versions, file URL, etc.
 * Supports all CurseForge sites (including Minecraft, World of Warcraft, etc.) (NOTE: CurseAPI does not fully support the new CurseForge because there is no reason to at the moment)
 * Basic event handling
+* Better error handling. At the moment, there's only one CurseException and CurseAPI doesn't retry requests
 * And more.
 
 Planned features:
