@@ -376,7 +376,17 @@ public class CurseProject {
 			widgetInfo = new ProjectInfo(id, game, type, urls, title, donate, license, members,
 					downloads, thumbnail, createdAt, description, lastFetch);
 		} else {
-			widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
+			try {
+				widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
+			} catch(CurseException ex) {
+				if(newCurseForgeURL == null) {
+					ThrowableHandling.handle(ex);
+				}
+
+				ThrowableHandling.handleWithoutExit(ex);
+				reload(false);
+				return;
+			}
 
 			//So == can be used
 			if(widgetInfo.thumbnail.equals(PLACEHOLDER_THUMBNAIL)) {
@@ -397,7 +407,7 @@ public class CurseProject {
 	public void reloadFiles() throws CurseException {
 		final List<CurseFile> files;
 
-		if(newCurseForgeURL == null) {
+		if(widgetInfo == null) {
 			files = DocumentUtils.<CurseFile>iteratePages(url + "/files?",
 					this::documentToCurseFiles, null, null);
 
