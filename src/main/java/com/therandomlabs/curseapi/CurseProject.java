@@ -436,21 +436,27 @@ public class CurseProject {
 				final URL url = URLUtils.url(
 						DocumentUtils.getValue(file, "class=twitch-link;attr=href;absUrl=href"));
 
-				final String name =
-						DocumentUtils.getValue(file, "class=twitch-link;text");
+				final String name = DocumentUtils.getValue(file, "class=twitch-link;text");
 
 				//<div class="alpha-phase tip">
 				final ReleaseType type = ReleaseType.fromName(DocumentUtils.getValue(file,
 						"class=project-file-release-type;class=tip;class").
 						split("-")[0]);
 
-				final String[] versions =
-						//<div>1.11.2</div><div>1.11</div><div>1.10.2</div><div>1.10
-						DocumentUtils.getValue(file, "class=additional-versions;attr=title").
-						split("</div><div>");
-				versions[0] = versions[0].substring("<div>".length());
+				final String[] versions;
+				if(file.getElementsByClass("additional-versions").isEmpty()) {
+					versions = new String[] {
+							DocumentUtils.getValue(file, "class=version-label;text")
+					};
+				} else {
+					versions =
+							//<div>1.11.2</div><div>1.11</div><div>1.10.2</div><div>1.10
+							DocumentUtils.getValue(file, "class=additional-versions;attr=title").
+							split("</div><div>");
+					versions[0] = versions[0].substring("<div>".length());
+				}
 
-				final String filesize =
+				final String fileSize =
 						DocumentUtils.getValue(file, "class=project-file-size;text");
 
 				final int downloads = Integer.parseInt(
@@ -460,7 +466,7 @@ public class CurseProject {
 				final String uploadedAt = DocumentUtils.getValue(file,
 						"class=standard-date;attr=data-epoch");
 
-				files.add(new CurseFile(this, new FileInfo(id, url, name, type, versions, filesize,
+				files.add(new CurseFile(this, new FileInfo(id, url, name, type, versions, fileSize,
 						downloads, uploadedAt)));
 			}
 		} catch(NumberFormatException ex) {

@@ -9,7 +9,7 @@ public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
 
 	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
-	private static int maxRetries = 5;
+	private static int maxRetries = 10;
 
 	private CurseAPI() {}
 
