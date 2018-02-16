@@ -31,6 +31,9 @@ public final class ProjectInfo implements Cloneable {
 
 	public String json;
 
+	public boolean retrievedDirectly = true;
+	public boolean failedToRetrieveDirectly;
+
 	public ProjectInfo() {}
 
 	public ProjectInfo(int id, Game game, String type, URLInfo urls, String title, URL donate,
@@ -45,7 +48,7 @@ public final class ProjectInfo implements Cloneable {
 		this.donate = donate;
 		this.license = license;
 		this.members = members;
-		versions = new HashMap<>(0);
+		versions = new HashMap<>();
 		this.downloads = downloads;
 		this.thumbnail = thumbnail;
 		this.created_at = createdAt;
@@ -91,6 +94,8 @@ public final class ProjectInfo implements Cloneable {
 		info.message = message;
 
 		info.json = json;
+		
+		info.retrievedDirectly = retrievedDirectly;
 
 		return info;
 	}

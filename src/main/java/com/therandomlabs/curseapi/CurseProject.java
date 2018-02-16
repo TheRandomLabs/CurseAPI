@@ -375,6 +375,7 @@ public class CurseProject {
 
 			widgetInfo = new ProjectInfo(id, game, type, urls, title, donate, license, members,
 					downloads, thumbnail, createdAt, description, lastFetch);
+			widgetInfo.retrievedDirectly = false;
 		} else {
 			try {
 				widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
@@ -385,6 +386,7 @@ public class CurseProject {
 
 				ThrowableHandling.handleWithoutExit(ex);
 				reload(false);
+				widgetInfo.failedToRetrieveDirectly = true;
 				return;
 			}
 
@@ -405,9 +407,18 @@ public class CurseProject {
 	}
 
 	public void reloadFiles() throws CurseException {
+		reloadFiles(false);
+	}
+
+	public void reloadFiles(boolean forceReloadWidgetInfo) throws CurseException {
 		final List<CurseFile> files;
 
-		if(widgetInfo == null) {
+		if(forceReloadWidgetInfo ||
+				(!widgetInfo.retrievedDirectly && !widgetInfo.failedToRetrieveDirectly)) {
+			reload(true);
+		}
+
+		if(widgetInfo.failedToRetrieveDirectly) {
 			files = DocumentUtils.<CurseFile>iteratePages(url + "/files?",
 					this::documentToCurseFiles, null, null);
 
@@ -419,10 +430,6 @@ public class CurseProject {
 			widgetInfo.download = widgetInfo.files.length == 0 ?
 					null : DownloadInfo.fromFileInfo(widgetInfo.files[0]);
 		} else {
-			if(widgetInfo.versions.isEmpty()) {
-				reload(true);
-			}
-
 			files = new ArrayList<>(widgetInfo.versions.size());
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {
 				for(FileInfo info : entry.getValue()) {
