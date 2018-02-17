@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.util;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap.KeySetView;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.MapUtils;
@@ -36,6 +37,24 @@ public class CloneException extends RuntimeException {
 	public static <E extends Cloneable> TRLList<E> tryClone(Collection<E> list) {
 		try {
 			return CollectionUtils.clone(list);
+		} catch(Exception ex) {
+			try {
+				throw new CloneException(ReflectionUtils.getCallerClass());
+			} catch(ClassNotFoundException ex2) {
+				ThrowableHandling.handle(ex2);
+			}
+		}
+
+		return null;
+	}
+
+	public static <E extends Cloneable> KeySetView<E, Boolean> tryClone(
+			KeySetView<E, Boolean> keySetView, boolean deepClone) {
+		try {
+			if(deepClone) {
+				return CollectionUtils.deepCloneKeySet(keySetView);
+			}
+			return CollectionUtils.cloneKeySet(keySetView);
 		} catch(Exception ex) {
 			try {
 				throw new CloneException(ReflectionUtils.getCallerClass());
