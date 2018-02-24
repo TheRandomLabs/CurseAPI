@@ -49,7 +49,8 @@ public final class WidgetAPI {
 
 			if(info.error != null) {
 				int tries = 0;
-				while(info.error != null && info.error.equals("in_queue") &&
+				while(info.error != null && (info.error.equals("in_queue") ||
+						info.error.equals("redirect_failed")) &&
 						tries++ < CurseAPI.getMaximumRetries()) {
 					//This means this JSON isn't in the database. It should be pretty soon though,
 					//so we try again.
