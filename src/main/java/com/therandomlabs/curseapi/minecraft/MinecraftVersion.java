@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.therandomlabs.utils.collection.TRLList;
 
 /**
- * An {@code enum} containing Minecraft versions.
+ * An {@code enum} containing all Minecraft versions listed on Curse.
  * @author TheRandomLabs
  */
 public enum MinecraftVersion {
