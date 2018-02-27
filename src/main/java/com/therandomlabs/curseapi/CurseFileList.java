@@ -1,9 +1,7 @@
 package com.therandomlabs.curseapi;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,14 +18,6 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public static final CurseFileList EMPTY = new CurseFileList();
 
-	SortType sortType;
-
-	enum SortType {
-		NEWEST,
-		OLDEST,
-		PROJECT_TITLE;
-	}
-
 	private CurseFileList(Collection<? extends CurseFile> files) {
 		super(files);
 	}
@@ -36,31 +26,31 @@ public class CurseFileList extends TRLList<CurseFile> {
 		super(files);
 	}
 
-	public CurseFileList newerThan(CurseFile oldFile) {
-		return filter(file -> file.id() > oldFile.id());
+	public void newerThan(CurseFile oldFile) {
+		filter(file -> file.id() > oldFile.id());
 	}
 
-	public CurseFileList newerThanOrEqualTo(CurseFile oldFile) {
-		return filter(file -> file.id() >= oldFile.id());
+	public void newerThanOrEqualTo(CurseFile oldFile) {
+		filter(file -> file.id() >= oldFile.id());
 	}
 
-	public CurseFileList olderThan(CurseFile newFile) {
-		return filter(file -> file.id() < newFile.id());
+	public void olderThan(CurseFile newFile) {
+		filter(file -> file.id() < newFile.id());
 	}
 
-	public CurseFileList olderThanOrEqualTo(CurseFile newFile) {
-		return filter(file -> file.id() <= newFile.id());
+	public void olderThanOrEqualTo(CurseFile newFile) {
+		filter(file -> file.id() <= newFile.id());
 	}
 
-	public CurseFileList between(CurseFile oldFile, CurseFile newFile) {
-		return filter(file -> file.id() > oldFile.id() && file.id() <= newFile.id());
+	public void between(CurseFile oldFile, CurseFile newFile) {
+		filter(file -> file.id() > oldFile.id() && file.id() <= newFile.id());
 	}
 
-	public CurseFileList filterMCVersionGroup(String version) {
-		return filterVersions(MinecraftVersion.groupFromString(version));
+	public void filterMCVersionGroup(String version) {
+		filterVersions(MinecraftVersion.groupFromString(version));
 	}
 
-	public CurseFileList filterVersions(MinecraftVersion... versions) {
+	public void filterVersions(MinecraftVersion... versions) {
 		final Set<MinecraftVersion> versionSet = new HashSet<>();
 
 		for(MinecraftVersion version : versions) {
@@ -71,43 +61,43 @@ public class CurseFileList extends TRLList<CurseFile> {
 			}
 		}
 
-		return filterVersions(CollectionUtils.stringify(versionSet));
+		filterVersions(CollectionUtils.stringify(versionSet));
 	}
 
-	public CurseFileList filterVersions(String... versions) {
-		return filterVersions(new ImmutableList<>(versions));
+	public void filterVersions(String... versions) {
+		filterVersions(new ImmutableList<>(versions));
 	}
 
-	public CurseFileList filterVersions(Collection<String> versions) {
-		return filter(file -> file.gameVersions().containsAny(versions));
+	public void filterVersions(Collection<String> versions) {
+		filter(file -> file.gameVersions().containsAny(versions));
 	}
 
-	public CurseFileList filterMinimumStability(ReleaseType type) {
+	public void filterMinimumStability(ReleaseType type) {
 		if(type == ReleaseType.ALPHA) {
-			return this;
+			return;
 		}
 
 		if(type == ReleaseType.BETA) {
-			return filterReleaseTypes(ReleaseType.RELEASE, ReleaseType.BETA);
+			filterReleaseTypes(ReleaseType.RELEASE, ReleaseType.BETA);
+			return;
 		}
 
-		return filterReleaseTypes(ReleaseType.RELEASE);
+		filterReleaseTypes(ReleaseType.RELEASE);
 	}
 
-	public CurseFileList filterReleaseTypes(ReleaseType... versions) {
-		return filterReleaseTypes(new ImmutableList<>(versions));
+	public void filterReleaseTypes(ReleaseType... versions) {
+		filterReleaseTypes(new ImmutableList<>(versions));
 	}
 
-	public CurseFileList filterReleaseTypes(Collection<ReleaseType> versions) {
-		return filter(file -> versions.contains(file.releaseType()));
+	public void filterReleaseTypes(Collection<ReleaseType> versions) {
+		filter(file -> versions.contains(file.releaseType()));
 	}
 
-	public CurseFileList filter(Predicate<? super CurseFile> predicate) {
+	public void filter(Predicate<? super CurseFile> predicate) {
 		removeIf(file -> !predicate.test(file));
-		return this;
 	}
 
-	public CurseFileList filterDuplicateProjects() {
+	public void removeDuplicateProjects() {
 		final List<CurseFile> duplicates = new ArrayList<>();
 
 		for(int i = 0; i < size(); i++) {
@@ -124,49 +114,18 @@ public class CurseFileList extends TRLList<CurseFile> {
 		}
 
 		removeAll(duplicates);
-		return this;
 	}
 
-	public CurseFileList sortedByNewest() {
-		return sorted(SortType.NEWEST, (file1, file2) -> Integer.compare(file2.id(), file1.id()));
+	public void sortByNewest() {
+		sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
 	}
 
-	public CurseFileList sortedByOldest() {
-		return sorted(SortType.OLDEST, (file1, file2) -> Integer.compare(file1.id(), file2.id()));
+	public void sortByOldest() {
+		sort((file1, file2) -> Integer.compare(file1.id(), file2.id()));
 	}
 
-	public CurseFileList sortedByProjectTitle() {
-		return sorted(SortType.PROJECT_TITLE,
-				(file1, file2) -> file1.project().title().compareTo(file2.project().title()));
-	}
-
-	public CurseFileList sorted(Comparator<? super CurseFile> comparator) {
-		return sorted(null, comparator);
-	}
-
-	private CurseFileList sorted(SortType type, Comparator<? super CurseFile> comparator) {
-		if(isEmpty() || type == sortType) {
-			return this;
-		}
-
-		final CurseFile[] files = toArray(new CurseFile[0]);
-		Arrays.sort(files, comparator);
-
-		final List<CurseFile> fileList = new ArrayList<>(files.length);
-
-		for(int i = 0; i < files.length; i++) {
-			CurseFile file = files[i];
-
-			if(i != files.length - 1 && files[i + 1].id() == file.id()) {
-				continue;
-			}
-
-			fileList.add(file);
-		}
-
-		final CurseFileList list = new CurseFileList(files);
-		list.sortType = type;
-		return list;
+	public void sortByProjectTitle() {
+		sort((file1, file2) -> file1.project().title().compareTo(file2.project().title()));
 	}
 
 	@Override
@@ -184,11 +143,15 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public static CurseFileList of(Collection<? extends CurseFile> files) {
-		return ofUnsorted(files).sortedByNewest();
+		final CurseFileList list = ofUnsorted(files);
+		list.sortByNewest();
+		return list;
 	}
 
 	public static CurseFileList of(CurseFile... files) {
-		return ofUnsorted(files).sortedByNewest();
+		final CurseFileList list = ofUnsorted(files);
+		list.sortByNewest();
+		return list;
 	}
 
 	public static CurseFileList ofUnsorted(Collection<? extends CurseFile> files) {

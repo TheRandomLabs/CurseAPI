@@ -440,7 +440,6 @@ public class CurseProject {
 		}
 
 		this.files = CurseFileList.of(files);
-		this.files.sortType = CurseFileList.SortType.NEWEST;
 	}
 
 	private void documentToCurseFiles(Element document, List<CurseFile> files)

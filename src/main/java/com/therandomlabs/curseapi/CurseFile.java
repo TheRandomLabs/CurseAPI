@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Locale;
 import org.jsoup.nodes.Element;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
@@ -17,6 +18,7 @@ import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NIOUtils;
+import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 
 //TODO Uploaded by, Additional Files
@@ -130,6 +132,14 @@ public class CurseFile {
 
 	public String changelog() throws CurseException {
 		return DocumentUtils.getPlainText(changelogHTML());
+	}
+
+	public boolean changelogProvided() throws CurseException {
+		String changelog = changelog().trim().toLowerCase(Locale.ENGLISH);
+		if(StringUtils.lastChar(changelog) == '.') {
+			changelog = StringUtils.removeLastChar(changelog);
+		}
+		return changelog.equals("no changelog provided") || changelog.equals("n/a");
 	}
 
 	public String uploader() throws CurseException {
