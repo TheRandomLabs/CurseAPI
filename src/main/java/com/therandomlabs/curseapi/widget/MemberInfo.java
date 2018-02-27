@@ -1,7 +1,9 @@
 package com.therandomlabs.curseapi.widget;
 
+import com.therandomlabs.curseapi.MemberType;
+
 public final class MemberInfo implements Cloneable {
-	public String title;
+	public MemberType title;
 	public String username;
 
 	@Override

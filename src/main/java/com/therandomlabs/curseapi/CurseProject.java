@@ -27,7 +27,6 @@ import com.therandomlabs.curseapi.widget.ProjectInfo;
 import com.therandomlabs.curseapi.widget.URLInfo;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
-import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -150,10 +149,16 @@ public class CurseProject {
 
 	public List<MemberInfo> members() throws CurseException {
 		try {
-			return new ImmutableList<>(ArrayUtils.clone(widgetInfo.members.clone()));
+			return new TRLList<>(ArrayUtils.clone(widgetInfo.members.clone()));
 		} catch(Exception ex) {
 			throw new CurseException(ex);
 		}
+	}
+
+	public List<MemberInfo> members(MemberType type) throws CurseException {
+		final List<MemberInfo> members = members();
+		members.removeIf(member -> member.title != type);
+		return members;
 	}
 
 	public int monthlyDownloads() {
@@ -348,7 +353,8 @@ public class CurseProject {
 			for(Element member : projectMembers) {
 				final MemberInfo memberInfo = new MemberInfo();
 
-				memberInfo.title = DocumentUtils.getValue(member, "class=title;text");
+				memberInfo.title =
+						MemberType.fromName(DocumentUtils.getValue(member, "class=title;text"));
 				memberInfo.username = DocumentUtils.getValue(member, "tag=span;text");
 
 				memberInfos.add(memberInfo);
