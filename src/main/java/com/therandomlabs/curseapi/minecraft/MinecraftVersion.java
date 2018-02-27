@@ -5,9 +5,6 @@ import com.therandomlabs.utils.collection.TRLList;
 
 /**
  * An {@code enum} containing Minecraft versions.
- * This {@code enum} only contains versions that have a build of Minecraft Forge for them,
- * as it would be unnecessary to include any other Minecraft versions.
- * This {@code enum} also contains versions of Java that are listed on Curse.
  * @author TheRandomLabs
  */
 public enum MinecraftVersion {
@@ -194,8 +191,8 @@ public enum MinecraftVersion {
 	}
 
 	/**
-	 * Returns a string representation of this Minecraft or Java version.
-	 * @return a string representation of this Minecraft or Java version.
+	 * Returns a string representation of this Minecraft version.
+	 * @return a string representation of this Minecraft version.
 	 */
 	@Override
 	public String toString() {
