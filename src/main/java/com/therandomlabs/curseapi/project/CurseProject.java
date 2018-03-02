@@ -607,13 +607,20 @@ public class CurseProject {
 		return categories;
 	}
 
-	private static Constructor<CurseFile> curseFile;
+	private static final Constructor<CurseFile> curseFile;
+
+	static {
+		Constructor<CurseFile> constructor = null;
+		try {
+			constructor = CurseFile.class.getConstructor(CurseProject.class, FileInfo.class);
+		} catch(Exception ex) {
+			ThrowableHandling.handleUnexpected(ex);
+		}
+		curseFile = constructor;
+	}
 
 	private CurseFile newCurseFile(FileInfo info) throws CurseException {
 		try {
-			if(curseFile == null) {
-				curseFile = CurseFile.class.getConstructor(CurseProject.class, FileInfo.class);
-			}
 			return curseFile.newInstance(this, info);
 		} catch(Exception ex) {
 			throw new CurseException(ex);
