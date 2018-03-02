@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
@@ -25,13 +29,18 @@ import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.concurrent.ThreadUtils;
+import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
 public final class DocumentUtils {
-	private static final Map<String, Document> documents = new ConcurrentHashMap<>(150);
+	private static int cacheSize = 150;
+	private static final Map<String, Document> documents =
+			Collections.synchronizedMap(new LinkedHashMap<>(cacheSize));
+	private static final Map<Element, Map<String, String>> values =
+			Collections.synchronizedMap(new LinkedHashMap<>(cacheSize));
 
 	private DocumentUtils() {}
 
@@ -183,7 +192,14 @@ public final class DocumentUtils {
 
 			final Document document = Jsoup.parse(html);
 			document.setBaseUri(url.toString());
+
 			documents.put(url.toString(), document);
+			if(documents.size() > cacheSize) {
+				final Map.Entry<String, Document> toRemove = documents.entrySet().iterator().next();
+				documents.remove(toRemove.getKey());
+				values.remove(toRemove.getValue());
+			}
+
 			return document;
 		} catch(IOException ex) {
 			throw new CurseException("An error occurred while reading from the URL: " + url, ex);
@@ -203,19 +219,21 @@ public final class DocumentUtils {
 			final String[] parts = data.split(";");
 			Element element = document;
 			for(String part : parts) {
-				final String[] values = part.split("=");
-				final int index = values.length < 3 ? 0 : Integer.parseInt(values[2]);
+				final String[] split = part.split("=");
+				final int index = split.length < 3 ? 0 : Integer.parseInt(split[2]);
 
-				switch(values[0]) {
+				switch(split[0]) {
 				case "attr":
-					element = element.getElementsByAttribute(values[1]).get(index);
+					element = element.getElementsByAttribute(split[1]).get(index);
 					break;
 				case "class":
-					element = element.getElementsByClass(values[1]).get(index);
+					element = element.getElementsByClass(split[1]).get(index);
 					break;
 				case "tag":
-					element = element.getElementsByTag(values[1]).get(index);
+					element = element.getElementsByTag(split[1]).get(index);
 					break;
+				default:
+					return null;
 				}
 			}
 			return element;
@@ -233,32 +251,56 @@ public final class DocumentUtils {
 	}
 
 	public static String getValue(Element document, String data) throws CurseException {
+		Map<String, String> cached = values.get(document);
+		if(cached != null) {
+			final String value = cached.get(data);
+			if(value != null) {
+				return value;
+			}
+		}
+
 		try {
 			final String lastPart = ArrayUtils.last(data.split(";"));
 			final Element element = get(document,
 					StringUtils.removeLastChars(data, lastPart.length() + 1));
-			final String[] values = lastPart.split("=");
+			final String[] split = lastPart.split("=");
 
-			switch(values[0]) {
+			final String value;
+
+			switch(split[0]) {
 			case "redirectAbsUrl":
 			case "absUrl":
-				final String absUrl = element.absUrl(values[1]);
-				return values[0].equals("absUrl") ? absUrl : URLUtils.redirect(absUrl).toString();
+				final String absUrl = element.absUrl(split[1]);
+				value = split[0].equals("absUrl") ? absUrl : URLUtils.redirect(absUrl).toString();
+				break;
 			case "class":
-				final int index = values.length < 2 ? 0 : Integer.parseInt(values[1]);
-				return element.classNames().toArray(new String[0])[index];
+				final int index = split.length < 2 ? 0 : Integer.parseInt(split[1]);
+				value = element.classNames().toArray(new String[0])[index];
+				break;
 			case "attr":
-				return element.attr(values[1]);
+				value = element.attr(split[1]);
+				break;
 			case "html":
-				return element.html();
+				value = element.html();
+				break;
 			case "text":
-				return element.text();
+				value = element.text();
+				break;
+			default:
+				return null;
 			}
+
+			if(cached == null) {
+				cached = new ConcurrentHashMap<>(2);
+			}
+
+			cached.put(data, value);
+			values.put(document, cached);
+
+			return value;
 		} catch(NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
 			throw new CurseException(ex);
 		}
-
-		return null;
 	}
 
 	public static boolean isAvailable(String url) throws CurseException {
@@ -281,8 +323,6 @@ public final class DocumentUtils {
 
 	public static int getNumberOfPages(Document document) throws CurseException {
 		try {
-			//Don't question it. Parsing HTML can get messy, okay?
-
 			final Elements paginations = document.getElementsByClass("b-pagination");
 
 			if(paginations.isEmpty()) {
@@ -344,15 +384,44 @@ public final class DocumentUtils {
 		return sortedList.toImmutableList();
 	}
 
-	public static void clearDocumentCache() {
+	public static void clearCache() {
 		documents.clear();
+		values.clear();
 	}
 
-	public static void clearDocumentCache(String url) {
+	public static void clearCache(String url) {
+		values.remove(documents.get(url));
 		documents.remove(url);
 	}
 
-	public static void clearDocumentCache(URL url) {
-		clearDocumentCache(url.toString());
+	public static void clearCache(URL url) {
+		clearCache(url.toString());
+	}
+
+	public static int getCacheSize() {
+		return cacheSize;
+	}
+
+	public static void setCacheSize(int size) {
+		Assertions.positive(size, "size", false);
+		cacheSize = size;
+
+		if(documents.size() <= cacheSize) {
+			return;
+		}
+
+		final Set<String> toRemove = new HashSet<>(cacheSize);
+		int i = 0;
+
+		for(Map.Entry<String, Document> entry : documents.entrySet()) {
+			if(++i >= cacheSize) {
+				break;
+			}
+
+			toRemove.add(entry.getKey());
+			values.remove(entry.getValue());
+		}
+
+		toRemove.forEach(documents::remove);
 	}
 }

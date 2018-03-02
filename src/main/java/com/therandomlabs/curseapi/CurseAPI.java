@@ -33,8 +33,14 @@ public final class CurseAPI {
 
 	public static void clearAllCache() {
 		CurseProject.clearProjectCache();
-		DocumentUtils.clearDocumentCache();
+		DocumentUtils.clearCache();
 		URLUtils.clearRedirectionCache();
 		WidgetAPI.clearCache();
+
+		try {
+			Class.forName("com.therandomlabs.curseapi.minecraft").
+					getDeclaredMethod("clearAllCache").
+					invoke(null);
+		} catch(Exception ex) {}
 	}
 }

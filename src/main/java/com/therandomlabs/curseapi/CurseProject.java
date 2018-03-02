@@ -413,10 +413,15 @@ public class CurseProject {
 	}
 
 	public void reloadFiles() throws CurseException {
-		reloadFiles(false);
+		reloadFiles(0);
 	}
 
-	public void reloadFiles(boolean forceReloadWidgetInfo) throws CurseException {
+	public void reloadFiles(int oldestNecessaryID) throws CurseException {
+		reloadFiles(false, oldestNecessaryID);
+	}
+
+	public void reloadFiles(boolean forceReloadWidgetInfo, int oldestNecessaryID)
+			throws CurseException {
 		final List<CurseFile> files;
 
 		if(forceReloadWidgetInfo ||
@@ -425,8 +430,7 @@ public class CurseProject {
 		}
 
 		if(widgetInfo.failedToRetrieveDirectly) {
-			files = DocumentUtils.<CurseFile>iteratePages(url + "/files?",
-					this::documentToCurseFiles, null, null);
+			files = DocumentUtils.<CurseFile>iteratePages(url + "/files?", this::run, null, null);
 
 			widgetInfo.files = new FileInfo[files.size()];
 			for(int i = 0; i < files.size(); i++) {
@@ -448,15 +452,14 @@ public class CurseProject {
 		this.files = CurseFileList.of(files);
 	}
 
-	private void documentToCurseFiles(Element document, List<CurseFile> files)
-			throws CurseException {
+	private void run(Element document, List<CurseFile> files) throws CurseException {
 		try {
 			for(Element file : document.getElementsByClass("project-file-list-item")) {
-				final int id = Integer.parseInt(ArrayUtils.last(
-						DocumentUtils.getValue(file, "class=twitch-link;attr=href").split("/")));
+				final int id = Integer.parseInt(ArrayUtils.last(DocumentUtils.getValue(
+						file, "class=twitch-link;attr=href").split("/")));
 
-				final URL url = URLUtils.url(
-						DocumentUtils.getValue(file, "class=twitch-link;attr=href;absUrl=href"));
+				final URL url = URLUtils.url(DocumentUtils.getValue(
+						file, "class=twitch-link;attr=href;absUrl=href"));
 
 				final String name = DocumentUtils.getValue(file, "class=twitch-link;text");
 
@@ -471,10 +474,8 @@ public class CurseProject {
 							DocumentUtils.getValue(file, "class=version-label;text")
 					};
 				} else {
-					versions =
-							//<div>1.11.2</div><div>1.11</div><div>1.10.2</div><div>1.10
-							DocumentUtils.getValue(file, "class=additional-versions;attr=title").
-							split("</div><div>");
+					versions = DocumentUtils.getValue(file,
+							"class=additional-versions;attr=title").split("</div><div>");
 					versions[0] = versions[0].substring("<div>".length());
 				}
 
@@ -488,8 +489,8 @@ public class CurseProject {
 				final String uploadedAt = DocumentUtils.getValue(file,
 						"class=standard-date;attr=data-epoch");
 
-				files.add(new CurseFile(this, new FileInfo(id, url, name, type, versions, fileSize,
-						downloads, uploadedAt)));
+				files.add(new CurseFile(CurseProject.this, new FileInfo(id, url, name,
+						type, versions, fileSize, downloads, uploadedAt)));
 			}
 		} catch(NumberFormatException ex) {
 			throw new CurseException(ex);
