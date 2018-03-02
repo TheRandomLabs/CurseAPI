@@ -23,8 +23,8 @@ import org.jsoup.select.NodeTraversor;
 import org.jsoup.select.NodeVisitor;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
@@ -44,9 +44,13 @@ public final class DocumentUtils {
 
 	private DocumentUtils() {}
 
+	@FunctionalInterface
+	public interface DocumentToList<E> {
+		void documentToList(Element document, List<E> list) throws CurseException;
+	}
+
 	//Taken and adapted from
-	//https://github.com/jhy/jsoup/blob/master/src/main/java/org/jsoup/examples/
-	//HtmlToPlainText.java
+	//https://github.com/jhy/jsoup/blob/master/src/main/java/org/jsoup/examples/HtmlToPlainText.java
 	private static class FormattingVisitor implements NodeVisitor {
 		private final int maxWidth;
 		private int width = 0;
@@ -338,7 +342,7 @@ public final class DocumentUtils {
 		}
 	}
 
-	public static <E> List<E> iteratePages(String baseURL, DocumentToList<E> documentToList,
+	public static <E> TRLList<E> iteratePages(String baseURL, DocumentToList<E> documentToList,
 			RunnableWithInput<? super E> onElementAdd, StopSwitch stopSwitch)
 			throws CurseException {
 		baseURL += "page=";

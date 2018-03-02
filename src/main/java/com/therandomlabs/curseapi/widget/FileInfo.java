@@ -1,9 +1,12 @@
 package com.therandomlabs.curseapi.widget;
 
+import java.io.Serializable;
 import java.net.URL;
-import com.therandomlabs.curseapi.ReleaseType;
+import com.therandomlabs.curseapi.file.ReleaseType;
 
-public final class FileInfo implements Cloneable {
+public final class FileInfo implements Cloneable, Serializable {
+	private static final long serialVersionUID = 3178137052318599043L;
+
 	public int id;
 	public URL url;
 	public String name;

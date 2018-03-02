@@ -1,6 +1,10 @@
 package com.therandomlabs.curseapi.widget;
 
-public final class DateInfo implements Cloneable {
+import java.io.Serializable;
+
+public final class DateInfo implements Cloneable, Serializable {
+	private static final long serialVersionUID = 3437565908465622016L;
+
 	public String date;
 	//https://stackoverflow.com/questions/17694894/different-timezone-types-on-datetime-object/
 	//17711005#17711005

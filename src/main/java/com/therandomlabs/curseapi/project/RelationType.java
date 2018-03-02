@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.project;
 
 public enum RelationType {
 	ALL_TYPES,

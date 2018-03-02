@@ -1,11 +1,14 @@
 package com.therandomlabs.curseapi.widget;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.util.CloneException;
 
-public final class ProjectInfo implements Cloneable {
+public final class ProjectInfo implements Cloneable, Serializable {
+	private static final long serialVersionUID = -7608267242380681184L;
+
 	public int id;
 	public Game game;
 	public String type;
@@ -94,7 +97,7 @@ public final class ProjectInfo implements Cloneable {
 		info.message = message;
 
 		info.json = json;
-		
+
 		info.retrievedDirectly = retrievedDirectly;
 
 		return info;

@@ -21,9 +21,11 @@ public final class MiscUtils {
 			return ZonedDateTime.parse(time);
 		} catch(DateTimeParseException ex) {
 			//Probably an epoch
-			final Instant instant =
-					Instant.ofEpochSecond(Long.parseLong(time));
-			return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+			return parseTime(Long.parseLong(time));
 		}
+	}
+
+	public static ZonedDateTime parseTime(long epochSeconds) {
+		return ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSeconds), ZoneOffset.UTC);
 	}
 }

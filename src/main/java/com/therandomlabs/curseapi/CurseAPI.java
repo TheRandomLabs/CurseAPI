@@ -1,9 +1,11 @@
 package com.therandomlabs.curseapi;
 
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.misc.Assertions;
+import com.therandomlabs.utils.throwable.ThrowableHandling;
 
 public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
@@ -41,6 +43,10 @@ public final class CurseAPI {
 			Class.forName("com.therandomlabs.curseapi.minecraft").
 					getDeclaredMethod("clearAllCache").
 					invoke(null);
-		} catch(Exception ex) {}
+		} catch(Exception ex) {
+			if(!(ex instanceof ClassNotFoundException)) {
+				ThrowableHandling.handleUnexpected(ex);
+			}
+		}
 	}
 }

@@ -1,5 +1,5 @@
 # CurseAPI
-A WIP Java API to handle interactions with Curse.
+A WIP Java API to handle interactions with CurseForge.
 Example Gradle buildscript:
 
 	apply plugin: "java"
@@ -37,21 +37,22 @@ Example Gradle buildscript:
 	}
 
 The CurseForge class is for basic methods, mainly to do with URLs.
-Use CurseProject instead where possible.
+Use CurseProject instead whereever possible.
+Note: CurseAPI refers to CurseForge for authors as just CurseForge, and the main CurseForge site as
+"Main CurseForge".
 
 Features:
-* Getting a project from a project ID
-* Getting a project from a URL
-* Getting project details, including name, description, license, etc.
-* Getting file details, including name, game versions, file URL, etc.
-* Supports all CurseForge sites (including Minecraft, World of Warcraft, etc.) (NOTE: CurseAPI does not fully support the new CurseForge because there is no reason to at the moment)
+* Get a project from a project ID
+* Get a project from a URL
+* Get project details, including name, description, license, etc.
+* Get file details, including name, game versions, file URL, etc.
+* Supports all CurseForge sites (Minecraft, World of Warcraft, etc.)
 * Basic event handling
-* Better error handling. At the moment, there's only one CurseException and CurseAPI doesn't retry requests
-* And more.
 
 Planned features:
 * More project and file details
-* Documentation and a wiki.
+* Better error handling. At the moment, there's only one CurseException and CurseAPI doesn't retry most requests
+* Documentation and a wiki
 
 Example:
 

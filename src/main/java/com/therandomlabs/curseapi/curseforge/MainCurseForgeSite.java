@@ -9,10 +9,10 @@ import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.util.URLUtils;
 
 /**
- * An {@code enum} containing all of the New CurseForge Mods sites.
+ * An {@code enum} containing all of the Main CurseForge sites.
  * @author TheRandomLabs
  */
-public enum NewCurseForgeSite {
+public enum MainCurseForgeSite {
 	WOW_ADDONS("addons/wow", Game.WORLD_OF_WARCRAFT),
 	WOW_ADDON_PACKS("addon-packs/wow", Game.WORLD_OF_WARCRAFT),
 	BUKKIT_PLUGINS("bukkit-plugins/minecraft", Game.MINECRAFT),
@@ -39,11 +39,11 @@ public enum NewCurseForgeSite {
 	DARKEST_DUNGEON("darkestdungeon/dd-mods", Game.DARKEST_DUNGEON);
 
 	/**
-	 * A {@link Pattern} that only matches valid New CurseForge paths.
+	 * A {@link Pattern} that only matches valid Main CurseForge paths.
 	 */
 	public static final Pattern PATH_PATTERN;
 	/**
-	 * The string representation of {@link NewCurseForgeSite#PATH_PATTERN}.
+	 * The string representation of {@link MainCurseForgeSite#PATH_PATTERN}.
 	 */
 	public static final String PATH_PATTERN_STRING;
 
@@ -56,7 +56,7 @@ public enum NewCurseForgeSite {
 	static {
 		final StringBuilder pattern = new StringBuilder();
 
-		for(NewCurseForgeSite site : values()) {
+		for(MainCurseForgeSite site : values()) {
 			pattern.append(site.pattern).append("|");
 		}
 
@@ -67,7 +67,7 @@ public enum NewCurseForgeSite {
 		PATH_PATTERN = Pattern.compile(PATH_PATTERN_STRING);
 	}
 
-	NewCurseForgeSite(String path, Game game) {
+	MainCurseForgeSite(String path, Game game) {
 		path += "/";
 		this.path = path;
 		patternString = "^/" + path + ".+";
@@ -104,8 +104,8 @@ public enum NewCurseForgeSite {
 	}
 
 	/**
-	 * Returns the string representation of {@link NewCurseForgeSite#getPathPattern}.
-	 * @return the string representation of {@link NewCurseForgeSite#getPathPattern}.
+	 * Returns the string representation of {@link MainCurseForgeSite#getPathPattern}.
+	 * @return the string representation of {@link MainCurseForgeSite#getPathPattern}.
 	 */
 	public String getPathPatternString() {
 		return patternString;
@@ -138,7 +138,7 @@ public enum NewCurseForgeSite {
 	 */
 	public URL getProjectURLByPath(String path) throws CurseException {
 		final URL project = URLUtils.url(url + path);
-		CurseException.validateNewCurseForgeProject(project);
+		CurseException.validateMainCurseForgeProject(project);
 		return project;
 	}
 
@@ -161,12 +161,12 @@ public enum NewCurseForgeSite {
 	 * @return the {@link CurseModsSite} that matches {@code url}'s path,
 	 * or {@code null} if {@code url} isn't a Curse Mods site.
 	 */
-	public static NewCurseForgeSite valueOf(URL url) {
+	public static MainCurseForgeSite valueOf(URL url) {
 		if(!url.getHost().equals(CurseForge.HOST)) {
 			return null;
 		}
 
-		for(NewCurseForgeSite site : values()) {
+		for(MainCurseForgeSite site : values()) {
 			if(site.pattern.matcher(url.getPath()).matches()) {
 				return site;
 			}

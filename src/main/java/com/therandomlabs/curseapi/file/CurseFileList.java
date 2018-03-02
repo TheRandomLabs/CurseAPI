@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.file;
 
 import java.util.ArrayList;
 import java.util.Collection;

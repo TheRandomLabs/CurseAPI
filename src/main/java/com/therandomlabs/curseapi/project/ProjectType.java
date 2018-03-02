@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.project;
 
 import java.util.Collection;
 import java.util.List;

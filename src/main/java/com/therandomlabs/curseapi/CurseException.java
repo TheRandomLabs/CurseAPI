@@ -33,9 +33,9 @@ public class CurseException extends Exception {
 		}
 	}
 
-	public static void validateNewCurseForgeProject(URL url) throws CurseException {
-		if(!CurseForge.isNewCurseForgeProject(url)) {
-			throw new CurseException("The following URL is not a valid New CurseForge project: " +
+	public static void validateMainCurseForgeProject(URL url) throws CurseException {
+		if(!CurseForge.isMainCurseForgeProject(url)) {
+			throw new CurseException("The following URL is not a valid Main CurseForge project: " +
 					url);
 		}
 	}

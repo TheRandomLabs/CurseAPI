@@ -1,7 +1,8 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -11,11 +12,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
+import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFileList;
+import com.therandomlabs.curseapi.file.ReleaseType;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
@@ -27,6 +34,7 @@ import com.therandomlabs.curseapi.widget.ProjectInfo;
 import com.therandomlabs.curseapi.widget.URLInfo;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
+import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -43,14 +51,14 @@ public class CurseProject {
 	private static final List<CurseProject> projects = new CopyOnWriteArrayList<>();
 
 	private URL url;
-	private URL newCurseForgeURL;
+	private URL mainCurseForgeURL;
 	private ProjectInfo widgetInfo;
 	private CurseFileList files;
 
-	private List<CategoryInfo> categories;
+	private TRLList<Category> categories;
 
-	private final Map<RelationType, List<RelationInfo>> dependencies = new HashMap<>();
-	private final Map<RelationType, List<RelationInfo>> dependents = new HashMap<>();
+	private final Map<RelationType, TRLList<Relation>> dependencies = new HashMap<>();
+	private final Map<RelationType, TRLList<Relation>> dependents = new HashMap<>();
 
 	static {
 		URL placeholder = null;
@@ -73,7 +81,7 @@ public class CurseProject {
 		CurseException.validateProject(url);
 
 		this.url = url;
-		this.newCurseForgeURL = CurseForge.toNewCurseForgeProject(url);
+		this.mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
 		reload(false);
 
 		projects.add(this);
@@ -91,16 +99,16 @@ public class CurseProject {
 		return url.toString();
 	}
 
-	public URL newCurseForgeURL() {
-		return newCurseForgeURL;
+	public URL mainCurseForgeURL() {
+		return mainCurseForgeURL;
 	}
 
-	public String newCurseForgeURLString() {
-		return newCurseForgeURL.toString();
+	public String mainCurseForgeURLString() {
+		return mainCurseForgeURL.toString();
 	}
 
-	public boolean hasNewCurseForgePage() {
-		return newCurseForgeURL != null;
+	public boolean hasMainCurseForgePage() {
+		return mainCurseForgeURL != null;
 	}
 
 	public String slug() {
@@ -147,17 +155,14 @@ public class CurseProject {
 		return ImageIO.read(NetworkUtils.download(thumbnailURL()));
 	}
 
-	public List<MemberInfo> members() throws CurseException {
-		try {
-			return new TRLList<>(ArrayUtils.clone(widgetInfo.members.clone()));
-		} catch(Exception ex) {
-			throw new CurseException(ex);
-		}
+	public TRLList<Member> members() {
+		return Stream.of(widgetInfo.members).map(Member::fromMemberInfo).
+				collect(TRLCollectors.toArrayList());
 	}
 
-	public List<MemberInfo> members(MemberType type) throws CurseException {
-		final List<MemberInfo> members = members();
-		members.removeIf(member -> member.title != type);
+	public TRLList<Member> members(MemberType type) {
+		final TRLList<Member> members = members();
+		members.removeIf(member -> member.type() != type);
 		return members;
 	}
 
@@ -219,7 +224,7 @@ public class CurseProject {
 		return DocumentUtils.getPlainText(descriptionHTML());
 	}
 
-	public List<CategoryInfo> categories() {
+	public TRLList<Category> categories() {
 		return categories;
 	}
 
@@ -273,11 +278,11 @@ public class CurseProject {
 		return fileFromID(widgetInfo.download.id);
 	}
 
-	public List<RelationInfo> dependencies() throws CurseException {
+	public TRLList<Relation> dependencies() throws CurseException {
 		return dependencies(RelationType.ALL_TYPES);
 	}
 
-	public List<RelationInfo> dependencies(RelationType relationType) throws CurseException {
+	public TRLList<Relation> dependencies(RelationType relationType) throws CurseException {
 		if(!dependencies.containsKey(relationType)) {
 			reloadDependencies(relationType);
 		}
@@ -290,17 +295,17 @@ public class CurseProject {
 	}
 
 	public void reloadDependencies(RelationType relationType,
-			RunnableWithInput<RelationInfo> onDependencyAdd, StopSwitch stopSwitch)
+			RunnableWithInput<Relation> onDependencyAdd, StopSwitch stopSwitch)
 			throws CurseException {
 		dependencies.put(relationType,
 				getRelations("dependencies", relationType, onDependencyAdd, stopSwitch));
 	}
 
-	public List<RelationInfo> dependents() throws CurseException {
+	public TRLList<Relation> dependents() throws CurseException {
 		return dependents(RelationType.ALL_TYPES);
 	}
 
-	public List<RelationInfo> dependents(RelationType relationType) throws CurseException {
+	public TRLList<Relation> dependents(RelationType relationType) throws CurseException {
 		if(!dependents.containsKey(relationType)) {
 			reloadDependents(relationType);
 		}
@@ -313,7 +318,7 @@ public class CurseProject {
 	}
 
 	public void reloadDependents(RelationType relationType,
-			RunnableWithInput<RelationInfo> onDependentAdd, StopSwitch stopSwitch)
+			RunnableWithInput<Relation> onDependentAdd, StopSwitch stopSwitch)
 			throws CurseException {
 		dependents.put(relationType,
 				getRelations("dependents", relationType, onDependentAdd, stopSwitch));
@@ -321,11 +326,11 @@ public class CurseProject {
 
 	public void reloadURL() throws CurseException {
 		url = CurseForge.fromID(id());
-		newCurseForgeURL = CurseForge.toNewCurseForgeProject(url);
+		mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
 	}
 
 	public void reload(boolean useWidgetAPI) throws CurseException {
-		if(!useWidgetAPI || newCurseForgeURL == null) {
+		if(!useWidgetAPI || mainCurseForgeURL == null) {
 			final int id = CurseForge.getID(url);
 			final Game game = CurseForgeSite.fromURL(url).getGame();
 			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
@@ -384,9 +389,9 @@ public class CurseProject {
 			widgetInfo.retrievedDirectly = false;
 		} else {
 			try {
-				widgetInfo = WidgetAPI.get(newCurseForgeURL.getPath());
+				widgetInfo = WidgetAPI.get(mainCurseForgeURL.getPath());
 			} catch(CurseException ex) {
-				if(newCurseForgeURL == null) {
+				if(mainCurseForgeURL == null) {
 					ThrowableHandling.handle(ex);
 				}
 
@@ -443,7 +448,7 @@ public class CurseProject {
 			files = new ArrayList<>(widgetInfo.versions.size());
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {
 				for(FileInfo info : entry.getValue()) {
-					files.add(new CurseFile(this, info));
+					files.add(newCurseFile(info));
 				}
 			}
 			files.sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
@@ -489,8 +494,8 @@ public class CurseProject {
 				final String uploadedAt = DocumentUtils.getValue(file,
 						"class=standard-date;attr=data-epoch");
 
-				files.add(new CurseFile(CurseProject.this, new FileInfo(id, url, name,
-						type, versions, fileSize, downloads, uploadedAt)));
+				files.add(newCurseFile(new FileInfo(
+						id, url, name, type, versions, fileSize, downloads, uploadedAt)));
 			}
 		} catch(NumberFormatException ex) {
 			throw new CurseException(ex);
@@ -538,8 +543,8 @@ public class CurseProject {
 		return false;
 	}
 
-	private List<RelationInfo> getRelations(String relationName, RelationType relationType,
-			RunnableWithInput<RelationInfo> onRelationAdd, StopSwitch stopSwitch)
+	private TRLList<Relation> getRelations(String relationName, RelationType relationType,
+			RunnableWithInput<Relation> onRelationAdd, StopSwitch stopSwitch)
 			throws CurseException {
 		String baseURL = urlString() + "/relations/" + relationName;
 
@@ -553,7 +558,7 @@ public class CurseProject {
 				onRelationAdd, stopSwitch);
 	}
 
-	private static void documentToRelations(Element document, List<RelationInfo> relations)
+	private static void documentToRelations(Element document, List<Relation> relations)
 			throws CurseException {
 		for(Element relation : document.getElementsByClass("project-list-item")) {
 			final String projectURL =
@@ -565,8 +570,8 @@ public class CurseProject {
 		}
 	}
 
-	private static RelationInfo getRelationInfo(Element element, URL url) throws CurseException {
-		final RelationInfo info = new RelationInfo();
+	private static Relation getRelationInfo(Element element, URL url) throws CurseException {
+		final Relation info = new Relation();
 
 		info.url = url;
 		info.title = DocumentUtils.getValue(element, "class=name-wrapper;tag=a;text");
@@ -575,27 +580,40 @@ public class CurseProject {
 		info.author = DocumentUtils.getValue(element, "tag=span;tag=a;text");
 		info.downloads = Integer.parseInt(DocumentUtils.getValue(
 				element, "class=e-download-count;text").replaceAll(",", ""));
-		info.lastUpdateTime = Integer.parseInt(
+		info.lastUpdateTime = Long.parseLong(
 				DocumentUtils.getValue(element, "class=standard-date;attr=data-epoch"));
 		info.description = DocumentUtils.getValue(element, "class=description;tag=p;text");
 		info.categories = getCategories(
-				element.getElementsByClass("category-icons")).toArray(new CategoryInfo[0]);
+				element.getElementsByClass("category-icons")).toArray(new Category[0]);
 
 		return info;
 	}
 
-	private static TRLList<CategoryInfo> getCategories(Elements categoryElements)
+	private static TRLList<Category> getCategories(Elements categoryElements)
 			throws CurseException {
-		final TRLList<CategoryInfo> categories = new TRLList<>();
+		final TRLList<Category> categories = new TRLList<>();
 		for(Element category : categoryElements) {
 			final String name = DocumentUtils.getValue(category, "tag=a;attr=title");
 			final URL url = URLUtils.url(DocumentUtils.getValue(category, "tag=a;absUrl=href"));
 			final URL thumbnailURL =
 					URLUtils.url(DocumentUtils.getValue(category, "tag=img;absUrl=src"));
 
-			categories.add(new CategoryInfo(name, url, thumbnailURL));
+			categories.add(new Category(name, url, thumbnailURL));
 		}
 		return categories;
+	}
+
+	private static Constructor<CurseFile> curseFile;
+
+	private CurseFile newCurseFile(FileInfo info) throws CurseException {
+		try {
+			if(curseFile == null) {
+				curseFile = CurseFile.class.getConstructor(CurseProject.class, FileInfo.class);
+			}
+			return curseFile.newInstance(this, info);
+		} catch(Exception ex) {
+			throw new CurseException(ex);
+		}
 	}
 
 	public static CurseProject fromID(String id) throws CurseException {

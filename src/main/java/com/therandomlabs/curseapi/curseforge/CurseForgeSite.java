@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
-import com.therandomlabs.curseapi.ProjectType;
+import com.therandomlabs.curseapi.project.ProjectType;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 

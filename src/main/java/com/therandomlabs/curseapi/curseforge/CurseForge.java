@@ -136,15 +136,15 @@ public final class CurseForge {
 		return isUnredirected(url) ? URLUtils.redirect(url) : url;
 	}
 
-	public static boolean isNewCurseForgeProject(String url) throws CurseException {
-		return isNewCurseForgeProject(URLUtils.url(url));
+	public static boolean isMainCurseForgeProject(String url) throws CurseException {
+		return isMainCurseForgeProject(URLUtils.url(url));
 	}
 
-	public static boolean isNewCurseForgeProject(URL url) throws CurseException {
+	public static boolean isMainCurseForgeProject(URL url) throws CurseException {
 		final String path = url.getPath();
 
 		try {
-			if(!is(url) || !NewCurseForgeSite.PATH_PATTERN.matcher(path).matches()) {
+			if(!is(url) || !MainCurseForgeSite.PATH_PATTERN.matcher(path).matches()) {
 				return false;
 			}
 
@@ -159,17 +159,17 @@ public final class CurseForge {
 		return true;
 	}
 
-	public static URL fromNewCurseForgeProject(String url) throws CurseException {
-		return fromNewCurseForgeProject(URLUtils.url(url));
+	public static URL fromMainCurseForgeProject(String url) throws CurseException {
+		return fromMainCurseForgeProject(URLUtils.url(url));
 	}
 
-	public static URL fromNewCurseForgeProject(URL url) throws CurseException {
-		CurseException.validateNewCurseForgeProject(url);
+	public static URL fromMainCurseForgeProject(URL url) throws CurseException {
+		CurseException.validateMainCurseForgeProject(url);
 		return URLUtils.url(
 				DocumentUtils.getValue(url, "class=curseforge;attr=href;absUrl=href"));
 	}
 
-	public static URL toNewCurseForgeProject(URL url) throws CurseException {
+	public static URL toMainCurseForgeProject(URL url) throws CurseException {
 		CurseException.validateProject(url);
 
 		final Elements viewOnCurse = DocumentUtils.get(url).getElementsByClass("view-on-curse");

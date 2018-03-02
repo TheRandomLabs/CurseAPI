@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.file;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,8 +8,11 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import org.jsoup.nodes.Element;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
@@ -21,7 +24,7 @@ import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 
-//TODO Uploaded by, Additional Files
+//TODO Additional Files
 public class CurseFile {
 	private final CurseProject project;
 	private final FileInfo widgetInfo;

@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * An {@code enum} containing all of the games Curse supports.
+ * An {@code enum} containing all of the games supported by Curse.
  * @author TheRandomLabs
  */
 public enum Game {

@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.file;
 
 import java.util.Locale;
 import com.google.gson.annotations.SerializedName;
