@@ -135,7 +135,7 @@ public class CurseProject {
 	}
 
 	public String avatarURLString() throws CurseException {
-		return DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=src");
+		return DocumentUtils.getValue(url, "class=e-avatar64;absUrl=href");
 	}
 
 	public BufferedImage avatar() throws CurseException, IOException {
