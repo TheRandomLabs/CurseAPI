@@ -174,7 +174,7 @@ public class CurseProject {
 		return widgetInfo.downloads.monthly;
 	}
 
-	public int totalDownloads() {
+	public int downloads() {
 		return widgetInfo.downloads.total;
 	}
 
