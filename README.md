@@ -51,7 +51,8 @@ Features:
 
 Planned features:
 * More project and file details
-* Better error handling. At the moment, there's only one CurseException and CurseAPI doesn't retry most requests
+* Better error handling. At the moment, there's only one CurseException and CurseAPI doesn't retry
+most requests
 * Documentation and a wiki
 
 Example:
@@ -117,3 +118,5 @@ The above code at the time of writing prints:
 	[INFO] Recommended file: com.therandomlabs.curseapi.file.CurseFile[id=2530517,name="RandomTweaks 1.12.2-1.17.0.1"]
 
 NOTE: Monthly downloads is 0 because that's what Curse always leaves it at - for some reason.
+
+No, you don't need to use my terrible logger.
