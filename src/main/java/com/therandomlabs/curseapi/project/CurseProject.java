@@ -166,6 +166,10 @@ public class CurseProject {
 		return members;
 	}
 
+	public Member owner() {
+		return members(MemberType.OWNER).get(0);
+	}
+
 	public int monthlyDownloads() {
 		return widgetInfo.downloads.monthly;
 	}
