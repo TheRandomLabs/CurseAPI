@@ -2,7 +2,6 @@ package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -136,7 +135,7 @@ public class CurseProject {
 	}
 
 	public String avatarURLString() throws CurseException {
-		return DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=href");
+		return DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=src");
 	}
 
 	public BufferedImage avatar() throws CurseException, IOException {
@@ -178,15 +177,15 @@ public class CurseProject {
 		return widgetInfo.downloads.total;
 	}
 
+	public ZonedDateTime creationTime() {
+		return MiscUtils.parseTime(widgetInfo.created_at);
+	}
+
 	public ZonedDateTime lastUpdateTime() throws CurseException {
 		if(widgetInfo.files == null) {
 			reloadFiles();
 		}
 		return MiscUtils.parseTime(widgetInfo.files[0].uploaded_at);
-	}
-
-	public ZonedDateTime creationTime() {
-		return MiscUtils.parseTime(widgetInfo.created_at);
 	}
 
 	public ReleaseType releaseType() throws CurseException {
@@ -248,6 +247,8 @@ public class CurseProject {
 		return files;
 	}
 
+	//TODO move to CurseFileList
+
 	public CurseFile fileFromID(int id) throws CurseException {
 		for(CurseFile file : filesDirect()) {
 			if(file.id() == id) {
@@ -278,7 +279,7 @@ public class CurseProject {
 		return lastFile;
 	}
 
-	public CurseFile recommendedDownload() throws CurseException {
+	public CurseFile recommendedFile() throws CurseException {
 		return fileFromID(widgetInfo.download.id);
 	}
 
@@ -452,7 +453,7 @@ public class CurseProject {
 			files = new ArrayList<>(widgetInfo.versions.size());
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {
 				for(FileInfo info : entry.getValue()) {
-					files.add(newCurseFile(info));
+					files.add(new CurseFile(this, info));
 				}
 			}
 			files.sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
@@ -498,7 +499,7 @@ public class CurseProject {
 				final String uploadedAt = DocumentUtils.getValue(file,
 						"class=standard-date;attr=data-epoch");
 
-				files.add(newCurseFile(new FileInfo(
+				files.add(new CurseFile(CurseProject.this, new FileInfo(
 						id, url, name, type, versions, fileSize, downloads, uploadedAt)));
 			}
 		} catch(NumberFormatException ex) {
@@ -605,26 +606,6 @@ public class CurseProject {
 			categories.add(new Category(name, url, thumbnailURL));
 		}
 		return categories;
-	}
-
-	private static final Constructor<CurseFile> curseFile;
-
-	static {
-		Constructor<CurseFile> constructor = null;
-		try {
-			constructor = CurseFile.class.getConstructor(CurseProject.class, FileInfo.class);
-		} catch(Exception ex) {
-			ThrowableHandling.handleUnexpected(ex);
-		}
-		curseFile = constructor;
-	}
-
-	private CurseFile newCurseFile(FileInfo info) throws CurseException {
-		try {
-			return curseFile.newInstance(this, info);
-		} catch(Exception ex) {
-			throw new CurseException(ex);
-		}
 	}
 
 	public static CurseProject fromID(String id) throws CurseException {

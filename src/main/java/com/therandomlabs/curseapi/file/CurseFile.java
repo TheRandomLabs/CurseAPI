@@ -35,7 +35,7 @@ public class CurseFile {
 
 	private final URL url;
 
-	protected CurseFile(CurseProject project, FileInfo widgetInfo) throws CurseException {
+	public CurseFile(CurseProject project, FileInfo widgetInfo) throws CurseException {
 		this.project = project;
 		this.widgetInfo = widgetInfo;
 
@@ -54,15 +54,6 @@ public class CurseFile {
 		}
 
 		url = URLUtils.url(project.urlString() + "/files/" + widgetInfo.id);
-	}
-
-	protected CurseFile(CurseFile file) {
-		this.project = file.project;
-		this.widgetInfo = file.widgetInfo;
-		this.gameVersions = file.gameVersions;
-		this.minecraftVersion = file.minecraftVersion;
-		this.minecraftVersions = file.minecraftVersions;
-		this.url = file.url;
 	}
 
 	public int id() {
