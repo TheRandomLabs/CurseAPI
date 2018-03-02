@@ -26,6 +26,36 @@ public class CurseFileList extends TRLList<CurseFile> {
 		super(files);
 	}
 
+	public CurseFile fileWithID(int id) {
+		for(CurseFile file : this) {
+			if(file.id() == id) {
+				return file;
+			}
+		}
+		return null;
+	}
+
+	public CurseFile fileClosestToID(int id, boolean preferOlder) {
+		CurseFile lastFile = null;
+
+		for(CurseFile file : this) {
+			if(file.id() == id) {
+				return file;
+			}
+
+			if(file.id() < id) {
+				if(preferOlder) {
+					return file;
+				}
+				return lastFile == null ? file : lastFile;
+			}
+
+			lastFile = file;
+		}
+
+		return lastFile;
+	}
+
 	public void newerThan(CurseFile oldFile) {
 		filter(file -> file.id() > oldFile.id());
 	}

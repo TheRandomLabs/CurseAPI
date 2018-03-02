@@ -249,38 +249,16 @@ public class CurseProject {
 
 	//TODO move to CurseFileList
 
-	public CurseFile fileFromID(int id) throws CurseException {
-		for(CurseFile file : filesDirect()) {
-			if(file.id() == id) {
-				return file;
-			}
-		}
-		throw new CurseException(this + " does not have a file with the ID: " + id);
+	public CurseFile fileWithID(int id) throws CurseException {
+		return filesDirect().fileWithID(id);
 	}
 
-	public CurseFile closestFileToID(int id, boolean preferOlder) throws CurseException {
-		CurseFile lastFile = null;
-
-		for(CurseFile file : filesDirect()) {
-			if(file.id() == id) {
-				return file;
-			}
-
-			if(file.id() < id) {
-				if(preferOlder) {
-					return file;
-				}
-				return lastFile == null ? file : lastFile;
-			}
-
-			lastFile = file;
-		}
-
-		return lastFile;
+	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
+		return filesDirect().fileClosestToID(id, preferOlder);
 	}
 
 	public CurseFile recommendedFile() throws CurseException {
-		return fileFromID(widgetInfo.download.id);
+		return fileWithID(widgetInfo.download.id);
 	}
 
 	public TRLList<Relation> dependencies() throws CurseException {
