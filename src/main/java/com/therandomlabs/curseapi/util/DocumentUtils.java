@@ -5,10 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
@@ -28,16 +26,15 @@ import com.therandomlabs.utils.collection.CacheMap;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.concurrent.ThreadUtils;
-import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
 public final class DocumentUtils {
+	private static final Map<Element, Map<String, String>> values = new HashMap<>(150);
 	private static final CacheMap<String, Document> documents =
 			new CacheMap<>(150, true, entry -> values.remove(entry.getValue()));
-	private static final Map<Element, Map<String, String>> values = new HashMap<>(150);
 
 	private DocumentUtils() {}
 
