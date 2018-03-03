@@ -232,11 +232,7 @@ public class CurseProject {
 	}
 
 	public CurseFileList files() throws CurseException {
-		if(files == null) {
-			reloadFiles();
-		}
-
-		return files.clone();
+		return filesDirect().clone();
 	}
 
 	private CurseFileList filesDirect() throws CurseException {
@@ -246,8 +242,6 @@ public class CurseProject {
 
 		return files;
 	}
-
-	//TODO move to CurseFileList
 
 	public CurseFile fileWithID(int id) throws CurseException {
 		return filesDirect().fileWithID(id);
@@ -537,39 +531,40 @@ public class CurseProject {
 			baseURL += "?filter-related-" + relationName + "=" + relationType.ordinal() + "&";
 		}
 
-		return DocumentUtils.iteratePages(baseURL, CurseProject::documentToRelations,
+		return DocumentUtils.iteratePages(baseURL,
+				(document, relations) -> documentToRelations(document, relations, relationType),
 				onRelationAdd, stopSwitch);
 	}
 
-	private static void documentToRelations(Element document, List<Relation> relations)
-			throws CurseException {
+	private void documentToRelations(Element document, List<Relation> relations,
+			RelationType relationType) throws CurseException {
 		for(Element relation : document.getElementsByClass("project-list-item")) {
 			final String projectURL =
 					DocumentUtils.getValue(relation, "class=name-wrapper;tag=a;absUrl=href");
 			//Some elements are empty for some reason
 			if(!projectURL.isEmpty()) {
-				relations.add(getRelationInfo(relation, URLUtils.url(projectURL)));
+				relations.add(getRelationInfo(relation, URLUtils.url(projectURL), relationType));
 			}
 		}
 	}
 
-	private static Relation getRelationInfo(Element element, URL url) throws CurseException {
-		final Relation info = new Relation();
-
-		info.url = url;
-		info.title = DocumentUtils.getValue(element, "class=name-wrapper;tag=a;text");
-		info.authorURL =
+	private Relation getRelationInfo(Element element, URL url, RelationType relationType)
+			throws CurseException {
+		final String title = DocumentUtils.getValue(element, "class=name-wrapper;tag=a;text");
+		final URL authorURL =
 				URLUtils.url(DocumentUtils.getValue(element, "tag=span;tag=a;absUrl=href"));
-		info.author = DocumentUtils.getValue(element, "tag=span;tag=a;text");
-		info.downloads = Integer.parseInt(DocumentUtils.getValue(
+		final String author = DocumentUtils.getValue(element, "tag=span;tag=a;text");
+		final int downloads = Integer.parseInt(DocumentUtils.getValue(
 				element, "class=e-download-count;text").replaceAll(",", ""));
-		info.lastUpdateTime = Long.parseLong(
+		final long lastUpdateTime = Long.parseLong(
 				DocumentUtils.getValue(element, "class=standard-date;attr=data-epoch"));
-		info.description = DocumentUtils.getValue(element, "class=description;tag=p;text");
-		info.categories = getCategories(
+		final String shortDescription =
+				DocumentUtils.getValue(element, "class=description;tag=p;text");
+		final Category[] categories = getCategories(
 				element.getElementsByClass("category-icons")).toArray(new Category[0]);
 
-		return info;
+		return new Relation(url, title, authorURL, author, downloads, lastUpdateTime,
+				shortDescription, categories, this, relationType);
 	}
 
 	private static TRLList<Category> getCategories(Elements categoryElements)

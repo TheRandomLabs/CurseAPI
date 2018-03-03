@@ -3,9 +3,11 @@ package com.therandomlabs.curseapi.project;
 import java.util.Collection;
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
+import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
+import com.therandomlabs.utils.misc.StringUtils;
 
 //Use .equals to compare a type (e.g. modpacks)
 //Use == to compare a type and a site (e.g. FTB modpacks)
@@ -364,6 +366,10 @@ public final class ProjectType {
 		return site;
 	}
 
+	public Game getGame() {
+		return site.getGame();
+	}
+
 	public String getSitePath() {
 		return sitePath;
 	}
@@ -373,9 +379,16 @@ public final class ProjectType {
 		return name;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof ProjectType && name.equals(((ProjectType) object).name);
+	public String singularName() {
+		return StringUtils.removeLastChar(name);
+	}
+
+	public String fullName() {
+		return getGame() + " " + name;
+	}
+
+	public String fullSingularName() {
+		return getGame() + " " + singularName();
 	}
 
 	@Override
