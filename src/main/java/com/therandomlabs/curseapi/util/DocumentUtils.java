@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +24,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.utils.collection.ArrayUtils;
+import com.therandomlabs.utils.collection.CacheMap;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.concurrent.ThreadUtils;
@@ -36,11 +35,9 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 
 public final class DocumentUtils {
-	private static int cacheSize = 150;
-	private static final Map<String, Document> documents =
-			Collections.synchronizedMap(new LinkedHashMap<>(cacheSize));
-	private static final Map<Element, Map<String, String>> values =
-			Collections.synchronizedMap(new LinkedHashMap<>(cacheSize));
+	private static final CacheMap<String, Document> documents =
+			new CacheMap<>(150, true, entry -> values.remove(entry.getValue()));
+	private static final Map<Element, Map<String, String>> values = new HashMap<>(150);
 
 	private DocumentUtils() {}
 
@@ -390,11 +387,9 @@ public final class DocumentUtils {
 
 	public static void clearCache() {
 		documents.clear();
-		values.clear();
 	}
 
 	public static void clearCache(String url) {
-		values.remove(documents.get(url));
 		documents.remove(url);
 	}
 
@@ -403,29 +398,10 @@ public final class DocumentUtils {
 	}
 
 	public static int getCacheSize() {
-		return cacheSize;
+		return documents.getCacheSize();
 	}
 
 	public static void setCacheSize(int size) {
-		Assertions.positive(size, "size", false);
-		cacheSize = size;
-
-		if(documents.size() <= cacheSize) {
-			return;
-		}
-
-		final Set<String> toRemove = new HashSet<>(cacheSize);
-		int i = 0;
-
-		for(Map.Entry<String, Document> entry : documents.entrySet()) {
-			if(++i >= cacheSize) {
-				break;
-			}
-
-			toRemove.add(entry.getKey());
-			values.remove(entry.getValue());
-		}
-
-		toRemove.forEach(documents::remove);
+		documents.setCacheSize(size);
 	}
 }
