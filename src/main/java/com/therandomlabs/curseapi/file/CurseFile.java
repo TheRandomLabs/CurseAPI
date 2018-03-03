@@ -133,7 +133,7 @@ public class CurseFile {
 		if(StringUtils.lastChar(changelog) == '.') {
 			changelog = StringUtils.removeLastChar(changelog);
 		}
-		return changelog.equals("no changelog provided") || changelog.equals("n/a");
+		return !changelog.equals("no changelog provided") && !changelog.equals("n/a");
 	}
 
 	public String uploader() throws CurseException {
