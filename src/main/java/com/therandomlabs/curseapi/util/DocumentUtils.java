@@ -193,14 +193,7 @@ public final class DocumentUtils {
 
 			final Document document = Jsoup.parse(html);
 			document.setBaseUri(url.toString());
-
 			documents.put(url.toString(), document);
-			if(documents.size() > cacheSize) {
-				final Map.Entry<String, Document> toRemove = documents.entrySet().iterator().next();
-				documents.remove(toRemove.getKey());
-				values.remove(toRemove.getValue());
-			}
-
 			return document;
 		} catch(IOException ex) {
 			throw new CurseException("An error occurred while reading from the URL: " + url, ex);
