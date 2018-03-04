@@ -18,4 +18,20 @@ public final class MemberInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[title=\"" + title + "\",username=\"" + username + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return title.hashCode() + username.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof MemberInfo ?
+				((MemberInfo) object).hashCode() == hashCode() : false;
+	}
 }

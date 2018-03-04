@@ -102,4 +102,19 @@ public final class ProjectInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[id=" + id + ",title=\"" + title + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof ProjectInfo ? ((ProjectInfo) object).id == id : false;
+	}
 }

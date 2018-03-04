@@ -47,4 +47,19 @@ public final class FileInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[id=" + id + ",name=\"" + name + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof FileInfo ? ((FileInfo) object).id == id : false;
+	}
 }

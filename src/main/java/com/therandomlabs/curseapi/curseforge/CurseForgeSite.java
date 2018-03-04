@@ -83,7 +83,7 @@ public enum CurseForgeSite {
 	 * Returns this site's host.
 	 * @return this site's host.
 	 */
-	public String getHost() {
+	public String host() {
 		return host;
 	}
 
@@ -91,7 +91,7 @@ public enum CurseForgeSite {
 	 * Returns a {@link Pattern} that will only match this site's host.
 	 * @return a {@link Pattern} that will only match this site's host.
 	 */
-	public Pattern getHostPattern() {
+	public Pattern hostPattern() {
 		return pattern;
 	}
 
@@ -99,7 +99,7 @@ public enum CurseForgeSite {
 	 * Returns the string representation of {@link CurseForgeSite#getHostPattern}.
 	 * @return the string representation of {@link CurseForgeSite#getHostPattern}.
 	 */
-	public String getHostPatternString() {
+	public String hostPatternString() {
 		return patternString;
 	}
 
@@ -107,20 +107,20 @@ public enum CurseForgeSite {
 	 * Returns this site's URL.
 	 * @return this site's URL.
 	 */
-	public URL getURL() {
+	public URL url() {
 		return url;
 	}
 
 	public URL getURL(ProjectType projectType) {
 		try {
-			return new URL("https://" + host + '/' + projectType.getSitePath());
+			return new URL("https://" + host + "/" + projectType.sitePath());
 		} catch(MalformedURLException ex) {
 			ThrowableHandling.handleUnexpected(ex);
 		}
 		return null;
 	}
 
-	public String getURLString() {
+	public String urlString() {
 		return url.toString();
 	}
 
@@ -128,7 +128,7 @@ public enum CurseForgeSite {
 	 * Returns the game this site is for.
 	 * @return the game this site is for.
 	 */
-	public Game getGame() {
+	public Game game() {
 		return game;
 	}
 
@@ -146,6 +146,11 @@ public enum CurseForgeSite {
 
 	public boolean is(String host) {
 		return pattern.matcher(host).matches();
+	}
+
+	@Override
+	public String toString() {
+		return urlString();
 	}
 
 	/**

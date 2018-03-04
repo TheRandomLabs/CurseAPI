@@ -18,4 +18,19 @@ public final class URLInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[project=\"" + project + "\",curseforge=\"" + curseforge + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return project.hashCode() + curseforge.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof URLInfo ? ((URLInfo) object).hashCode() == hashCode() : false;
+	}
 }

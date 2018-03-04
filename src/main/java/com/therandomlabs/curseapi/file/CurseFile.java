@@ -166,7 +166,7 @@ public class CurseFile {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[id=" + id() + ",name=\"" + name() + "\"]";
+		return "[id=" + id() + ",name=\"" + name() + "\"]";
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class CurseFile {
 	@Override
 	public boolean equals(Object anotherObject) {
 		if(anotherObject instanceof CurseFile) {
-			return ((CurseFile) anotherObject).hashCode() == hashCode();
+			return ((CurseFile) anotherObject).id() == id();
 		}
 
 		return false;

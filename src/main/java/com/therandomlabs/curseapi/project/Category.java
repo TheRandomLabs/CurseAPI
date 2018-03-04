@@ -38,7 +38,16 @@ public class Category implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[name=\"" + name + "\",url=\"" + url + "\",thumbnailURL=\"" +
-				thumbnailURL + "\"]";
+		return "[name=\"" + name + "\",url=\"" + url + "\",thumbnailURL=\"" + thumbnailURL + "\"]";
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof Category ? ((Category) object).url.equals(url) : false;
+	}
+
+	@Override
+	public int hashCode() {
+		return url.hashCode();
 	}
 }

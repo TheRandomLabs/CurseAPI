@@ -35,6 +35,21 @@ public final class DownloadInfo implements Cloneable, Serializable {
 		return info;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id + ",name=\"" + name + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof DownloadInfo ? ((DownloadInfo) object).id == id : false;
+	}
+
 	public static DownloadInfo fromFileInfo(FileInfo fileInfo) {
 		final DownloadInfo info = new DownloadInfo();
 

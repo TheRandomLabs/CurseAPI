@@ -18,9 +18,9 @@ public class Relation {
 	private final CurseProject relatedFrom;
 	private final RelationType relationType;
 
-	Relation(URL url, String title, URL authorURL, String author, int downloads, long lastUpdateTime,
-			String shortDescription, Category[] categories, CurseProject relatedFrom,
-			RelationType relationType) {
+	Relation(URL url, String title, URL authorURL, String author, int downloads,
+			long lastUpdateTime, String shortDescription, Category[] categories,
+			CurseProject relatedFrom, RelationType relationType) {
 		this.url = url;
 		this.title = title;
 		this.authorURL = authorURL;
@@ -92,6 +92,16 @@ public class Relation {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[title=\"" + title + "\",url=\"" + url + "\"]";
+		return "[title=\"" + title + "\",url=\"" + url + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return url.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof Relation ? ((Relation) object).url.equals(url) : false;
 	}
 }

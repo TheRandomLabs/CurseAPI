@@ -21,4 +21,20 @@ public final class DateInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" + timezone +
+				"\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return date.hashCode() + timezone_type + timezone.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof DateInfo ? ((DateInfo) object).hashCode() == hashCode() : false;
+	}
 }

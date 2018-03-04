@@ -28,7 +28,6 @@ public final class Member implements Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[type=\"" + type + "\",username=\"" + username +
-				"\"]";
+		return "[type=\"" + type + "\",username=\"" + username + "\"]";
 	}
 }

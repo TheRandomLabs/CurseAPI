@@ -17,4 +17,20 @@ public final class DownloadsInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[total=" + total + ",monthly=" + monthly + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return total + monthly;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof DownloadsInfo ?
+				((DownloadsInfo) object).hashCode() == hashCode() : false;
+	}
 }

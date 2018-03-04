@@ -362,15 +362,15 @@ public final class ProjectType {
 		values.add(this);
 	}
 
-	public CurseForgeSite getSite() {
+	public CurseForgeSite site() {
 		return site;
 	}
 
-	public Game getGame() {
-		return site.getGame();
+	public Game game() {
+		return site.game();
 	}
 
-	public String getSitePath() {
+	public String sitePath() {
 		return sitePath;
 	}
 
@@ -384,16 +384,11 @@ public final class ProjectType {
 	}
 
 	public String fullName() {
-		return getGame() + " " + name;
+		return game() + " " + name;
 	}
 
 	public String fullSingularName() {
-		return getGame() + " " + singularName();
-	}
-
-	@Override
-	public int hashCode() {
-		return name.hashCode();
+		return game() + " " + singularName();
 	}
 
 	public static ProjectType[] values() {

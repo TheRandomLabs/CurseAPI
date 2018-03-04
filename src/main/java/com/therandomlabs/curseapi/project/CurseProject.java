@@ -309,7 +309,7 @@ public class CurseProject {
 	public void reload(boolean useWidgetAPI) throws CurseException {
 		if(!useWidgetAPI || mainCurseForgeURL == null) {
 			final int id = CurseForge.getID(url);
-			final Game game = CurseForgeSite.fromURL(url).getGame();
+			final Game game = CurseForgeSite.fromURL(url).game();
 			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
 
 			final URLInfo urls = new URLInfo();
@@ -514,7 +514,7 @@ public class CurseProject {
 	@Override
 	public boolean equals(Object anotherObject) {
 		if(anotherObject instanceof CurseProject) {
-			return ((CurseProject) anotherObject).hashCode() == hashCode();
+			return ((CurseProject) anotherObject).id() == id();
 		}
 
 		return false;
@@ -627,7 +627,7 @@ public class CurseProject {
 	}
 
 	public static CurseProject fromSlug(CurseForgeSite site, String slug) throws CurseException {
-		return fromURL(site.getURL() + "projects/" + slug);
+		return fromURL(site.url() + "projects/" + slug);
 	}
 
 	public static void clearProjectCache() {

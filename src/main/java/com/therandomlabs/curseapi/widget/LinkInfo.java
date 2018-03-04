@@ -17,4 +17,19 @@ public final class LinkInfo implements Cloneable, Serializable {
 
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "[href=\"" + href + ",title=\"" + title + "\"]";
+	}
+
+	@Override
+	public int hashCode() {
+		return href.hashCode() + title.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof LinkInfo ? ((LinkInfo) object).hashCode() == hashCode() : false;
+	}
 }

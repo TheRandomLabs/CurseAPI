@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.file;
 
 import java.util.Locale;
 import com.google.gson.annotations.SerializedName;
+import com.therandomlabs.utils.misc.StringUtils;
 
 /**
  * An {@code enum} containing Curse file release types.
@@ -22,6 +23,10 @@ public enum ReleaseType {
 	@Override
 	public String toString() {
 		return super.toString().toLowerCase(Locale.ENGLISH);
+	}
+
+	public String getName() {
+		return StringUtils.capitalizeRegion(toString(), 0, 0);
 	}
 
 	/**
