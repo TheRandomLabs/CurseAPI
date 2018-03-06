@@ -13,13 +13,11 @@ public final class DateInfo implements Cloneable, Serializable {
 
 	@Override
 	public DateInfo clone() {
-		final DateInfo info = new DateInfo();
+		try {
+			return (DateInfo) super.clone();
+		} catch(CloneNotSupportedException ignored) {}
 
-		info.date = date;
-		info.timezone_type = timezone_type;
-		info.timezone = timezone;
-
-		return info;
+		return null;
 	}
 
 	@Override
@@ -35,6 +33,6 @@ public final class DateInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof DateInfo ? ((DateInfo) object).hashCode() == hashCode() : false;
+		return object instanceof DateInfo && object.hashCode() == hashCode();
 	}
 }

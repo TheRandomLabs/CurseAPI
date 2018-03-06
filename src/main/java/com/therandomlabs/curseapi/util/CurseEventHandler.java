@@ -1,9 +1,7 @@
 package com.therandomlabs.curseapi.util;
 
-import java.net.URL;
 import com.therandomlabs.curseapi.CurseException;
 
-@SuppressWarnings("unused")
 public interface CurseEventHandler {
 	default void preRedirect(String url) throws CurseException {}
 

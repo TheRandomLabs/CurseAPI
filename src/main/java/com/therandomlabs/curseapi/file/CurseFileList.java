@@ -1,10 +1,6 @@
 package com.therandomlabs.curseapi.file;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
@@ -151,11 +147,11 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public void sortByOldest() {
-		sort((file1, file2) -> Integer.compare(file1.id(), file2.id()));
+		sort(Comparator.comparingInt(CurseFile::id));
 	}
 
 	public void sortByProjectTitle() {
-		sort((file1, file2) -> file1.project().title().compareTo(file2.project().title()));
+		sort(Comparator.comparing(CurseFile::projectTitle));
 	}
 
 	@Override
@@ -195,7 +191,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
 		final List<E> files = new ArrayList<>(collection);
-		files.removeIf(file -> file == null);
+		files.removeIf(Objects::isNull);
 		final List<E> duplicates = new ArrayList<>();
 
 		for(int i = 0; i < files.size(); i++) {

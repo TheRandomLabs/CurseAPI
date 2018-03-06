@@ -12,7 +12,7 @@ import com.therandomlabs.utils.network.NetworkUtils;
 public final class URLUtils {
 	//Curse usually redirects to URLs with "cookieTest=" at the end of them.
 	public static final Pattern COOKIE_TEST =
-			Pattern.compile("\\?cookieTest\\=*(?=&)|\\?cookieTest\\=[^&]*");
+			Pattern.compile("\\?cookieTest=*(?=&)|\\?cookieTest=[^&]*");
 
 	private static final Map<String, String> redirectionCache = new ConcurrentHashMap<>(50);
 

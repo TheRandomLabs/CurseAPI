@@ -18,11 +18,11 @@ public final class CurseForge {
 	public static final String HOST = "www.curseforge.com";
 	public static final String URL = "https://" + HOST + "/";
 	public static final Pattern PROJECT_PATH_PATTERN =
-			Pattern.compile("^/projects/[a-zA-Z]+[a-zA-Z|0-9|\\-]*$");
+			Pattern.compile("^/projects/[a-zA-Z]+([a-zA-Z|0-9]|-)*$");
 	public static final Pattern UNREDIRECTED_PROJECT_PATH_PATTERN =
 			Pattern.compile("^/projects/[0-9]+$");
 	public static final Pattern FILE_PATH_PATTERN =
-			Pattern.compile("^/projects/[a-zA-Z]+[a-zA-Z|0-9|\\-]*/files/[0-9]+$");
+			Pattern.compile("^/projects/[a-zA-Z]+([a-zA-Z|0-9]|-)*/files/[0-9]+$");
 
 	private CurseForge() {}
 
@@ -38,15 +38,25 @@ public final class CurseForge {
 	}
 
 	public static boolean is(String url) throws CurseException {
+		if(url == null) {
+			return false;
+		}
 		return is(URLUtils.url(url));
 	}
 
 	public static boolean is(URL url) {
+		if(url == null) {
+			return false;
+		}
 		return CurseForgeSite.HOST_PATTERN.matcher(url.getHost()).matches();
 	}
 
 	public static boolean isProject(String url) throws CurseException {
-		URL urlObject = null;
+		if(url == null) {
+			return false;
+		}
+
+		URL urlObject;
 
 		try {
 			urlObject = new URL(url);
@@ -58,6 +68,10 @@ public final class CurseForge {
 	}
 
 	public static boolean isProject(URL url) throws CurseException {
+		if(url == null) {
+			return false;
+		}
+
 		url = redirectIfNecessary(url);
 
 		String path = url.getPath();
@@ -79,7 +93,7 @@ public final class CurseForge {
 	}
 
 	public static boolean isFile(String url) throws CurseException {
-		URL urlObject = null;
+		URL urlObject;
 
 		try {
 			urlObject = new URL(url);

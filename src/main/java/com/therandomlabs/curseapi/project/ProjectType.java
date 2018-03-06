@@ -16,7 +16,7 @@ public final class ProjectType {
 		@SerializedName("Bukkit Plugins")
 		public static final ProjectType BUKKIT_PLUGINS = get("Bukkit Plugins", "projects");
 
-		Bukkit() {}
+		private Bukkit() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.BUKKIT);
@@ -45,7 +45,7 @@ public final class ProjectType {
 		@SerializedName("Worlds")
 		public static final ProjectType WORLDS = get("Worlds", "worlds");
 
-		Minecraft() {}
+		private Minecraft() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.MINECRAFT);
@@ -64,7 +64,7 @@ public final class ProjectType {
 		@SerializedName("Modpacks")
 		public static final ProjectType MODPACKS = get("Modpacks", "modpacks");
 
-		FeedTheBeast() {}
+		private FeedTheBeast() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.FEED_THE_BEAST);
@@ -83,7 +83,7 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "addons");
 
-		WowAce() {}
+		private WowAce() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.WOW_ACE);
@@ -104,7 +104,7 @@ public final class ProjectType {
 		@SerializedName("Maps")
 		public static final ProjectType MAPS = get("Maps", "maps");
 
-		SCIIMapster() {}
+		private SCIIMapster() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.SC_II_MAPSTER);
@@ -125,7 +125,7 @@ public final class ProjectType {
 		@SerializedName("Shareables")
 		public static final ProjectType SHAREABLES = get("Shareables", "ksp-shareables");
 
-		KerbalSpaceProgram() {}
+		private KerbalSpaceProgram() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.KERBAL_SPACE_PROGRAM);
@@ -144,7 +144,7 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "ws-addons");
 
-		WildStar() {}
+		private WildStar() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.WILDSTAR);
@@ -163,7 +163,7 @@ public final class ProjectType {
 		@SerializedName("Maps")
 		public static final ProjectType MAPS = get("Maps", "maps");
 
-		Terraria() {}
+		private Terraria() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.TERRARIA);
@@ -184,7 +184,7 @@ public final class ProjectType {
 		@SerializedName("Skins")
 		public static final ProjectType SKINS = get("Skins", "wot-skins");
 
-		WorldOfTanks() {}
+		private WorldOfTanks() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.WORLD_OF_TANKS);
@@ -203,7 +203,7 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "addons");
 
-		Rift() {}
+		private Rift() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.RIFT);
@@ -222,7 +222,7 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "addons");
 
-		RunesOfMagic() {}
+		private RunesOfMagic() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.RUNES_OF_MAGIC);
@@ -241,7 +241,7 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "mods");
 
-		Skyrim() {}
+		private Skyrim() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.SKYRIM);
@@ -260,7 +260,7 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "tsw-mods");
 
-		TheSecretWorld() {}
+		private TheSecretWorld() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.THE_SECRET_WORLD);
@@ -279,7 +279,7 @@ public final class ProjectType {
 		@SerializedName("Addons")
 		public static final ProjectType ADDONS = get("Addons", "teso-addons");
 
-		TheElderScrollsOnline() {}
+		private TheElderScrollsOnline() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.THE_ELDER_SCROLLS_ONLINE);
@@ -298,7 +298,7 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "tswl-mods");
 
-		SecretWorldLegends() {}
+		private SecretWorldLegends() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.SECRET_WORLD_LEGENDS);
@@ -317,7 +317,7 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "dd-mods");
 
-		DarkestDungeon() {}
+		private DarkestDungeon() {}
 
 		public static ProjectType[] values() {
 			return ProjectType.values(CurseForgeSite.DARKEST_DUNGEON);

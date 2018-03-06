@@ -11,12 +11,11 @@ public final class MemberInfo implements Cloneable, Serializable {
 
 	@Override
 	public MemberInfo clone() {
-		final MemberInfo info = new MemberInfo();
+		try {
+			return (MemberInfo) super.clone();
+		} catch(CloneNotSupportedException ignored) {}
 
-		info.title = title;
-		info.username = username;
-
-		return info;
+		return null;
 	}
 
 	@Override
@@ -31,7 +30,6 @@ public final class MemberInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof MemberInfo ?
-				((MemberInfo) object).hashCode() == hashCode() : false;
+		return object instanceof MemberInfo && object.hashCode() == hashCode();
 	}
 }

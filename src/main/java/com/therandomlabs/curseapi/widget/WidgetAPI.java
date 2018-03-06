@@ -13,6 +13,7 @@ import com.therandomlabs.utils.network.NetworkUtils;
 
 /**
  * Handles interactions with Curse's widget API.
+ *
  * @author TheRandomLabs
  */
 public final class WidgetAPI {

@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import org.jsoup.nodes.Element;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
@@ -44,7 +45,7 @@ public class CurseFile {
 		if(project.game() == Game.MINECRAFT) {
 			final TRLList<MinecraftVersion> minecraftVersions =
 					CollectionUtils.convert(gameVersions, MinecraftVersion::fromString);
-			minecraftVersions.removeIf(version -> version == null);
+			minecraftVersions.removeIf(Objects::isNull);
 			minecraftVersions.sort();
 			this.minecraftVersions = minecraftVersions.toImmutableList();
 			minecraftVersion = minecraftVersions.get(0);
@@ -146,6 +147,10 @@ public class CurseFile {
 
 	public CurseProject project() {
 		return project;
+	}
+
+	public String projectTitle() {
+		return project.title();
 	}
 
 	public FileInfo widgetInfo() {

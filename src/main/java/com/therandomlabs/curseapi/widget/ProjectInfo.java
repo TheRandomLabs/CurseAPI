@@ -72,35 +72,22 @@ public final class ProjectInfo implements Cloneable, Serializable {
 
 	@Override
 	public ProjectInfo clone() {
-		final ProjectInfo info = new ProjectInfo();
+		try {
+			final ProjectInfo info = (ProjectInfo) super.clone();
 
-		info.id = id;
-		info.game = game;
-		info.type = type;
-		info.urls = urls == null ? null : urls.clone();
-		info.files = CloneException.tryClone(files);
-		info.links = CloneException.tryClone(links);
-		info.title = title;
-		info.donate = donate;
-		info.license = license;
-		info.members = CloneException.tryClone(members);
-		info.versions = CloneException.tryClone(versions);
-		info.downloads = downloads.clone();
-		info.thumbnail = thumbnail;
-		info.categories = categories.clone();
-		info.created_at = created_at;
-		info.description = description;
-		info.last_fetch = last_fetch;
-		info.download = download.clone();
+			info.urls = urls == null ? null : urls.clone();
+			info.files = CloneException.tryClone(files);
+			info.links = CloneException.tryClone(links);
+			info.members = CloneException.tryClone(members);
+			info.versions = CloneException.tryClone(versions);
+			info.downloads = downloads.clone();
+			info.categories = categories.clone();
+			info.download = download.clone();
 
-		info.error = error;
-		info.message = message;
+			return info;
+		} catch(CloneNotSupportedException ignored) {}
 
-		info.json = json;
-
-		info.retrievedDirectly = retrievedDirectly;
-
-		return info;
+		return null;
 	}
 
 	@Override
@@ -115,6 +102,6 @@ public final class ProjectInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof ProjectInfo ? ((ProjectInfo) object).id == id : false;
+		return object instanceof ProjectInfo && ((ProjectInfo) object).id == id;
 	}
 }

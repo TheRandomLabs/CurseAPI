@@ -11,12 +11,11 @@ public final class URLInfo implements Cloneable, Serializable {
 
 	@Override
 	public URLInfo clone() {
-		final URLInfo info = new URLInfo();
+		try {
+			return (URLInfo) super.clone();
+		} catch(CloneNotSupportedException ignored) {}
 
-		info.project = project;
-		info.curseforge = curseforge;
-
-		return info;
+		return null;
 	}
 
 	@Override
@@ -31,6 +30,6 @@ public final class URLInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof URLInfo ? ((URLInfo) object).hashCode() == hashCode() : false;
+		return object instanceof URLInfo && object.hashCode() == hashCode();
 	}
 }

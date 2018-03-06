@@ -10,12 +10,11 @@ public final class DownloadsInfo implements Cloneable, Serializable {
 
 	@Override
 	public DownloadsInfo clone() {
-		final DownloadsInfo info = new DownloadsInfo();
+		try {
+			return (DownloadsInfo) super.clone();
+		} catch(CloneNotSupportedException ignored) {}
 
-		info.total = total;
-		info.monthly = monthly;
-
-		return info;
+		return null;
 	}
 
 	@Override
@@ -30,7 +29,6 @@ public final class DownloadsInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof DownloadsInfo ?
-				((DownloadsInfo) object).hashCode() == hashCode() : false;
+		return object instanceof DownloadsInfo && object.hashCode() == hashCode();
 	}
 }

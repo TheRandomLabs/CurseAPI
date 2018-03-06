@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.MiscUtils;
 
-public class Relation {
+public final class Relation {
 	private final URL url;
 	private final String title;
 	private final URL authorURL;
@@ -102,6 +102,6 @@ public class Relation {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof Relation ? ((Relation) object).url.equals(url) : false;
+		return object instanceof Relation && ((Relation) object).url.equals(url);
 	}
 }

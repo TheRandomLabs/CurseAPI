@@ -96,8 +96,8 @@ public enum CurseForgeSite {
 	}
 
 	/**
-	 * Returns the string representation of {@link CurseForgeSite#getHostPattern}.
-	 * @return the string representation of {@link CurseForgeSite#getHostPattern}.
+	 * Returns the string representation of {@link CurseForgeSite#hostPattern()}.
+	 * @return the string representation of {@link CurseForgeSite#hostPattern()}.
 	 */
 	public String hostPatternString() {
 		return patternString;
@@ -134,7 +134,7 @@ public enum CurseForgeSite {
 
 	/**
 	 * Returns the URL to the project on this site with the specified slug.
-	 * @param path a slug.
+	 * @param slug a slug.
 	 * @return the URL to the project on this site with the specified slug.
 	 * @throws CurseException if something goes wrong.
 	 */

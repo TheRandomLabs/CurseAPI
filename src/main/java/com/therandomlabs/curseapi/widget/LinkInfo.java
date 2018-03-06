@@ -30,6 +30,6 @@ public final class LinkInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof LinkInfo ? ((LinkInfo) object).hashCode() == hashCode() : false;
+		return object instanceof LinkInfo && object.hashCode() == hashCode();
 	}
 }

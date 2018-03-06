@@ -131,8 +131,6 @@ public enum MainCurseForgeSite {
 	 * Returns the URL to the project on this site with the specified path.
 	 * @param path a path.
 	 * @return the URL to the project on this site with the specified path.
-	 * @throws InvalidCurseURLException if {@code path} is not a valid path.
-	 * @throws CurseAPIUnavailableException if CurseAPI is unavailable.
 	 * @throws CurseException if something goes wrong. Usually this is caused by a change
 	 * in the HTML code.
 	 */
@@ -156,9 +154,9 @@ public enum MainCurseForgeSite {
 	}
 
 	/**
-	 * Returns the {@link CurseModsSite} with the path of the specified URL.
+	 * Returns the {@link MainCurseForgeSite} with the path of the specified URL.
 	 * @param url a URL.
-	 * @return the {@link CurseModsSite} that matches {@code url}'s path,
+	 * @return the {@link MainCurseForgeSite} that matches {@code url}'s path,
 	 * or {@code null} if {@code url} isn't a Curse Mods site.
 	 */
 	public static MainCurseForgeSite valueOf(URL url) {

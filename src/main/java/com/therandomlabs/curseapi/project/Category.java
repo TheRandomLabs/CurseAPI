@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi.project;
 import java.io.Serializable;
 import java.net.URL;
 
-public class Category implements Serializable {
+public final class Category implements Serializable {
 	private static final long serialVersionUID = 4578392820713062750L;
 
 	private String name;
@@ -43,7 +43,7 @@ public class Category implements Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof Category ? ((Category) object).url.equals(url) : false;
+		return object instanceof Category && ((Category) object).url.equals(url);
 	}
 
 	@Override

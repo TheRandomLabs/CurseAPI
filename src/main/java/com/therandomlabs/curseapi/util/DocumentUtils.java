@@ -119,17 +119,19 @@ public final class DocumentUtils {
 				for(int i = 0; i < words.length; i++) {
 					final String word = words[i];
 
-					//If this isn't the last word, insert a space
-					if(i < words.length - 1) {
-						string += ' ';
-					}
-
 					//Wrap and reset counter
 					if(string.length() + width > maxWidth) {
 						text.append("\n").append(word);
 						width = word.length();
 					} else {
 						text.append(word);
+
+						//If this isn't the last word, insert a space
+						if(i < words.length - 1) {
+							text.append(' ');
+							width++;
+						}
+
 						width += word.length();
 					}
 				}
@@ -363,8 +365,6 @@ public final class DocumentUtils {
 			});
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 			throw new CurseException(ex);
-		} catch(CurseException ex) {
-			throw ex;
 		}
 
 		final TRLList<E> sortedList =

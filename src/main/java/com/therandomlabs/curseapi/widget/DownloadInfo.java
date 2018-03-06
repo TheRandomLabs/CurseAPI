@@ -21,18 +21,16 @@ public final class DownloadInfo implements Cloneable, Serializable {
 
 	@Override
 	public DownloadInfo clone() {
-		final DownloadInfo info = new DownloadInfo();
+		try {
+			final DownloadInfo info = (DownloadInfo) super.clone();
 
-		info.id = id;
-		info.url = url;
-		info.name = name;
-		info.type = type;
-		info.version = version;
-		info.filesize = filesize;
-		info.versions = versions.clone();
-		info.uploaded_at = uploaded_at.clone();
+			info.versions = versions.clone();
+			info.uploaded_at = uploaded_at.clone();
 
-		return info;
+			return info;
+		} catch(CloneNotSupportedException ignored) {}
+
+		return null;
 	}
 
 	@Override
@@ -47,7 +45,7 @@ public final class DownloadInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof DownloadInfo ? ((DownloadInfo) object).id == id : false;
+		return object instanceof DownloadInfo && ((DownloadInfo) object).id == id;
 	}
 
 	public static DownloadInfo fromFileInfo(FileInfo fileInfo) {

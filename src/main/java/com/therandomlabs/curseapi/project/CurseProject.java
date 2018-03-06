@@ -42,7 +42,7 @@ import com.therandomlabs.utils.throwable.ThrowableHandling;
 
 //TODO Images, Issues, Source, Pages, Wiki, Get number of relations,
 //get relations on a specific page
-public class CurseProject {
+public final class CurseProject {
 	public static final URL PLACEHOLDER_THUMBNAIL;
 
 	public static final int RELATIONS_PER_PAGE = 20;
@@ -51,6 +51,7 @@ public class CurseProject {
 
 	private URL url;
 	private URL mainCurseForgeURL;
+	private CurseForgeSite site;
 	private ProjectInfo widgetInfo;
 	private CurseFileList files;
 
@@ -115,7 +116,7 @@ public class CurseProject {
 	}
 
 	public CurseForgeSite site() {
-		return CurseForgeSite.fromURL(url);
+		return site;
 	}
 
 	public String title() {
@@ -307,9 +308,14 @@ public class CurseProject {
 	}
 
 	public void reload(boolean useWidgetAPI) throws CurseException {
+		site = CurseForgeSite.fromURL(url);
+		if(site == null) {
+			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
+		}
+
 		if(!useWidgetAPI || mainCurseForgeURL == null) {
 			final int id = CurseForge.getID(url);
-			final Game game = CurseForgeSite.fromURL(url).game();
+			final Game game = site.game();
 			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
 
 			final URLInfo urls = new URLInfo();
@@ -324,7 +330,7 @@ public class CurseProject {
 			try {
 				donate = URLUtils.url(
 						DocumentUtils.getValue(url, "class=icon-donate;attr=href;absUrl=href"));
-			} catch(CurseException ex) {}
+			} catch(CurseException ignored) {}
 
 			final String license = DocumentUtils.getValue(url, "class=info-data=4;tag=a;text");
 
@@ -348,7 +354,7 @@ public class CurseProject {
 			downloads.total = Integer.parseInt(
 					DocumentUtils.getValue(url, "class=info-data=3;text").replaceAll(",", ""));
 
-			URL thumbnail = null;
+			URL thumbnail;
 			try {
 				thumbnail = URLUtils.url(
 						DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=src"));
@@ -412,7 +418,7 @@ public class CurseProject {
 		}
 
 		if(widgetInfo.failedToRetrieveDirectly) {
-			files = DocumentUtils.<CurseFile>iteratePages(url + "/files?", this::run, null, null);
+			files = DocumentUtils.iteratePages(url + "/files?", this::run, null, null);
 
 			widgetInfo.files = new FileInfo[files.size()];
 			for(int i = 0; i < files.size(); i++) {
@@ -474,7 +480,7 @@ public class CurseProject {
 				files.add(new CurseFile(CurseProject.this, new FileInfo(
 						id, url, name, type, versions, fileSize, downloads, uploadedAt)));
 			}
-		} catch(NumberFormatException ex) {
+		} catch(NullPointerException | NumberFormatException ex) {
 			throw new CurseException(ex);
 		}
 	}

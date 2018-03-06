@@ -34,18 +34,13 @@ public final class FileInfo implements Cloneable, Serializable {
 
 	@Override
 	public FileInfo clone() {
-		final FileInfo info = new FileInfo();
+		try {
+			final FileInfo info = (FileInfo) super.clone();
+			info.versions = versions.clone();
+			return info;
+		} catch(CloneNotSupportedException ignored) {}
 
-		info.id = id;
-		info.url = url;
-		info.name = name;
-		info.type = type;
-		info.version = version;
-		info.filesize = filesize;
-		info.versions = versions.clone();
-		info.uploaded_at = uploaded_at;
-
-		return info;
+		return null;
 	}
 
 	@Override
@@ -60,6 +55,6 @@ public final class FileInfo implements Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof FileInfo ? ((FileInfo) object).id == id : false;
+		return object instanceof FileInfo && ((FileInfo) object).id == id;
 	}
 }
