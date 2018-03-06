@@ -1,11 +1,9 @@
 package com.therandomlabs.curseapi.curseforge;
 
-import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
-import org.jsoup.select.Elements;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.DocumentUtils;
@@ -13,6 +11,8 @@ import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
+import org.jsoup.select.Elements;
+import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 public final class CurseForge {
 	public static final String HOST = "www.curseforge.com";
@@ -92,6 +92,14 @@ public final class CurseForge {
 		return true;
 	}
 
+	public static URL redirectIfNecessary(URL url) throws CurseException {
+		return isUnredirected(url) ? URLUtils.redirect(url) : url;
+	}
+
+	public static boolean isUnredirected(URL url) {
+		return is(url) && UNREDIRECTED_PROJECT_PATH_PATTERN.matcher(url.getPath()).matches();
+	}
+
 	public static boolean isFile(String url) throws CurseException {
 		URL urlObject;
 
@@ -138,16 +146,8 @@ public final class CurseForge {
 		return isUnredirected(URLUtils.url(url));
 	}
 
-	public static boolean isUnredirected(URL url) {
-		return is(url) && UNREDIRECTED_PROJECT_PATH_PATTERN.matcher(url.getPath()).matches();
-	}
-
 	public static URL redirectIfNecessary(String url) throws CurseException {
 		return redirectIfNecessary(URLUtils.url(url));
-	}
-
-	public static URL redirectIfNecessary(URL url) throws CurseException {
-		return isUnredirected(url) ? URLUtils.redirect(url) : url;
 	}
 
 	public static boolean isMainCurseForgeProject(String url) throws CurseException {
@@ -192,22 +192,13 @@ public final class CurseForge {
 		}
 
 		return URLUtils.url(
-					DocumentUtils.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
+				DocumentUtils.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
 	}
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
 		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
-	}
-
-	public static int getFileID(String url) throws CurseException {
-		return getFileID(URLUtils.url(url));
-	}
-
-	public static int getFileID(URL url) throws CurseException {
-		CurseException.validateFile(url);
-		return Integer.parseInt(ArrayUtils.last(StringUtils.split(url.getPath(), '/')));
 	}
 
 	public static URL fromID(int projectID) throws CurseException {
@@ -231,6 +222,15 @@ public final class CurseForge {
 		}
 
 		return project;
+	}
+
+	public static int getFileID(String url) throws CurseException {
+		return getFileID(URLUtils.url(url));
+	}
+
+	public static int getFileID(URL url) throws CurseException {
+		CurseException.validateFile(url);
+		return Integer.parseInt(ArrayUtils.last(StringUtils.split(url.getPath(), '/')));
 	}
 
 	public static int getID(String url) throws CurseException {

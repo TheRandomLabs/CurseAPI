@@ -8,7 +8,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import org.jsoup.nodes.Element;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
@@ -24,9 +23,10 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
+import org.jsoup.nodes.Element;
 
 //TODO Additional Files
-public class CurseFile {
+public final class CurseFile {
 	private final CurseProject project;
 	private final FileInfo widgetInfo;
 
@@ -57,12 +57,12 @@ public class CurseFile {
 		url = URLUtils.url(project.urlString() + "/files/" + widgetInfo.id);
 	}
 
-	public int id() {
-		return widgetInfo.id;
-	}
-
 	public String fileName() throws CurseException {
 		return NetworkUtils.getFileName(fileURL());
+	}
+
+	public URL fileURL() throws CurseException {
+		return CurseForge.getFileURL(project.id(), widgetInfo.id);
 	}
 
 	public URL url() {
@@ -73,16 +73,8 @@ public class CurseFile {
 		return url.toString();
 	}
 
-	public URL fileURL() throws CurseException {
-		return CurseForge.getFileURL(project.id(), widgetInfo.id);
-	}
-
 	public String fileURLString() throws CurseException {
 		return fileURL().toString();
-	}
-
-	public String name() {
-		return widgetInfo.name;
 	}
 
 	public ReleaseType releaseType() {
@@ -121,20 +113,20 @@ public class CurseFile {
 		return DocumentUtils.getValue(url, "class=md5;text");
 	}
 
-	public Element changelogHTML() throws CurseException {
-		return DocumentUtils.get(url, "class=logbox");
-	}
-
-	public String changelog() throws CurseException {
-		return DocumentUtils.getPlainText(changelogHTML());
-	}
-
 	public boolean changelogProvided() throws CurseException {
 		String changelog = changelog().trim().toLowerCase(Locale.ENGLISH);
 		if(StringUtils.lastChar(changelog) == '.') {
 			changelog = StringUtils.removeLastChar(changelog);
 		}
 		return !changelog.equals("no changelog provided") && !changelog.equals("n/a");
+	}
+
+	public String changelog() throws CurseException {
+		return DocumentUtils.getPlainText(changelogHTML());
+	}
+
+	public Element changelogHTML() throws CurseException {
+		return DocumentUtils.get(url, "class=logbox");
 	}
 
 	public String uploader() throws CurseException {
@@ -170,11 +162,6 @@ public class CurseFile {
 	}
 
 	@Override
-	public String toString() {
-		return "[id=" + id() + ",name=\"" + name() + "\"]";
-	}
-
-	@Override
 	public int hashCode() {
 		return id();
 	}
@@ -186,5 +173,18 @@ public class CurseFile {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "[id=" + id() + ",name=\"" + name() + "\"]";
+	}
+
+	public String name() {
+		return widgetInfo.name;
+	}
+
+	public int id() {
+		return widgetInfo.id;
 	}
 }

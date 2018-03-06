@@ -18,14 +18,6 @@ public final class URLUtils {
 
 	private URLUtils() {}
 
-	public static String stripCookieTestString(String string) {
-		return COOKIE_TEST.matcher(string).replaceAll("");
-	}
-
-	public static URL stripCookieTestString(URL url) throws CurseException {
-		return URLUtils.url(stripCookieTestString(url.toString()));
-	}
-
 	public static URL redirect(String url) throws CurseException {
 		return redirect(URLUtils.url(url));
 	}
@@ -61,6 +53,14 @@ public final class URLUtils {
 		} catch(MalformedURLException ex) {
 			throw new CurseException(ex);
 		}
+	}
+
+	public static URL stripCookieTestString(URL url) throws CurseException {
+		return URLUtils.url(stripCookieTestString(url.toString()));
+	}
+
+	public static String stripCookieTestString(String string) {
+		return COOKIE_TEST.matcher(string).replaceAll("");
 	}
 
 	public static void clearRedirectionCache() {

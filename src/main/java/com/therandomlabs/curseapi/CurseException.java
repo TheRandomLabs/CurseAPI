@@ -7,13 +7,12 @@ import java.net.UnknownHostException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 
 public class CurseException extends Exception {
+	public static final int CURSE_MODS = 0;
+	public static final int CURSEFORGE = 1;
 	private static final String UNAVAILABLE_MESSAGE = "Curse and/or CurseForge seems to be " +
 			"unavailable. This could be due to a bug in CurseAPI, because Curse is not working " +
 			"as intended, or because Java or the system cannot access the internet.";
 	private static final long serialVersionUID = -7778596309352978036L;
-
-	public static final int CURSE_MODS = 0;
-	public static final int CURSEFORGE = 1;
 
 	public CurseException(String message) {
 		super(message);
@@ -23,13 +22,32 @@ public class CurseException extends Exception {
 		super(getMessage(throwable), throwable);
 	}
 
+	private static String getMessage(Throwable throwable) {
+		if(throwable instanceof MalformedURLException) {
+			return "An invalid URL has been created by CurseAPI. Usually, this is due to an " +
+					"error in the user input, but it could also be a bug in CurseAPI, or a " +
+					"change that Curse has made on their end.";
+		}
+		if(isUnavailable(throwable)) {
+			return UNAVAILABLE_MESSAGE;
+		}
+		return "An error has occurred that should normally be prevented by CurseAPI. " +
+				"This could be a bug in CurseAPI, or a change that Curse has made on their end.";
+	}
+
+	public static boolean isUnavailable(Throwable throwable) {
+		return throwable instanceof SocketTimeoutException ||
+				throwable instanceof UnknownHostException;
+	}
+
 	public CurseException(String message, Throwable throwable) {
 		super(message, throwable);
 	}
 
 	public static void validateProject(URL url) throws CurseException {
 		if(!CurseForge.isProject(url)) {
-			throw new CurseException("The following URL is not a valid CurseForge project: " + url);
+			throw new CurseException("The following URL is not a valid CurseForge project: " +
+					url);
 		}
 	}
 
@@ -60,25 +78,7 @@ public class CurseException extends Exception {
 		throw new CurseException("Invalid project ID: " + id, throwable);
 	}
 
-	public static boolean isUnavailable(Throwable throwable) {
-		return throwable instanceof SocketTimeoutException ||
-				throwable instanceof UnknownHostException;
-	}
-
 	public static void unavailable() throws CurseException {
 		throw new CurseException(UNAVAILABLE_MESSAGE);
-	}
-
-	private static String getMessage(Throwable throwable) {
-		if(throwable instanceof MalformedURLException) {
-			return "An invalid URL has been created by CurseAPI. Usually, this is due to an " +
-					"error in the user input, but it could also be a bug in CurseAPI, or a " +
-					"change that Curse has made on their end.";
-		}
-		if(isUnavailable(throwable)) {
-			return UNAVAILABLE_MESSAGE;
-		}
-		return "An error has occurred that should normally be prevented by CurseAPI. " +
-				"This could be a bug in CurseAPI, or a change that Curse has made on their end.";
 	}
 }

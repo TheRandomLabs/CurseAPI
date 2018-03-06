@@ -5,6 +5,7 @@ import com.therandomlabs.utils.collection.TRLList;
 
 /**
  * An {@code enum} containing all Minecraft versions listed on Curse.
+ *
  * @author TheRandomLabs
  */
 public enum MinecraftVersion {
@@ -155,8 +156,8 @@ public enum MinecraftVersion {
 
 	private final String versionString;
 	private final TRLList<MinecraftVersion> versions = new TRLList<>(3);
-	private TRLList<MinecraftVersion> immutableVersions;
 	private final MinecraftVersion group;
+	private TRLList<MinecraftVersion> immutableVersions;
 
 	MinecraftVersion(MinecraftVersion group) {
 		this.group = group;
@@ -171,34 +172,6 @@ public enum MinecraftVersion {
 				replaceAll(".GROUP", "-Group").replaceAll(".SNAPSHOT", "-Snapshot");
 	}
 
-	public TRLList<MinecraftVersion> getVersions() {
-		if(immutableVersions == null) {
-			immutableVersions = versions.toImmutableList();
-		}
-		return immutableVersions;
-	}
-
-	public MinecraftVersion getGroup() {
-		return group;
-	}
-
-	public boolean isVersion() {
-		return getGroup() != this;
-	}
-
-	public boolean isGroup() {
-		return getGroup() == this;
-	}
-
-	/**
-	 * Returns a string representation of this Minecraft version.
-	 * @return a string representation of this Minecraft version.
-	 */
-	@Override
-	public String toString() {
-		return versionString;
-	}
-
 	public static MinecraftVersion latest() {
 		return values()[1];
 	}
@@ -207,8 +180,14 @@ public enum MinecraftVersion {
 		return values()[0];
 	}
 
+	public static MinecraftVersion groupFromString(String version) {
+		final MinecraftVersion mcVersion = fromString(version);
+		return mcVersion == null ? null : mcVersion.getGroup();
+	}
+
 	/**
 	 * Returns the {@link MinecraftVersion} with the specified version string.
+	 *
 	 * @param version a version string.
 	 * @return the {@link MinecraftVersion} with the specified version string,
 	 * or {@code null} if it does not exist.
@@ -222,8 +201,32 @@ public enum MinecraftVersion {
 		return null;
 	}
 
-	public static MinecraftVersion groupFromString(String version) {
-		final MinecraftVersion mcVersion = fromString(version);
-		return mcVersion == null ? null : mcVersion.getGroup();
+	public MinecraftVersion getGroup() {
+		return group;
+	}
+
+	public TRLList<MinecraftVersion> getVersions() {
+		if(immutableVersions == null) {
+			immutableVersions = versions.toImmutableList();
+		}
+		return immutableVersions;
+	}
+
+	public boolean isVersion() {
+		return getGroup() != this;
+	}
+
+	public boolean isGroup() {
+		return getGroup() == this;
+	}
+
+	/**
+	 * Returns a string representation of this Minecraft version.
+	 *
+	 * @return a string representation of this Minecraft version.
+	 */
+	@Override
+	public String toString() {
+		return versionString;
 	}
 }

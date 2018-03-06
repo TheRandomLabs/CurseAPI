@@ -71,6 +71,16 @@ public final class ProjectInfo implements Cloneable, Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof ProjectInfo && ((ProjectInfo) object).id == id;
+	}
+
+	@Override
 	public ProjectInfo clone() {
 		try {
 			final ProjectInfo info = (ProjectInfo) super.clone();
@@ -93,15 +103,5 @@ public final class ProjectInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[id=" + id + ",title=\"" + title + "\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof ProjectInfo && ((ProjectInfo) object).id == id;
 	}
 }

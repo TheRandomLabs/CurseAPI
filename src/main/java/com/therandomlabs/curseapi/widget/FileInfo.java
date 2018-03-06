@@ -33,6 +33,16 @@ public final class FileInfo implements Cloneable, Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof FileInfo && ((FileInfo) object).id == id;
+	}
+
+	@Override
 	public FileInfo clone() {
 		try {
 			final FileInfo info = (FileInfo) super.clone();
@@ -46,15 +56,5 @@ public final class FileInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[id=" + id + ",name=\"" + name + "\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof FileInfo && ((FileInfo) object).id == id;
 	}
 }

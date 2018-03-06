@@ -91,11 +91,6 @@ public final class Relation {
 	}
 
 	@Override
-	public String toString() {
-		return "[title=\"" + title + "\",url=\"" + url + "\"]";
-	}
-
-	@Override
 	public int hashCode() {
 		return url.hashCode();
 	}
@@ -103,5 +98,10 @@ public final class Relation {
 	@Override
 	public boolean equals(Object object) {
 		return object instanceof Relation && ((Relation) object).url.equals(url);
+	}
+
+	@Override
+	public String toString() {
+		return "[title=\"" + title + "\",url=\"" + url + "\"]";
 	}
 }

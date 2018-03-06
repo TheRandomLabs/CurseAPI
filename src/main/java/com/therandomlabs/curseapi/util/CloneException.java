@@ -48,35 +48,6 @@ public class CloneException extends RuntimeException {
 		return null;
 	}
 
-	public static <E> KeySetView<E, Boolean> tryCloneKeySet(KeySetView<E, Boolean> keySetView) {
-		try {
-			return CollectionUtils.cloneKeySet(keySetView);
-		} catch(Exception ex) {
-			try {
-				throw new CloneException(ReflectionUtils.getCallerClass());
-			} catch(ClassNotFoundException ex2) {
-				ThrowableHandling.handle(ex2);
-			}
-		}
-
-		return null;
-	}
-
-	public static <E extends Cloneable> KeySetView<E, Boolean> tryDeepCloneKeySet(
-			KeySetView<E, Boolean> keySetView) {
-		try {
-			return CollectionUtils.deepCloneKeySet(keySetView);
-		} catch(Exception ex) {
-			try {
-				throw new CloneException(ReflectionUtils.getCallerClass());
-			} catch(ClassNotFoundException ex2) {
-				ThrowableHandling.handle(ex2);
-			}
-		}
-
-		return null;
-	}
-
 	public static <K, V> HashMap<K, V> tryClone(Map<K, V> map) {
 		try {
 			return MapUtils.clone(map);

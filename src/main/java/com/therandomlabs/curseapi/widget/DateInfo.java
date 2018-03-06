@@ -22,7 +22,8 @@ public final class DateInfo implements Cloneable, Serializable {
 
 	@Override
 	public String toString() {
-		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" + timezone +
+		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" +
+				timezone +
 				"\"]";
 	}
 

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * An {@code enum} containing all of the games supported by Curse.
+ *
  * @author TheRandomLabs
  */
 public enum Game {
@@ -53,6 +54,7 @@ public enum Game {
 
 	/**
 	 * Returns the name of this game.
+	 *
 	 * @return the name of this game.
 	 */
 	@Override

@@ -19,35 +19,6 @@ public final class DownloadInfo implements Cloneable, Serializable {
 	public int downloads;
 	public DateInfo uploaded_at;
 
-	@Override
-	public DownloadInfo clone() {
-		try {
-			final DownloadInfo info = (DownloadInfo) super.clone();
-
-			info.versions = versions.clone();
-			info.uploaded_at = uploaded_at.clone();
-
-			return info;
-		} catch(CloneNotSupportedException ignored) {}
-
-		return null;
-	}
-
-	@Override
-	public String toString() {
-		return "[id=" + id + ",name=\"" + name + "\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof DownloadInfo && ((DownloadInfo) object).id == id;
-	}
-
 	public static DownloadInfo fromFileInfo(FileInfo fileInfo) {
 		final DownloadInfo info = new DownloadInfo();
 
@@ -66,5 +37,34 @@ public final class DownloadInfo implements Cloneable, Serializable {
 		info.uploaded_at.timezone = "+00:00";
 
 		return info;
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof DownloadInfo && ((DownloadInfo) object).id == id;
+	}
+
+	@Override
+	public DownloadInfo clone() {
+		try {
+			final DownloadInfo info = (DownloadInfo) super.clone();
+
+			info.versions = versions.clone();
+			info.uploaded_at = uploaded_at.clone();
+
+			return info;
+		} catch(CloneNotSupportedException ignored) {}
+
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "[id=" + id + ",name=\"" + name + "\"]";
 	}
 }

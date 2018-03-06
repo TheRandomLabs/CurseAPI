@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * An {@code enum} containing Curse project member types.
+ *
  * @author TheRandomLabs
  */
 public enum MemberType {
@@ -37,16 +38,8 @@ public enum MemberType {
 	}
 
 	/**
-	 * Returns a string representation of this member type.
-	 * @return a string representation of this member type.
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
-
-	/**
 	 * Returns the {@link MemberType} with the specified name.
+	 *
 	 * @param name a release type name.
 	 * @return the {@link MemberType} with the specified name,
 	 * or {@code null} if it does not exist.
@@ -58,5 +51,15 @@ public enum MemberType {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns a string representation of this member type.
+	 *
+	 * @return a string representation of this member type.
+	 */
+	@Override
+	public String toString() {
+		return name;
 	}
 }

@@ -6,6 +6,7 @@ import com.therandomlabs.utils.misc.StringUtils;
 
 /**
  * An {@code enum} containing Curse file release types.
+ *
  * @author TheRandomLabs
  */
 public enum ReleaseType {
@@ -17,20 +18,8 @@ public enum ReleaseType {
 	ALPHA;
 
 	/**
-	 * Returns a string representation of this release type.
-	 * @return a string representation of this release type.
-	 */
-	@Override
-	public String toString() {
-		return super.toString().toLowerCase(Locale.ENGLISH);
-	}
-
-	public String getName() {
-		return StringUtils.capitalizeRegion(toString(), 0, 0);
-	}
-
-	/**
 	 * Returns the {@link ReleaseType} with the specified name.
+	 *
 	 * @param name a release type name.
 	 * @return the {@link ReleaseType} with the specified name,
 	 * or {@code null} if it does not exist.
@@ -42,5 +31,19 @@ public enum ReleaseType {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns a string representation of this release type.
+	 *
+	 * @return a string representation of this release type.
+	 */
+	@Override
+	public String toString() {
+		return super.toString().toLowerCase(Locale.ENGLISH);
+	}
+
+	public String getName() {
+		return StringUtils.capitalizeRegion(toString(), 0, 0);
 	}
 }

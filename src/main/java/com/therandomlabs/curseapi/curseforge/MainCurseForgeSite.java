@@ -1,15 +1,16 @@
 package com.therandomlabs.curseapi.curseforge;
 
-import static com.therandomlabs.utils.logging.Logging.getLogger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.util.URLUtils;
+import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 /**
  * An {@code enum} containing all of the Main CurseForge sites.
+ *
  * @author TheRandomLabs
  */
 public enum MainCurseForgeSite {
@@ -47,12 +48,6 @@ public enum MainCurseForgeSite {
 	 */
 	public static final String PATH_PATTERN_STRING;
 
-	private final String path;
-	private final String patternString;
-	private final Pattern pattern;
-	private final URL url;
-	private final Game game;
-
 	static {
 		final StringBuilder pattern = new StringBuilder();
 
@@ -66,6 +61,12 @@ public enum MainCurseForgeSite {
 		PATH_PATTERN_STRING = pattern.toString();
 		PATH_PATTERN = Pattern.compile(PATH_PATTERN_STRING);
 	}
+
+	private final String path;
+	private final String patternString;
+	private final Pattern pattern;
+	private final URL url;
+	private final Game game;
 
 	MainCurseForgeSite(String path, Game game) {
 		path += "/";
@@ -87,74 +88,13 @@ public enum MainCurseForgeSite {
 		this.game = game;
 	}
 
-	/**
-	 * Returns this site's path.
-	 * @return this site's path.
-	 */
-	public String getPath() {
-		return path;
-	}
-
-	/**
-	 * Returns a {@link Pattern} that will only match this site's path.
-	 * @return a {@link Pattern} that will only match this site's path.
-	 */
-	public Pattern getPathPattern() {
-		return pattern;
-	}
-
-	/**
-	 * Returns the string representation of {@link MainCurseForgeSite#getPathPattern}.
-	 * @return the string representation of {@link MainCurseForgeSite#getPathPattern}.
-	 */
-	public String getPathPatternString() {
-		return patternString;
-	}
-
-	/**
-	 * Returns this site's URL.
-	 * @return this site's URL.
-	 */
-	public URL getURL() {
-		return url;
-	}
-
-	/**
-	 * Returns the game this site is for.
-	 * @return the game this site is for.
-	 */
-	public Game getGame() {
-		return game;
-	}
-
-	/**
-	 * Returns the URL to the project on this site with the specified path.
-	 * @param path a path.
-	 * @return the URL to the project on this site with the specified path.
-	 * @throws CurseException if something goes wrong. Usually this is caused by a change
-	 * in the HTML code.
-	 */
-	public URL getProjectURLByPath(String path) throws CurseException {
-		final URL project = URLUtils.url(url + path);
-		CurseException.validateMainCurseForgeProject(project);
-		return project;
-	}
-
-	public boolean is(String path) {
-		return pattern.matcher(path).matches();
-	}
-
-	@Override
-	public String toString() {
-		return path;
-	}
-
 	public static boolean isValidPath(String path) {
 		return PATH_PATTERN.matcher(path).matches();
 	}
 
 	/**
 	 * Returns the {@link MainCurseForgeSite} with the path of the specified URL.
+	 *
 	 * @param url a URL.
 	 * @return the {@link MainCurseForgeSite} that matches {@code url}'s path,
 	 * or {@code null} if {@code url} isn't a Curse Mods site.
@@ -170,5 +110,73 @@ public enum MainCurseForgeSite {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns this site's path.
+	 *
+	 * @return this site's path.
+	 */
+	public String getPath() {
+		return path;
+	}
+
+	/**
+	 * Returns a {@link Pattern} that will only match this site's path.
+	 *
+	 * @return a {@link Pattern} that will only match this site's path.
+	 */
+	public Pattern getPathPattern() {
+		return pattern;
+	}
+
+	/**
+	 * Returns the string representation of {@link MainCurseForgeSite#getPathPattern}.
+	 *
+	 * @return the string representation of {@link MainCurseForgeSite#getPathPattern}.
+	 */
+	public String getPathPatternString() {
+		return patternString;
+	}
+
+	/**
+	 * Returns this site's URL.
+	 *
+	 * @return this site's URL.
+	 */
+	public URL getURL() {
+		return url;
+	}
+
+	/**
+	 * Returns the game this site is for.
+	 *
+	 * @return the game this site is for.
+	 */
+	public Game getGame() {
+		return game;
+	}
+
+	/**
+	 * Returns the URL to the project on this site with the specified path.
+	 *
+	 * @param path a path.
+	 * @return the URL to the project on this site with the specified path.
+	 * @throws CurseException if something goes wrong. Usually this is caused by a change
+	 *                        in the HTML code.
+	 */
+	public URL getProjectURLByPath(String path) throws CurseException {
+		final URL project = URLUtils.url(url + path);
+		CurseException.validateMainCurseForgeProject(project);
+		return project;
+	}
+
+	public boolean is(String path) {
+		return pattern.matcher(path).matches();
+	}
+
+	@Override
+	public String toString() {
+		return path;
 	}
 }

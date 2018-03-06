@@ -14,16 +14,16 @@ public final class Member implements Serializable {
 		this.username = username;
 	}
 
+	static Member fromMemberInfo(MemberInfo info) {
+		return new Member(info.title, info.username);
+	}
+
 	public MemberType type() {
 		return type;
 	}
 
 	public String username() {
 		return username;
-	}
-
-	static Member fromMemberInfo(MemberInfo info) {
-		return new Member(info.title, info.username);
 	}
 
 	@Override

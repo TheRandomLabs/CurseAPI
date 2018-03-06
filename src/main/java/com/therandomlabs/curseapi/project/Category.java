@@ -37,8 +37,8 @@ public final class Category implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return "[name=\"" + name + "\",url=\"" + url + "\",thumbnailURL=\"" + thumbnailURL + "\"]";
+	public int hashCode() {
+		return url.hashCode();
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public final class Category implements Serializable {
 	}
 
 	@Override
-	public int hashCode() {
-		return url.hashCode();
+	public String toString() {
+		return "[name=\"" + name + "\",url=\"" + url + "\",thumbnailURL=\"" + thumbnailURL + "\"]";
 	}
 }
