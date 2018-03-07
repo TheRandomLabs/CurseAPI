@@ -32,9 +32,9 @@ import org.jsoup.select.NodeTraversor;
 import org.jsoup.select.NodeVisitor;
 
 public final class DocumentUtils {
-	private static final Map<Element, Map<String, String>> values = new HashMap<>(150);
+	private static final Map<Element, Map<String, String>> values = new HashMap<>(3000);
 	private static final CacheMap<String, Document> documents =
-			new CacheMap<>(150, true, entry -> values.remove(entry.getValue()));
+			new CacheMap<>(3000, true, entry -> values.remove(entry.getValue()));
 
 	private DocumentUtils() {}
 
