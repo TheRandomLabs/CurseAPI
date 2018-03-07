@@ -10,8 +10,9 @@ import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 
 public class CurseFileList extends TRLList<CurseFile> {
-	public static final CurseFileList EMPTY = new CurseFileList();
 	private static final long serialVersionUID = 8733576650037056459L;
+
+	public static final CurseFileList EMPTY = new CurseFileList();
 
 	private CurseFileList(Collection<? extends CurseFile> files) {
 		super(files);
