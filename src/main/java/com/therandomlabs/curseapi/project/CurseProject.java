@@ -617,9 +617,10 @@ public final class CurseProject {
 							DocumentUtils.getValue(file, "class=version-label;text")
 					};
 				} else {
-					versions = DocumentUtils.getValue(file,
-							"class=additional-versions;attr=title").split("</div><div>");
-					versions[0] = versions[0].substring("<div>".length());
+					String value =
+							DocumentUtils.getValue(file, "class=additional-versions;attr=title");
+					value = value.substring(5, value.length() - 6);
+					versions = value.split("</div><div>");
 				}
 
 				final String fileSize =
