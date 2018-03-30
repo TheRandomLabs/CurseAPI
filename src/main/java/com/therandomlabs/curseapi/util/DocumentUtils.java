@@ -205,7 +205,7 @@ public final class DocumentUtils {
 	}
 
 	public static <E> TRLList<E> iteratePages(String baseURL, DocumentToList<E> documentToList,
-			RunnableWithInput<? super E> onElementAdd, StopSwitch stopSwitch)
+			RunnableWithInput<? super E> onElementAdd, StopSwitch stopSwitch, boolean threaded)
 			throws CurseException {
 		baseURL += "page=";
 
@@ -224,20 +224,17 @@ public final class DocumentUtils {
 
 		final Map<Integer, List<E>> allData = new HashMap<>();
 
-		try {
-			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), pages, page -> {
-				final TRLList<E> data = new TRLList<>(CurseProject.RELATIONS_PER_PAGE);
-				data.setOnAdd(onElementAdd);
-				allData.put(page, data);
-
-				if(stopSwitch != null && stopSwitch.isStopped()) {
-					return;
-				}
-
-				documentToList.documentToList(get(url + (page + 1)), data);
-			});
-		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
-			throw new CurseException(ex);
+		if(threaded) {
+			ThreadUtils.splitWorkload(
+					CurseAPI.getMaximumThreads(),
+					pages,
+					page -> iteratePage(documentToList, onElementAdd, stopSwitch, url,
+							allData, page)
+			);
+		} else {
+			for(int page = 0; page < pages; page++) {
+				iteratePage(documentToList, onElementAdd, stopSwitch, url, allData, page);
+			}
 		}
 
 		final TRLList<E> sortedList =
@@ -246,6 +243,24 @@ public final class DocumentUtils {
 			sortedList.addAll(allData.get(i));
 		}
 		return sortedList.toImmutableList();
+	}
+
+	private static <E> void iteratePage(DocumentToList<E> documentToList,
+			RunnableWithInput<? super E> onElementAdd, StopSwitch stopSwitch, String url,
+			Map<Integer, List<E>> allData, int page) throws CurseException {
+		try {
+			if(stopSwitch != null && stopSwitch.isStopped()) {
+				return;
+			}
+
+			final TRLList<E> data = new TRLList<>(CurseProject.RELATIONS_PER_PAGE);
+			data.setOnAdd(onElementAdd);
+			allData.put(page, data);
+
+			documentToList.documentToList(get(url + (page + 1)), data);
+		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
+			throw new CurseException(ex);
+		}
 	}
 
 	public static int getNumberOfPages(Document document) throws CurseException {

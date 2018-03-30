@@ -14,6 +14,8 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public static final CurseFileList EMPTY = new CurseFileList();
 
+	private boolean sortedByNewest;
+
 	private CurseFileList(Collection<? extends CurseFile> files) {
 		super(files);
 	}
@@ -36,27 +38,6 @@ public class CurseFileList extends TRLList<CurseFile> {
 		return files.isEmpty() ? EMPTY : new CurseFileList(filter(files));
 	}
 
-	public void sortByNewest() {
-		sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
-	}
-
-	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
-		final List<E> files = new ArrayList<>(collection);
-		files.removeIf(Objects::isNull);
-		final List<E> duplicates = new ArrayList<>();
-
-		for(int i = 0; i < files.size(); i++) {
-			for(int j = 0; j < files.size(); j++) {
-				if(i != j && files.get(i).id() == files.get(j).id()) {
-					duplicates.add(files.get(i));
-				}
-			}
-		}
-
-		files.removeAll(duplicates);
-		return files;
-	}
-
 	public static CurseFileList of(CurseFile... files) {
 		final CurseFileList list = ofUnsorted(files);
 		list.sortByNewest();
@@ -64,8 +45,41 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public static CurseFileList ofUnsorted(CurseFile... files) {
-		return files.length == 0 ?
-				EMPTY : new CurseFileList(filter(new ImmutableList<>(files)));
+		return files.length == 0 ? EMPTY : new CurseFileList(filter(new ImmutableList<>(files)));
+	}
+
+	public CurseFile latest() {
+		return isEmpty() ? null : get(0);
+	}
+
+	public CurseFile latest(Collection<String> versions) {
+		final CurseFileList byNewest;
+		if(sortedByNewest) {
+			byNewest = this;
+		} else {
+			byNewest = clone();
+			byNewest.sortByNewest();
+		}
+
+		for(CurseFile file : byNewest) {
+			if(file.gameVersions().containsAny(versions)) {
+				return file;
+			}
+		}
+
+		return null;
+	}
+
+	public CurseFile latest(String... versions) {
+		return latest(new ImmutableList<>(versions));
+	}
+
+	public CurseFile latest(MinecraftVersion... versions) {
+		return latest(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
+	}
+
+	public CurseFile latestWithMCVersionGroup(String version) {
+		return latest(MinecraftVersion.groupFromString(version));
 	}
 
 	public CurseFile fileWithID(int id) {
@@ -98,7 +112,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 		return lastFile;
 	}
 
-	public void newerThan(CurseFile oldFile) {
+	public void filterNewerThan(CurseFile oldFile) {
 		filter(file -> file.id() > oldFile.id());
 	}
 
@@ -127,17 +141,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public void filterVersions(MinecraftVersion... versions) {
-		final Set<MinecraftVersion> versionSet = new HashSet<>();
-
-		for(MinecraftVersion version : versions) {
-			if(version.isGroup()) {
-				versionSet.addAll(version.getVersions());
-			} else {
-				versionSet.add(version);
-			}
-		}
-
-		filterVersions(CollectionUtils.stringify(versionSet));
+		filterVersions(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
 	}
 
 	public void filterVersions(Collection<String> versions) {
@@ -169,6 +173,23 @@ public class CurseFileList extends TRLList<CurseFile> {
 		filter(file -> versions.contains(file.releaseType()));
 	}
 
+	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
+		final List<E> files = new ArrayList<>(collection);
+		files.removeIf(Objects::isNull);
+		final List<E> duplicates = new ArrayList<>();
+
+		for(int i = 0; i < files.size(); i++) {
+			for(int j = 0; j < files.size(); j++) {
+				if(i != j && files.get(i).id() == files.get(j).id()) {
+					duplicates.add(files.get(i));
+				}
+			}
+		}
+
+		files.removeAll(duplicates);
+		return files;
+	}
+
 	public void removeDuplicateProjects() {
 		final List<CurseFile> duplicates = new ArrayList<>();
 
@@ -188,12 +209,27 @@ public class CurseFileList extends TRLList<CurseFile> {
 		removeAll(duplicates);
 	}
 
+	public void sortByNewest() {
+		sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
+		sortedByNewest = true;
+	}
+
+	public boolean isSortedByNewest() {
+		return sortedByNewest;
+	}
+
 	public void sortByOldest() {
 		sort(Comparator.comparingInt(CurseFile::id));
 	}
 
 	public void sortByProjectTitle() {
 		sort(Comparator.comparing(CurseFile::projectTitle));
+	}
+
+	@Override
+	public void sort(Comparator<? super CurseFile> comparator) {
+		super.sort(comparator);
+		sortedByNewest = false;
 	}
 
 	@Override

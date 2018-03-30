@@ -7,12 +7,14 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
@@ -20,17 +22,27 @@ import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.file.ReleaseType;
+import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
-import com.therandomlabs.curseapi.widget.*;
+import com.therandomlabs.curseapi.widget.DownloadInfo;
+import com.therandomlabs.curseapi.widget.DownloadsInfo;
+import com.therandomlabs.curseapi.widget.FileInfo;
+import com.therandomlabs.curseapi.widget.MemberInfo;
+import com.therandomlabs.curseapi.widget.ProjectInfo;
+import com.therandomlabs.curseapi.widget.URLInfo;
+import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
+import com.therandomlabs.utils.collection.CollectionUtils;
+import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StopSwitch;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithInput;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
+import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -120,7 +132,7 @@ public final class CurseProject {
 	}
 
 	public static CurseProject fromSlug(CurseForgeSite site, String slug) throws CurseException {
-		return fromURL(site.url() + "projects/" + slug);
+		return fromURL(site.url() + "projects/" + slug, true);
 	}
 
 	public static CurseProject fromURL(String url) throws CurseException {
@@ -129,7 +141,7 @@ public final class CurseProject {
 
 	public static CurseProject fromURL(String url, boolean followRedirections)
 			throws CurseException {
-		return fromURL(URLUtils.url(url), false);
+		return fromURL(URLUtils.url(url), followRedirections);
 	}
 
 	public static void clearProjectCache() {
@@ -269,6 +281,47 @@ public final class CurseProject {
 		return categories;
 	}
 
+	public CurseFile latestFile() throws CurseException {
+		if(files != null) {
+			return files.latest();
+		}
+
+		final List<CurseFile> files = new TRLList<>();
+		getFiles(DocumentUtils.get(url + "/files?page=1"), files);
+		return files.get(0);
+	}
+
+	public CurseFile latestFile(Collection<String> versions) throws CurseException {
+		if(files != null) {
+			return files.latest(versions);
+		}
+
+		final Wrapper<CurseFile> latestFile = new Wrapper<>();
+		final StopSwitch stopSwitch = new StopSwitch();
+
+		DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+			if(!latestFile.isLocked() && file.gameVersions().containsAny(versions)) {
+				latestFile.set(file);
+				latestFile.lock();
+				stopSwitch.stop();
+			}
+		}, stopSwitch, false);
+
+		return latestFile.get();
+	}
+
+	public CurseFile latestFile(String... versions) throws CurseException {
+		return latestFile(new ImmutableList<>(versions));
+	}
+
+	public CurseFile latestFile(MinecraftVersion... versions) throws CurseException {
+		return latestFile(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
+	}
+
+	public CurseFile latestFileWithMCVersionGroup(String version) throws CurseException {
+		return latestFile(MinecraftVersion.groupFromString(version));
+	}
+
 	public CurseFileList files() throws CurseException {
 		return filesDirect().clone();
 	}
@@ -329,7 +382,7 @@ public final class CurseProject {
 
 		return DocumentUtils.iteratePages(baseURL,
 				(document, relations) -> documentToRelations(document, relations, relationType),
-				onRelationAdd, stopSwitch);
+				onRelationAdd, stopSwitch, true);
 	}
 
 	private void documentToRelations(Element document, List<Relation> relations,
@@ -411,7 +464,7 @@ public final class CurseProject {
 			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
 		}
 
-		if(!useWidgetAPI || mainCurseForgeURL == null) {
+		if(CurseAPI.isAvoidingWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
 			final int id = CurseForge.getID(url);
 			final Game game = site.game();
 			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
@@ -468,6 +521,10 @@ public final class CurseProject {
 			widgetInfo = new ProjectInfo(id, game, type, urls, title, donate, license, members,
 					downloads, thumbnail, createdAt, description, lastFetch);
 			widgetInfo.retrievedDirectly = false;
+
+			if(CurseAPI.isAvoidingWidgetAPI()) {
+				widgetInfo.failedToRetrieveDirectly = true;
+			}
 		} else {
 			try {
 				widgetInfo = WidgetAPI.get(mainCurseForgeURL.getPath());
@@ -516,7 +573,7 @@ public final class CurseProject {
 		}
 
 		if(widgetInfo.failedToRetrieveDirectly) {
-			files = DocumentUtils.iteratePages(url + "/files?", this::run, null, null);
+			files = DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, null, true);
 
 			widgetInfo.files = new FileInfo[files.size()];
 			for(int i = 0; i < files.size(); i++) {
@@ -538,7 +595,7 @@ public final class CurseProject {
 		this.files = CurseFileList.of(files);
 	}
 
-	private void run(Element document, List<CurseFile> files) throws CurseException {
+	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
 		try {
 			for(Element file : document.getElementsByClass("project-file-list-item")) {
 				final int id = Integer.parseInt(ArrayUtils.last(DocumentUtils.getValue(

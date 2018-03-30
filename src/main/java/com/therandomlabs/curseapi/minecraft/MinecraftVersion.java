@@ -1,5 +1,8 @@
 package com.therandomlabs.curseapi.minecraft;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import com.google.gson.annotations.SerializedName;
 import com.therandomlabs.utils.collection.TRLList;
 
@@ -199,6 +202,24 @@ public enum MinecraftVersion {
 			}
 		}
 		return null;
+	}
+
+	public static Set<MinecraftVersion> getVersions(Collection<MinecraftVersion> versions) {
+		return getVersions(versions.toArray(new MinecraftVersion[0]));
+	}
+
+	public static Set<MinecraftVersion> getVersions(MinecraftVersion... versions) {
+		final Set<MinecraftVersion> versionSet = new HashSet<>();
+
+		for(MinecraftVersion version : versions) {
+			if(version.isGroup()) {
+				versionSet.addAll(version.getVersions());
+			} else {
+				versionSet.add(version);
+			}
+		}
+
+		return versionSet;
 	}
 
 	public MinecraftVersion getGroup() {

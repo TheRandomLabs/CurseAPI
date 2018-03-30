@@ -12,6 +12,7 @@ public final class CurseAPI {
 
 	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
 	private static int maxRetries = 5;
+	private static boolean avoidWidgetAPI;
 
 	private CurseAPI() {}
 
@@ -31,6 +32,14 @@ public final class CurseAPI {
 	public static void setMaximumRetries(int retries) {
 		Assertions.positive(retries, "retries", false);
 		maxRetries = retries;
+	}
+
+	public static boolean isAvoidingWidgetAPI() {
+		return avoidWidgetAPI;
+	}
+
+	public static void avoidWidgetAPI(boolean flag) {
+		avoidWidgetAPI = flag;
 	}
 
 	public static void clearAllCache() {
