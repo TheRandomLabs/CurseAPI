@@ -315,12 +315,12 @@ public final class CurseProject {
 
 		final List<CurseFile> files =
 				DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
-			if(!latestFile.isLocked() && predicate.test(file)) {
-				latestFile.set(file);
-				latestFile.lock();
-				stopSwitch.stop();
-			}
-		}, stopSwitch, false);
+					if(!latestFile.isLocked() && predicate.test(file)) {
+						latestFile.set(file);
+						latestFile.lock();
+						stopSwitch.stop();
+					}
+				}, stopSwitch, false);
 		incompleteFiles.addAll(files);
 
 		return latestFile.get();

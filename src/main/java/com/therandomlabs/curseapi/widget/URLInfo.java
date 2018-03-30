@@ -10,6 +10,16 @@ public final class URLInfo implements Cloneable, Serializable {
 	public URL curseforge;
 
 	@Override
+	public int hashCode() {
+		return project.hashCode() + curseforge.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof URLInfo && object.hashCode() == hashCode();
+	}
+
+	@Override
 	public URLInfo clone() {
 		try {
 			return (URLInfo) super.clone();
@@ -21,15 +31,5 @@ public final class URLInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[project=\"" + project + "\",curseforge=\"" + curseforge + "\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return project.hashCode() + curseforge.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof URLInfo && object.hashCode() == hashCode();
 	}
 }

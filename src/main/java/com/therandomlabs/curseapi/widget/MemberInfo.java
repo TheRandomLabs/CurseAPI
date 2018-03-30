@@ -10,6 +10,16 @@ public final class MemberInfo implements Cloneable, Serializable {
 	public String username;
 
 	@Override
+	public int hashCode() {
+		return title.hashCode() + username.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof MemberInfo && object.hashCode() == hashCode();
+	}
+
+	@Override
 	public MemberInfo clone() {
 		try {
 			return (MemberInfo) super.clone();
@@ -21,15 +31,5 @@ public final class MemberInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[title=\"" + title + "\",username=\"" + username + "\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return title.hashCode() + username.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof MemberInfo && object.hashCode() == hashCode();
 	}
 }

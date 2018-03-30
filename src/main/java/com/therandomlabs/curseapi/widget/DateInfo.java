@@ -12,6 +12,16 @@ public final class DateInfo implements Cloneable, Serializable {
 	public String timezone;
 
 	@Override
+	public int hashCode() {
+		return date.hashCode() + timezone_type + timezone.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof DateInfo && object.hashCode() == hashCode();
+	}
+
+	@Override
 	public DateInfo clone() {
 		try {
 			return (DateInfo) super.clone();
@@ -25,15 +35,5 @@ public final class DateInfo implements Cloneable, Serializable {
 		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" +
 				timezone +
 				"\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return date.hashCode() + timezone_type + timezone.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof DateInfo && object.hashCode() == hashCode();
 	}
 }

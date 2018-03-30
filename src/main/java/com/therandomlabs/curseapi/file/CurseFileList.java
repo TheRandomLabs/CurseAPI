@@ -25,16 +25,25 @@ public class CurseFileList extends TRLList<CurseFile> {
 		}
 
 		@Override
+		public boolean addAll(@SuppressWarnings("unchecked") CurseFile... elements) {
+			throw new ImmutableCollectionException();
+		}		@Override
 		public boolean remove(Object object) {
 			throw new ImmutableCollectionException();
 		}
 
 		@Override
+		public boolean add(CurseFile file) {
+			throw new ImmutableCollectionException();
+		}		@Override
 		public boolean removeAll(Collection<?> collection) {
 			throw new ImmutableCollectionException();
 		}
 
 		@Override
+		public void add(int index, CurseFile file) {
+			throw new ImmutableCollectionException();
+		}		@Override
 		public boolean retainAll(Collection<?> collection) {
 			throw new ImmutableCollectionException();
 		}
@@ -54,25 +63,16 @@ public class CurseFileList extends TRLList<CurseFile> {
 			throw new ImmutableCollectionException();
 		}
 
-		@Override
-		public boolean addAll(@SuppressWarnings("unchecked") CurseFile... elements) {
-			throw new ImmutableCollectionException();
-		}
+
 
 		@Override
 		public CurseFile set(int index, CurseFile file) {
 			throw new ImmutableCollectionException();
 		}
 
-		@Override
-		public void add(int index, CurseFile file) {
-			throw new ImmutableCollectionException();
-		}
 
-		@Override
-		public boolean add(CurseFile file) {
-			throw new ImmutableCollectionException();
-		}
+
+
 
 		@Override
 		public CurseFile remove(int index) {
@@ -312,20 +312,20 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	@Override
+	public CurseFileList clone() {
+		return new CurseFileList(toArray());
+	}	@Override
 	public void sort(Comparator<? super CurseFile> comparator) {
 		super.sort(comparator);
 		sortedByNewest = false;
 	}
 
 	@Override
-	public CurseFileList clone() {
-		return new CurseFileList(toArray());
-	}
-
-	@Override
 	public CurseFile[] toArray() {
 		return toArray(new CurseFile[0]);
 	}
+
+
 
 	@Override
 	public boolean add(CurseFile file) {

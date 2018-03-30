@@ -9,6 +9,16 @@ public final class LinkInfo implements Cloneable, Serializable {
 	public String title;
 
 	@Override
+	public int hashCode() {
+		return href.hashCode() + title.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof LinkInfo && object.hashCode() == hashCode();
+	}
+
+	@Override
 	public LinkInfo clone() {
 		final LinkInfo info = new LinkInfo();
 
@@ -21,15 +31,5 @@ public final class LinkInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[href=\"" + href + ",title=\"" + title + "\"]";
-	}
-
-	@Override
-	public int hashCode() {
-		return href.hashCode() + title.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof LinkInfo && object.hashCode() == hashCode();
 	}
 }
