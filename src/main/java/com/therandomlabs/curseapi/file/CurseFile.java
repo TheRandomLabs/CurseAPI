@@ -57,6 +57,14 @@ public final class CurseFile {
 		url = URLUtils.url(project.urlString() + "/files/" + widgetInfo.id);
 	}
 
+	public String name() {
+		return widgetInfo.name;
+	}
+
+	public int id() {
+		return widgetInfo.id;
+	}
+
 	public String fileName() throws CurseException {
 		return NetworkUtils.getFileName(fileURL());
 	}
@@ -161,6 +169,10 @@ public final class CurseFile {
 		return NIOUtils.downloadToDirectory(fileURL(), directory);
 	}
 
+	public boolean matchesMinimumStability(ReleaseType releaseType) {
+		return releaseType.ordinal() >= releaseType().ordinal();
+	}
+
 	@Override
 	public int hashCode() {
 		return id();
@@ -178,13 +190,5 @@ public final class CurseFile {
 	@Override
 	public String toString() {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
-	}
-
-	public String name() {
-		return widgetInfo.name;
-	}
-
-	public int id() {
-		return widgetInfo.id;
 	}
 }

@@ -52,7 +52,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 		return isEmpty() ? null : get(0);
 	}
 
-	public CurseFile latest(Collection<String> versions) {
+	public CurseFile latest(Predicate<CurseFile> predicate) {
 		final CurseFileList byNewest;
 		if(sortedByNewest) {
 			byNewest = this;
@@ -62,12 +62,16 @@ public class CurseFileList extends TRLList<CurseFile> {
 		}
 
 		for(CurseFile file : byNewest) {
-			if(file.gameVersions().containsAny(versions)) {
+			if(predicate.test(file)) {
 				return file;
 			}
 		}
 
 		return null;
+	}
+
+	public CurseFile latest(Collection<String> versions) {
+		return latest(file -> file.gameVersions().containsAny(versions));
 	}
 
 	public CurseFile latest(String... versions) {

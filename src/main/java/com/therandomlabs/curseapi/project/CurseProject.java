@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -291,16 +292,16 @@ public final class CurseProject {
 		return files.get(0);
 	}
 
-	public CurseFile latestFile(Collection<String> versions) throws CurseException {
+	public CurseFile latestFile(Predicate<CurseFile> predicate) throws CurseException {
 		if(files != null) {
-			return files.latest(versions);
+			return files.latest(predicate);
 		}
 
 		final Wrapper<CurseFile> latestFile = new Wrapper<>();
 		final StopSwitch stopSwitch = new StopSwitch();
 
 		DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
-			if(!latestFile.isLocked() && file.gameVersions().containsAny(versions)) {
+			if(!latestFile.isLocked() && predicate.test(file)) {
 				latestFile.set(file);
 				latestFile.lock();
 				stopSwitch.stop();
@@ -310,16 +311,42 @@ public final class CurseProject {
 		return latestFile.get();
 	}
 
+	public CurseFile latestFile(Collection<String> versions) throws CurseException {
+		return latestFile(file -> file.gameVersions().containsAny(versions));
+	}
+
+	public CurseFile latestFile(Collection<String> versions, ReleaseType minimumStability)
+			throws CurseException {
+		return latestFile(file -> file.gameVersions().containsAny(versions) &&
+				file.matchesMinimumStability(minimumStability));
+	}
+
 	public CurseFile latestFile(String... versions) throws CurseException {
 		return latestFile(new ImmutableList<>(versions));
+	}
+
+	public CurseFile latestFile(ReleaseType minimumStability, String... versions)
+			throws CurseException {
+		return latestFile(new ImmutableList<>(versions), minimumStability);
 	}
 
 	public CurseFile latestFile(MinecraftVersion... versions) throws CurseException {
 		return latestFile(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
 	}
 
+	public CurseFile latestFile(ReleaseType minimumStability, MinecraftVersion... versions)
+			throws CurseException {
+		return latestFile(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)),
+				minimumStability);
+	}
+
 	public CurseFile latestFileWithMCVersionGroup(String version) throws CurseException {
 		return latestFile(MinecraftVersion.groupFromString(version));
+	}
+
+	public CurseFile latestFileWithMCVersionGroup(String version, ReleaseType minimumStability)
+			throws CurseException {
+		return latestFile(minimumStability, MinecraftVersion.groupFromString(version));
 	}
 
 	public CurseFileList files() throws CurseException {
