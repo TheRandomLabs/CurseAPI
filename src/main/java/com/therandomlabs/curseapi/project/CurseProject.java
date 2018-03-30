@@ -76,6 +76,7 @@ public final class CurseProject {
 	private CurseForgeSite site;
 	private ProjectInfo widgetInfo;
 	private CurseFileList files;
+	private CurseFileList incompleteFiles = CurseFileList.newEmpty();
 	private TRLList<Category> categories;
 
 	private CurseProject(int id) throws CurseException {
@@ -283,30 +284,44 @@ public final class CurseProject {
 	}
 
 	public CurseFile latestFile() throws CurseException {
-		if(files != null) {
-			return files.latest();
+		if(files != null || !CurseAPI.isAvoidingWidgetAPI()) {
+			return filesDirect().latest();
+		}
+
+		if(incompleteFiles != null) {
+			return incompleteFiles.latest();
 		}
 
 		final List<CurseFile> files = new TRLList<>();
 		getFiles(DocumentUtils.get(url + "/files?page=1"), files);
+		incompleteFiles.addAll(files);
 		return files.get(0);
 	}
 
 	public CurseFile latestFile(Predicate<CurseFile> predicate) throws CurseException {
-		if(files != null) {
-			return files.latest(predicate);
+		if(files != null || !CurseAPI.isAvoidingWidgetAPI()) {
+			return filesDirect().latest(predicate);
+		}
+
+		if(incompleteFiles != null) {
+			final CurseFile file = incompleteFiles.latest(predicate);
+			if(file != null) {
+				return file;
+			}
 		}
 
 		final Wrapper<CurseFile> latestFile = new Wrapper<>();
 		final StopSwitch stopSwitch = new StopSwitch();
 
-		DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+		final List<CurseFile> files =
+				DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
 			if(!latestFile.isLocked() && predicate.test(file)) {
 				latestFile.set(file);
 				latestFile.lock();
 				stopSwitch.stop();
 			}
 		}, stopSwitch, false);
+		incompleteFiles.addAll(files);
 
 		return latestFile.get();
 	}
@@ -353,6 +368,29 @@ public final class CurseProject {
 		return filesDirect().clone();
 	}
 
+	public CurseFileList filesBetween(int oldID, int newID) throws CurseException {
+		if(files != null || !CurseAPI.isAvoidingWidgetAPI()) {
+			final CurseFileList files = filesDirect().clone();
+			files.between(oldID, newID);
+			return files;
+		}
+
+		final StopSwitch stopSwitch = new StopSwitch();
+
+		final List<CurseFile> files =
+				DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+					//Not <= so these files can be used with fileClosestToID
+					if(file.id() < oldID) {
+						stopSwitch.stop();
+					}
+				}, stopSwitch, false);
+		incompleteFiles.addAll(files);
+
+		final CurseFileList fileList = CurseFileList.of(files);
+		fileList.between(oldID, newID);
+		return fileList;
+	}
+
 	private CurseFileList filesDirect() throws CurseException {
 		if(files == null) {
 			reloadFiles();
@@ -362,10 +400,46 @@ public final class CurseProject {
 	}
 
 	public CurseFile fileWithID(int id) throws CurseException {
+		if(files == null) {
+			final CurseFile file = incompleteFiles.fileWithID(id);
+			if(file != null) {
+				return file;
+			}
+		}
+
+		if(CurseAPI.isAvoidingWidgetAPI()) {
+			final Wrapper<CurseFile> fileWithID = new Wrapper<>();
+			final StopSwitch stopSwitch = new StopSwitch();
+
+			final List<CurseFile> files =
+					DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+						//Not <= so these files can be used with fileClosestToID
+						if(file.id() == id) {
+							fileWithID.set(file);
+							stopSwitch.stop();
+						}
+					}, stopSwitch, false);
+			incompleteFiles.addAll(files);
+
+			return fileWithID.get();
+		}
+
 		return filesDirect().fileWithID(id);
 	}
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
+		if(files == null) {
+			final CurseFile file = incompleteFiles.fileClosestToID(id, preferOlder);
+			if(file != null) {
+				return file;
+			}
+		}
+
+		if(CurseAPI.isAvoidingWidgetAPI()) {
+			filesBetween(Integer.MAX_VALUE, id);
+			return incompleteFiles.fileClosestToID(id, preferOlder);
+		}
+
 		return filesDirect().fileClosestToID(id, preferOlder);
 	}
 

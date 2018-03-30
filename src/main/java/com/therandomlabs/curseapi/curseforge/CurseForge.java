@@ -1,5 +1,9 @@
 package com.therandomlabs.curseapi.curseforge;
 
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.DocumentUtils;
@@ -8,12 +12,6 @@ import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
 import org.jsoup.select.Elements;
-
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.regex.Pattern;
-
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 public final class CurseForge {

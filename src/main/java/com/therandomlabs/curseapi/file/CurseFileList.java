@@ -1,10 +1,15 @@
 package com.therandomlabs.curseapi.file;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.utils.collection.CollectionUtils;
+import com.therandomlabs.utils.collection.ImmutableCollectionException;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
@@ -12,13 +17,81 @@ import com.therandomlabs.utils.collection.TRLList;
 public class CurseFileList extends TRLList<CurseFile> {
 	private static final long serialVersionUID = 8733576650037056459L;
 
-	public static final CurseFileList EMPTY = new CurseFileList();
+	public static final CurseFileList EMPTY = new EmptyCurseFileList();
+
+	private static class EmptyCurseFileList extends CurseFileList {
+		EmptyCurseFileList() {
+			super();
+		}
+
+		@Override
+		public boolean remove(Object object) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> collection) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> collection) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public void clear() {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends CurseFile> collection) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends CurseFile> collection) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean addAll(@SuppressWarnings("unchecked") CurseFile... elements) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public CurseFile set(int index, CurseFile file) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public void add(int index, CurseFile file) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean add(CurseFile file) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public CurseFile remove(int index) {
+			throw new ImmutableCollectionException();
+		}
+
+		@Override
+		public boolean removeIf(Predicate<? super CurseFile> filter) {
+			throw new ImmutableCollectionException();
+		}
+	}
 
 	private boolean sortedByNewest;
 
 	private CurseFileList(Collection<? extends CurseFile> files) {
 		super(files);
 	}
+
+	private CurseFileList() {}
 
 	private CurseFileList(CurseFile... files) {
 		super(files);
@@ -46,6 +119,10 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public static CurseFileList ofUnsorted(CurseFile... files) {
 		return files.length == 0 ? EMPTY : new CurseFileList(filter(new ImmutableList<>(files)));
+	}
+
+	public static CurseFileList newEmpty() {
+		return new CurseFileList();
 	}
 
 	public CurseFile latest() {
@@ -136,8 +213,12 @@ public class CurseFileList extends TRLList<CurseFile> {
 		filter(file -> file.id() <= newFile.id());
 	}
 
+	public void between(int oldID, int newID) {
+		filter(file -> file.id() > oldID && file.id() <= newID);
+	}
+
 	public void between(CurseFile oldFile, CurseFile newFile) {
-		filter(file -> file.id() > oldFile.id() && file.id() <= newFile.id());
+		between(oldFile.id(), newFile.id());
 	}
 
 	public void filterMCVersionGroup(String version) {
@@ -244,5 +325,22 @@ public class CurseFileList extends TRLList<CurseFile> {
 	@Override
 	public CurseFile[] toArray() {
 		return toArray(new CurseFile[0]);
+	}
+
+	@Override
+	public boolean add(CurseFile file) {
+		if(contains(file)) {
+			return false;
+		}
+
+		super.add(file);
+		return true;
+	}
+
+	@Override
+	public void add(int index, CurseFile file) {
+		if(!contains(file)) {
+			super.add(index, file);
+		}
 	}
 }
