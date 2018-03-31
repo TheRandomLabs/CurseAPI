@@ -78,6 +78,7 @@ public final class CurseProject {
 	private CurseFileList files;
 	private CurseFileList incompleteFiles = CurseFileList.newEmpty();
 	private TRLList<Category> categories;
+	private boolean avoidWidgetAPI = CurseAPI.isAvoidingWidgetAPI();
 
 	private CurseProject(int id) throws CurseException {
 		this(CurseForge.fromID(id));
@@ -93,61 +94,16 @@ public final class CurseProject {
 		projects.add(this);
 	}
 
-	public static CurseProject fromID(String id) throws CurseException {
-		return fromID(Integer.parseInt(id));
-	}
-
-	public static CurseProject fromID(int id) throws CurseException {
-		for(CurseProject project : projects) {
-			if(project.id() == id) {
-				return project;
-			}
-		}
-
-		return new CurseProject(id);
-	}
-
 	public int id() {
 		return widgetInfo.id;
 	}
 
-	public static CurseProject fromURL(URL url) throws CurseException {
-		return fromURL(url, false);
+	public String title() {
+		return widgetInfo.title;
 	}
 
-	public static CurseProject fromURL(URL url, boolean followRedirections) throws CurseException {
-		if(followRedirections) {
-			url = URLUtils.redirect(url);
-		}
-
-		for(CurseProject project : projects) {
-			if(url.equals(project.url)) {
-				return project;
-			}
-		}
-
-		return new CurseProject(url);
-	}
-
-	public static CurseProject fromSlug(String site, String slug) throws CurseException {
-		return fromSlug(CurseForgeSite.fromString(site), slug);
-	}
-
-	public static CurseProject fromSlug(CurseForgeSite site, String slug) throws CurseException {
-		return fromURL(site.url() + "projects/" + slug, true);
-	}
-
-	public static CurseProject fromURL(String url) throws CurseException {
-		return fromURL(url, false);
-	}
-
-	public static CurseProject fromURL(String url, boolean followRedirections)
-			throws CurseException {
-		return fromURL(URLUtils.url(url), followRedirections);
-	}
-
-	public static void clearProjectCache() {
-		projects.clear();
+	public Game game() {
+		return widgetInfo.game;
 	}
 
 	public URL url() {
@@ -283,8 +239,16 @@ public final class CurseProject {
 		return categories;
 	}
 
+	public boolean isAvoidingWidgetAPI() {
+		return avoidWidgetAPI;
+	}
+
+	public void avoidWidgetAPI(boolean flag) {
+		avoidWidgetAPI = flag;
+	}
+
 	public CurseFile latestFile() throws CurseException {
-		if(files != null || !CurseAPI.isAvoidingWidgetAPI()) {
+		if(files != null || !avoidWidgetAPI) {
 			return filesDirect().latest();
 		}
 
@@ -299,7 +263,7 @@ public final class CurseProject {
 	}
 
 	public CurseFile latestFile(Predicate<CurseFile> predicate) throws CurseException {
-		if(files != null || !CurseAPI.isAvoidingWidgetAPI()) {
+		if(files != null || !avoidWidgetAPI) {
 			return filesDirect().latest(predicate);
 		}
 
@@ -369,7 +333,7 @@ public final class CurseProject {
 	}
 
 	public CurseFileList filesBetween(int oldID, int newID) throws CurseException {
-		if(files != null || !CurseAPI.isAvoidingWidgetAPI()) {
+		if(files != null || !avoidWidgetAPI) {
 			final CurseFileList files = filesDirect().clone();
 			files.between(oldID, newID);
 			return files;
@@ -407,7 +371,7 @@ public final class CurseProject {
 			}
 		}
 
-		if(CurseAPI.isAvoidingWidgetAPI()) {
+		if(avoidWidgetAPI) {
 			final Wrapper<CurseFile> fileWithID = new Wrapper<>();
 			final StopSwitch stopSwitch = new StopSwitch();
 
@@ -435,7 +399,7 @@ public final class CurseProject {
 			}
 		}
 
-		if(CurseAPI.isAvoidingWidgetAPI()) {
+		if(avoidWidgetAPI) {
 			filesBetween(Integer.MAX_VALUE, id);
 			return incompleteFiles.fileClosestToID(id, preferOlder);
 		}
@@ -565,7 +529,7 @@ public final class CurseProject {
 			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
 		}
 
-		if(CurseAPI.isAvoidingWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
+		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
 			final int id = CurseForge.getID(url);
 			final Game game = site.game();
 			final String type = DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2];
@@ -623,7 +587,7 @@ public final class CurseProject {
 					downloads, thumbnail, createdAt, description, lastFetch);
 			widgetInfo.retrievedDirectly = false;
 
-			if(CurseAPI.isAvoidingWidgetAPI()) {
+			if(avoidWidgetAPI) {
 				widgetInfo.failedToRetrieveDirectly = true;
 			}
 		} else {
@@ -783,11 +747,56 @@ public final class CurseProject {
 				"[id=" + id() + ",title=" + title() + ",game=" + game() + "]";
 	}
 
-	public String title() {
-		return widgetInfo.title;
+	public static CurseProject fromID(String id) throws CurseException {
+		return fromID(Integer.parseInt(id));
 	}
 
-	public Game game() {
-		return widgetInfo.game;
+	public static CurseProject fromID(int id) throws CurseException {
+		for(CurseProject project : projects) {
+			if(project.id() == id) {
+				return project;
+			}
+		}
+
+		return new CurseProject(id);
+	}
+
+	public static CurseProject fromURL(URL url) throws CurseException {
+		return fromURL(url, false);
+	}
+
+	public static CurseProject fromURL(URL url, boolean followRedirections) throws CurseException {
+		if(followRedirections) {
+			url = URLUtils.redirect(url);
+		}
+
+		for(CurseProject project : projects) {
+			if(url.equals(project.url)) {
+				return project;
+			}
+		}
+
+		return new CurseProject(url);
+	}
+
+	public static CurseProject fromSlug(String site, String slug) throws CurseException {
+		return fromSlug(CurseForgeSite.fromString(site), slug);
+	}
+
+	public static CurseProject fromSlug(CurseForgeSite site, String slug) throws CurseException {
+		return fromURL(site.url() + "projects/" + slug, true);
+	}
+
+	public static CurseProject fromURL(String url) throws CurseException {
+		return fromURL(url, false);
+	}
+
+	public static CurseProject fromURL(String url, boolean followRedirections)
+			throws CurseException {
+		return fromURL(URLUtils.url(url), followRedirections);
+	}
+
+	public static void clearProjectCache() {
+		projects.clear();
 	}
 }
