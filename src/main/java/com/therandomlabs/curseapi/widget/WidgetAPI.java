@@ -10,6 +10,7 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.utils.network.NetworkUtils;
+import com.therandomlabs.utils.wrapper.Wrapper;
 
 /**
  * Handles interactions with Curse's widget API.
@@ -35,50 +36,36 @@ public final class WidgetAPI {
 			return cache.get(path).clone();
 		}
 
-		try {
-			final String jsonURL = WIDGET_API_URL + path;
+		final String urlPath = path;
+		final String jsonURL = WIDGET_API_URL + path;
+		final Wrapper<ProjectInfo> info = new Wrapper<>();
 
+		CurseAPI.doWithRetries(() -> info.set(doGet(urlPath, jsonURL)));
+
+		cache.put(path, info.get());
+		return info.get().clone();
+	}
+
+	private static ProjectInfo doGet(String path, String jsonURL) throws CurseException {
+		try {
 			CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(jsonURL));
-			String json = NetworkUtils.read(jsonURL);
+			final String json = NetworkUtils.read(jsonURL);
 			CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(jsonURL));
 
 			if(json == null) {
 				CurseException.unavailable();
 			}
 
-			ProjectInfo info = new Gson().fromJson(json, ProjectInfo.class);
+			final ProjectInfo info = new Gson().fromJson(json, ProjectInfo.class);
 
 			if(info.error != null) {
-				int tries = 0;
-				while(info.error != null && (info.error.equals("in_queue") ||
-						info.error.equals("redirect_failed")) &&
-						tries++ < CurseAPI.getMaximumRetries()) {
-					//This means this JSON isn't in the database. It should be pretty soon though,
-					//so we try again.
-
-					CurseEventHandling.forEach(handler -> handler.retryingJSON(5));
-
-					try {
-						Thread.sleep(5000L);
-					} catch(InterruptedException ex) {
-						throw new CurseException(ex);
-					}
-
-					json = NetworkUtils.read(jsonURL);
-					info = new Gson().fromJson(json, ProjectInfo.class);
-				}
-
-				//If there is still an error
-				if(info.error != null) {
-					throw new CurseException("The error \"" + info.error +
-							"\" has occurred while using the widget API. Error message: " +
-							info.message);
-				}
+				throw new CurseException("The error \"" + info.error +
+						"\" occurred while using the widget API. Error message: " +
+						info.message);
 			}
 
 			info.json = json;
-			cache.put(path, info);
-			return info.clone();
+			return info;
 		} catch(IOException | JsonSyntaxException ex) {
 			if(ex instanceof MalformedURLException || ex.getMessage().contains("400 for URL")) {
 				throw new CurseException(path + " is not a valid URL path");

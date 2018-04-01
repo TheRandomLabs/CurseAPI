@@ -56,6 +56,18 @@ public final class CurseProject {
 
 	private static final List<CurseProject> projects = new CopyOnWriteArrayList<>();
 
+	private final Map<RelationType, TRLList<Relation>> dependencies = new HashMap<>();
+	private final Map<RelationType, TRLList<Relation>> dependents = new HashMap<>();
+	private URL url;
+	private URL mainCurseForgeURL;
+	private CurseForgeSite site;
+	private ProjectInfo widgetInfo;
+	private CurseFileList files;
+	//Incomplete list of files used as a cache
+	private CurseFileList incompleteFiles = CurseFileList.newEmpty();
+	private TRLList<Category> categories;
+	private boolean avoidWidgetAPI = CurseAPI.isAvoidingWidgetAPI();
+
 	static {
 		URL placeholder = null;
 
@@ -68,17 +80,6 @@ public final class CurseProject {
 
 		PLACEHOLDER_THUMBNAIL = placeholder;
 	}
-
-	private final Map<RelationType, TRLList<Relation>> dependencies = new HashMap<>();
-	private final Map<RelationType, TRLList<Relation>> dependents = new HashMap<>();
-	private URL url;
-	private URL mainCurseForgeURL;
-	private CurseForgeSite site;
-	private ProjectInfo widgetInfo;
-	private CurseFileList files;
-	private CurseFileList incompleteFiles = CurseFileList.newEmpty();
-	private TRLList<Category> categories;
-	private boolean avoidWidgetAPI = CurseAPI.isAvoidingWidgetAPI();
 
 	private CurseProject(int id) throws CurseException {
 		this(CurseForge.fromID(id));

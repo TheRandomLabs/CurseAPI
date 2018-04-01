@@ -11,5 +11,5 @@ public interface CurseEventHandler {
 
 	default void postDownloadDocument(String url) throws CurseException {}
 
-	default void retryingJSON(int retryingIn) throws CurseException {}
+	default void retrying(Exception exception, int retryingIn) throws CurseException {}
 }

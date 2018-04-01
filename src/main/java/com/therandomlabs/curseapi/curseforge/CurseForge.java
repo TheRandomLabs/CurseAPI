@@ -11,6 +11,7 @@ import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
+import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.select.Elements;
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 
@@ -168,6 +169,12 @@ public final class CurseForge {
 			DocumentUtils.get(url, "class=overview;index=0");
 		} catch(IndexOutOfBoundsException | NullPointerException ex) {
 			return false;
+		} catch(CurseException ex) {
+			if(ex.getCause() instanceof FileNotFoundException) {
+				return false;
+			}
+
+			throw ex;
 		}
 
 		return true;
@@ -205,23 +212,27 @@ public final class CurseForge {
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
 
-		final URL project = URLUtils.redirect(URL + "projects/" + projectID);
+		final Wrapper<URL> project = new Wrapper<>();
 
-		if(!is(project) || !PROJECT_PATH_PATTERN.matcher(project.getPath()).matches()) {
-			CurseException.invalidProjectID(projectID);
-		}
+		CurseAPI.doWithRetries(() -> {
+			project.set(URLUtils.redirect(URL + "projects/" + projectID));
 
-		//The project may have been deleted
-		try {
-			DocumentUtils.get(project);
-		} catch(CurseException ex) {
-			if(ex.getCause() instanceof FileNotFoundException) {
+			if(!is(project.get()) ||
+					!PROJECT_PATH_PATTERN.matcher(project.get().getPath()).matches()) {
 				CurseException.invalidProjectID(projectID);
 			}
-			CurseException.invalidProjectID(projectID, ex);
-		}
 
-		return project;
+			try {
+				DocumentUtils.get(project.get());
+			} catch(CurseException ex) {
+				if(ex.getCause() instanceof FileNotFoundException) {
+					CurseException.invalidProjectID(projectID);
+				}
+				CurseException.invalidProjectID(projectID, ex);
+			}
+		});
+
+		return project.get();
 	}
 
 	public static int getFileID(String url) throws CurseException {

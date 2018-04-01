@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.utils.runnable.RunnableWithInputAndThrowable;
+import com.therandomlabs.utils.throwable.ThrowableHandling;
 import com.therandomlabs.utils.wrapper.Wrapper;
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 
@@ -65,9 +66,10 @@ public final class CurseEventHandling {
 		}
 
 		@Override
-		public void retryingJSON(int retryingIn) {
-			getLogger().debug("The requested JSON is not in the database yet. " +
-					"Retrying in %s seconds...", retryingIn);
+		public void retrying(Exception exception, int retryingIn) {
+			getLogger().warning("An unexpected error occurred:");
+			ThrowableHandling.handleWithoutExit(exception);
+			getLogger().warning("Retrying in %d seconds...", retryingIn);
 		}
 	}
 }
