@@ -312,7 +312,7 @@ public final class DocumentUtils {
 		private final int maxWidth;
 		private final StringBuilder text = new StringBuilder();
 		private int width = 0;
-		private int h3s;
+		//private int h3s;
 
 		FormattingVisitor(int maxWidth) {
 			this.maxWidth = maxWidth < 1 ? Integer.MAX_VALUE : maxWidth;
@@ -321,9 +321,9 @@ public final class DocumentUtils {
 		//Hit when the node is first seen
 		@Override
 		public void head(Node node, int depth) {
-			if(h3s > 1) {
-				return;
-			}
+			//if(h3s > 1) {
+			//	return;
+			//}
 
 			final String name = node.nodeName();
 
@@ -339,19 +339,19 @@ public final class DocumentUtils {
 			} else if(StringUtil.in(name, "p", "h1", "h2", "h3", "h4", "h5", "tr")) {
 				append("\n");
 
-				if(name.equals("h3")) {
-					//Just for you, mezz, and your ridiculously long changelogs.
-					h3s++;
-				}
+				//if(name.equals("h3")) {
+				//	//Just for you, mezz, and your ridiculously long changelogs.
+				//	h3s++;
+				//}
 			}
 		}
 
 		//Hit when all of the node's children (if any) have been visited
 		@Override
 		public void tail(Node node, int depth) {
-			if(h3s > 1) {
-				return;
-			}
+			//if(h3s > 1) {
+			//	return;
+			//}
 
 			final String name = node.nodeName();
 
