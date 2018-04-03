@@ -46,16 +46,16 @@ public final class ProjectType {
 		return values.toArray(new ProjectType[0]);
 	}
 
+	public static ProjectType[] values(CurseForgeSite site) {
+		return values.stream().filter(type -> type.site == site).toArray(ProjectType[]::new);
+	}
+
 	public static ProjectType get(CurseForgeSite site, String name) {
 		return valueOf(values(site), name);
 	}
 
 	static ProjectType valueOf(ProjectType[] values, String name) {
 		return valueOf(new ImmutableList<>(values), name);
-	}
-
-	public static ProjectType[] values(CurseForgeSite site) {
-		return values.stream().filter(type -> type.site == site).toArray(ProjectType[]::new);
 	}
 
 	static ProjectType valueOf(Collection<ProjectType> values, String name) {

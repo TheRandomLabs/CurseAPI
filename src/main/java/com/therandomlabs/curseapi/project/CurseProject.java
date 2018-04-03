@@ -27,7 +27,6 @@ import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
-import com.therandomlabs.curseapi.widget.DownloadInfo;
 import com.therandomlabs.curseapi.widget.DownloadsInfo;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.curseapi.widget.MemberInfo;
@@ -47,8 +46,8 @@ import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-//TODO Images, Issues, Source, Pages, Wiki, Get number of relations,
-//get relations on a specific page
+//TODO Images, Issues, Source, Pages, Wiki, Get number of relations, get relations on specific page
+//TODO don't rely on ProjectInfo to store information - just store as local fields
 public final class CurseProject {
 	public static final URL PLACEHOLDER_THUMBNAIL;
 
@@ -187,17 +186,7 @@ public final class CurseProject {
 	}
 
 	public ZonedDateTime lastUpdateTime() throws CurseException {
-		if(widgetInfo.files == null) {
-			reloadFiles();
-		}
-		return MiscUtils.parseTime(widgetInfo.files[0].uploaded_at);
-	}
-
-	public ReleaseType releaseType() throws CurseException {
-		if(widgetInfo.files == null) {
-			reloadFiles();
-		}
-		return widgetInfo.files[0].type;
+		return latestFile().uploadTime();
 	}
 
 	public URL donateURL() {
@@ -278,14 +267,20 @@ public final class CurseProject {
 		final Wrapper<CurseFile> latestFile = new Wrapper<>();
 		final StopSwitch stopSwitch = new StopSwitch();
 
-		final List<CurseFile> files =
-				DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+		final List<CurseFile> files = DocumentUtils.iteratePages(
+				url + "/files?",
+				this::getFiles,
+				file -> {
 					if(!latestFile.isLocked() && predicate.test(file)) {
 						latestFile.set(file);
 						latestFile.lock();
 						stopSwitch.stop();
 					}
-				}, stopSwitch, false);
+				},
+				stopSwitch,
+				false
+		);
+
 		incompleteFiles.addAll(files);
 
 		return latestFile.get();
@@ -342,13 +337,19 @@ public final class CurseProject {
 
 		final StopSwitch stopSwitch = new StopSwitch();
 
-		final List<CurseFile> files =
-				DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+		final List<CurseFile> files = DocumentUtils.iteratePages(
+				url + "/files?",
+				this::getFiles,
+				file -> {
 					//Not <= so these files can be used with fileClosestToID
 					if(file.id() < oldID) {
 						stopSwitch.stop();
 					}
-				}, stopSwitch, false);
+				},
+				stopSwitch,
+				false
+		);
+
 		incompleteFiles.addAll(files);
 
 		final CurseFileList fileList = CurseFileList.of(files);
@@ -365,8 +366,10 @@ public final class CurseProject {
 	}
 
 	public CurseFile fileWithID(int id) throws CurseException {
+		CurseFile file;
+
 		if(files == null) {
-			final CurseFile file = incompleteFiles.fileWithID(id);
+			file = incompleteFiles.fileWithID(id);
 			if(file != null) {
 				return file;
 			}
@@ -376,25 +379,44 @@ public final class CurseProject {
 			final Wrapper<CurseFile> fileWithID = new Wrapper<>();
 			final StopSwitch stopSwitch = new StopSwitch();
 
-			final List<CurseFile> files =
-					DocumentUtils.iteratePages(url + "/files?", this::getFiles, file -> {
+			final List<CurseFile> files = DocumentUtils.iteratePages(
+					url + "/files?",
+					this::getFiles,
+					file2 -> {
 						//Not <= so these files can be used with fileClosestToID
-						if(file.id() == id) {
-							fileWithID.set(file);
+						if(file2.id() < id) {
+							fileWithID.set(file2);
 							stopSwitch.stop();
 						}
-					}, stopSwitch, false);
+					},
+					stopSwitch,
+					false
+			);
+
 			incompleteFiles.addAll(files);
 
-			return fileWithID.get();
+			if(fileWithID.hasValue()) {
+				return fileWithID.get();
+			}
 		}
 
-		return filesDirect().fileWithID(id);
+		file = filesDirect().fileWithID(id);
+		if(file != null) {
+			return file;
+		}
+
+		//TODO CurseMeta
+		return null;
 	}
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
+		CurseFile file = fileWithID(id);
+		if(file != null) {
+			return file;
+		}
+
 		if(files == null) {
-			final CurseFile file = incompleteFiles.fileClosestToID(id, preferOlder);
+			file = incompleteFiles.fileClosestToID(id, preferOlder);
 			if(file != null) {
 				return file;
 			}
@@ -466,8 +488,6 @@ public final class CurseProject {
 	private Relation getRelationInfo(Element element, URL url, RelationType relationType)
 			throws CurseException {
 		final String title = DocumentUtils.getValue(element, "class=name-wrapper;tag=a;text");
-		final URL authorURL =
-				URLUtils.url(DocumentUtils.getValue(element, "tag=span;tag=a;absUrl=href"));
 		final String author = DocumentUtils.getValue(element, "tag=span;tag=a;text");
 		final int downloads = Integer.parseInt(DocumentUtils.getValue(
 				element, "class=e-download-count;text").replaceAll(",", ""));
@@ -478,7 +498,7 @@ public final class CurseProject {
 		final Category[] categories = getCategories(
 				element.getElementsByClass("category-icons")).toArray(new Category[0]);
 
-		return new Relation(url, title, authorURL, author, downloads, lastUpdateTime,
+		return new Relation(url, title, author, downloads, lastUpdateTime,
 				shortDescription, categories, this, relationType);
 	}
 
@@ -640,14 +660,6 @@ public final class CurseProject {
 
 		if(widgetInfo.failedToRetrieveDirectly) {
 			files = DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, null, true);
-
-			widgetInfo.files = new FileInfo[files.size()];
-			for(int i = 0; i < files.size(); i++) {
-				widgetInfo.files[i] = files.get(i).widgetInfo();
-			}
-
-			widgetInfo.download = widgetInfo.files.length == 0 ?
-					null : DownloadInfo.fromFileInfo(widgetInfo.files[0]);
 		} else {
 			files = new ArrayList<>(widgetInfo.versions.size());
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfo.versions.entrySet()) {

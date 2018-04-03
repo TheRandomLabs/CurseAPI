@@ -5,12 +5,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.cursemeta.AddOnFile;
+import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
@@ -28,49 +29,86 @@ import org.jsoup.nodes.Element;
 //TODO Additional Files
 public final class CurseFile {
 	private final CurseProject project;
-	private final FileInfo widgetInfo;
-
-	private final TRLList<String> gameVersions;
-	private final MinecraftVersion minecraftVersion;
-	private final List<MinecraftVersion> minecraftVersions;
+	private final FileStatus status;
 
 	private final URL url;
 
-	public CurseFile(CurseProject project, FileInfo widgetInfo) throws CurseException {
-		this.project = project;
-		this.widgetInfo = widgetInfo;
+	private final int id;
+	private final String name;
+	private String nameOnDisk;
+	private URL downloadURL;
+	private final ReleaseType releaseType;
+	private final ZonedDateTime uploadTime;
+	private String fileSize;
+	private final int downloads;
+	private final TRLList<CurseProject> dependencies;
 
-		gameVersions = new ImmutableList<>(widgetInfo.versions);
+	private final TRLList<String> gameVersions;
+	private final TRLList<MinecraftVersion> minecraftVersions;
+
+	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
+		this(project, info.fileStatus, info.id, info.fileName, info.fileNameOnDisk,
+				info.downloadURL, info.releaseType, info.fileDate, null, -1,
+				AddOnFileDependency.toProjects(info.dependencies),
+				info.gameVersion.toArray(new String[0]));
+	}
+
+	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
+		this(project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
+				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
+	}
+
+	public CurseFile(CurseProject project, FileStatus status, int id, String name,
+			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
+			String fileSize, int downloads, TRLList<CurseProject> dependencies,
+			String[] gameVersions) throws CurseException {
+		this.project = project;
+		this.status = status;
+
+		url = URLUtils.url(project.urlString() + "/files/" + id);
+
+		this.id = id;
+		this.name = name;
+		this.nameOnDisk = nameOnDisk;
+		this.downloadURL = downloadURL;
+		this.releaseType = releaseType;
+		this.uploadTime = MiscUtils.parseTime(uploadTime);
+		this.fileSize = fileSize;
+		this.downloads = downloads;
+		this.dependencies =
+				dependencies == null ? getDependencies(url) : dependencies.toImmutableList();
+
+		this.gameVersions = new ImmutableList<>(gameVersions);
 
 		if(project.game() == Game.MINECRAFT) {
 			final TRLList<MinecraftVersion> minecraftVersions =
-					CollectionUtils.convert(gameVersions, MinecraftVersion::fromString);
+					CollectionUtils.convert(this.gameVersions, MinecraftVersion::fromString);
 			minecraftVersions.removeIf(Objects::isNull);
 			minecraftVersions.sort();
 			this.minecraftVersions = minecraftVersions.toImmutableList();
-			minecraftVersion = minecraftVersions.get(0);
 		} else {
-			minecraftVersion = null;
 			minecraftVersions = null;
 		}
-
-		url = URLUtils.url(project.urlString() + "/files/" + widgetInfo.id);
 	}
 
-	public String name() {
-		return widgetInfo.name;
+	public FileStatus status() {
+		return status;
 	}
 
 	public int id() {
-		return widgetInfo.id;
+		return id;
 	}
 
-	public String fileName() throws CurseException {
-		return NetworkUtils.getFileName(fileURL());
+	public String name() {
+		return name;
 	}
 
-	public URL fileURL() throws CurseException {
-		return CurseForge.getFileURL(project.id(), widgetInfo.id);
+	public String nameOnDisk() throws CurseException {
+		if(nameOnDisk == null) {
+			nameOnDisk = DocumentUtils.getValue(url, "class=details-info;class=info-data;text");
+		}
+
+		return nameOnDisk;
 	}
 
 	public URL url() {
@@ -81,16 +119,28 @@ public final class CurseFile {
 		return url.toString();
 	}
 
-	public String fileURLString() throws CurseException {
-		return fileURL().toString();
+	public URL downloadURL() throws CurseException {
+		if(downloadURL == null) {
+			downloadURL = CurseForge.getFileURL(project.id(), id);
+		}
+
+		return downloadURL;
+	}
+
+	public String downloadURLString() throws CurseException {
+		return downloadURL().toString();
 	}
 
 	public ReleaseType releaseType() {
-		return widgetInfo.type;
+		return releaseType;
+	}
+
+	public TRLList<CurseProject> dependencies() {
+		return dependencies;
 	}
 
 	public String gameVersion() {
-		return widgetInfo.version;
+		return gameVersions.get(0);
 	}
 
 	public TRLList<String> gameVersions() {
@@ -98,30 +148,34 @@ public final class CurseFile {
 	}
 
 	public MinecraftVersion minecraftVersion() {
-		return minecraftVersion;
+		return minecraftVersions.get(0);
 	}
 
-	public List<MinecraftVersion> minecraftVersions() {
+	public TRLList<MinecraftVersion> minecraftVersions() {
 		return minecraftVersions;
 	}
 
 	public ZonedDateTime uploadTime() {
-		return MiscUtils.parseTime(widgetInfo.uploaded_at);
+		return uploadTime;
 	}
 
-	public String fileSize() {
-		return widgetInfo.filesize;
+	public String fileSize() throws CurseException {
+		if(fileSize == null) {
+			fileSize = DocumentUtils.getValue(url, "class=details-info;class=info-data=3;text");
+		}
+
+		return fileSize;
 	}
 
 	public int downloads() {
-		return widgetInfo.downloads;
+		return downloads;
 	}
 
 	public String md5() throws CurseException {
 		return DocumentUtils.getValue(url, "class=md5;text");
 	}
 
-	public boolean changelogProvided() throws CurseException {
+	public boolean hasChangelog() throws CurseException {
 		String changelog = changelog().trim().toLowerCase(Locale.ENGLISH);
 		if(StringUtils.lastChar(changelog) == '.') {
 			changelog = StringUtils.removeLastChar(changelog);
@@ -153,20 +207,16 @@ public final class CurseFile {
 		return project.title();
 	}
 
-	public FileInfo widgetInfo() {
-		return widgetInfo.clone();
-	}
-
 	public InputStream download() throws CurseException, IOException {
-		return NetworkUtils.download(fileURL());
+		return NetworkUtils.download(downloadURL());
 	}
 
 	public Path download(Path location) throws CurseException, IOException {
-		return NIOUtils.download(fileURL(), location);
+		return NIOUtils.download(downloadURL(), location);
 	}
 
 	public Path downloadToDirectory(Path directory) throws CurseException, IOException {
-		return NIOUtils.downloadToDirectory(fileURL(), directory);
+		return NIOUtils.downloadToDirectory(downloadURL(), directory);
 	}
 
 	public boolean matchesMinimumStability(ReleaseType releaseType) {
@@ -190,5 +240,11 @@ public final class CurseFile {
 	@Override
 	public String toString() {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
+	}
+
+	@SuppressWarnings("all")
+	private static TRLList<CurseProject> getDependencies(URL url) throws CurseException {
+		//TODO parse from HTML
+		return null;
 	}
 }

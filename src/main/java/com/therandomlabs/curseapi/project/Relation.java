@@ -3,12 +3,13 @@ package com.therandomlabs.curseapi.project;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.util.MiscUtils;
+import com.therandomlabs.curseapi.util.URLUtils;
 
 public final class Relation {
 	private final URL url;
 	private final String title;
-	private final URL authorURL;
 	private final String author;
 	private final int downloads;
 	private final long lastUpdateTime;
@@ -18,12 +19,11 @@ public final class Relation {
 	private final CurseProject relatedFrom;
 	private final RelationType relationType;
 
-	Relation(URL url, String title, URL authorURL, String author, int downloads,
+	Relation(URL url, String title, String author, int downloads,
 			long lastUpdateTime, String shortDescription, Category[] categories,
 			CurseProject relatedFrom, RelationType relationType) {
 		this.url = url;
 		this.title = title;
-		this.authorURL = authorURL;
 		this.author = author;
 		this.downloads = downloads;
 		this.lastUpdateTime = lastUpdateTime;
@@ -46,12 +46,12 @@ public final class Relation {
 		return title;
 	}
 
-	public URL authorURL() {
-		return authorURL;
+	public URL authorURL() throws CurseException {
+		return URLUtils.url(authorURLString());
 	}
 
 	public String authorURLString() {
-		return authorURL.toString();
+		return CurseForge.URL + "members/" + author;
 	}
 
 	public String author() {

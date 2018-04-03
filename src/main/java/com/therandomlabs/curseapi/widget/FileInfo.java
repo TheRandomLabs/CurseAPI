@@ -19,8 +19,8 @@ public final class FileInfo implements Cloneable, Serializable {
 
 	public FileInfo() {}
 
-	public FileInfo(int id, URL url, String name, ReleaseType type,
-			String[] versions, String filesize, int downloads, String uploadedAt) {
+	public FileInfo(int id, URL url, String name, ReleaseType type, String[] versions,
+			String filesize, int downloads, String uploadedAt) {
 		this.id = id;
 		this.url = url;
 		this.name = name;

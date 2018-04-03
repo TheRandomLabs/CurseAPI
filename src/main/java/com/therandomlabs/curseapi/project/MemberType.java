@@ -20,7 +20,7 @@ public enum MemberType {
 	AUTHOR("Author"),
 	@SerializedName("Former Author")
 	FORMER_AUTHOR("Former Author"),
-	//Apparently it's mispelt
+	//Apparently it's misspelt
 	@SerializedName("Ticket Manger")
 	TICKET_MANAGER("Ticket Manger"),
 	@SerializedName("Tester")
