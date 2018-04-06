@@ -20,6 +20,8 @@ public class CurseFileList extends TRLList<CurseFile> {
 	public static final CurseFileList EMPTY = new EmptyCurseFileList();
 
 	private static class EmptyCurseFileList extends CurseFileList {
+		private static final long serialVersionUID = -1451778220667862580L;
+
 		EmptyCurseFileList() {
 			super();
 		}
@@ -27,7 +29,9 @@ public class CurseFileList extends TRLList<CurseFile> {
 		@Override
 		public boolean addAll(@SuppressWarnings("unchecked") CurseFile... elements) {
 			throw new ImmutableCollectionException();
-		}		@Override
+		}
+
+		@Override
 		public boolean remove(Object object) {
 			throw new ImmutableCollectionException();
 		}
@@ -35,7 +39,9 @@ public class CurseFileList extends TRLList<CurseFile> {
 		@Override
 		public boolean add(CurseFile file) {
 			throw new ImmutableCollectionException();
-		}		@Override
+		}
+
+		@Override
 		public boolean removeAll(Collection<?> collection) {
 			throw new ImmutableCollectionException();
 		}
@@ -43,7 +49,9 @@ public class CurseFileList extends TRLList<CurseFile> {
 		@Override
 		public void add(int index, CurseFile file) {
 			throw new ImmutableCollectionException();
-		}		@Override
+		}
+
+		@Override
 		public boolean retainAll(Collection<?> collection) {
 			throw new ImmutableCollectionException();
 		}
@@ -63,16 +71,10 @@ public class CurseFileList extends TRLList<CurseFile> {
 			throw new ImmutableCollectionException();
 		}
 
-
-
 		@Override
 		public CurseFile set(int index, CurseFile file) {
 			throw new ImmutableCollectionException();
 		}
-
-
-
-
 
 		@Override
 		public CurseFile remove(int index) {
