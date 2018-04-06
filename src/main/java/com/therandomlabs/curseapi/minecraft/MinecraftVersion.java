@@ -241,6 +241,22 @@ public enum MinecraftVersion {
 		return getGroup() == this;
 	}
 
+	public boolean isNewerThan(MinecraftVersion version) {
+		return compareTo(version) > 0;
+	}
+
+	public boolean isNewerThanOrEqualTo(MinecraftVersion version) {
+		return compareTo(version) >= 0;
+	}
+
+	public boolean isOlderThan(MinecraftVersion version) {
+		return compareTo(version) < 0;
+	}
+
+	public boolean isOlderThanOrEqualTo(MinecraftVersion version) {
+		return compareTo(version) <= 0;
+	}
+
 	/**
 	 * Returns a string representation of this Minecraft version.
 	 *
