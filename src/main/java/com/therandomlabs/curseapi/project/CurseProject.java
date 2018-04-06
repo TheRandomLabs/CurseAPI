@@ -383,9 +383,10 @@ public final class CurseProject {
 					url + "/files?",
 					this::getFiles,
 					file2 -> {
-						//Not <= so these files can be used with fileClosestToID
-						if(file2.id() < id) {
+						//Get one older file so fileClosestToID can be used faster
+						if(file2.id() == id) {
 							fileWithID.set(file2);
+						} else if(file2.id() < id) {
 							stopSwitch.stop();
 						}
 					},
