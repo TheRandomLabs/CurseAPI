@@ -88,7 +88,7 @@ public final class DocumentUtils {
 					case "name":
 						final Elements elements = element.getElementsByAttribute("name");
 						for(int i = 0, j = 0; i < elements.size(); i++) {
-							if(split[1].equals(elements.get(i).attr("value")) && j++ == index) {
+							if(split[1].equals(elements.get(i).attr("name")) && j++ == index) {
 								element = elements.get(i);
 								break;
 							}
