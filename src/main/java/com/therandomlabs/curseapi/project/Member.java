@@ -5,7 +5,6 @@ import java.net.URL;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.util.URLUtils;
-import com.therandomlabs.curseapi.widget.MemberInfo;
 
 public final class Member implements Serializable {
 	private static final long serialVersionUID = -5874001152475689908L;
@@ -13,13 +12,9 @@ public final class Member implements Serializable {
 	private final MemberType type;
 	private final String username;
 
-	private Member(MemberType type, String username) {
+	Member(MemberType type, String username) {
 		this.type = type;
 		this.username = username;
-	}
-
-	static Member fromMemberInfo(MemberInfo info) {
-		return new Member(info.title, info.username);
 	}
 
 	public MemberType type() {

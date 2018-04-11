@@ -27,6 +27,7 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.nodes.Element;
 
 //TODO Additional Files
+//TODO retrieve changelog via CurseMeta if avoidCurseMeta is false
 public final class CurseFile {
 	private final CurseProject project;
 	private final FileStatus status;

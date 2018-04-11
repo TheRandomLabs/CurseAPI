@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.utils.collection.CollectionUtils;
-import com.therandomlabs.utils.collection.ImmutableCollectionException;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
@@ -17,114 +16,29 @@ import com.therandomlabs.utils.collection.TRLList;
 public class CurseFileList extends TRLList<CurseFile> {
 	private static final long serialVersionUID = 8733576650037056459L;
 
-	public static final CurseFileList EMPTY = new EmptyCurseFileList();
+	public CurseFileList() {}
 
-	private static class EmptyCurseFileList extends CurseFileList {
-		private static final long serialVersionUID = -1451778220667862580L;
-
-		EmptyCurseFileList() {
-			super();
-		}
-
-		@Override
-		public boolean addAll(@SuppressWarnings("unchecked") CurseFile... elements) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean remove(Object object) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean add(CurseFile file) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> collection) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public void add(int index, CurseFile file) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> collection) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public void clear() {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends CurseFile> collection) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean addAll(int index, Collection<? extends CurseFile> collection) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public CurseFile set(int index, CurseFile file) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public CurseFile remove(int index) {
-			throw new ImmutableCollectionException();
-		}
-
-		@Override
-		public boolean removeIf(Predicate<? super CurseFile> filter) {
-			throw new ImmutableCollectionException();
-		}
+	public CurseFileList(int initialCapacity) {
+		super(initialCapacity);
 	}
 
-	private boolean sortedByNewest;
-
-	private CurseFileList(Collection<? extends CurseFile> files) {
-		super(files);
+	public CurseFileList(CurseFile... files) {
+		this(true, files);
 	}
 
-	private CurseFileList() {}
-
-	private CurseFileList(CurseFile... files) {
-		super(files);
+	public CurseFileList(boolean sortByNewest, CurseFile... files) {
+		this(new ImmutableList<>(files), sortByNewest);
 	}
 
-	public static Collector<CurseFile, ?, CurseFileList> toCurseFileList() {
-		return TRLCollectors.toCollection(CurseFileList::new);
+	public CurseFileList(Collection<? extends CurseFile> files) {
+		this(files, true);
 	}
 
-	public static CurseFileList of(Collection<? extends CurseFile> files) {
-		final CurseFileList list = ofUnsorted(files);
-		list.sortByNewest();
-		return list;
-	}
-
-	public static CurseFileList ofUnsorted(Collection<? extends CurseFile> files) {
-		return files.isEmpty() ? EMPTY : new CurseFileList(filter(files));
-	}
-
-	public static CurseFileList of(CurseFile... files) {
-		final CurseFileList list = ofUnsorted(files);
-		list.sortByNewest();
-		return list;
-	}
-
-	public static CurseFileList ofUnsorted(CurseFile... files) {
-		return files.length == 0 ? EMPTY : new CurseFileList(filter(new ImmutableList<>(files)));
-	}
-
-	public static CurseFileList newEmpty() {
-		return new CurseFileList();
+	public CurseFileList(Collection<? extends CurseFile> files, boolean sortByNewest) {
+		super(filter(files));
+		if(sortByNewest) {
+			sortByNewest();
+		}
 	}
 
 	public CurseFile latest() {
@@ -132,21 +46,13 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public CurseFile latest(Predicate<CurseFile> predicate) {
-		final CurseFileList byNewest;
-		if(sortedByNewest) {
-			byNewest = this;
-		} else {
-			byNewest = clone();
-			byNewest.sortByNewest();
-		}
-
-		for(CurseFile file : byNewest) {
-			if(predicate.test(file)) {
-				return file;
+		CurseFile latest = null;
+		for(CurseFile file : this) {
+			if((latest == null || file.id() > latest.id()) && predicate.test(file)) {
+				latest = file;
 			}
 		}
-
-		return null;
+		return latest;
 	}
 
 	public CurseFile latest(Collection<String> versions) {
@@ -195,6 +101,32 @@ public class CurseFileList extends TRLList<CurseFile> {
 		return lastFile;
 	}
 
+	public boolean hasFileOlderThan(int id) {
+		for(CurseFile file : this) {
+			if(file.id() < id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasFileOlderThanOrEqualTo(int id) {
+		return hasFileOlderThan(id - 1);
+	}
+
+	public boolean hasFileNewerThan(int id) {
+		for(CurseFile file : this) {
+			if(file.id() > id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasFileNewerThanOrEqualTo(int id) {
+		return hasFileNewerThan(id + 1);
+	}
+
 	public void filterNewerThan(CurseFile oldFile) {
 		filter(file -> file.id() > oldFile.id());
 	}
@@ -215,12 +147,24 @@ public class CurseFileList extends TRLList<CurseFile> {
 		filter(file -> file.id() <= newFile.id());
 	}
 
-	public void between(int oldID, int newID) {
-		filter(file -> file.id() > oldID && file.id() <= newID);
+	public void between(CurseFile oldFile, CurseFile newFile) {
+		//Best defaults for changelogs
+		between(oldFile, newFile, false, true);
 	}
 
-	public void between(CurseFile oldFile, CurseFile newFile) {
+	public void between(CurseFile oldFile, CurseFile newFile,
+			boolean includeOlder, boolean includeNewer) {
 		between(oldFile.id(), newFile.id());
+	}
+
+	public void between(int oldID, int newID) {
+		between(oldID, newID, false, true);
+	}
+
+	public void between(int oldID, int newID, boolean includeOlder, boolean includeNewer) {
+		final int older = includeOlder ? oldID - 1 : oldID;
+		final int newer = includeNewer ? oldID + 1 : newID;
+		filter(file -> file.id() > older && file.id() < newer);
 	}
 
 	public void filterMCVersionGroup(String version) {
@@ -260,23 +204,6 @@ public class CurseFileList extends TRLList<CurseFile> {
 		filter(file -> versions.contains(file.releaseType()));
 	}
 
-	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
-		final List<E> files = new ArrayList<>(collection);
-		files.removeIf(Objects::isNull);
-		final List<E> duplicates = new ArrayList<>();
-
-		for(int i = 0; i < files.size(); i++) {
-			for(int j = 0; j < files.size(); j++) {
-				if(i != j && files.get(i).id() == files.get(j).id()) {
-					duplicates.add(files.get(i));
-				}
-			}
-		}
-
-		files.removeAll(duplicates);
-		return files;
-	}
-
 	public void removeDuplicateProjects() {
 		final List<CurseFile> duplicates = new ArrayList<>();
 
@@ -298,11 +225,6 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public void sortByNewest() {
 		sort((file1, file2) -> Integer.compare(file2.id(), file1.id()));
-		sortedByNewest = true;
-	}
-
-	public boolean isSortedByNewest() {
-		return sortedByNewest;
 	}
 
 	public void sortByOldest() {
@@ -316,18 +238,12 @@ public class CurseFileList extends TRLList<CurseFile> {
 	@Override
 	public CurseFileList clone() {
 		return new CurseFileList(toArray());
-	}	@Override
-	public void sort(Comparator<? super CurseFile> comparator) {
-		super.sort(comparator);
-		sortedByNewest = false;
 	}
 
 	@Override
 	public CurseFile[] toArray() {
 		return toArray(new CurseFile[0]);
 	}
-
-
 
 	@Override
 	public boolean add(CurseFile file) {
@@ -344,5 +260,26 @@ public class CurseFileList extends TRLList<CurseFile> {
 		if(!contains(file)) {
 			super.add(index, file);
 		}
+	}
+
+	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
+		final List<E> files = new TRLList<>(collection);
+		files.removeIf(Objects::isNull);
+		final List<E> duplicates = new TRLList<>();
+
+		for(int i = 0; i < files.size(); i++) {
+			for(int j = 0; j < files.size(); j++) {
+				if(i != j && files.get(i).id() == files.get(j).id()) {
+					duplicates.add(files.get(i));
+				}
+			}
+		}
+
+		files.removeAll(duplicates);
+		return files;
+	}
+
+	public static Collector<CurseFile, ?, CurseFileList> toCurseFileList() {
+		return TRLCollectors.toCollection(CurseFileList::new);
 	}
 }

@@ -12,7 +12,7 @@ public class CurseException extends Exception {
 	public static final int CURSE_MODS = 0;
 	public static final int CURSEFORGE = 1;
 
-	private static final String UNAVAILABLE_MESSAGE = "Curse and/or CurseForge seems to be " +
+	public static final String UNAVAILABLE_MESSAGE = "Curse and/or CurseForge seems to be " +
 			"unavailable. This could be due to a bug in CurseAPI, because Curse is not working " +
 			"as intended, or because Java or the system cannot access the internet.";
 

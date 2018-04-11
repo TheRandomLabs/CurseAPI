@@ -24,7 +24,7 @@ public class AddOnFile implements Cloneable, Serializable {
 	public boolean isAvailable;
 	public long packageFingerprint;
 	public ReleaseType releaseType;
-	public List<AddOnModule> modules;
+	public ArrayList<AddOnModule> modules;
 
 	@SuppressWarnings("unchecked")
 	@Override

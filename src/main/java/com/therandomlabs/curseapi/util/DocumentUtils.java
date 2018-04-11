@@ -238,7 +238,7 @@ public final class DocumentUtils {
 		}
 
 		final TRLList<E> sortedList =
-				new TRLList<>(allData.size() * CurseProject.RELATIONS_PER_PAGE);
+				new TRLList<>(allData.size() * CurseAPI.RELATIONS_PER_PAGE);
 		for(int i = 0; i < allData.size(); i++) {
 			sortedList.addAll(allData.get(i));
 		}
@@ -253,7 +253,7 @@ public final class DocumentUtils {
 				return;
 			}
 
-			final TRLList<E> data = new TRLList<>(CurseProject.RELATIONS_PER_PAGE);
+			final TRLList<E> data = new TRLList<>(CurseAPI.RELATIONS_PER_PAGE);
 			data.setOnAdd(onElementAdd);
 			allData.put(page, data);
 

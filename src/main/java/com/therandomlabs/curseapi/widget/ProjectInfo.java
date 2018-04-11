@@ -34,9 +34,6 @@ public final class ProjectInfo implements Cloneable, Serializable {
 
 	public String json;
 
-	public boolean retrievedDirectly = true;
-	public boolean failedToRetrieveDirectly;
-
 	public ProjectInfo() {}
 
 	public ProjectInfo(int id, Game game, String type, URLInfo urls, String title, URL donate,

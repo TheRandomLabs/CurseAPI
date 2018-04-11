@@ -1,5 +1,8 @@
 package com.therandomlabs.curseapi;
 
+import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.net.URL;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
@@ -10,11 +13,34 @@ import com.therandomlabs.utils.throwable.ThrowableHandling;
 
 public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
+	public static final int RELATIONS_PER_PAGE = 20;
+
+	public static final String PLACEHOLDER_THUMBNAIL_URL_STRING =
+			"https://media-elerium.cursecdn.com/avatars/0/93/635227964539626926.png";
+	public static final URL PLACEHOLDER_THUMBNAIL_URL;
+
+	private static BufferedImage placeholderThumbnail;
 
 	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
+
 	private static int maxRetries = 5;
 	private static int retryTime = 5;
-	private static boolean avoidWidgetAPI;
+
+	//True by default because the widget API is somehow less reliable than CurseMeta
+	private static boolean avoidWidgetAPI = true;
+	private static boolean avoidCurseMeta;
+
+	static {
+		URL url = null;
+
+		try {
+			url = new URL(PLACEHOLDER_THUMBNAIL_URL_STRING);
+		} catch(MalformedURLException ex) {
+			ThrowableHandling.handleUnexpected(ex);
+		}
+
+		PLACEHOLDER_THUMBNAIL_URL = url;
+	}
 
 	private CurseAPI() {}
 
@@ -50,6 +76,14 @@ public final class CurseAPI {
 
 	public static void avoidWidgetAPI(boolean flag) {
 		avoidWidgetAPI = flag;
+	}
+
+	public static boolean isAvoidingCurseMeta() {
+		return avoidCurseMeta;
+	}
+
+	public static void avoidCurseMeta(boolean flag) {
+		avoidCurseMeta = flag;
 	}
 
 	public static void doWithRetries(RunnableWithThrowable<CurseException> runnable)

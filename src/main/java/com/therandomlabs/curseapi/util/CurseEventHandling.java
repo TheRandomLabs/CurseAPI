@@ -1,16 +1,15 @@
 package com.therandomlabs.curseapi.util;
 
-import java.util.ArrayList;
 import java.util.List;
-import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.utils.runnable.RunnableWithInputAndThrowable;
+import com.therandomlabs.utils.collection.TRLList;
+import com.therandomlabs.utils.runnable.RunnableWithInput;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
-import com.therandomlabs.utils.wrapper.Wrapper;
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 public final class CurseEventHandling {
 	public static final CurseEventHandler DEFAULT_EVENT_HANDLER = new DefaultCurseEventHandler();
-	private static final List<CurseEventHandler> eventHandlers = new ArrayList<>(5);
+
+	private static final List<CurseEventHandler> eventHandlers = new TRLList<>(5);
 
 	static {
 		register(DEFAULT_EVENT_HANDLER);
@@ -26,22 +25,8 @@ public final class CurseEventHandling {
 		eventHandlers.remove(eventHandler);
 	}
 
-	public static void forEach(
-			RunnableWithInputAndThrowable<CurseEventHandler, CurseException> consumer)
-			throws CurseException {
-		final Wrapper<CurseException> exception = new Wrapper<>();
-
-		for(CurseEventHandler eventHandler : eventHandlers) {
-			try {
-				consumer.run(eventHandler);
-			} catch(CurseException ex) {
-				exception.set(ex);
-			}
-		}
-
-		if(exception.hasValue()) {
-			throw exception.get();
-		}
+	public static void forEach(RunnableWithInput<CurseEventHandler> runnable) {
+		eventHandlers.forEach(runnable::run);
 	}
 
 	public static class DefaultCurseEventHandler implements CurseEventHandler {
