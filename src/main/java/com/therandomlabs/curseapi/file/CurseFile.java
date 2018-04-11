@@ -12,6 +12,7 @@ import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.cursemeta.AddOnFile;
 import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
+import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
@@ -27,13 +28,10 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.nodes.Element;
 
 //TODO Additional Files
-//TODO retrieve changelog via CurseMeta if avoidCurseMeta is false
 public final class CurseFile {
 	private final CurseProject project;
 	private final FileStatus status;
-
 	private final URL url;
-
 	private final int id;
 	private final String name;
 	private String nameOnDisk;
@@ -43,26 +41,26 @@ public final class CurseFile {
 	private String fileSize;
 	private final int downloads;
 	private final TRLList<CurseProject> dependencies;
-
 	private final TRLList<String> gameVersions;
 	private final TRLList<MinecraftVersion> minecraftVersions;
+	private final boolean curseMeta;
 
 	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
 		this(project, info.fileStatus, info.id, info.fileName, info.fileNameOnDisk,
 				info.downloadURL, info.releaseType, info.fileDate, null, -1,
 				AddOnFileDependency.toProjects(info.dependencies),
-				info.gameVersion.toArray(new String[0]));
+				info.gameVersion.toArray(new String[0]), true);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
 		this(project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
-				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
+				info.uploaded_at, info.filesize, info.downloads, null, info.versions, false);
 	}
 
 	public CurseFile(CurseProject project, FileStatus status, int id, String name,
 			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, TRLList<CurseProject> dependencies,
-			String[] gameVersions) throws CurseException {
+			String[] gameVersions, boolean curseMeta) throws CurseException {
 		this.project = project;
 		this.status = status;
 
@@ -90,6 +88,8 @@ public final class CurseFile {
 		} else {
 			minecraftVersions = null;
 		}
+
+		this.curseMeta = curseMeta;
 	}
 
 	public FileStatus status() {
@@ -189,6 +189,10 @@ public final class CurseFile {
 	}
 
 	public Element changelogHTML() throws CurseException {
+		if(curseMeta) {
+			return CurseMeta.getChangelog(project.id(), id);
+		}
+
 		return DocumentUtils.get(url, "class=logbox");
 	}
 
