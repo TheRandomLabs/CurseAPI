@@ -595,7 +595,7 @@ public final class CurseProject {
 		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
 			id = CurseForge.getID(url);
 			title = DocumentUtils.getValue(url, "class=project-title;class=overflow-tip;text");
-			shortDescription = DocumentUtils.getValue(url, "tag=meta=5;attr=content");
+			shortDescription = DocumentUtils.getValue(url, "name=description=1;attr=content");
 			game = site.game();
 			type = ProjectType.get(site,
 					DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2]);

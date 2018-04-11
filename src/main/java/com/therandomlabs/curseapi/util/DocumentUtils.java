@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
-import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CacheMap;
 import com.therandomlabs.utils.collection.CollectionUtils;
@@ -85,6 +84,15 @@ public final class DocumentUtils {
 						break;
 					case "tag":
 						element = element.getElementsByTag(split[1]).get(index);
+						break;
+					case "name":
+						final Elements elements = element.getElementsByAttribute("name");
+						for(int i = 0, j = 0; i < elements.size(); i++) {
+							if(split[1].equals(elements.get(i).attr("value")) && j++ == index) {
+								element = elements.get(i);
+								break;
+							}
+						}
 						break;
 					default:
 						return null;

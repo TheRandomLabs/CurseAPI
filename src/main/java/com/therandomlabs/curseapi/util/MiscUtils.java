@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import com.google.gson.Gson;
 import com.therandomlabs.utils.io.NIOUtils;
+import com.therandomlabs.utils.misc.StringUtils;
 
 public final class MiscUtils {
 	private MiscUtils() {}
@@ -24,6 +25,11 @@ public final class MiscUtils {
 				//Probably an epoch
 				return parseTime(Long.parseLong(time));
 			} catch(NumberFormatException ex2) {
+				//CurseMeta compat
+				if(StringUtils.lastChar(time) != 'Z') {
+					return parseTime(time + 'Z');
+				}
+
 				throw ex;
 			}
 		}
