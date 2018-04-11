@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
@@ -20,7 +22,9 @@ import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
+import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
+import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -33,21 +37,26 @@ public final class CurseFile {
 	private final URL url;
 	private final int id;
 	private final String name;
-	private String nameOnDisk;
-	private URL downloadURL;
+	private final String nameOnDisk;
+	private final URL downloadURL;
+	private final String downloadURLString;
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
-	private String fileSize;
+	private final String fileSize;
 	private final int downloads;
-	private final TRLList<CurseProject> dependencies;
+	private final String md5;
+	private final TRLList<Integer> dependencyIDs;
+	private TRLList<CurseProject> dependencies;
 	private final TRLList<String> gameVersions;
 	private final TRLList<MinecraftVersion> minecraftVersions;
+	private Element changelogHTML;
+	private String changelog;
 	private final boolean curseMeta;
 
 	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
 		this(project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.DownloadURL, info.ReleaseType, info.FileDate, null, -1,
-				AddOnFileDependency.toProjects(info.Dependencies), info.GameVersion, true);
+				getDependencyIDs(info.Dependencies), info.GameVersion, true);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
@@ -57,7 +66,7 @@ public final class CurseFile {
 
 	public CurseFile(CurseProject project, FileStatus status, int id, String name,
 			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
-			String fileSize, int downloads, TRLList<CurseProject> dependencies,
+			String fileSize, int downloads, TRLList<Integer> dependencyIDs,
 			String[] gameVersions, boolean curseMeta) throws CurseException {
 		this.project = project;
 		this.status = status;
@@ -66,14 +75,19 @@ public final class CurseFile {
 
 		this.id = id;
 		this.name = name;
-		this.nameOnDisk = nameOnDisk;
-		this.downloadURL = downloadURL;
+		this.nameOnDisk = nameOnDisk == null ?
+				DocumentUtils.getValue(url, "class=details-info;class=info-data;text") : nameOnDisk;
+		this.downloadURL = downloadURL == null ?
+				CurseForge.getFileURL(project.id(), id) : downloadURL;
+		downloadURLString = this.downloadURL.toString();
 		this.releaseType = releaseType;
 		this.uploadTime = MiscUtils.parseTime(uploadTime);
 		this.fileSize = fileSize;
 		this.downloads = downloads;
-		this.dependencies =
-				dependencies == null ? getDependencies(url) : dependencies.toImmutableList();
+		//TODO get with CurseMeta
+		this.md5 = curseMeta ? null : DocumentUtils.getValue(url, "class=md5;text");
+		this.dependencyIDs =
+				dependencyIDs == null ? getDependencies(url) : dependencyIDs.toImmutableList();
 
 		final TRLList<String> gameVersionList = new TRLList<>();
 		for(String gameVersion : gameVersions) {
@@ -108,11 +122,7 @@ public final class CurseFile {
 		return name;
 	}
 
-	public String nameOnDisk() throws CurseException {
-		if(nameOnDisk == null) {
-			nameOnDisk = DocumentUtils.getValue(url, "class=details-info;class=info-data;text");
-		}
-
+	public String nameOnDisk() {
 		return nameOnDisk;
 	}
 
@@ -124,23 +134,30 @@ public final class CurseFile {
 		return url.toString();
 	}
 
-	public URL downloadURL() throws CurseException {
-		if(downloadURL == null) {
-			downloadURL = CurseForge.getFileURL(project.id(), id);
-		}
-
+	public URL downloadURL() {
 		return downloadURL;
 	}
 
-	public String downloadURLString() throws CurseException {
-		return downloadURL().toString();
+	public String downloadURLString()  {
+		return downloadURLString;
 	}
 
 	public ReleaseType releaseType() {
 		return releaseType;
 	}
 
-	public TRLList<CurseProject> dependencies() {
+	public TRLList<Integer> dependencyIDs() {
+		return dependencyIDs;
+	}
+
+	public TRLList<CurseProject> dependencies() throws CurseException {
+		if(dependencies == null) {
+			final TRLList<CurseProject> dependencyList = new TRLList<>(dependencyIDs.size());
+			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), dependencyIDs.size(),
+					index -> dependencyList.add(CurseProject.fromID(dependencyIDs.get(index))));
+			dependencies = dependencyList.toImmutableList();
+		}
+
 		return dependencies;
 	}
 
@@ -164,11 +181,7 @@ public final class CurseFile {
 		return uploadTime;
 	}
 
-	public String fileSize() throws CurseException {
-		if(fileSize == null) {
-			fileSize = DocumentUtils.getValue(url, "class=details-info;class=info-data=3;text");
-		}
-
+	public String fileSize() {
 		return fileSize;
 	}
 
@@ -176,8 +189,8 @@ public final class CurseFile {
 		return downloads;
 	}
 
-	public String md5() throws CurseException {
-		return DocumentUtils.getValue(url, "class=md5;text");
+	public String md5() {
+		return md5;
 	}
 
 	public boolean hasChangelog() throws CurseException {
@@ -189,15 +202,22 @@ public final class CurseFile {
 	}
 
 	public String changelog() throws CurseException {
-		return DocumentUtils.getPlainText(changelogHTML());
+		changelogHTML();
+		return changelog;
 	}
 
 	public Element changelogHTML() throws CurseException {
-		if(curseMeta) {
-			return CurseMeta.getChangelog(project.id(), id);
+		if(changelogHTML == null) {
+			if(curseMeta) {
+				changelogHTML = CurseMeta.getChangelog(project.id(), id);
+			} else {
+				changelogHTML = DocumentUtils.get(url, "class=logbox");
+			}
+
+			changelog = DocumentUtils.getPlainText(changelogHTML);
 		}
 
-		return DocumentUtils.get(url, "class=logbox");
+		return changelogHTML;
 	}
 
 	public String uploader() throws CurseException {
@@ -251,9 +271,18 @@ public final class CurseFile {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
 	}
 
+	private static TRLList<Integer> getDependencyIDs(List<AddOnFileDependency> dependencies) {
+		if(dependencies == null) {
+			return new TRLList<>();
+		}
+
+		return dependencies.stream().map(dependency -> dependency.AddOnId).
+				collect(TRLCollectors.toImmutableList());
+	}
+
 	@SuppressWarnings("all")
-	private static TRLList<CurseProject> getDependencies(URL url) throws CurseException {
-		//TODO parse from HTML
+	private static TRLList<Integer> getDependencies(URL url) throws CurseException {
+		//TODO parse from HTML - get dependencies and dependencyIDs
 		return null;
 	}
 }

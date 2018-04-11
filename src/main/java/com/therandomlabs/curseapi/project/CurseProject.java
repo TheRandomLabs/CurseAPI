@@ -702,6 +702,8 @@ public final class CurseProject {
 		for(AddOnFile file : cmFiles) {
 			files.add(new CurseFile(this, file));
 		}
+
+		files.sortByNewest();
 	}
 
 	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
