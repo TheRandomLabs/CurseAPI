@@ -4,7 +4,6 @@ import java.io.IOException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
-import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.Jsoup;
@@ -12,8 +11,8 @@ import org.jsoup.nodes.Element;
 
 public final class CurseMeta {
 	public static final String BASE_URL = "https://cursemeta.dries007.net/api/v2/direct/";
-	public static final String GET_ALL_FILES_FOR_ADDON = "GetAllFilesForAddon/";
-	public static final String GET_ADDON_FILE = "GetAddonFile/";
+	public static final String GET_ALL_FILES_FOR_ADDON = "GetAllFilesForAddOn/";
+	public static final String GET_ADDON_FILE = "GetAddOnFile/";
 	public static final String GET_CHANGELOG = "v2GetChangelog/";
 
 	private CurseMeta() {}
