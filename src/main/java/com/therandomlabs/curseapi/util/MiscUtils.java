@@ -20,8 +20,12 @@ public final class MiscUtils {
 		try {
 			return ZonedDateTime.parse(time);
 		} catch(DateTimeParseException ex) {
-			//Probably an epoch
-			return parseTime(Long.parseLong(time));
+			try {
+				//Probably an epoch
+				return parseTime(Long.parseLong(time));
+			} catch(NumberFormatException ex2) {
+				throw ex;
+			}
 		}
 	}
 

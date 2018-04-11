@@ -20,7 +20,6 @@ import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
-import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
@@ -46,10 +45,9 @@ public final class CurseFile {
 	private final boolean curseMeta;
 
 	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
-		this(project, info.fileStatus, info.id, info.fileName, info.fileNameOnDisk,
-				info.downloadURL, info.releaseType, info.fileDate, null, -1,
-				AddOnFileDependency.toProjects(info.dependencies),
-				info.gameVersion.toArray(new String[0]), true);
+		this(project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
+				info.DownloadURL, info.ReleaseType, info.FileDate, null, -1,
+				AddOnFileDependency.toProjects(info.Dependencies), info.GameVersion, true);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
@@ -77,7 +75,13 @@ public final class CurseFile {
 		this.dependencies =
 				dependencies == null ? getDependencies(url) : dependencies.toImmutableList();
 
-		this.gameVersions = new ImmutableList<>(gameVersions);
+		final TRLList<String> gameVersionList = new TRLList<>();
+		for(String gameVersion : gameVersions) {
+			if(!gameVersion.startsWith("Java ")) {
+				gameVersionList.add(gameVersion);
+			}
+		}
+		this.gameVersions = gameVersionList.toImmutableList();
 
 		if(project.game() == Game.MINECRAFT) {
 			final TRLList<MinecraftVersion> minecraftVersions =

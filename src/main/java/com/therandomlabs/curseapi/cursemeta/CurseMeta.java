@@ -49,10 +49,13 @@ public final class CurseMeta {
 		CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(url));
 
 		try {
-			final CurseMetaError error = new Gson().fromJson(json, CurseMetaError.class);
-			if(error.error) {
-				throw new CurseMetaException(error.description, error.status, url);
-			}
+			try {
+				final CurseMetaError error = new Gson().fromJson(json, CurseMetaError.class);
+
+				if(error.error) {
+					throw new CurseMetaException(error.description, error.status, url);
+				}
+			} catch(JsonSyntaxException ignored) {}
 
 			return new Gson().fromJson(json, clazz);
 		} catch(JsonSyntaxException ex) {

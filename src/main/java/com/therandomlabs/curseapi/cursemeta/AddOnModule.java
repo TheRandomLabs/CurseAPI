@@ -5,16 +5,16 @@ import java.io.Serializable;
 public class AddOnModule implements Cloneable, Serializable {
 	private static final long serialVersionUID = -2811805463510045881L;
 
-	public long fingerprint;
-	public String foldername;
+	public long Fingerprint;
+	public String Foldername;
 
 	@Override
 	public AddOnModule clone() {
 		try {
 			final AddOnModule module = (AddOnModule) super.clone();
 
-			module.fingerprint = fingerprint;
-			module.foldername = foldername;
+			module.Fingerprint = Fingerprint;
+			module.Foldername = Foldername;
 
 			return module;
 		} catch(CloneNotSupportedException ignored) {}
