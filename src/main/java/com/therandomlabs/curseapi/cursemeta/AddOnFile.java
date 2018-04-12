@@ -3,9 +3,14 @@ package com.therandomlabs.curseapi.cursemeta;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
 import com.therandomlabs.curseapi.file.ReleaseType;
 import com.therandomlabs.curseapi.util.CloneException;
+import com.therandomlabs.utils.collection.TRLList;
 
 public class AddOnFile implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1265896534353648752L;
@@ -49,5 +54,16 @@ public class AddOnFile implements Cloneable, Serializable {
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;
+	}
+
+	public static TRLList<CurseFile> toCurseFiles(Map<Integer, Collection<AddOnFile>> files)
+			throws CurseException {
+		final TRLList<CurseFile> curseFiles = new TRLList<>(files.size());
+		for(Map.Entry<Integer, Collection<AddOnFile>> entry : files.entrySet()) {
+			for(AddOnFile file : entry.getValue()) {
+				curseFiles.add(new CurseFile(entry.getKey(), file));
+			}
+		}
+		return curseFiles;
 	}
 }

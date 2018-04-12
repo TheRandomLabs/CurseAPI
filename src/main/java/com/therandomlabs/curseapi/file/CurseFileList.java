@@ -2,11 +2,15 @@ package com.therandomlabs.curseapi.file;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.cursemeta.AddOnFile;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
@@ -22,6 +26,19 @@ public class CurseFileList extends TRLList<CurseFile> {
 		super(initialCapacity);
 	}
 
+	public CurseFileList(int projectID, Collection<AddOnFile> files) throws CurseException {
+		this(Collections.singletonMap(projectID, files), true);
+	}
+
+	public CurseFileList(Map<Integer, Collection<AddOnFile>> files) throws CurseException {
+		this(files, true);
+	}
+
+	public CurseFileList(Map<Integer, Collection<AddOnFile>> files, boolean sortByNewest)
+			throws CurseException {
+		this(AddOnFile.toCurseFiles(files), sortByNewest);
+	}
+
 	public CurseFileList(CurseFile... files) {
 		this(true, files);
 	}
@@ -30,11 +47,11 @@ public class CurseFileList extends TRLList<CurseFile> {
 		this(new ImmutableList<>(files), sortByNewest);
 	}
 
-	public CurseFileList(Collection<? extends CurseFile> files) {
+	public CurseFileList(Collection<CurseFile> files) {
 		this(files, true);
 	}
 
-	public CurseFileList(Collection<? extends CurseFile> files, boolean sortByNewest) {
+	public CurseFileList(Collection<CurseFile> files, boolean sortByNewest) {
 		super(filter(files));
 		if(sortByNewest) {
 			sortByNewest();
@@ -209,7 +226,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 		for(int i = 0; i < size(); i++) {
 			for(int j = 0; j < size(); j++) {
-				if(i != j && get(i).project().id() == get(j).project().id()) {
+				if(i != j && get(i).projectID() == get(j).projectID()) {
 					//Prefer newest
 					if(get(j).id() > get(i).id()) {
 						duplicates.add(get(j));

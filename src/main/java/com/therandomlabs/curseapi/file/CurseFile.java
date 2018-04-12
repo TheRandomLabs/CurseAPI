@@ -31,8 +31,10 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.nodes.Element;
 
 //TODO Additional Files
+//TODO get dependencies by type
 public final class CurseFile {
-	private final CurseProject project;
+	private final int projectID;
+	private CurseProject project;
 	private final FileStatus status;
 	private final URL url;
 	private final int id;
@@ -53,21 +55,33 @@ public final class CurseFile {
 	private String changelog;
 	private final boolean curseMeta;
 
-	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
-		this(project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
+	public CurseFile(int projectID, AddOnFile info) throws CurseException {
+		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.DownloadURL, info.ReleaseType, info.FileDate, null, -1,
 				getDependencyIDs(info.Dependencies), info.GameVersion, true);
 	}
 
-	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
-		this(project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
+	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
+		this(project.id(), project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
+				info.DownloadURL, info.ReleaseType, info.FileDate, null, -1,
+				getDependencyIDs(info.Dependencies), info.GameVersion, true);
+	}
+
+	public CurseFile(int projectID, FileInfo info) throws CurseException {
+		this(projectID, null, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
 				info.uploaded_at, info.filesize, info.downloads, null, info.versions, false);
 	}
 
-	public CurseFile(CurseProject project, FileStatus status, int id, String name,
+	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
+		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
+				info.uploaded_at, info.filesize, info.downloads, null, info.versions, false);
+	}
+
+	public CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
 			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, TRLList<Integer> dependencyIDs,
 			String[] gameVersions, boolean curseMeta) throws CurseException {
+		this.projectID = projectID;
 		this.project = project;
 		this.status = status;
 
@@ -228,7 +242,15 @@ public final class CurseFile {
 		return URLUtils.url(DocumentUtils.getValue(url, "class=user-tag;tag=a=1;absUrl=href"));
 	}
 
-	public CurseProject project() {
+	public int projectID() {
+		return projectID;
+	}
+
+	public CurseProject project() throws CurseException {
+		if(project == null) {
+			project = CurseProject.fromID(projectID);
+		}
+
 		return project;
 	}
 
