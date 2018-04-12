@@ -27,7 +27,7 @@ public class AddOnFile implements Cloneable, Serializable {
 	public boolean IsAlternate;
 	public boolean IsAvailable;
 	public long PackageFingerprint;
-	public ReleaseType ReleaseType;
+	public ReleaseType ReleaseType = com.therandomlabs.curseapi.file.ReleaseType.RELEASE;
 	public ArrayList<AddOnModule> Modules;
 
 	@SuppressWarnings("unchecked")
