@@ -57,13 +57,13 @@ public final class CurseFile {
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.DownloadURL, info.ReleaseType, info.FileDate, null, -1,
+				info.DownloadURL, info.releaseType(), info.FileDate, null, -1,
 				getDependencyIDs(info.Dependencies), info.GameVersion, true);
 	}
 
 	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
 		this(project.id(), project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.DownloadURL, info.ReleaseType, info.FileDate, null, -1,
+				info.DownloadURL, info.releaseType(), info.FileDate, null, -1,
 				getDependencyIDs(info.Dependencies), info.GameVersion, true);
 	}
 

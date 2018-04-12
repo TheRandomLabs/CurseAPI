@@ -8,7 +8,6 @@ import java.util.Map;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
-import com.therandomlabs.curseapi.file.ReleaseType;
 import com.therandomlabs.curseapi.util.CloneException;
 import com.therandomlabs.utils.collection.TRLList;
 
@@ -27,8 +26,12 @@ public class AddOnFile implements Cloneable, Serializable {
 	public boolean IsAlternate;
 	public boolean IsAvailable;
 	public long PackageFingerprint;
-	public ReleaseType ReleaseType;
+	public String ReleaseType;
 	public ArrayList<AddOnModule> Modules;
+
+	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
+		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
