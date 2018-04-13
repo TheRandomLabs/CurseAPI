@@ -669,7 +669,9 @@ public final class CurseProject {
 						getElementsByClass("project-categories").get(0).
 						getElementsByTag("li")
 		).toImmutableList();
+		System.out.println(id() + " " + title());
 		avatarURLString = DocumentUtils.getValue(url, "class=e-avatar64;absUrl=href");
+		System.out.println("HELLO:" + avatarURLString);
 		avatarURL = URLUtils.url(avatarURLString);
 	}
 

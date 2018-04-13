@@ -1,5 +1,5 @@
 # CurseAPI
-A WIP Java API to handle interactions with CurseForge.
+A WIP Java API to handle interactions with Curse. It aims to combine information from three sources to provide a reliable API, and soon will use CurseMeta by default for most interactions, as it is somehow more reliable than Curse itself.
 Example Gradle buildscript:
 
 	apply plugin: "java"
@@ -48,13 +48,8 @@ Features:
 * Get project details, including name, description, license, etc.
 * Get file details, including name, game versions, file URL, etc.
 * Supports all CurseForge sites (Minecraft, World of Warcraft, etc.)
+* Supports parsing CurseForge HTML, CurseMeta and the Curse widget API
 * Basic event handling
-
-Planned features:
-* More project and file details
-* Better error handling. At the moment, there's only one CurseException and CurseAPI doesn't retry
-most requests
-* Documentation and a wiki
 
 Example:
 
