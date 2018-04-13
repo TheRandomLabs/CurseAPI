@@ -3,6 +3,9 @@ package com.therandomlabs.curseapi.cursemeta;
 import java.io.IOException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.network.NetworkUtils;
@@ -21,8 +24,21 @@ public final class CurseMeta {
 		return new TRLList<>(get(GET_ALL_FILES_FOR_ADDON + projectID, AddOnFile[].class));
 	}
 
+	public static CurseFileList getCurseFiles(int projectID) throws CurseException {
+		final TRLList<AddOnFile> files = getFiles(projectID);
+		final CurseFileList curseFiles = new CurseFileList(files.size());
+		for(AddOnFile file : files) {
+			curseFiles.add(new CurseFile(projectID, file));
+		}
+		return curseFiles;
+	}
+
 	public static AddOnFile getFile(int projectID, int fileID) throws CurseMetaException {
 		return get(GET_ADDON_FILE + projectID + "/" + fileID, AddOnFile.class);
+	}
+
+	public static CurseFile getCurseFile(int projectID, int fileID) throws CurseException {
+		return new CurseFile(projectID, getFile(projectID, fileID));
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
