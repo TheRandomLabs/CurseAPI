@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.file;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -51,10 +52,10 @@ public final class CurseFile {
 	private final ZonedDateTime uploadTime;
 	private final String fileSize;
 	private final int downloads;
-	private final String md5;
-	private final String uploader;
-	private final String uploaderURLString;
-	private final URL uploaderURL;
+	private String md5;
+	private String uploader;
+	private String uploaderURLString;
+	private URL uploaderURL;
 	private final Map<RelationType, TRLList<Integer>> dependencyIDs;
 	private Map<RelationType, TRLList<CurseProject>> dependencies;
 	private final TRLList<String> gameVersions;
@@ -62,6 +63,7 @@ public final class CurseFile {
 	private Element changelogHTML;
 	private String changelog;
 	private final boolean curseMeta;
+	private boolean noCurseForgeURL;
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
@@ -108,12 +110,6 @@ public final class CurseFile {
 		this.uploadTime = MiscUtils.parseTime(uploadTime);
 		this.fileSize = fileSize;
 		this.downloads = downloads;
-		this.md5 = curseMeta ? null : DocumentUtils.getValue(url, "class=md5;text");
-		this.uploader = curseMeta ?
-				null : DocumentUtils.getValue(url(), "class=user-tag;tag=a=1;text");
-		this.uploaderURLString = curseMeta ?
-				null : DocumentUtils.getValue(url(), "class=user-tag;tag=a=1;absUrl=href");
-		this.uploaderURL = curseMeta ? null : URLUtils.url(uploaderURLString);
 		this.dependencyIDs =
 				dependencyIDs == null ? getDependencies(url) : dependencyIDs;
 		this.dependencies = new HashMap<>(dependencyIDs.size());
@@ -152,8 +148,17 @@ public final class CurseFile {
 	}
 
 	public URL url() throws CurseException {
-		if(url == null) {
+		if(url == null && !noCurseForgeURL) {
 			url = URLUtils.url(CurseForge.fromID(projectID) + "/files/" + id);
+			try {
+				DocumentUtils.get(url);
+			} catch(CurseException ex) {
+				if(!(ex.getCause() instanceof FileNotFoundException)) {
+					throw ex;
+				}
+
+				noCurseForgeURL = true;
+			}
 		}
 
 		return url;
@@ -338,7 +343,8 @@ public final class CurseFile {
 		return downloads;
 	}
 
-	public String md5() {
+	public String md5() throws CurseException {
+		ensureHTMLDataRetrieved();
 		return md5;
 	}
 
@@ -369,15 +375,18 @@ public final class CurseFile {
 		return changelogHTML;
 	}
 
-	public String uploader() {
+	public String uploader() throws CurseException {
+		ensureHTMLDataRetrieved();
 		return uploader;
 	}
 
-	public String uploaderURLString() {
+	public String uploaderURLString() throws CurseException {
+		ensureHTMLDataRetrieved();
 		return uploaderURLString;
 	}
 
-	public URL uploaderURL() {
+	public URL uploaderURL() throws CurseException {
+		ensureHTMLDataRetrieved();
 		return uploaderURL;
 	}
 
@@ -430,6 +439,17 @@ public final class CurseFile {
 	@Override
 	public String toString() {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
+	}
+
+	private void ensureHTMLDataRetrieved() throws CurseException {
+		if(md5 != null || noCurseForgeURL || url() == null) {
+			return;
+		}
+
+		md5 = DocumentUtils.getValue(url, "class=md5;text");
+		uploader = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
+		uploaderURLString = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
+		uploaderURL = URLUtils.url(uploaderURLString);
 	}
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
