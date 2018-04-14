@@ -112,7 +112,7 @@ public final class CurseFile {
 		this.downloads = downloads;
 		this.dependencyIDs =
 				dependencyIDs == null ? getDependencies(url) : dependencyIDs;
-		this.dependencies = new HashMap<>(dependencyIDs.size());
+		this.dependencies = new HashMap<>(dependencyIDs == null ? 1 : dependencyIDs.size());
 
 		final TRLList<String> gameVersionList = new TRLList<>();
 		for(String gameVersion : gameVersions) {
