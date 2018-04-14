@@ -113,15 +113,11 @@ public final class CurseFile {
 		}
 		this.gameVersions = gameVersionList.toImmutableList();
 
-		if(project.game() == Game.MINECRAFT) {
-			final TRLList<MinecraftVersion> minecraftVersions =
+		final TRLList<MinecraftVersion> minecraftVersions =
 					CollectionUtils.convert(this.gameVersions, MinecraftVersion::fromString);
-			minecraftVersions.removeIf(Objects::isNull);
-			minecraftVersions.sort();
-			this.minecraftVersions = minecraftVersions.toImmutableList();
-		} else {
-			minecraftVersions = null;
-		}
+		minecraftVersions.removeIf(Objects::isNull);
+		minecraftVersions.sort();
+		this.minecraftVersions = minecraftVersions.toImmutableList();
 
 		this.curseMeta = curseMeta;
 	}
