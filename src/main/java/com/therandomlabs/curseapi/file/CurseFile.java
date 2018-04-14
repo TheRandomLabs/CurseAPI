@@ -36,7 +36,7 @@ public final class CurseFile {
 	private final int projectID;
 	private CurseProject project;
 	private final FileStatus status;
-	private final URL url;
+	private URL url;
 	private final int id;
 	private final String name;
 	private final String nameOnDisk;
@@ -85,7 +85,9 @@ public final class CurseFile {
 		this.project = project;
 		this.status = status;
 
-		url = URLUtils.url(project.urlString() + "/files/" + id);
+		if(project != null) {
+			url = URLUtils.url(project.urlString() + "/files/" + id);
+		}
 
 		this.id = id;
 		this.name = name;
@@ -140,7 +142,11 @@ public final class CurseFile {
 		return nameOnDisk;
 	}
 
-	public URL url() {
+	public URL url() throws CurseException {
+		if(url == null) {
+			url = URLUtils.url(CurseForge.fromID(projectID) + "/files/" + id);
+		}
+
 		return url;
 	}
 
