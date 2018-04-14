@@ -46,8 +46,8 @@ public final class CurseFile {
 	private final int id;
 	private final String name;
 	private final String nameOnDisk;
-	private final URL downloadURL;
-	private final String downloadURLString;
+	private URL downloadURL;
+	private String downloadURLString;
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
 	private final String fileSize;
@@ -103,9 +103,8 @@ public final class CurseFile {
 		this.name = name;
 		this.nameOnDisk = nameOnDisk == null ?
 				DocumentUtils.getValue(url, "class=details-info;class=info-data;text") : nameOnDisk;
-		this.downloadURL = downloadURL == null ?
-				CurseForge.getFileURL(project.id(), id) : downloadURL;
-		downloadURLString = this.downloadURL.toString();
+		this.downloadURL = downloadURL;
+		downloadURLString = downloadURL ==  null ? null : this.downloadURL.toString();
 		this.releaseType = releaseType;
 		this.uploadTime = MiscUtils.parseTime(uploadTime);
 		this.fileSize = fileSize;
@@ -168,11 +167,17 @@ public final class CurseFile {
 		return url.toString();
 	}
 
-	public URL downloadURL() {
+	public URL downloadURL() throws CurseException {
+		if(downloadURL == null) {
+			downloadURL = CurseForge.getFileURL(projectID, id);
+			downloadURLString = downloadURL.toString();
+		}
+
 		return downloadURL;
 	}
 
-	public String downloadURLString()  {
+	public String downloadURLString() throws CurseException {
+		downloadURL();
 		return downloadURLString;
 	}
 
@@ -406,15 +411,15 @@ public final class CurseFile {
 		return project.title();
 	}
 
-	public InputStream download() throws IOException {
+	public InputStream download() throws CurseException, IOException {
 		return NetworkUtils.download(downloadURL());
 	}
 
-	public Path download(Path location) throws IOException {
+	public Path download(Path location) throws CurseException, IOException {
 		return NIOUtils.download(downloadURL(), location);
 	}
 
-	public Path downloadToDirectory(Path directory) throws IOException {
+	public Path downloadToDirectory(Path directory) throws CurseException, IOException {
 		return NIOUtils.downloadToDirectory(downloadURL(), directory);
 	}
 
