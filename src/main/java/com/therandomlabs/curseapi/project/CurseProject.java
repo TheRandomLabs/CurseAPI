@@ -149,7 +149,11 @@ public final class CurseProject {
 
 	public BufferedImage avatar() throws IOException {
 		if(avatar == null) {
-			avatar = ImageIO.read(NetworkUtils.download(avatarURL));
+			if(avatarURL == CurseAPI.PLACEHOLDER_THUMBNAIL_URL) {
+				avatar = CurseAPI.getPlaceholderThumbnail();
+			} else {
+				avatar = ImageIO.read(NetworkUtils.download(avatarURL));
+			}
 		}
 
 		return avatar;
@@ -669,10 +673,9 @@ public final class CurseProject {
 						getElementsByClass("project-categories").get(0).
 						getElementsByTag("li")
 		).toImmutableList();
-		System.out.println(id() + " " + title());
 		avatarURLString = DocumentUtils.getValue(url, "class=e-avatar64;absUrl=href");
-		System.out.println("HELLO:" + avatarURLString);
-		avatarURL = URLUtils.url(avatarURLString);
+		avatarURL = avatarURLString.isEmpty() ?
+				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLUtils.url(avatarURLString);
 	}
 
 	public void reloadFiles() throws CurseException {

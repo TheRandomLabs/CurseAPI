@@ -1,13 +1,16 @@
 package com.therandomlabs.curseapi;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.misc.Assertions;
+import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithThrowable;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 
@@ -43,6 +46,14 @@ public final class CurseAPI {
 	}
 
 	private CurseAPI() {}
+
+	public static BufferedImage getPlaceholderThumbnail() throws IOException {
+		if(placeholderThumbnail == null) {
+			placeholderThumbnail = ImageIO.read(NetworkUtils.download(PLACEHOLDER_THUMBNAIL_URL));
+		}
+
+		return placeholderThumbnail;
+	}
 
 	public static int getMaximumThreads() {
 		return threads;
@@ -113,7 +124,7 @@ public final class CurseAPI {
 		WidgetAPI.clearCache();
 
 		try {
-			Class.forName("com.therandomlabs.curseapi.minecraft").
+			Class.forName("com.therandomlabs.curseapi.minecraft.CurseAPIMinecraft").
 					getDeclaredMethod("clearAllCache").
 					invoke(null);
 		} catch(Exception ex) {
