@@ -174,6 +174,10 @@ public final class CurseFile {
 		return ids == null ? ImmutableList.empty() : ids;
 	}
 
+	public TRLList<CurseProject> dependencies() throws CurseException {
+		return dependencies(RelationType.ALL_TYPES);
+	}
+
 	public TRLList<CurseProject> dependencies(RelationType relationType) throws CurseException {
 		if(dependencies.get(relationType) == null) {
 			final TRLList<Integer> ids = dependencyIDs(relationType);
