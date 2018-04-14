@@ -5,12 +5,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
@@ -192,6 +195,72 @@ public final class CurseFile {
 		}
 
 		return dependencies.get(relationType);
+	}
+
+	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
+			Collection<MinecraftVersion> mcVersions) throws CurseException {
+		return dependenciesRecursive(minimumStability,
+				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursive(ReleaseType minimumStability,
+			Collection<String> gameVersions) throws CurseException {
+		return dependenciesRecursive(Collections.emptyMap(), minimumStability, gameVersions);
+	}
+
+	public TRLList<CurseFile> dependenciesRecursiveMC(Collection<CurseFile> files,
+			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
+			throws CurseException {
+		return dependenciesRecursive(files, minimumStability,
+				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursive(Collection<CurseFile> files,
+			ReleaseType minimumStability, Collection<String> gameVersions) throws CurseException {
+		final Map<Integer, Integer> map = new HashMap<>(files.size());
+		for(CurseFile file : files) {
+			map.put(file.projectID, file.id);
+		}
+		return dependenciesRecursive(map, minimumStability, gameVersions);
+	}
+
+	public TRLList<CurseFile> dependenciesRecursiveMC(Map<Integer, Integer> files,
+			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
+			throws CurseException {
+		return dependenciesRecursive(files, minimumStability,
+				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
+			ReleaseType minimumStabililty, Collection<String> gameVersions) throws CurseException {
+		final TRLList<CurseFile> dependencies = new TRLList<>();
+		final Queue<CurseFile> toCheck = new PriorityQueue<>();
+		toCheck.add(this);
+
+		while(!toCheck.isEmpty()) {
+			final CurseFile file = toCheck.poll();
+
+			for(CurseProject project : file.dependencies(RelationType.REQUIRED_LIBRARY)) {
+				toCheck.add(getFile(files, project.id(), minimumStabililty, gameVersions));
+			}
+
+			if(file != this) {
+				dependencies.add(file);
+			}
+		}
+
+		return dependencies;
+	}
+
+	private CurseFile getFile(Map<Integer, Integer> files, int projectID,
+			ReleaseType minimumStability, Collection<String> gameVersions) throws CurseException {
+		if(files.containsKey(projectID)) {
+			return CurseMeta.getCurseFile(projectID, files.get(projectID));
+		}
+
+		final CurseFileList fileList = CurseMeta.getCurseFiles(projectID);
+		fileList.filterMinimumStability(minimumStability);
+		return fileList.latest(gameVersions);
 	}
 
 	public String gameVersion() {
