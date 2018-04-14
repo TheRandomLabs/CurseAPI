@@ -448,7 +448,7 @@ public final class CurseFile {
 
 		md5 = DocumentUtils.getValue(url, "class=md5;text");
 		uploader = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
-		uploaderURLString = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
+		uploaderURLString = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;absUrl=href");
 		uploaderURL = URLUtils.url(uploaderURLString);
 	}
 
