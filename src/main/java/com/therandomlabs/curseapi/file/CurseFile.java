@@ -287,7 +287,10 @@ public final class CurseFile {
 	private CurseFile getFile(Map<Integer, Integer> files, int projectID,
 			ReleaseType minimumStability, Collection<String> gameVersions) throws CurseException {
 		if(files.containsKey(projectID)) {
-			return CurseMeta.getCurseFile(projectID, files.get(projectID));
+			final int fileID = files.get(projectID);
+			if(fileID >= CurseAPI.MIN_PROJECT_ID) {
+				return CurseMeta.getCurseFile(projectID, files.get(projectID));
+			}
 		}
 
 		final CurseFileList fileList = CurseMeta.getCurseFiles(projectID);
