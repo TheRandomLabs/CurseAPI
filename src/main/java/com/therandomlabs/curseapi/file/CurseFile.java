@@ -198,9 +198,19 @@ public final class CurseFile {
 	}
 
 	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
+			MinecraftVersion... mcVersions) throws CurseException {
+		return dependenciesRecursiveMC(minimumStability, new ImmutableList<>(mcVersions));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
 			Collection<MinecraftVersion> mcVersions) throws CurseException {
 		return dependenciesRecursive(minimumStability,
 				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursive(ReleaseType minimumStability,
+			String... gameVersions) throws CurseException {
+		return dependenciesRecursive(minimumStability, new ImmutableList<>(gameVersions));
 	}
 
 	public TRLList<CurseFile> dependenciesRecursive(ReleaseType minimumStability,
@@ -209,10 +219,21 @@ public final class CurseFile {
 	}
 
 	public TRLList<CurseFile> dependenciesRecursiveMC(Collection<CurseFile> files,
+			ReleaseType minimumStability, MinecraftVersion... mcVersions)
+			throws CurseException {
+		return dependenciesRecursiveMC(files, minimumStability, new ImmutableList<>(mcVersions));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursiveMC(Collection<CurseFile> files,
 			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
 			throws CurseException {
 		return dependenciesRecursive(files, minimumStability,
 				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursive(Collection<CurseFile> files,
+			ReleaseType minimumStability, String... gameVersions) throws CurseException {
+		return dependenciesRecursive(files, minimumStability, new ImmutableList<>(gameVersions));
 	}
 
 	public TRLList<CurseFile> dependenciesRecursive(Collection<CurseFile> files,
@@ -225,10 +246,21 @@ public final class CurseFile {
 	}
 
 	public TRLList<CurseFile> dependenciesRecursiveMC(Map<Integer, Integer> files,
+			ReleaseType minimumStability, MinecraftVersion... mcVersions)
+			throws CurseException {
+		return dependenciesRecursiveMC(files, minimumStability, new ImmutableList<>(mcVersions));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursiveMC(Map<Integer, Integer> files,
 			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
 			throws CurseException {
 		return dependenciesRecursive(files, minimumStability,
 				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+	}
+
+	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
+			ReleaseType minimumStabililty, String... gameVersions) throws CurseException {
+		return dependenciesRecursive(files, minimumStabililty, new ImmutableList<>(gameVersions));
 	}
 
 	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
