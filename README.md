@@ -1,5 +1,5 @@
 # CurseAPI
-A WIP Java API to handle interactions with Curse. It aims to combine information from three sources to provide a reliable API, and soon will use CurseMeta by default for most interactions, as it is somehow more reliable than Curse itself.
+A WIP Java API to handle interactions with Curse. It aims to combine information from multiple sources to provide a reliable API.
 Example Gradle buildscript:
 
 	apply plugin: "java"
