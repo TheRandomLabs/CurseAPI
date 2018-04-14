@@ -27,9 +27,12 @@ public final class CurseMeta {
 	public static CurseFileList getCurseFiles(int projectID) throws CurseException {
 		final TRLList<AddOnFile> files = getFiles(projectID);
 		final CurseFileList curseFiles = new CurseFileList(files.size());
+
 		for(AddOnFile file : files) {
 			curseFiles.add(new CurseFile(projectID, file));
 		}
+
+		curseFiles.sortByNewest();
 		return curseFiles;
 	}
 
@@ -67,6 +70,10 @@ public final class CurseMeta {
 		try {
 			try {
 				final CurseMetaError error = new Gson().fromJson(json, CurseMetaError.class);
+
+				if(error == null) {
+					throw new CurseMetaException("Invalid CurseMeta URL: " + url);
+				}
 
 				if(error.error) {
 					throw new CurseMetaException(error.description, error.status, url);

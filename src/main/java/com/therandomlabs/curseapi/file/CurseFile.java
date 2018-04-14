@@ -291,8 +291,13 @@ public final class CurseFile {
 		}
 
 		final CurseFileList fileList = CurseMeta.getCurseFiles(projectID);
+		final CurseFile fallback = fileList.latest(gameVersions);
+
 		fileList.filterMinimumStability(minimumStability);
-		return fileList.latest(gameVersions);
+		final CurseFile file = fileList.latest(gameVersions);
+
+		//Bypass minimumStability if there are no dependency files matching it
+		return file == null ? fallback : file;
 	}
 
 	public String gameVersion() {

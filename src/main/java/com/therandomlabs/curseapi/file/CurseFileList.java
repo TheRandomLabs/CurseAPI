@@ -59,16 +59,22 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public CurseFile latest() {
-		return isEmpty() ? null : get(0);
+		return latest(file -> true);
 	}
 
 	public CurseFile latest(Predicate<CurseFile> predicate) {
+		if(isEmpty()) {
+			return null;
+		}
+
 		CurseFile latest = null;
+
 		for(CurseFile file : this) {
 			if((latest == null || file.id() > latest.id()) && predicate.test(file)) {
 				latest = file;
 			}
 		}
+
 		return latest;
 	}
 
