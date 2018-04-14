@@ -5,8 +5,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -16,12 +19,13 @@ import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.project.RelationType;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
-import com.therandomlabs.utils.collection.TRLCollectors;
+import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.NIOUtils;
@@ -30,7 +34,6 @@ import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.nodes.Element;
 
 //TODO Additional Files
-//TODO get dependencies by type
 public final class CurseFile {
 	private final int projectID;
 	private CurseProject project;
@@ -46,8 +49,8 @@ public final class CurseFile {
 	private final String fileSize;
 	private final int downloads;
 	private final String md5;
-	private final TRLList<Integer> dependencyIDs;
-	private TRLList<CurseProject> dependencies;
+	private final Map<RelationType, TRLList<Integer>> dependencyIDs;
+	private Map<RelationType, TRLList<CurseProject>> dependencies;
 	private final TRLList<String> gameVersions;
 	private final TRLList<MinecraftVersion> minecraftVersions;
 	private Element changelogHTML;
@@ -78,7 +81,7 @@ public final class CurseFile {
 
 	public CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
 			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
-			String fileSize, int downloads, TRLList<Integer> dependencyIDs,
+			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,
 			String[] gameVersions, boolean curseMeta) throws CurseException {
 		this.projectID = projectID;
 		this.project = project;
@@ -102,7 +105,8 @@ public final class CurseFile {
 		//TODO get with CurseMeta
 		this.md5 = curseMeta ? null : DocumentUtils.getValue(url, "class=md5;text");
 		this.dependencyIDs =
-				dependencyIDs == null ? getDependencies(url) : dependencyIDs.toImmutableList();
+				dependencyIDs == null ? getDependencies(url) : dependencyIDs;
+		this.dependencies = new HashMap<>(dependencyIDs.size());
 
 		final TRLList<String> gameVersionList = new TRLList<>();
 		for(String gameVersion : gameVersions) {
@@ -162,18 +166,24 @@ public final class CurseFile {
 	}
 
 	public TRLList<Integer> dependencyIDs() {
-		return dependencyIDs;
+		return dependencyIDs(RelationType.ALL_TYPES);
 	}
 
-	public TRLList<CurseProject> dependencies() throws CurseException {
-		if(dependencies == null) {
-			final TRLList<CurseProject> dependencyList = new TRLList<>(dependencyIDs.size());
-			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), dependencyIDs.size(),
-					index -> dependencyList.add(CurseProject.fromID(dependencyIDs.get(index))));
-			dependencies = dependencyList.toImmutableList();
+	public TRLList<Integer> dependencyIDs(RelationType relationType) {
+		final TRLList<Integer> ids = dependencyIDs.get(relationType);
+		return ids == null ? ImmutableList.empty() : ids;
+	}
+
+	public TRLList<CurseProject> dependencies(RelationType relationType) throws CurseException {
+		if(dependencies.get(relationType) == null) {
+			final TRLList<Integer> ids = dependencyIDs(relationType);
+			final TRLList<CurseProject> dependencyList = new TRLList<>(ids.size());
+			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), ids.size(),
+					index -> dependencyList.add(CurseProject.fromID(ids.get(index))));
+			dependencies.put(relationType, dependencyList.toImmutableList());
 		}
 
-		return dependencies;
+		return dependencies.get(relationType);
 	}
 
 	public String gameVersion() {
@@ -294,18 +304,28 @@ public final class CurseFile {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
 	}
 
-	private static TRLList<Integer> getDependencyIDs(List<AddOnFileDependency> dependencies) {
-		if(dependencies == null) {
-			return new TRLList<>();
+	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
+			List<AddOnFileDependency> dependencies) {
+		final Map<RelationType, TRLList<Integer>> ids = new HashMap<>(RelationType.values().length);
+		final TRLList<Integer> all = new TRLList<>(dependencies.size());
+		ids.put(RelationType.ALL_TYPES, all);
+
+		for(AddOnFileDependency dependency : dependencies) {
+			ids.computeIfAbsent(dependency.Type, type -> new TRLList<>());
+			ids.get(dependency.Type).add(dependency.AddOnId);
+			all.add(dependency.AddOnId);
 		}
 
-		return dependencies.stream().map(dependency -> dependency.AddOnId).
-				collect(TRLCollectors.toImmutableList());
+		for(Map.Entry<RelationType, TRLList<Integer>> entry : ids.entrySet()) {
+			ids.put(entry.getKey(), entry.getValue().toImmutableList());
+		}
+
+		return ids;
 	}
 
 	@SuppressWarnings("all")
-	private static TRLList<Integer> getDependencies(URL url) throws CurseException {
+	private static Map<RelationType, TRLList<Integer>> getDependencies(URL url) throws CurseException {
 		//TODO parse from HTML - get dependencies and dependencyIDs
-		return null;
+		return Collections.emptyMap();
 	}
 }
