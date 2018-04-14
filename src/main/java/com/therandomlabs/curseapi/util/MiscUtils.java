@@ -27,7 +27,7 @@ public final class MiscUtils {
 			} catch(NumberFormatException ex2) {
 				//CurseMeta compat
 				if(StringUtils.lastChar(time) != 'Z') {
-					return parseTime(time + 'Z');
+					return ZonedDateTime.parse(time + 'Z');
 				}
 
 				throw ex;

@@ -93,7 +93,7 @@ The above code at the time of writing prints:
 	[INFO] Thumbnail URL: https://media.forgecdn.net/avatars/thumbnails/86/874/62/62/636211726646572646.png
 	[INFO] Members: [[type="Owner",username="TheRandomLabs"]]
 	[INFO] Downloads: 203255
-	[INFO] Creation time: 2018-04-11T21:25:47Z
+	[INFO] Creation time: 2017-01-28T09:57:02Z
 	[INFO] Last update time: 2018-04-12T02:28:04Z
 	[INFO] Donate URL: null
 	[INFO] License name: Custom License

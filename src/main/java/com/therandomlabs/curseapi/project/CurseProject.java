@@ -622,8 +622,8 @@ public final class CurseProject {
 
 			downloads = Integer.parseInt(
 					DocumentUtils.getValue(url, "class=info-data=3;text").replaceAll(",", ""));
-			creationTime = MiscUtils.parseTime(
-					DocumentUtils.getValue(url, "class=standard-date;attr=data-epoch"));
+			creationTime = MiscUtils.parseTime(DocumentUtils.getValue(url,
+					"class=project-details;class=standard-date;attr=data-epoch"));
 
 			try {
 				donateURLString =
