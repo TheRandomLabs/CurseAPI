@@ -52,6 +52,9 @@ public final class CurseFile {
 	private final String fileSize;
 	private final int downloads;
 	private final String md5;
+	private final String uploader;
+	private final String uploaderURLString;
+	private final URL uploaderURL;
 	private final Map<RelationType, TRLList<Integer>> dependencyIDs;
 	private Map<RelationType, TRLList<CurseProject>> dependencies;
 	private final TRLList<String> gameVersions;
@@ -105,8 +108,12 @@ public final class CurseFile {
 		this.uploadTime = MiscUtils.parseTime(uploadTime);
 		this.fileSize = fileSize;
 		this.downloads = downloads;
-		//TODO get with CurseMeta
 		this.md5 = curseMeta ? null : DocumentUtils.getValue(url, "class=md5;text");
+		this.uploader = curseMeta ?
+				null : DocumentUtils.getValue(url(), "class=user-tag;tag=a=1;text");
+		this.uploaderURLString = curseMeta ?
+				null : DocumentUtils.getValue(url(), "class=user-tag;tag=a=1;absUrl=href");
+		this.uploaderURL = curseMeta ? null : URLUtils.url(uploaderURLString);
 		this.dependencyIDs =
 				dependencyIDs == null ? getDependencies(url) : dependencyIDs;
 		this.dependencies = new HashMap<>(dependencyIDs.size());
@@ -362,12 +369,16 @@ public final class CurseFile {
 		return changelogHTML;
 	}
 
-	public String uploader() throws CurseException {
-		return DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
+	public String uploader() {
+		return uploader;
 	}
 
-	public URL uploaderURL() throws CurseException {
-		return URLUtils.url(DocumentUtils.getValue(url, "class=user-tag;tag=a=1;absUrl=href"));
+	public String uploaderURLString() {
+		return uploaderURLString;
+	}
+
+	public URL uploaderURL() {
+		return uploaderURL;
 	}
 
 	public int projectID() {
@@ -386,15 +397,15 @@ public final class CurseFile {
 		return project.title();
 	}
 
-	public InputStream download() throws CurseException, IOException {
+	public InputStream download() throws IOException {
 		return NetworkUtils.download(downloadURL());
 	}
 
-	public Path download(Path location) throws CurseException, IOException {
+	public Path download(Path location) throws IOException {
 		return NIOUtils.download(downloadURL(), location);
 	}
 
-	public Path downloadToDirectory(Path directory) throws CurseException, IOException {
+	public Path downloadToDirectory(Path directory) throws IOException {
 		return NIOUtils.downloadToDirectory(downloadURL(), directory);
 	}
 
