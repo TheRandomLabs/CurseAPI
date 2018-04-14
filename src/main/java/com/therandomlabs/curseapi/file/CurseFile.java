@@ -181,6 +181,10 @@ public final class CurseFile {
 	public TRLList<CurseProject> dependencies(RelationType relationType) throws CurseException {
 		if(dependencies.get(relationType) == null) {
 			final TRLList<Integer> ids = dependencyIDs(relationType);
+			if(ids.isEmpty()) {
+				return ImmutableList.empty();
+			}
+
 			final TRLList<CurseProject> dependencyList = new TRLList<>(ids.size());
 			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), ids.size(),
 					index -> dependencyList.add(CurseProject.fromID(ids.get(index))));
@@ -310,6 +314,10 @@ public final class CurseFile {
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
 			List<AddOnFileDependency> dependencies) {
+		if(dependencies == null || dependencies.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
 		final Map<RelationType, TRLList<Integer>> ids = new HashMap<>(RelationType.values().length);
 		final TRLList<Integer> all = new TRLList<>(dependencies.size());
 		ids.put(RelationType.ALL_TYPES, all);
@@ -328,7 +336,8 @@ public final class CurseFile {
 	}
 
 	@SuppressWarnings("all")
-	private static Map<RelationType, TRLList<Integer>> getDependencies(URL url) throws CurseException {
+	private static Map<RelationType, TRLList<Integer>> getDependencies(URL url)
+			throws CurseException {
 		//TODO parse from HTML - get dependencies and dependencyIDs
 		return Collections.emptyMap();
 	}
