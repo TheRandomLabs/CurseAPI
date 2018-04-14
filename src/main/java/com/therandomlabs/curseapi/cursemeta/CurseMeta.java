@@ -16,7 +16,7 @@ public final class CurseMeta {
 	public static final String BASE_URL = "https://cursemeta.dries007.net/api/v2/direct/";
 	public static final String GET_ALL_FILES_FOR_ADDON = "GetAllFilesForAddOn/";
 	public static final String GET_ADDON_FILE = "GetAddOnFile/";
-	public static final String GET_CHANGELOG = "v2GetChangelog/";
+	public static final String GET_CHANGELOG = "v2GetChangeLog/";
 
 	private CurseMeta() {}
 
