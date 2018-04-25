@@ -2,6 +2,8 @@ package com.therandomlabs.curseapi.project;
 
 import java.io.Serializable;
 import java.net.URL;
+import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.cursemeta.AddOnCategory;
 
 public final class Category implements Serializable {
 	private static final long serialVersionUID = 4578392820713062750L;
@@ -49,5 +51,15 @@ public final class Category implements Serializable {
 	@Override
 	public String toString() {
 		return "[name=\"" + name + "\",url=\"" + url + "\",thumbnailURL=\"" + thumbnailURL + "\"]";
+	}
+
+	public static Category[] fromAddOnCategories(AddOnCategory[] addOnCategories) {
+		final Category[] categories = new Category[addOnCategories.length];
+		for(int i = 0; i < addOnCategories.length; i++) {
+			final AddOnCategory category = addOnCategories[i];
+			categories[i] =
+					new Category(category.Name, category.URL, CurseAPI.PLACEHOLDER_THUMBNAIL_URL);
+		}
+		return categories;
 	}
 }

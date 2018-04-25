@@ -17,6 +17,9 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
+import com.therandomlabs.curseapi.cursemeta.AddOn;
+import com.therandomlabs.curseapi.cursemeta.CurseMeta;
+import com.therandomlabs.curseapi.cursemeta.CurseMetaException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.file.ReleaseType;
@@ -76,6 +79,8 @@ public final class CurseProject {
 
 	private Map<String, FileInfo[]> widgetInfoFiles;
 
+	private final boolean curseMeta;
+
 	private CurseFileList files;
 
 	//Incomplete list of files used as a cache
@@ -91,9 +96,22 @@ public final class CurseProject {
 	private CurseProject(URL url) throws CurseException {
 		CurseException.validateProject(url);
 
+		curseMeta = false;
 		this.url = url;
 		this.mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
 		reload(false);
+
+		projects.add(this);
+	}
+
+	private CurseProject(int id, boolean curseMeta) throws CurseException {
+		this.curseMeta = curseMeta;
+		avoidWidgetAPI = true;
+		avoidCurseMeta = false;
+
+		this.id = id;
+
+		reload();
 
 		projects.add(this);
 	}
@@ -235,10 +253,16 @@ public final class CurseProject {
 	}
 
 	public String description() throws CurseException {
+		descriptionHTML();
 		return description;
 	}
 
 	public Element descriptionHTML() throws CurseException {
+		if(curseMeta && descriptionHTML == null) {
+			descriptionHTML = CurseMeta.getDescription(id);
+			description = DocumentUtils.getPlainText(descriptionHTML);
+		}
+
 		return descriptionHTML;
 	}
 
@@ -251,7 +275,9 @@ public final class CurseProject {
 	}
 
 	public void avoidWidgetAPI(boolean flag) {
-		avoidWidgetAPI = flag;
+		if(!curseMeta) {
+			avoidWidgetAPI = flag;
+		}
 	}
 
 	public boolean isAvoidingCurseMeta() {
@@ -259,7 +285,9 @@ public final class CurseProject {
 	}
 
 	public void avoidCurseMeta(boolean flag) {
-		avoidCurseMeta = flag;
+		if(!curseMeta) {
+			avoidCurseMeta = flag;
+		}
 	}
 
 	public CurseFile latestFile() throws CurseException {
@@ -582,6 +610,11 @@ public final class CurseProject {
 	public void reloadURL() throws CurseException {
 		url = CurseForge.fromID(id);
 		mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
+
+		site = CurseForgeSite.fromURL(url);
+		if(site == null) {
+			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
+		}
 	}
 
 	public void reload() throws CurseException {
@@ -589,9 +622,8 @@ public final class CurseProject {
 	}
 
 	private void reload(boolean useWidgetAPI) throws CurseException {
-		site = CurseForgeSite.fromURL(url);
-		if(site == null) {
-			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
+		if(curseMeta) {
+			reloadCurseMeta();
 		}
 
 		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
@@ -675,6 +707,27 @@ public final class CurseProject {
 		avatarURLString = DocumentUtils.getValue(url, "class=e-avatar64;absUrl=href");
 		avatarURL = avatarURLString.isEmpty() ?
 				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLUtils.url(avatarURLString);
+	}
+
+	private void reloadCurseMeta() throws CurseException {
+		final AddOn addon = CurseMeta.getAddOn(id);
+
+		id = addon.Id;
+		title = addon.Name;
+		game = Game.fromID(addon.GameId);
+		url = URLUtils.redirect(CurseForge.URL + "projects/" + id);
+		mainCurseForgeURL = addon.WebSiteURL;
+		avatarURL = addon.AvatarUrl == null ? addon.AvatarUrl : CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
+		avatarURLString = avatarURL.toString();
+		thumbnailURL = avatarURL;
+		thumbnailURLString = avatarURLString;
+		members = new TRLList<>(Member.fromAuthors(addon.Authors));
+		downloads = (int) addon.DownloadCount;
+		creationTime = null;
+		donateURL = addon.DonationUrl;
+		donateURLString = donateURL == null ? null : donateURL.toString();
+		shortDescription = addon.Summary;
+		categories = new TRLList<>(Category.fromAddOnCategories(addon.Categories));
 	}
 
 	public void reloadFiles() throws CurseException {
@@ -814,7 +867,15 @@ public final class CurseProject {
 			}
 		}
 
-		return new CurseProject(id);
+		try {
+			return new CurseProject(id);
+		} catch(InvalidProjectIDException ex) {
+			try {
+				return new CurseProject(id, true);
+			} catch(CurseMetaException ex2) {
+				throw ex;
+			}
+		}
 	}
 
 	public static CurseProject fromURL(URL url) throws CurseException {

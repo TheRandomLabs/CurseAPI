@@ -39,18 +39,7 @@ public class AddOnFile implements Cloneable, Serializable {
 		try {
 			final AddOnFile file = (AddOnFile) super.clone();
 
-			file.Id = Id;
-			file.AlternateFileId = AlternateFileId;
 			file.Dependencies = CloneException.tryClone(Dependencies);
-			file.DownloadURL = DownloadURL;
-			file.FileDate = FileDate;
-			file.FileName = FileName;
-			file.FileNameOnDisk = FileNameOnDisk;
-			file.FileStatus = FileStatus;
-			file.GameVersion = GameVersion.clone();
-			file.IsAlternate = IsAlternate;
-			file.PackageFingerprint = PackageFingerprint;
-			file.ReleaseType = ReleaseType;
 			file.Modules = CloneException.tryClone(Modules);
 
 			return file;

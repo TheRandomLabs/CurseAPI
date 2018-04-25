@@ -20,8 +20,8 @@ public final class ProjectType {
 		new Minecraft();
 		new KerbalSpaceProgram();
 		new WildStar();
-		new Terraria();
 		new WorldOfTanks();
+		new Terraria();
 		new Rift();
 		new RunesOfMagic();
 		new Skyrim();
@@ -29,6 +29,9 @@ public final class ProjectType {
 		new TheElderScrollsOnline();
 		new SecretWorldLegends();
 		new DarkestDungeon();
+		new SurvivingMars();
+		new StardewValley();
+		new Staxel();
 	}
 
 	final String name;
@@ -243,25 +246,6 @@ public final class ProjectType {
 		}
 	}
 
-	public static final class Terraria {
-		@SerializedName("Maps")
-		public static final ProjectType MAPS = get("Maps", "maps");
-
-		private Terraria() {}
-
-		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values(), name);
-		}
-
-		public static ProjectType[] values() {
-			return ProjectType.values(CurseForgeSite.TERRARIA);
-		}
-
-		private static ProjectType get(String name, String sitePath) {
-			return new ProjectType(name, CurseForgeSite.TERRARIA, sitePath);
-		}
-	}
-
 	public static final class WorldOfTanks {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "wot-mods");
@@ -280,6 +264,25 @@ public final class ProjectType {
 
 		private static ProjectType get(String name, String sitePath) {
 			return new ProjectType(name, CurseForgeSite.WORLD_OF_TANKS, sitePath);
+		}
+	}
+
+	public static final class Terraria {
+		@SerializedName("Maps")
+		public static final ProjectType MAPS = get("Maps", "maps");
+
+		private Terraria() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.TERRARIA);
+		}
+
+		private static ProjectType get(String name, String sitePath) {
+			return new ProjectType(name, CurseForgeSite.TERRARIA, sitePath);
 		}
 	}
 
@@ -413,6 +416,63 @@ public final class ProjectType {
 
 		private static ProjectType get(String name, String sitePath) {
 			return new ProjectType(name, CurseForgeSite.DARKEST_DUNGEON, sitePath);
+		}
+	}
+
+	public static final class SurvivingMars {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get("Mods", "mods");
+
+		private SurvivingMars() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.SURVIVING_MARS);
+		}
+
+		private static ProjectType get(String name, String sitePath) {
+			return new ProjectType(name, CurseForgeSite.SURVIVING_MARS, sitePath);
+		}
+	}
+
+	public static final class StardewValley {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get("Mods", "mods");
+
+		private StardewValley() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.STARDEW_VALLEY);
+		}
+
+		private static ProjectType get(String name, String sitePath) {
+			return new ProjectType(name, CurseForgeSite.STARDEW_VALLEY, sitePath);
+		}
+	}
+
+	public static final class Staxel {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get("Mods", "staxel-mods");
+
+		private Staxel() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.STAXEL);
+		}
+
+		private static ProjectType get(String name, String sitePath) {
+			return new ProjectType(name, CurseForgeSite.STAXEL, sitePath);
 		}
 	}
 }

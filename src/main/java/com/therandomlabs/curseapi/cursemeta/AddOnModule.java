@@ -11,12 +11,7 @@ public class AddOnModule implements Cloneable, Serializable {
 	@Override
 	public AddOnModule clone() {
 		try {
-			final AddOnModule module = (AddOnModule) super.clone();
-
-			module.Fingerprint = Fingerprint;
-			module.Foldername = Foldername;
-
-			return module;
+			return (AddOnModule) super.clone();
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;

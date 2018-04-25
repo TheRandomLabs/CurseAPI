@@ -16,13 +16,27 @@ import org.jsoup.nodes.Element;
 
 public final class CurseMeta {
 	public static final String BASE_URL = "https://cursemeta.dries007.net/api/v2/direct/";
+	public static final String GET_ADDON = "GetAddOn/";
 	public static final String GET_ALL_FILES_FOR_ADDON = "GetAllFilesForAddOn/";
 	public static final String GET_ADDON_FILE = "GetAddOnFile/";
+	public static final String GET_ADDON_DESCRIPTION = "v2GetAddOnDescription/";
 	public static final String GET_CHANGELOG = "v2GetChangeLog/";
 
 	private static final Map<Integer, TRLList<AddOnFile>> cache = new ConcurrentHashMap<>(50);
 
 	private CurseMeta() {}
+
+	public static AddOn getAddOn(int projectID) throws CurseMetaException {
+		return get(GET_ADDON + projectID, AddOn.class);
+	}
+
+	public static String getAddOnURLString(int projectID) {
+		return BASE_URL + GET_ADDON + projectID;
+	}
+
+	public static URL getAddOnURL(int projectID) throws CurseException {
+		return URLUtils.url(getAddOnURLString(projectID));
+	}
 
 	public static TRLList<AddOnFile> getFiles(int projectID) throws CurseMetaException {
 		TRLList<AddOnFile> list = cache.get(projectID);
@@ -54,6 +68,18 @@ public final class CurseMeta {
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
 		return URLUtils.url(getFileURLString(projectID, fileID));
+	}
+
+	public static Element getDescription(int projectID) throws CurseMetaException {
+		return Jsoup.parse(get(GET_ADDON_DESCRIPTION + projectID, String.class));
+	}
+
+	public static String getDescriptionURLString(int projectID) {
+		return BASE_URL + GET_ADDON_DESCRIPTION + projectID;
+	}
+
+	public static URL getDescriptionURL(int projectID) throws CurseException {
+		return URLUtils.url(getDescriptionURLString(projectID));
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {

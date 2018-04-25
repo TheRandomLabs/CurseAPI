@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.curseforge;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
+import com.google.gson.annotations.SerializedName;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.project.ProjectType;
@@ -19,15 +20,18 @@ public enum CurseForgeSite {
 	SC_II_MAPSTER("www.sc2mapster.com", Game.STARCRAFT_II),
 	KERBAL_SPACE_PROGRAM("kerbal", Game.KERBAL_SPACE_PROGRAM),
 	WILDSTAR("wildstar", Game.WILDSTAR),
-	TERRARIA("terraria", Game.TERRARIA),
 	WORLD_OF_TANKS("worldoftanks", Game.WORLD_OF_TANKS),
+	TERRARIA("terraria", Game.TERRARIA),
 	RIFT("rift", Game.RIFT),
 	RUNES_OF_MAGIC("rom", Game.RUNES_OF_MAGIC),
 	SKYRIM("www.skyrimforge.com", Game.SKYRIM),
 	THE_SECRET_WORLD("tsw", Game.THE_SECRET_WORLD),
 	THE_ELDER_SCROLLS_ONLINE("teso", Game.THE_ELDER_SCROLLS),
 	SECRET_WORLD_LEGENDS("swl", Game.SECRET_WORLD_LEGENDS),
-	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON);
+	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON),
+	SURVIVING_MARS("survivingmars", Game.SURVIVING_MARS),
+	STARDEW_VALLEY("stardewvalley", Game.STARDEW_VALLEY),
+	STAXEL("staxel", Game.STAXEL);
 
 	/**
 	 * A {@link Pattern} that only matches valid CurseForge hosts.

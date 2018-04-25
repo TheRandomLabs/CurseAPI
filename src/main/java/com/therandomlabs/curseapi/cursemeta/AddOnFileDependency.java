@@ -12,12 +12,7 @@ public class AddOnFileDependency implements Cloneable, Serializable {
 	@Override
 	public AddOnFileDependency clone() {
 		try {
-			final AddOnFileDependency dependency = (AddOnFileDependency) super.clone();
-
-			dependency.AddOnId = AddOnId;
-			dependency.Type = Type;
-
-			return dependency;
+			return (AddOnFileDependency) super.clone();
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;

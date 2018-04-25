@@ -16,10 +16,10 @@ public enum MemberType {
 	MAINTAINER("Maintainer"),
 	@SerializedName("Contributor")
 	CONTRIBUTOR("Contributor"),
-	@SerializedName("Author")
-	AUTHOR("Author"),
-	@SerializedName("Former Author")
-	FORMER_AUTHOR("Former Author"),
+	@SerializedName("AddOnAuthor")
+	AUTHOR("AddOnAuthor"),
+	@SerializedName("Former AddOnAuthor")
+	FORMER_AUTHOR("Former AddOnAuthor"),
 	//Apparently it's misspelt
 	@SerializedName("Ticket Manger")
 	TICKET_MANAGER("Ticket Manger"),
@@ -28,7 +28,9 @@ public enum MemberType {
 	@SerializedName("Artist")
 	ARTIST("Artist"),
 	@SerializedName("Mascot")
-	MASCOT("Mascot");
+	MASCOT("Mascot"),
+	@SerializedName("Unknown")
+	UNKNOWN("Unknown");
 
 
 	private final String name;
