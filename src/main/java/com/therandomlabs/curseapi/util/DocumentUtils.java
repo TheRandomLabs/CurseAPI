@@ -302,6 +302,14 @@ public final class DocumentUtils {
 		documents.remove(url);
 	}
 
+	public static boolean isCached(String url) {
+		return documents.containsKey(url);
+	}
+
+	public static boolean isCached(URL url) {
+		return isCached(url.toString());
+	}
+
 	public static int getCacheSize() {
 		return documents.getCacheSize();
 	}

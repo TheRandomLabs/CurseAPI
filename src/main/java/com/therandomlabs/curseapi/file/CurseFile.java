@@ -372,7 +372,7 @@ public final class CurseFile {
 
 	public Element changelogHTML() throws CurseException {
 		if(changelogHTML == null) {
-			if(url == null) {
+			if(url == null || !DocumentUtils.isCached(url)) {
 				changelogHTML = CurseMeta.getChangelog(projectID, id);
 			} else {
 				changelogHTML = DocumentUtils.get(url, "class=logbox");
