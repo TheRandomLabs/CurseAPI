@@ -21,6 +21,7 @@ import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.cursemeta.AddOnFile;
 import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
+import com.therandomlabs.curseapi.cursemeta.CurseMetaException;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
@@ -36,6 +37,7 @@ import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.NIOUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 //TODO Additional Files
@@ -376,7 +378,11 @@ public final class CurseFile {
 	public Element changelogHTML() throws CurseException {
 		if(changelogHTML == null) {
 			if(url == null || !DocumentUtils.isCached(url)) {
-				changelogHTML = CurseMeta.getChangelog(projectID, id);
+				try {
+					changelogHTML = CurseMeta.getChangelog(projectID, id);
+				} catch(CurseMetaException ex) {
+					changelogHTML = Jsoup.parse("No changelog provided");
+				}
 			} else {
 				changelogHTML = DocumentUtils.get(url, "class=logbox");
 			}

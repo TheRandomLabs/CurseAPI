@@ -177,7 +177,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public void between(CurseFile oldFile, CurseFile newFile,
 			boolean includeOlder, boolean includeNewer) {
-		between(oldFile.id(), newFile.id());
+		between(oldFile.id(), newFile.id(), includeOlder, includeNewer);
 	}
 
 	public void between(int oldID, int newID) {
@@ -186,9 +186,9 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public void between(int oldID, int newID, boolean includeOlder, boolean includeNewer) {
 		final int older = includeOlder ? oldID - 1 : oldID;
-		final int newer = includeNewer ? oldID + 1 : newID;
+		final int newer = includeNewer ? newID + 1 : newID;
 		filter(file -> file.id() > older && file.id() < newer);
-	}
+}
 
 	public void filterMCVersionGroup(String version) {
 		filterVersions(MinecraftVersion.groupFromString(version));
