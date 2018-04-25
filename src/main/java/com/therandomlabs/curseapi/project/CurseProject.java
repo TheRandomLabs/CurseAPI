@@ -890,7 +890,7 @@ public final class CurseProject {
 			url = URLUtils.redirect(url);
 		}
 
-		for(CurseProject project : projects) {
+		for(CurseProject project : projects.values()) {
 			if(url.equals(project.url)) {
 				return project;
 			}
