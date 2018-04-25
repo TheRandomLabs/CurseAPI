@@ -13,7 +13,7 @@ public enum Game {
 	@SerializedName("World of Warcraft")
 	WORLD_OF_WARCRAFT("World of Warcraft", 1),
 	@SerializedName("StarCraft II")
-	STARCRAFT_II("StarCraft II", -1), //Unknown ID
+	STARCRAFT_II("StarCraft II", 65),
 	@SerializedName("Kerbal Space Program")
 	KERBAL_SPACE_PROGRAM("Kerbal Space Program", 4401),
 	@SerializedName("WildStar")
@@ -21,13 +21,13 @@ public enum Game {
 	@SerializedName("World of Tanks")
 	WORLD_OF_TANKS("World of Tanks", 423),
 	@SerializedName("Terraria")
-	TERRARIA("Terraria", -1), //Unknown ID
+	TERRARIA("Terraria", 431),
 	@SerializedName("Rift")
 	RIFT("Rift", 424),
 	@SerializedName("Runes of Magic")
 	RUNES_OF_MAGIC("Runes of Magic", 335),
 	@SerializedName("Elder Scrolls V: Skyrim")
-	SKYRIM("Elder Scrolls V: Skyrim", -1), //Unknown ID
+	SKYRIM("Elder Scrolls V: Skyrim", 449),
 	@SerializedName("The Secret World")
 	THE_SECRET_WORLD("The Secret World", 64),
 	@SerializedName("The Elder Scrolls Online")
@@ -41,7 +41,7 @@ public enum Game {
 	@SerializedName("Stardew Valley")
 	STARDEW_VALLEY("Stardew Valley", 669),
 	@SerializedName("Staxel")
-	STAXEL("Staxel", -1), //Unknown ID
+	STAXEL("Staxel", 18237),
 	@SerializedName("Unknown")
 	UNKNOWN("Unknown", 0);
 
