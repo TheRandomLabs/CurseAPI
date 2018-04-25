@@ -36,6 +36,10 @@ public final class DocumentUtils {
 	private static final CacheMap<String, Document> documents =
 			new CacheMap<>(3000, true, entry -> values.remove(entry.getValue()));
 
+	static {
+		NetworkUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
+	}
+
 	private DocumentUtils() {}
 
 	public static String getPlainText(Element element) {
