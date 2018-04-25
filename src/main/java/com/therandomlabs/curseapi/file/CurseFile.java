@@ -154,7 +154,8 @@ public final class CurseFile {
 				url = URLUtils.url(urlString);
 				DocumentUtils.get(url);
 			} catch(CurseException ex) {
-				if(!(ex.getCause() instanceof FileNotFoundException)) {
+				if(!(ex.getCause() instanceof FileNotFoundException) &&
+						!(ex.getCause() instanceof InvalidProjectIDException)) {
 					throw ex;
 				}
 
