@@ -369,6 +369,8 @@ public final class CurseFile {
 	}
 
 	public String changelog() throws CurseException {
+		System.out.println(ReflectionUtils.getCallerMethod());
+
 		changelogHTML();
 		return changelog;
 	}

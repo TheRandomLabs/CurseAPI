@@ -68,7 +68,7 @@ public enum Game {
 				return game;
 			}
 		}
-		return null;
+		return UNKNOWN;
 	}
 
 	/**

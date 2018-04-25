@@ -622,9 +622,6 @@ public final class CurseProject {
 		}
 
 		site = CurseForgeSite.fromURL(url);
-		if(site == null) {
-			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
-		}
 
 		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
 			id = CurseForge.getID(url);

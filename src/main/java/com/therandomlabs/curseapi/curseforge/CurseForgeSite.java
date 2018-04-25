@@ -96,7 +96,7 @@ public enum CurseForgeSite {
 				return site;
 			}
 		}
-		return null;
+		return UNKNOWN;
 	}
 
 	public static CurseForgeSite fromString(String string) {
