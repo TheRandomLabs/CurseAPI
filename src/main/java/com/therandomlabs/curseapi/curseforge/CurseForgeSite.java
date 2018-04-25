@@ -3,7 +3,6 @@ package com.therandomlabs.curseapi.curseforge;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
-import com.google.gson.annotations.SerializedName;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.project.ProjectType;
@@ -31,7 +30,8 @@ public enum CurseForgeSite {
 	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON),
 	SURVIVING_MARS("survivingmars", Game.SURVIVING_MARS),
 	STARDEW_VALLEY("stardewvalley", Game.STARDEW_VALLEY),
-	STAXEL("staxel", Game.STAXEL);
+	STAXEL("staxel", Game.STAXEL),
+	UNKNOWN("unknown", Game.UNKNOWN);
 
 	/**
 	 * A {@link Pattern} that only matches valid CurseForge hosts.

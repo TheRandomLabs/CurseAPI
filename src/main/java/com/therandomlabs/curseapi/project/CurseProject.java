@@ -610,11 +610,6 @@ public final class CurseProject {
 	public void reloadURL() throws CurseException {
 		url = CurseForge.fromID(id);
 		mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
-
-		site = CurseForgeSite.fromURL(url);
-		if(site == null) {
-			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
-		}
 	}
 
 	public void reload() throws CurseException {
@@ -624,6 +619,11 @@ public final class CurseProject {
 	private void reload(boolean useWidgetAPI) throws CurseException {
 		if(curseMeta) {
 			reloadCurseMeta();
+		}
+
+		site = CurseForgeSite.fromURL(url);
+		if(site == null) {
+			throw new CurseException("Could not find CurseForgeSite for URL: " + url);
 		}
 
 		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
@@ -716,6 +716,7 @@ public final class CurseProject {
 		title = addon.Name;
 		game = Game.fromID(addon.GameId);
 		url = URLUtils.redirect(CurseForge.URL + "projects/" + id);
+		site = CurseForgeSite.UNKNOWN;
 		mainCurseForgeURL = addon.WebSiteURL;
 		avatarURL = addon.AvatarUrl == null ? addon.AvatarUrl : CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
 		avatarURLString = avatarURL.toString();
