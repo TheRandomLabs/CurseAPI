@@ -1,12 +1,14 @@
 package com.therandomlabs.curseapi.cursemeta;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.file.CurseFile;
-import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
+import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.Jsoup;
@@ -18,34 +20,60 @@ public final class CurseMeta {
 	public static final String GET_ADDON_FILE = "GetAddOnFile/";
 	public static final String GET_CHANGELOG = "v2GetChangeLog/";
 
+	private static final Map<Integer, TRLList<AddOnFile>> cache = new ConcurrentHashMap<>(50);
+
 	private CurseMeta() {}
 
 	public static TRLList<AddOnFile> getFiles(int projectID) throws CurseMetaException {
-		return new TRLList<>(get(GET_ALL_FILES_FOR_ADDON + projectID, AddOnFile[].class));
-	}
+		TRLList<AddOnFile> list = cache.get(projectID);
 
-	public static CurseFileList getCurseFiles(int projectID) throws CurseException {
-		final TRLList<AddOnFile> files = getFiles(projectID);
-		final CurseFileList curseFiles = new CurseFileList(files.size());
-
-		for(AddOnFile file : files) {
-			curseFiles.add(new CurseFile(projectID, file));
+		if(list != null) {
+			return list;
 		}
 
-		curseFiles.sortByNewest();
-		return curseFiles;
+		list = new TRLList<>(get(GET_ALL_FILES_FOR_ADDON + projectID, AddOnFile[].class));
+		cache.put(projectID, list);
+		return list;
+	}
+
+	public static String getFilesURLString(int projectID) {
+		return BASE_URL + GET_ALL_FILES_FOR_ADDON + projectID;
+	}
+
+	public static URL getFilesURL(int projectID) throws CurseException {
+		return URLUtils.url(getFilesURLString(projectID));
 	}
 
 	public static AddOnFile getFile(int projectID, int fileID) throws CurseMetaException {
 		return get(GET_ADDON_FILE + projectID + "/" + fileID, AddOnFile.class);
 	}
 
-	public static CurseFile getCurseFile(int projectID, int fileID) throws CurseException {
-		return new CurseFile(projectID, getFile(projectID, fileID));
+	public static String getFileURLString(int projectID, int fileID) {
+		return BASE_URL + GET_ADDON_FILE + projectID + "/" + fileID;
+	}
+
+	public static URL getFileURL(int projectID, int fileID) throws CurseException {
+		return URLUtils.url(getFileURLString(projectID, fileID));
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
 		return Jsoup.parse(get(GET_CHANGELOG + projectID + "/" + fileID, String.class));
+	}
+
+	public static String getChangelogURLString(int projectID, int fileID) {
+		return BASE_URL + GET_CHANGELOG + projectID + "/" + fileID;
+	}
+
+	public static URL getChangelogURL(int projectID, int fileID) throws CurseException {
+		return URLUtils.url(getChangelogURLString(projectID, fileID));
+	}
+
+	public static void clearCache() {
+		cache.clear();
+	}
+
+	public static void clearCache(int projectID) {
+		cache.remove(projectID);
 	}
 
 	private static <T> T get(String path, Class<T> clazz) throws CurseMetaException {

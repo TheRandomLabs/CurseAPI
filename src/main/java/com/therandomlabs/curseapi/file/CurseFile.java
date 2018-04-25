@@ -41,13 +41,14 @@ import org.jsoup.nodes.Element;
 public final class CurseFile {
 	private final int projectID;
 	private CurseProject project;
-	private final FileStatus status;
+	private FileStatus status;
 	private URL url;
+	private String urlString;
 	private final int id;
 	private final String name;
 	private final String nameOnDisk;
-	private URL downloadURL;
 	private String downloadURLString;
+	private URL downloadURL;
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
 	private final String fileSize;
@@ -96,7 +97,8 @@ public final class CurseFile {
 		this.status = status;
 
 		if(project != null) {
-			url = URLUtils.url(project.urlString() + "/files/" + id);
+			urlString = project.urlString() + "/files/" + id;
+			url = URLUtils.url(urlString);
 		}
 
 		this.id = id;
@@ -148,6 +150,7 @@ public final class CurseFile {
 
 	public URL url() throws CurseException {
 		if(url == null && !noCurseForgeURL) {
+			urlString = CurseForge.fromID(projectID) + "/files/" + id;
 			url = URLUtils.url(CurseForge.fromID(projectID) + "/files/" + id);
 			try {
 				DocumentUtils.get(url);
@@ -157,14 +160,16 @@ public final class CurseFile {
 				}
 
 				noCurseForgeURL = true;
+				status = FileStatus.SEMI_NORMAL;
 			}
 		}
 
 		return url;
 	}
 
-	public String urlString() {
-		return url.toString();
+	public String urlString() throws CurseException {
+		url();
+		return urlString;
 	}
 
 	public URL downloadURL() throws CurseException {
@@ -306,11 +311,11 @@ public final class CurseFile {
 		if(files.containsKey(projectID)) {
 			final int fileID = files.get(projectID);
 			if(fileID >= CurseAPI.MIN_PROJECT_ID) {
-				return CurseMeta.getCurseFile(projectID, files.get(projectID));
+				return fromID(projectID, files.get(projectID));
 			}
 		}
 
-		final CurseFileList fileList = CurseMeta.getCurseFiles(projectID);
+		final CurseFileList fileList = filesFromProjectID(projectID);
 		final CurseFile fallback = fileList.latest(gameVersions);
 
 		fileList.filterMinimumStability(minimumStability);
@@ -444,6 +449,26 @@ public final class CurseFile {
 	@Override
 	public String toString() {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
+	}
+
+	public static CurseFileList filesFromProjectID(int projectID) throws CurseException {
+		if(CurseAPI.isAvoidingCurseMeta()) {
+			return CurseProject.fromID(projectID).files();
+		}
+
+		final TRLList<AddOnFile> files = CurseMeta.getFiles(projectID);
+		final CurseFileList curseFiles = new CurseFileList(files.size());
+
+		for(AddOnFile file : files) {
+			curseFiles.add(new CurseFile(projectID, file));
+		}
+
+		curseFiles.sortByNewest();
+		return curseFiles;
+	}
+
+	public static CurseFile fromID(int projectID, int fileID) throws CurseException {
+		return new CurseFile(projectID, CurseMeta.getFile(projectID, fileID));
 	}
 
 	private void ensureHTMLDataRetrieved() throws CurseException {

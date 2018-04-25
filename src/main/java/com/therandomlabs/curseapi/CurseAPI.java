@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.imageio.ImageIO;
+import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
@@ -29,7 +30,6 @@ public final class CurseAPI {
 	private static int maxRetries = 5;
 	private static int retryTime = 5;
 
-	//True by default because the widget API is somehow less reliable than CurseMeta
 	private static boolean avoidWidgetAPI = true;
 	private static boolean avoidCurseMeta;
 
@@ -118,6 +118,9 @@ public final class CurseAPI {
 	}
 
 	public static void clearAllCache() {
+		placeholderThumbnail = null;
+
+		CurseMeta.clearCache();
 		CurseProject.clearProjectCache();
 		DocumentUtils.clearCache();
 		URLUtils.clearRedirectionCache();
