@@ -14,8 +14,8 @@ public class CurseMetaException extends CurseException {
 		super(message);
 	}
 
-	public CurseMetaException(Throwable throwable) {
-		super(throwable);
+	public CurseMetaException(String message, Throwable throwable) {
+		super(message, throwable);
 	}
 
 	public CurseMetaException(String description, int status, String url) {

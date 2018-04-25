@@ -744,7 +744,7 @@ public final class CurseProject {
 						id, url, name, type, versions, fileSize, downloads, uploadedAt)));
 			}
 		} catch(NullPointerException | NumberFormatException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 

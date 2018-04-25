@@ -43,7 +43,7 @@ public final class URLUtils {
 
 			return redirected;
 		} catch(IOException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 
@@ -51,7 +51,7 @@ public final class URLUtils {
 		try {
 			return new URL(url);
 		} catch(MalformedURLException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 

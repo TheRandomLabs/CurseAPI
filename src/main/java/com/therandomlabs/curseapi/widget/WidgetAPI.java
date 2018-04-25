@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CurseUnavailableException;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
@@ -53,25 +54,24 @@ public final class WidgetAPI {
 			CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(jsonURL));
 
 			if(json == null) {
-				CurseException.unavailable();
+				throw new CurseUnavailableException();
 			}
 
 			final ProjectInfo info = new Gson().fromJson(json, ProjectInfo.class);
 
 			if(info.error != null) {
-				throw new CurseException("The error \"" + info.error +
-						"\" occurred while using the widget API. Error message: " +
-						info.message);
+				throw new CurseException("The error \"" + info.error + "\" has occurred while " +
+						"using the widget API. Error message: " + info.message);
 			}
 
 			info.json = json;
 			return info;
 		} catch(IOException | JsonSyntaxException ex) {
 			if(ex instanceof MalformedURLException || ex.getMessage().contains("400 for URL")) {
-				throw new CurseException(path + " is not a valid URL path");
+				throw new CurseException("Invalid widget API path: " + path);
 			}
 
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 

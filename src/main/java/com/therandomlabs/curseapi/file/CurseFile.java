@@ -63,35 +63,34 @@ public final class CurseFile {
 	private final TRLList<MinecraftVersion> minecraftVersions;
 	private Element changelogHTML;
 	private String changelog;
-	private final boolean curseMeta;
 	private boolean noCurseForgeURL;
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.DownloadURL, info.releaseType(), info.FileDate, null, -1,
-				getDependencyIDs(info.Dependencies), info.GameVersion, true);
+				getDependencyIDs(info.Dependencies), info.GameVersion);
 	}
 
 	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
 		this(project.id(), project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.DownloadURL, info.releaseType(), info.FileDate, null, -1,
-				getDependencyIDs(info.Dependencies), info.GameVersion, true);
+				getDependencyIDs(info.Dependencies), info.GameVersion);
 	}
 
 	public CurseFile(int projectID, FileInfo info) throws CurseException {
 		this(projectID, null, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
-				info.uploaded_at, info.filesize, info.downloads, null, info.versions, false);
+				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
 		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
-				info.uploaded_at, info.filesize, info.downloads, null, info.versions, false);
+				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
 	}
 
 	public CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
 			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,
-			String[] gameVersions, boolean curseMeta) throws CurseException {
+			String[] gameVersions) throws CurseException {
 		this.projectID = projectID;
 		this.project = project;
 		this.status = status;
@@ -128,8 +127,6 @@ public final class CurseFile {
 		minecraftVersions.removeIf(Objects::isNull);
 		minecraftVersions.sort();
 		this.minecraftVersions = minecraftVersions.toImmutableList();
-
-		this.curseMeta = curseMeta;
 	}
 
 	public FileStatus status() {
@@ -151,7 +148,7 @@ public final class CurseFile {
 	public URL url() throws CurseException {
 		if(url == null && !noCurseForgeURL) {
 			urlString = CurseForge.fromID(projectID) + "/files/" + id;
-			url = URLUtils.url(CurseForge.fromID(projectID) + "/files/" + id);
+			url = URLUtils.url(urlString);
 			try {
 				DocumentUtils.get(url);
 			} catch(CurseException ex) {
@@ -373,7 +370,7 @@ public final class CurseFile {
 
 	public Element changelogHTML() throws CurseException {
 		if(changelogHTML == null) {
-			if(curseMeta) {
+			if(url == null) {
 				changelogHTML = CurseMeta.getChangelog(projectID, id);
 			} else {
 				changelogHTML = DocumentUtils.get(url, "class=logbox");

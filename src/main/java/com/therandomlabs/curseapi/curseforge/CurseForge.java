@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
@@ -139,7 +140,7 @@ public final class CurseForge {
 			return new URL(url.getProtocol(), url.getHost(),
 					"projects/" + url.getPath().split("/")[1]);
 		} catch(MalformedURLException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 
@@ -219,16 +220,16 @@ public final class CurseForge {
 
 			if(!is(project.get()) ||
 					!PROJECT_PATH_PATTERN.matcher(project.get().getPath()).matches()) {
-				CurseException.invalidProjectID(projectID);
+				throw new InvalidProjectIDException(projectID);
 			}
 
 			try {
 				DocumentUtils.get(project.get());
 			} catch(CurseException ex) {
 				if(ex.getCause() instanceof FileNotFoundException) {
-					CurseException.invalidProjectID(projectID);
+					throw new InvalidProjectIDException(projectID);
 				}
-				CurseException.invalidProjectID(projectID, ex);
+				throw new InvalidProjectIDException(projectID, ex);
 			}
 		});
 
@@ -260,7 +261,7 @@ public final class CurseForge {
 				return Integer.parseInt(ArrayUtils.last(parts));
 			} catch(NumberFormatException ex) {
 				//isUnredirected should rule this out as it checks if the last part is a number
-				throw new CurseException(ex);
+				throw CurseException.fromThrowable(ex);
 			}
 		}
 
@@ -269,7 +270,7 @@ public final class CurseForge {
 		try {
 			return Integer.parseInt(DocumentUtils.getValue(url, "class=info-data;text"));
 		} catch(NumberFormatException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 }

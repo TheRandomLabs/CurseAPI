@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CurseUnavailableException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CacheMap;
@@ -100,7 +101,7 @@ public final class DocumentUtils {
 			}
 			return element;
 		} catch(NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 
@@ -116,7 +117,7 @@ public final class DocumentUtils {
 		try {
 			final String html = read(url);
 			if(html == null) {
-				CurseException.unavailable();
+				throw new CurseUnavailableException();
 			}
 
 			final Document document = Jsoup.parse(html);
@@ -124,7 +125,7 @@ public final class DocumentUtils {
 			documents.put(url.toString(), document);
 			return document;
 		} catch(IOException ex) {
-			throw new CurseException("An error occurred while reading from the URL: " + url, ex);
+			throw CurseException.fromThrowable("An error has occurred while reading: " + url, ex);
 		}
 	}
 
@@ -186,7 +187,7 @@ public final class DocumentUtils {
 
 			return value;
 		} catch(NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 
@@ -204,8 +205,9 @@ public final class DocumentUtils {
 			connection.connect();
 			connection.disconnect();
 		} catch(IOException ex) {
-			if(!CurseException.isUnavailable(ex)) {
-				throw new CurseException(ex);
+			final CurseException curseException = CurseException.fromThrowable(ex);
+			if(!(curseException instanceof CurseUnavailableException)) {
+				throw curseException;
 			}
 		}
 
@@ -267,7 +269,7 @@ public final class DocumentUtils {
 
 			documentToList.documentToList(get(url + (page + 1)), data);
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 
@@ -284,7 +286,7 @@ public final class DocumentUtils {
 
 			return Integer.parseInt(CollectionUtils.fromLast(paginationItems, 1).text());
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
-			throw new CurseException(ex);
+			throw CurseException.fromThrowable(ex);
 		}
 	}
 

@@ -86,7 +86,7 @@ public final class CurseMeta {
 		try {
 			json = NetworkUtils.read(url);
 		} catch(IOException ex) {
-			throw new CurseMetaException(ex);
+			throw new CurseMetaException("An error has occured while reading from: " + url, ex);
 		}
 
 		if(json == null) {
@@ -110,7 +110,8 @@ public final class CurseMeta {
 
 			return new Gson().fromJson(json, clazz);
 		} catch(JsonSyntaxException ex) {
-			throw new CurseMetaException(ex);
+			throw new CurseMetaException("An error has occurred while parsing data from " +
+					"the URL: " + url, ex);
 		}
 	}
 }
