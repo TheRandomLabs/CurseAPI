@@ -155,7 +155,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public void filter(Predicate<? super CurseFile> predicate) {
-		removeIf(file -> !predicate.test(file));
+		removeIf(predicate.negate());
 	}
 
 	public void newerThanOrEqualTo(CurseFile oldFile) {

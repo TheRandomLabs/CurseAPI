@@ -12,7 +12,6 @@ import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
-import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.select.Elements;
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 
@@ -213,27 +212,21 @@ public final class CurseForge {
 		Assertions.larger(projectID, "projectID",
 				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
 
-		final Wrapper<URL> project = new Wrapper<>();
+		URL project = URLUtils.redirect(URL + "projects/" + projectID);
+		if(!is(project) || !PROJECT_PATH_PATTERN.matcher(project.getPath()).matches()) {
+			throw new InvalidProjectIDException(projectID);
+		}
 
-		CurseAPI.doWithRetries(() -> {
-			project.set(URLUtils.redirect(URL + "projects/" + projectID));
-
-			if(!is(project.get()) ||
-					!PROJECT_PATH_PATTERN.matcher(project.get().getPath()).matches()) {
+		try {
+			DocumentUtils.get(project);
+		} catch(CurseException ex) {
+			if(ex.getCause() instanceof FileNotFoundException) {
 				throw new InvalidProjectIDException(projectID);
 			}
+			throw new InvalidProjectIDException(projectID, ex);
+		}
 
-			try {
-				DocumentUtils.get(project.get());
-			} catch(CurseException ex) {
-				if(ex.getCause() instanceof FileNotFoundException) {
-					throw new InvalidProjectIDException(projectID);
-				}
-				throw new InvalidProjectIDException(projectID, ex);
-			}
-		});
-
-		return project.get();
+		return project;
 	}
 
 	public static int getFileID(String url) throws CurseException {
