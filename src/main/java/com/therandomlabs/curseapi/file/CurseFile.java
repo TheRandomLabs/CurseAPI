@@ -149,9 +149,9 @@ public final class CurseFile {
 
 	public URL url() throws CurseException {
 		if(url == null && !noCurseForgeURL) {
-			urlString = CurseForge.fromID(projectID) + "/files/" + id;
-			url = URLUtils.url(urlString);
 			try {
+				urlString = CurseForge.fromID(projectID) + "/files/" + id;
+				url = URLUtils.url(urlString);
 				DocumentUtils.get(url);
 			} catch(CurseException ex) {
 				if(!(ex.getCause() instanceof FileNotFoundException)) {
