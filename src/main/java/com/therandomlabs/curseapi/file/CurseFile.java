@@ -34,7 +34,6 @@ import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.NIOUtils;
-import com.therandomlabs.utils.misc.ReflectionUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.network.NetworkUtils;
 import org.jsoup.nodes.Element;
@@ -369,8 +368,6 @@ public final class CurseFile {
 	}
 
 	public String changelog() throws CurseException {
-		System.out.println(ReflectionUtils.getCallerMethod());
-
 		changelogHTML();
 		return changelog;
 	}

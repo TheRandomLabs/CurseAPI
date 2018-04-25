@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -45,7 +44,7 @@ import org.jsoup.select.Elements;
 
 //TODO Images, Issues, Source, Pages, Wiki, get number of relations, get relations on specific pages
 public final class CurseProject {
-	private static final List<CurseProject> projects = new CopyOnWriteArrayList<>();
+	private static final Map<Integer, CurseProject> projects = new ConcurrentHashMap<>();
 
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
 	private final Map<RelationType, TRLList<Relation>> dependents = new ConcurrentHashMap<>();
@@ -101,7 +100,7 @@ public final class CurseProject {
 		this.mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
 		reload(false);
 
-		projects.add(this);
+		projects.put(id, this);
 	}
 
 	private CurseProject(int id, boolean curseMeta) throws CurseException {
@@ -113,7 +112,7 @@ public final class CurseProject {
 
 		reload();
 
-		projects.add(this);
+		projects.put(id, this);
 	}
 
 	public int id() {
@@ -661,17 +660,19 @@ public final class CurseProject {
 			donateURL = donateURLString == null ? null : URLUtils.url(donateURLString);
 			licenseName = DocumentUtils.getValue(url, "class=info-data=4;tag=a;text");
 		} else {
+			if(mainCurseForgeURL == null) {
+				avoidWidgetAPI = true;
+				reload(false);
+				return;
+			}
+
 			ProjectInfo info;
 
 			try {
 				info = WidgetAPI.get(mainCurseForgeURL.getPath());
 			} catch(CurseException ex) {
-				if(mainCurseForgeURL == null) {
-					ThrowableHandling.handle(ex);
-				}
-
 				ThrowableHandling.handleWithoutExit(ex);
-				//Reload using HTML
+				avoidWidgetAPI = true;
 				reload(false);
 				return;
 			}
@@ -859,16 +860,20 @@ public final class CurseProject {
 	}
 
 	public static CurseProject fromID(int id) throws CurseException {
-		for(CurseProject project : projects) {
-			if(project.id() == id) {
-				return project;
+		final CurseProject project = projects.get(id);
+		if(projects.containsKey(id)) {
+			if(project == null) {
+				throw new InvalidProjectIDException(id);
 			}
+
+			return project;
 		}
 
 		try {
 			return new CurseProject(id);
 		} catch(InvalidProjectIDException ex) {
 			try {
+				projects.put(id, null);
 				return new CurseProject(id, true);
 			} catch(CurseMetaException ex2) {
 				throw ex;
