@@ -156,6 +156,8 @@ public final class CurseFile {
 					throw ex;
 				}
 
+				urlString = null;
+				url = null;
 				noCurseForgeURL = true;
 				status = FileStatus.SEMI_NORMAL;
 			}
