@@ -44,6 +44,7 @@ import org.jsoup.select.Elements;
 
 //TODO Images, Issues, Source, Pages, Wiki, get number of relations, get relations on specific pages
 public final class CurseProject {
+	private static final CurseProject NULL_PROJECT = new CurseProject();
 	private static final Map<Integer, CurseProject> projects = new ConcurrentHashMap<>();
 
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
@@ -87,6 +88,10 @@ public final class CurseProject {
 
 	private boolean avoidWidgetAPI = CurseAPI.isAvoidingWidgetAPI();
 	private boolean avoidCurseMeta = CurseAPI.isAvoidingCurseMeta();
+
+	private CurseProject() {
+		curseMeta = false;
+	}
 
 	private CurseProject(int id) throws CurseException {
 		this(CurseForge.fromID(id));
@@ -861,8 +866,8 @@ public final class CurseProject {
 
 	public static CurseProject fromID(int id) throws CurseException {
 		final CurseProject project = projects.get(id);
-		if(projects.containsKey(id)) {
-			if(project == null) {
+		if(project != null) {
+			if(project == NULL_PROJECT) {
 				throw new InvalidProjectIDException(id);
 			}
 
@@ -873,7 +878,7 @@ public final class CurseProject {
 			return new CurseProject(id);
 		} catch(InvalidProjectIDException ex) {
 			try {
-				projects.put(id, null);
+				projects.put(id, NULL_PROJECT);
 				return new CurseProject(id, true);
 			} catch(CurseMetaException ex2) {
 				throw ex;
