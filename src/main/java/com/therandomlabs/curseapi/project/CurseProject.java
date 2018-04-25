@@ -718,7 +718,7 @@ public final class CurseProject {
 		url = URLUtils.redirect(CurseForge.URL + "projects/" + id);
 		site = CurseForgeSite.UNKNOWN;
 		mainCurseForgeURL = addon.WebSiteURL;
-		avatarURL = addon.AvatarUrl == null ? addon.AvatarUrl : CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
+		avatarURL = addon.AvatarUrl == null ? CurseAPI.PLACEHOLDER_THUMBNAIL_URL : addon.AvatarUrl;
 		avatarURLString = avatarURL.toString();
 		thumbnailURL = avatarURL;
 		thumbnailURLString = avatarURLString;

@@ -23,6 +23,7 @@ import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.RelationType;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
@@ -65,6 +66,7 @@ public final class CurseFile {
 	private Element changelogHTML;
 	private String changelog;
 	private boolean noCurseForgeURL;
+	private boolean hasNoProject;
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
@@ -367,8 +369,6 @@ public final class CurseFile {
 	}
 
 	public String changelog() throws CurseException {
-		System.out.println(ReflectionUtils.getCallerClassName());
-
 		changelogHTML();
 		return changelog;
 	}
@@ -407,8 +407,12 @@ public final class CurseFile {
 	}
 
 	public CurseProject project() throws CurseException {
-		if(project == null) {
-			project = CurseProject.fromID(projectID);
+		if(project == null && !hasNoProject) {
+			try {
+				project = CurseProject.fromID(projectID);
+			} catch(InvalidProjectIDException ex) {
+				hasNoProject = true;
+			}
 		}
 
 		return project;
