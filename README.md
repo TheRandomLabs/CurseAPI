@@ -51,6 +51,10 @@ Features:
 * Supports parsing CurseForge HTML, CurseMeta and the Curse widget API
 * Basic event handling
 
+TODO:
+* More project/file data
+* [Better category support](https://clientupdate-v6.cursecdn.com/feed/categories/v10/categories.json.bz2)
+
 Example:
 
 	getLogger().info(CurseProject.fromSlug("minecraft", "endercore").dependents(RelationType.REQUIRED_LIBRARY));
