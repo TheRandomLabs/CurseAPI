@@ -33,10 +33,10 @@ import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.concurrent.ThreadUtils;
 import com.therandomlabs.utils.io.NIOUtils;
+import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
-import com.therandomlabs.utils.network.NetworkUtils;
+import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
@@ -127,7 +127,7 @@ public final class CurseFile {
 		this.gameVersions = gameVersionList.toImmutableList();
 
 		final TRLList<MinecraftVersion> minecraftVersions =
-					CollectionUtils.convert(this.gameVersions, MinecraftVersion::fromString);
+					CollectionUtils.map(this.gameVersions, MinecraftVersion::fromString);
 		minecraftVersions.removeIf(Objects::isNull);
 		minecraftVersions.sort();
 		this.minecraftVersions = minecraftVersions.toImmutableList();
@@ -231,7 +231,7 @@ public final class CurseFile {
 	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
 			Collection<MinecraftVersion> mcVersions) throws CurseException {
 		return dependenciesRecursive(minimumStability,
-				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+				CollectionUtils.toStrings(MinecraftVersion.getVersions(mcVersions)));
 	}
 
 	public TRLList<CurseFile> dependenciesRecursive(ReleaseType minimumStability,
@@ -254,7 +254,7 @@ public final class CurseFile {
 			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
 			throws CurseException {
 		return dependenciesRecursive(files, minimumStability,
-				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+				CollectionUtils.toStrings(MinecraftVersion.getVersions(mcVersions)));
 	}
 
 	public TRLList<CurseFile> dependenciesRecursive(Collection<CurseFile> files,
@@ -281,7 +281,7 @@ public final class CurseFile {
 			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
 			throws CurseException {
 		return dependenciesRecursive(files, minimumStability,
-				CollectionUtils.stringify(MinecraftVersion.getVersions(mcVersions)));
+				CollectionUtils.toStrings(MinecraftVersion.getVersions(mcVersions)));
 	}
 
 	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
@@ -429,7 +429,7 @@ public final class CurseFile {
 	}
 
 	public InputStream download() throws CurseException, IOException {
-		return NetworkUtils.download(downloadURL());
+		return NetUtils.download(downloadURL());
 	}
 
 	public Path download(Path location) throws CurseException, IOException {

@@ -87,7 +87,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public CurseFile latest(MinecraftVersion... versions) {
-		return latest(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
+		return latest(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
 	}
 
 	public CurseFile latestWithMCVersionGroup(String version) {
@@ -195,7 +195,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 	}
 
 	public void filterVersions(MinecraftVersion... versions) {
-		filterVersions(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
+		filterVersions(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
 	}
 
 	public void filterVersions(Collection<String> versions) {

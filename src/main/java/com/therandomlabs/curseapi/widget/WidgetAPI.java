@@ -10,7 +10,7 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
-import com.therandomlabs.utils.network.NetworkUtils;
+import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
 /**
@@ -50,7 +50,7 @@ public final class WidgetAPI {
 	private static ProjectInfo doGet(String path, String jsonURL) throws CurseException {
 		try {
 			CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(jsonURL));
-			final String json = NetworkUtils.read(jsonURL);
+			final String json = NetUtils.read(jsonURL);
 			CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(jsonURL));
 
 			if(json == null) {

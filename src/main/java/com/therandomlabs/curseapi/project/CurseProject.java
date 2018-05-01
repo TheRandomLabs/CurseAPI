@@ -34,9 +34,8 @@ import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.misc.StopSwitch;
-import com.therandomlabs.utils.network.NetworkUtils;
-import com.therandomlabs.utils.runnable.RunnableWithInput;
+import com.therandomlabs.utils.io.NetUtils;
+import com.therandomlabs.utils.runnable.IterationRunnable;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.nodes.Element;
@@ -173,7 +172,7 @@ public final class CurseProject {
 			if(avatarURL == CurseAPI.PLACEHOLDER_THUMBNAIL_URL) {
 				avatar = CurseAPI.getPlaceholderThumbnail();
 			} else {
-				avatar = ImageIO.read(NetworkUtils.download(avatarURL));
+				avatar = ImageIO.read(NetUtils.download(avatarURL));
 			}
 		}
 
@@ -189,7 +188,7 @@ public final class CurseProject {
 	}
 
 	public BufferedImage thumbnail() throws IOException {
-		return ImageIO.read(NetworkUtils.download(thumbnailURL()));
+		return ImageIO.read(NetUtils.download(thumbnailURL()));
 	}
 
 	public Member owner() {
@@ -323,18 +322,17 @@ public final class CurseProject {
 
 		if(avoidWidgetAPI && avoidCurseMeta) {
 			final Wrapper<CurseFile> latestFile = new Wrapper<>();
-			final StopSwitch stopSwitch = new StopSwitch();
 
 			final List<CurseFile> files = DocumentUtils.iteratePages(
 					url + "/files?",
 					this::getFiles,
 					file -> {
-						if(!stopSwitch.isStopped() && predicate.test(file)) {
+						if(predicate.test(file)) {
 							latestFile.set(file);
-							stopSwitch.stop();
+							return false;
 						}
+						return true;
 					},
-					stopSwitch,
 					false
 			);
 
@@ -366,12 +364,12 @@ public final class CurseProject {
 	}
 
 	public CurseFile latestFile(MinecraftVersion... versions) throws CurseException {
-		return latestFile(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)));
+		return latestFile(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
 	}
 
 	public CurseFile latestFile(ReleaseType minimumStability, MinecraftVersion... versions)
 			throws CurseException {
-		return latestFile(CollectionUtils.stringify(MinecraftVersion.getVersions(versions)),
+		return latestFile(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)),
 				minimumStability);
 	}
 
@@ -405,17 +403,10 @@ public final class CurseProject {
 		}
 
 		if(avoidWidgetAPI && avoidCurseMeta) {
-			final StopSwitch stopSwitch = new StopSwitch();
-
 			final List<CurseFile> files = DocumentUtils.iteratePages(
 					url + "/files?",
 					this::getFiles,
-					file -> {
-						if(file.id() <= oldID) {
-							stopSwitch.stop();
-						}
-					},
-					stopSwitch,
+					file -> file.id() >= oldID, //Continue as long as file.ID() >= oldID
 					false
 			);
 
@@ -444,19 +435,18 @@ public final class CurseProject {
 
 		if(avoidWidgetAPI && avoidCurseMeta) {
 			final Wrapper<CurseFile> fileWithID = new Wrapper<>();
-			final StopSwitch stopSwitch = new StopSwitch();
 
 			incompleteFiles.addAll(DocumentUtils.iteratePages(
 					url + "/files?",
 					this::getFiles,
 					file -> {
-						if(file.id() == id) {
+						if(!fileWithID.hasValue() && file.id() == id) {
 							fileWithID.set(file);
-						} else if(file.id() < id) {
-							stopSwitch.stop();
+							return false;
 						}
+
+						return file.id() > id;
 					},
-					stopSwitch,
 					false
 			));
 
@@ -484,18 +474,11 @@ public final class CurseProject {
 		}
 
 		if(avoidWidgetAPI && avoidCurseMeta) {
-			final StopSwitch stopSwitch = new StopSwitch();
-
 			//Cache files up to the first file older than the file with the specified ID
 			incompleteFiles.addAll(DocumentUtils.iteratePages(
 					url + "/files?",
 					this::getFiles,
-					file -> {
-						if(file.id() < id) {
-							stopSwitch.stop();
-						}
-					},
-					stopSwitch,
+					file -> file.id() > id - 1,
 					false
 			));
 
@@ -518,15 +501,12 @@ public final class CurseProject {
 	}
 
 	public void reloadDependencies(RelationType relationType) throws CurseException {
-		reloadDependencies(relationType, null, null);
+		reloadDependencies(relationType, null);
 	}
 
-	//TODO Function<Relation, Boolean> - if return value is true, stop
 	public void reloadDependencies(RelationType relationType,
-			RunnableWithInput<Relation> onDependencyAdd, StopSwitch stopSwitch)
-			throws CurseException {
-		dependencies.put(relationType,
-				getRelations("dependencies", relationType, onDependencyAdd, stopSwitch));
+			IterationRunnable<Relation> onDependencyAdd) throws CurseException {
+		dependencies.put(relationType, getRelations("dependencies", relationType, onDependencyAdd));
 	}
 
 	public TRLList<Relation> dependents() throws CurseException {
@@ -542,19 +522,16 @@ public final class CurseProject {
 	}
 
 	public void reloadDependents(RelationType relationType) throws CurseException {
-		reloadDependents(relationType, null, null);
+		reloadDependents(relationType, null);
 	}
 
 	public void reloadDependents(RelationType relationType,
-			RunnableWithInput<Relation> onDependentAdd, StopSwitch stopSwitch)
-			throws CurseException {
-		dependents.put(relationType,
-				getRelations("dependents", relationType, onDependentAdd, stopSwitch));
+			IterationRunnable<Relation> onDependentAdd) throws CurseException {
+		dependents.put(relationType, getRelations("dependents", relationType, onDependentAdd));
 	}
 
 	private TRLList<Relation> getRelations(String relationName, RelationType relationType,
-			RunnableWithInput<Relation> onRelationAdd, StopSwitch stopSwitch)
-			throws CurseException {
+			IterationRunnable<Relation> onRelationAdd) throws CurseException {
 		String baseURL = urlString() + "/relations/" + relationName;
 
 		if(relationType == RelationType.ALL_TYPES) {
@@ -565,7 +542,7 @@ public final class CurseProject {
 
 		return DocumentUtils.iteratePages(baseURL,
 				(document, relations) -> documentToRelations(document, relations, relationType),
-				onRelationAdd, stopSwitch, true);
+				onRelationAdd, true);
 	}
 
 	private void documentToRelations(Element document, List<Relation> relations,
@@ -752,7 +729,7 @@ public final class CurseProject {
 
 		if(avoidCurseMeta) {
 			this.files = new CurseFileList(
-					DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, null, true));
+					DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, true));
 			return;
 		}
 

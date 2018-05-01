@@ -10,7 +10,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.CurseEventHandling;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.network.NetworkUtils;
+import com.therandomlabs.utils.io.NetUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
@@ -110,7 +110,7 @@ public final class CurseMeta {
 		final String json;
 
 		try {
-			json = NetworkUtils.read(url);
+			json = NetUtils.read(url);
 		} catch(IOException ex) {
 			throw new CurseMetaException("An error has occured while reading from: " + url, ex);
 		}

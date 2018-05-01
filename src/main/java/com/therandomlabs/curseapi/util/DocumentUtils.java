@@ -16,11 +16,11 @@ import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CacheMap;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.concurrent.ThreadUtils;
-import com.therandomlabs.utils.misc.StopSwitch;
+import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
-import com.therandomlabs.utils.network.NetworkUtils;
-import com.therandomlabs.utils.runnable.RunnableWithInput;
+import com.therandomlabs.utils.misc.ThreadUtils;
+import com.therandomlabs.utils.runnable.IterationRunnable;
+import com.therandomlabs.utils.wrapper.BooleanWrapper;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
@@ -37,7 +37,7 @@ public final class DocumentUtils {
 			new CacheMap<>(3000, true, entry -> values.remove(entry.getValue()));
 
 	static {
-		NetworkUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
+		NetUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
 	}
 
 	private DocumentUtils() {}
@@ -60,7 +60,7 @@ public final class DocumentUtils {
 		CurseEventHandling.forEach(eventHandler ->
 				eventHandler.preDownloadDocument(url.toString()));
 
-		final String string = NetworkUtils.read(url);
+		final String string = NetUtils.read(url);
 
 		CurseEventHandling.forEach(eventHandler ->
 				eventHandler.postDownloadDocument(url.toString()));
@@ -219,7 +219,7 @@ public final class DocumentUtils {
 	}
 
 	public static <E> TRLList<E> iteratePages(String baseURL, DocumentToList<E> documentToList,
-			RunnableWithInput<? super E> onElementAdd, StopSwitch stopSwitch, boolean threaded)
+			IterationRunnable<? super E> onElementAdd, boolean threaded)
 			throws CurseException {
 		baseURL += "page=";
 
@@ -237,6 +237,8 @@ public final class DocumentUtils {
 		final String url = baseURL;
 
 		final Map<Integer, List<E>> allData = new HashMap<>();
+
+		final BooleanWrapper stopSwitch = new BooleanWrapper();
 
 		if(threaded) {
 			ThreadUtils.splitWorkload(
@@ -260,15 +262,19 @@ public final class DocumentUtils {
 	}
 
 	private static <E> void iteratePage(DocumentToList<E> documentToList,
-			RunnableWithInput<? super E> onElementAdd, StopSwitch stopSwitch, String url,
+			IterationRunnable<? super E> onElementAdd, BooleanWrapper stopSwitch, String url,
 			Map<Integer, List<E>> allData, int page) throws CurseException {
 		try {
-			if(stopSwitch != null && stopSwitch.isStopped()) {
+			if(stopSwitch != null && stopSwitch.get()) {
 				return;
 			}
 
 			final TRLList<E> data = new TRLList<>(CurseAPI.RELATIONS_PER_PAGE);
-			data.setOnAdd(onElementAdd);
+			data.setOnAdd(element -> {
+				if(!onElementAdd.run(element)) {
+					stopSwitch.set(true);
+				}
+			});
 			allData.put(page, data);
 
 			documentToList.documentToList(get(url + (page + 1)), data);

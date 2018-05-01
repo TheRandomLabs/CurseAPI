@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.utils.network.NetworkUtils;
+import com.therandomlabs.utils.io.NetUtils;
 
 public final class URLUtils {
 	//Curse usually redirects to URLs with "cookieTest=" at the end of them.
@@ -33,7 +33,7 @@ public final class URLUtils {
 			CurseEventHandling.forEach(eventHandler -> eventHandler.preRedirect(urlString));
 
 			final URL redirected = stripCookieTestString(
-					NetworkUtils.getRedirectedURL(url, NetworkUtils.DEFAULT_REDIRECTIONS, false));
+					NetUtils.getRedirectedURL(url, NetUtils.DEFAULT_REDIRECTIONS, false));
 			final String redirectedString = redirected.toString();
 
 			CurseEventHandling.forEach(eventHandler ->

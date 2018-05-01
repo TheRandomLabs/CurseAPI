@@ -163,7 +163,7 @@ public enum CurseForgeSite {
 		try {
 			return new URL("https://" + host + "/" + projectType.sitePath());
 		} catch(MalformedURLException ex) {
-			ThrowableHandling.handleUnexpected(ex);
+			ThrowableHandling.handle(ex);
 		}
 		return null;
 	}

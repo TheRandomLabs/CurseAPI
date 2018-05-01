@@ -10,8 +10,8 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
+import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.Assertions;
-import com.therandomlabs.utils.network.NetworkUtils;
 import com.therandomlabs.utils.runnable.RunnableWithThrowable;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 
@@ -39,7 +39,7 @@ public final class CurseAPI {
 		try {
 			url = new URL(PLACEHOLDER_THUMBNAIL_URL_STRING);
 		} catch(MalformedURLException ex) {
-			ThrowableHandling.handleUnexpected(ex);
+			ThrowableHandling.handle(ex);
 		}
 
 		PLACEHOLDER_THUMBNAIL_URL = url;
@@ -49,7 +49,7 @@ public final class CurseAPI {
 
 	public static BufferedImage getPlaceholderThumbnail() throws IOException {
 		if(placeholderThumbnail == null) {
-			placeholderThumbnail = ImageIO.read(NetworkUtils.download(PLACEHOLDER_THUMBNAIL_URL));
+			placeholderThumbnail = ImageIO.read(NetUtils.download(PLACEHOLDER_THUMBNAIL_URL));
 		}
 
 		return placeholderThumbnail;
@@ -113,7 +113,7 @@ public final class CurseAPI {
 				}
 			}
 		} catch(InterruptedException ex) {
-			ThrowableHandling.handleUnexpected(ex);
+			ThrowableHandling.handle(ex);
 		}
 	}
 
@@ -128,11 +128,10 @@ public final class CurseAPI {
 
 		try {
 			Class.forName("com.therandomlabs.curseapi.minecraft.CurseAPIMinecraft").
-					getDeclaredMethod("clearAllCache").
-					invoke(null);
+					getDeclaredMethod("clearAllCache").invoke(null);
 		} catch(Exception ex) {
 			if(!(ex instanceof ClassNotFoundException)) {
-				ThrowableHandling.handleUnexpected(ex);
+				ThrowableHandling.handle(ex);
 			}
 		}
 	}
