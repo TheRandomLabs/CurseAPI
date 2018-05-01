@@ -270,11 +270,13 @@ public final class DocumentUtils {
 			}
 
 			final TRLList<E> data = new TRLList<>(CurseAPI.RELATIONS_PER_PAGE);
-			data.setOnAdd(element -> {
-				if(!onElementAdd.run(element)) {
-					stopSwitch.set(true);
-				}
-			});
+			if(onElementAdd != null) {
+				data.setOnAdd(element -> {
+					if(!onElementAdd.run(element)) {
+						stopSwitch.set(true);
+					}
+				});
+			}
 			allData.put(page, data);
 
 			documentToList.documentToList(get(url + (page + 1)), data);
