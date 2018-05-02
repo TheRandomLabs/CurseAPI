@@ -1,6 +1,6 @@
 # CurseAPI
 
-A WIP Java API to handle interactions with Curse.
+A WIP Java API that handles interactions with Curse.
 Example Gradle buildscript:
 
 	apply plugin: "java"
