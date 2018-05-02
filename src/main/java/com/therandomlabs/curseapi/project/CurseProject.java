@@ -35,7 +35,6 @@ import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
-import com.therandomlabs.utils.runnable.IterationRunnable;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.nodes.Element;
@@ -504,8 +503,8 @@ public final class CurseProject {
 		reloadDependencies(relationType, null);
 	}
 
-	public void reloadDependencies(RelationType relationType,
-			IterationRunnable<Relation> onDependencyAdd) throws CurseException {
+	public void reloadDependencies(RelationType relationType, Predicate<Relation> onDependencyAdd)
+			throws CurseException {
 		dependencies.put(relationType, getRelations("dependencies", relationType, onDependencyAdd));
 	}
 
@@ -525,13 +524,13 @@ public final class CurseProject {
 		reloadDependents(relationType, null);
 	}
 
-	public void reloadDependents(RelationType relationType,
-			IterationRunnable<Relation> onDependentAdd) throws CurseException {
+	public void reloadDependents(RelationType relationType, Predicate<Relation> onDependentAdd)
+			throws CurseException {
 		dependents.put(relationType, getRelations("dependents", relationType, onDependentAdd));
 	}
 
 	private TRLList<Relation> getRelations(String relationName, RelationType relationType,
-			IterationRunnable<Relation> onRelationAdd) throws CurseException {
+			Predicate<Relation> onRelationAdd) throws CurseException {
 		String baseURL = urlString() + "/relations/" + relationName;
 
 		if(relationType == RelationType.ALL_TYPES) {

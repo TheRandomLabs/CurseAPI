@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
@@ -19,7 +20,6 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
-import com.therandomlabs.utils.runnable.IterationRunnable;
 import com.therandomlabs.utils.wrapper.BooleanWrapper;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
@@ -219,8 +219,7 @@ public final class DocumentUtils {
 	}
 
 	public static <E> TRLList<E> iteratePages(String baseURL, DocumentToList<E> documentToList,
-			IterationRunnable<? super E> onElementAdd, boolean threaded)
-			throws CurseException {
+			Predicate<? super E> onElementAdd, boolean threaded) throws CurseException {
 		baseURL += "page=";
 
 		try {
@@ -262,7 +261,7 @@ public final class DocumentUtils {
 	}
 
 	private static <E> void iteratePage(DocumentToList<E> documentToList,
-			IterationRunnable<? super E> onElementAdd, BooleanWrapper stopSwitch, String url,
+			Predicate<? super E> onElementAdd, BooleanWrapper stopSwitch, String url,
 			Map<Integer, List<E>> allData, int page) throws CurseException {
 		try {
 			if(stopSwitch != null && stopSwitch.get()) {
@@ -272,7 +271,7 @@ public final class DocumentUtils {
 			final TRLList<E> data = new TRLList<>(CurseAPI.RELATIONS_PER_PAGE);
 			if(onElementAdd != null) {
 				data.setOnAdd(element -> {
-					if(!onElementAdd.run(element)) {
+					if(!onElementAdd.test(element)) {
 						stopSwitch.set(true);
 					}
 				});
