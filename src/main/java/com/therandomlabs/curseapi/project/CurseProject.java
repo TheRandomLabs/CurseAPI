@@ -667,7 +667,7 @@ public final class CurseProject {
 			thumbnailURLString = thumbnailURL.toString();
 			members = Arrays.stream(info.members).
 					map(member -> new Member(member.title, member.username)).
-					collect(TRLCollectors.toArrayList());
+					collect(TRLCollectors.toTRLList());
 			downloads = info.downloads.total;
 			creationTime = MiscUtils.parseTime(info.created_at);
 			donateURL = info.donate;
