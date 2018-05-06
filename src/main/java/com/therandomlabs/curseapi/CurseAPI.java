@@ -97,6 +97,14 @@ public final class CurseAPI {
 		avoidCurseMeta = flag;
 	}
 
+	public static void validateID(int... ids) {
+		for(int id : ids) {
+			if(id < CurseAPI.MIN_PROJECT_ID) {
+				throw new IllegalArgumentException("Invalid Curse ID: " + id);
+			}
+		}
+	}
+
 	public static void doWithRetries(RunnableWithThrowable<CurseException> runnable)
 			throws CurseException {
 		try {
