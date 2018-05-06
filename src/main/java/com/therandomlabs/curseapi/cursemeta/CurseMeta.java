@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.util.CurseEventHandling;
+import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;

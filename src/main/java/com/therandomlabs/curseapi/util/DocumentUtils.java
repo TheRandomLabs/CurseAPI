@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;

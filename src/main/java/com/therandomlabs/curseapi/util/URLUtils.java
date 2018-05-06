@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.utils.io.NetUtils;
 

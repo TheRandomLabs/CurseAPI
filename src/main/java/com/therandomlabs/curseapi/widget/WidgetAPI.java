@@ -9,7 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
-import com.therandomlabs.curseapi.util.CurseEventHandling;
+import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
 

@@ -17,6 +17,14 @@ public class CurseException extends Exception {
 		super(message, throwable);
 	}
 
+	public static void validateID(int... ids) throws CurseException {
+		for(int id : ids) {
+			if(id < CurseAPI.MIN_PROJECT_ID) {
+				throw new CurseException("Invalid ID: " + id);
+			}
+		}
+	}
+
 	public static void validateProject(URL url) throws CurseException {
 		if(!CurseForge.isProject(url)) {
 			throw new CurseException("Invalid CurseForge project URL: " + url);
