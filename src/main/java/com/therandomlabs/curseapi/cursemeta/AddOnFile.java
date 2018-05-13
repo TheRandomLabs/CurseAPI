@@ -31,7 +31,8 @@ public class AddOnFile implements Cloneable, Serializable {
 	public ArrayList<AddOnModule> Modules;
 
 	public URL downloadURL() throws CurseException {
-		return URLUtils.url(DownloadURL.replace("files", "media").replaceAll(" ", "+"));
+		return URLUtils.url(DownloadURL.replace("files", "media").replace("/media/", "/files/").
+				replaceAll(" ", "+"));
 	}
 
 	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
