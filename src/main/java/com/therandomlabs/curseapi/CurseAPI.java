@@ -115,13 +115,13 @@ public final class CurseAPI {
 			for(int i = 0; i < maxRetries; i++) {
 				try {
 					runnable.run();
-					Thread.sleep(retryTime * 1000L);
 					break;
 				} catch(CurseException ex) {
 					if(i == maxRetries - 1) {
 						throw ex;
 					}
 					ThrowableHandling.handleWithoutExit(ex);
+					Thread.sleep(retryTime * 1000L);
 				}
 			}
 		} catch(InterruptedException ex) {
