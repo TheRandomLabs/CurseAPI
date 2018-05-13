@@ -10,7 +10,6 @@ import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
-import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.misc.StringUtils;
 import org.jsoup.select.Elements;
 import static com.therandomlabs.utils.logging.Logging.getLogger;
@@ -203,14 +202,12 @@ public final class CurseForge {
 	}
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
-		Assertions.larger(projectID, "projectID",
-				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
+		CurseAPI.validateID(projectID, fileID);
 		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
 	}
 
 	public static URL fromID(int projectID) throws CurseException {
-		Assertions.larger(projectID, "projectID",
-				CurseAPI.MIN_PROJECT_ID - 1, String.valueOf(CurseAPI.MIN_PROJECT_ID - 1));
+		CurseAPI.validateID(projectID);
 
 		URL project = URLUtils.redirect(URL + "projects/" + projectID);
 		if(!is(project) || !PROJECT_PATH_PATTERN.matcher(project.getPath()).matches()) {

@@ -118,6 +118,10 @@ public final class CurseProject {
 		projects.put(id, this);
 	}
 
+	public boolean isNull() {
+		return this == NULL_PROJECT;
+	}
+
 	public int id() {
 		return id;
 	}
