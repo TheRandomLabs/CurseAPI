@@ -29,7 +29,7 @@ public final class CurseMeta {
 	private CurseMeta() {}
 
 	public static AddOn getAddOn(int projectID) throws CurseMetaException {
-		return get(GET_ADDON + projectID, AddOn.class);
+		return get(GET_ADDON + projectID, AddOn.class, false);
 	}
 
 	public static String getAddOnURLString(int projectID) {
@@ -47,7 +47,7 @@ public final class CurseMeta {
 			return list;
 		}
 
-		list = new TRLList<>(get(GET_ALL_FILES_FOR_ADDON + projectID, AddOnFile[].class));
+		list = new TRLList<>(get(GET_ALL_FILES_FOR_ADDON + projectID, AddOnFile[].class, false));
 		cache.put(projectID, list);
 		return list;
 	}
@@ -61,7 +61,7 @@ public final class CurseMeta {
 	}
 
 	public static AddOnFile getFile(int projectID, int fileID) throws CurseMetaException {
-		return get(GET_ADDON_FILE + projectID + "/" + fileID, AddOnFile.class);
+		return get(GET_ADDON_FILE + projectID + "/" + fileID, AddOnFile.class, false);
 	}
 
 	public static String getFileURLString(int projectID, int fileID) {
@@ -73,7 +73,7 @@ public final class CurseMeta {
 	}
 
 	public static Element getDescription(int projectID) throws CurseMetaException {
-		return Jsoup.parse(get(GET_ADDON_DESCRIPTION + projectID, String.class));
+		return Jsoup.parse(get(GET_ADDON_DESCRIPTION + projectID, String.class, false));
 	}
 
 	public static String getDescriptionURLString(int projectID) {
@@ -85,10 +85,13 @@ public final class CurseMeta {
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
-		try {
-			return Jsoup.parse(get(GET_CHANGELOG + projectID + "/" + fileID, String.class));
-		} catch(NullCurseMetaException ignored) {}
-		return Jsoup.parse("No changelog provided");
+		final String data = get(GET_CHANGELOG + projectID + "/" + fileID, String.class, true);
+
+		if(data == null) {
+			return Jsoup.parse("No changelog provided");
+		}
+
+		return Jsoup.parse(data);
 	}
 
 	public static String getChangelogURLString(int projectID, int fileID) {
@@ -107,17 +110,19 @@ public final class CurseMeta {
 		cache.remove(projectID);
 	}
 
-	private static <T> T get(String path, Class<T> clazz) throws CurseMetaException {
+	private static <T> T get(String path, Class<T> clazz, boolean ignoreNull)
+			throws CurseMetaException {
 		final Wrapper<T> data = new Wrapper<>();
 		try {
-			CurseAPI.doWithRetries(() -> data.set(getWithoutRetries(path, clazz)));
+			CurseAPI.doWithRetries(() -> data.set(getWithoutRetries(path, clazz, ignoreNull)));
 		} catch(CurseException ex) {
 			throw (CurseMetaException) ex;
 		}
 		return data.get();
 	}
 
-	private static <T> T getWithoutRetries(String path, Class<T> clazz) throws CurseMetaException {
+	private static <T> T getWithoutRetries(String path, Class<T> clazz, boolean ignoreNull)
+			throws CurseMetaException {
 		final String url = BASE_URL + path;
 
 		CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(url));
@@ -141,6 +146,10 @@ public final class CurseMeta {
 				final CurseMetaError error = new Gson().fromJson(json, CurseMetaError.class);
 
 				if(error == null) {
+					if(ignoreNull) {
+						return null;
+					}
+
 					throw new NullCurseMetaException(url);
 				}
 
