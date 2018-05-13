@@ -41,7 +41,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 //TODO Additional Files
-public final class CurseFile {
+public final class CurseFile implements Comparable<CurseFile> {
 	private final int projectID;
 	private CurseProject project;
 	private FileStatus status;
@@ -298,8 +298,8 @@ public final class CurseFile {
 		while(!toCheck.isEmpty()) {
 			final CurseFile file = toCheck.poll();
 
-			for(CurseProject project : file.dependencies(RelationType.REQUIRED_LIBRARY)) {
-				toCheck.add(getFile(files, project.id(), minimumStabililty, gameVersions));
+			for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
+				toCheck.add(getFile(files, id, minimumStabililty, gameVersions));
 			}
 
 			if(file != this) {
@@ -461,6 +461,11 @@ public final class CurseFile {
 	@Override
 	public String toString() {
 		return "[id=" + id() + ",name=\"" + name() + "\"]";
+	}
+
+	@Override
+	public int compareTo(CurseFile file) {
+		return Integer.compare(id, file.id);
 	}
 
 	public static CurseFileList filesFromProjectID(int projectID) throws CurseException {
