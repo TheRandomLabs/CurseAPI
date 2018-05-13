@@ -23,7 +23,6 @@ import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
 import com.therandomlabs.utils.wrapper.BooleanWrapper;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -342,7 +341,6 @@ public final class DocumentUtils {
 		private final int maxWidth;
 		private final StringBuilder text = new StringBuilder();
 		private int width = 0;
-		//private int h3s;
 
 		FormattingVisitor(int maxWidth) {
 			this.maxWidth = maxWidth < 1 ? Integer.MAX_VALUE : maxWidth;
@@ -351,10 +349,6 @@ public final class DocumentUtils {
 		//Hit when the node is first seen
 		@Override
 		public void head(Node node, int depth) {
-			//if(h3s > 1) {
-			//	return;
-			//}
-
 			final String name = node.nodeName();
 
 			if(node instanceof TextNode) {
@@ -366,26 +360,17 @@ public final class DocumentUtils {
 				append("\n * ");
 			} else if(name.equals("dt")) {
 				append("  ");
-			} else if(StringUtil.in(name, "p", "h1", "h2", "h3", "h4", "h5", "tr")) {
+			} else if(ArrayUtils.in(name, "p", "h1", "h2", "h3", "h4", "h5", "tr")) {
 				append("\n");
-
-				//if(name.equals("h3")) {
-				//	//Just for you, mezz, and your ridiculously long changelogs.
-				//	h3s++;
-				//}
 			}
 		}
 
 		//Hit when all of the node's children (if any) have been visited
 		@Override
 		public void tail(Node node, int depth) {
-			//if(h3s > 1) {
-			//	return;
-			//}
-
 			final String name = node.nodeName();
 
-			if(StringUtil.in(name, "br", "dd", "dt", "p", "h1", "h2", "h3", "h4", "h5")) {
+			if(ArrayUtils.in(name, "br", "dd", "dt", "p", "h1", "h2", "h3", "h4", "h5")) {
 				append("\n");
 			} else if(name.equals("a")) {
 				append(String.format("](%s)", node.absUrl("href")));
@@ -400,7 +385,7 @@ public final class DocumentUtils {
 			}
 
 			if(string.equals(" ") && (text.length() == 0 ||
-					StringUtil.in(text.substring(text.length() - 1), " ", "\n"))) {
+					ArrayUtils.in(text.substring(text.length() - 1), " ", "\n"))) {
 				//Don't accumulate long runs of empty spaces
 				return;
 			}
