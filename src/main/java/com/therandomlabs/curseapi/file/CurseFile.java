@@ -9,12 +9,14 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
@@ -291,23 +293,34 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
 			ReleaseType minimumStabililty, Collection<String> gameVersions) throws CurseException {
-		final TRLList<CurseFile> dependencies = new TRLList<>();
-		final Queue<CurseFile> toCheck = new PriorityQueue<>();
-		toCheck.add(this);
+		final Set<CurseFile> dependencies = new HashSet<>();
+		final List<CurseFile> firstIterationDependencies = new TRLList<>();
 
-		while(!toCheck.isEmpty()) {
-			final CurseFile file = toCheck.poll();
-
-			for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
-				toCheck.add(getFile(files, id, minimumStabililty, gameVersions));
-			}
-
-			if(file != this) {
-				dependencies.add(file);
-			}
+		for(int id : dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
+			final CurseFile file = getFile(files, id, minimumStabililty, gameVersions);
+			firstIterationDependencies.add(file);
+			dependencies.add(file);
 		}
 
-		return dependencies;
+		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads() / 2,
+				firstIterationDependencies.size(), index -> {
+			final Queue<CurseFile> toCheck = new PriorityQueue<>();
+			toCheck.add(firstIterationDependencies.get(index));
+
+			while(!toCheck.isEmpty()) {
+				final CurseFile file = toCheck.poll();
+
+				for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
+					toCheck.add(getFile(files, id, minimumStabililty, gameVersions));
+				}
+
+				if(file != this) {
+					dependencies.add(file);
+				}
+			}
+		});
+
+		return new TRLList<>(dependencies);
 	}
 
 	private CurseFile getFile(Map<Integer, Integer> files, int projectID,
