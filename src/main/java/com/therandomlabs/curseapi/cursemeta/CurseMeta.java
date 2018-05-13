@@ -85,7 +85,10 @@ public final class CurseMeta {
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
-		return Jsoup.parse(get(GET_CHANGELOG + projectID + "/" + fileID, String.class));
+		try {
+			return Jsoup.parse(get(GET_CHANGELOG + projectID + "/" + fileID, String.class));
+		} catch(NullCurseMetaException ignored) {}
+		return Jsoup.parse("No changelog provided");
 	}
 
 	public static String getChangelogURLString(int projectID, int fileID) {
@@ -138,7 +141,7 @@ public final class CurseMeta {
 				final CurseMetaError error = new Gson().fromJson(json, CurseMetaError.class);
 
 				if(error == null) {
-					throw new CurseMetaException("Invalid CurseMeta URL: " + url);
+					throw new NullCurseMetaException(url);
 				}
 
 				if(error.error) {
