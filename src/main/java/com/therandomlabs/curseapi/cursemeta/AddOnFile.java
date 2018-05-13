@@ -9,6 +9,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
 import com.therandomlabs.curseapi.util.CloneException;
+import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
 
 public class AddOnFile implements Cloneable, Serializable {
@@ -17,7 +18,7 @@ public class AddOnFile implements Cloneable, Serializable {
 	public int Id;
 	public int AlternateFileId;
 	public ArrayList<AddOnFileDependency> Dependencies;
-	public URL DownloadURL;
+	public String DownloadURL;
 	public String FileDate;
 	public String FileName;
 	public String FileNameOnDisk;
@@ -31,6 +32,10 @@ public class AddOnFile implements Cloneable, Serializable {
 
 	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
 		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);
+	}
+
+	public URL downloadURL() throws CurseException {
+		return URLUtils.url(DownloadURL.replaceAll(" ", "+"));
 	}
 
 	@SuppressWarnings("unchecked")
