@@ -35,7 +35,7 @@ public class AddOnFile implements Cloneable, Serializable {
 	}
 
 	public URL downloadURL() throws CurseException {
-		return URLUtils.url(DownloadURL.replaceAll(" ", "+"));
+		return URLUtils.redirect(DownloadURL);
 	}
 
 	@SuppressWarnings("unchecked")
