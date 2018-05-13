@@ -55,6 +55,7 @@ Features:
 
 TODO:
 * More project/file data
+* More member data, e.g. projects
 * [Better category support](https://clientupdate-v6.cursecdn.com/feed/categories/v10/categories.json.bz2)
 
 Example:
