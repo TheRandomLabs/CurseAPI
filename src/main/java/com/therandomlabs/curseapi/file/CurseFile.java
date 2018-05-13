@@ -302,8 +302,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 			dependencies.add(file);
 		}
 
-		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads() / 2,
-				firstIterationDependencies.size(), index -> {
+		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), firstIterationDependencies.size(),
+				index -> {
 			final Queue<CurseFile> toCheck = new PriorityQueue<>();
 			toCheck.add(firstIterationDependencies.get(index));
 
