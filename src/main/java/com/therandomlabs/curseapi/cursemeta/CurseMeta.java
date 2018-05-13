@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
+import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
@@ -103,6 +105,16 @@ public final class CurseMeta {
 	}
 
 	private static <T> T get(String path, Class<T> clazz) throws CurseMetaException {
+		final Wrapper<T> data = new Wrapper<>();
+		try {
+			CurseAPI.doWithRetries(() -> data.set(getWithoutRetries(path, clazz)));
+		} catch(CurseException ex) {
+			throw (CurseMetaException) ex;
+		}
+		return data.get();
+	}
+
+	private static <T> T getWithoutRetries(String path, Class<T> clazz) throws CurseMetaException {
 		final String url = BASE_URL + path;
 
 		CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(url));
