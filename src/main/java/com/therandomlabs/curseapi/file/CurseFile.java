@@ -73,13 +73,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.downloadURL(), info.releaseType(), info.FileDate, null, -1,
+				info.DownloadURL, info.releaseType(), info.FileDate, null, -1,
 				getDependencyIDs(info.Dependencies), info.GameVersion);
 	}
 
 	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
 		this(project.id(), project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.downloadURL(), info.releaseType(), info.FileDate, null, -1,
+				info.DownloadURL, info.releaseType(), info.FileDate, null, -1,
 				getDependencyIDs(info.Dependencies), info.GameVersion);
 	}
 
@@ -94,7 +94,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
-			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
+			String nameOnDisk, String downloadURL, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,
 			String[] gameVersions) throws CurseException {
 		this.projectID = projectID;
@@ -110,8 +110,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.name = name;
 		this.nameOnDisk = nameOnDisk == null ?
 				DocumentUtils.getValue(url, "class=details-info;class=info-data;text") : nameOnDisk;
-		this.downloadURL = downloadURL;
-		downloadURLString = downloadURL ==  null ? null : this.downloadURL.toString();
+		downloadURLString = downloadURL;
 		this.releaseType = releaseType;
 		this.uploadTime = MiscUtils.parseTime(uploadTime);
 		this.fileSize = fileSize;
@@ -180,8 +179,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public URL downloadURL() throws CurseException {
 		if(downloadURL == null) {
-			downloadURL = CurseForge.getFileURL(projectID, id);
-			downloadURLString = downloadURL.toString();
+			if(downloadURLString != null) {
+				downloadURL = URLUtils.redirect(downloadURLString);
+				downloadURLString = downloadURL.toString();
+			} else {
+				downloadURL = CurseForge.getFileURL(projectID, id);
+				downloadURLString = downloadURL.toString();
+			}
 		}
 
 		return downloadURL;

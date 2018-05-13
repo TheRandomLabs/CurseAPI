@@ -1,7 +1,6 @@
 package com.therandomlabs.curseapi.cursemeta;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -9,7 +8,6 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
 import com.therandomlabs.curseapi.util.CloneException;
-import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
 
 public class AddOnFile implements Cloneable, Serializable {
@@ -32,10 +30,6 @@ public class AddOnFile implements Cloneable, Serializable {
 
 	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
 		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);
-	}
-
-	public URL downloadURL() throws CurseException {
-		return URLUtils.redirect(DownloadURL);
 	}
 
 	@SuppressWarnings("unchecked")
