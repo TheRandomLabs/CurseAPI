@@ -50,6 +50,7 @@ Features:
 * Get file details, including name, game versions, file URL, etc.
 * Supports all CurseForge sites (Minecraft, World of Warcraft, etc.)
 * Supports retrieving data from CurseForge HTML, CurseMeta and the Curse widget API
+(the widget API is disabled by default as it is currently not being updated by Curse)
 * Basic event handling
 
 TODO:
