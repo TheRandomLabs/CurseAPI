@@ -42,12 +42,15 @@ public class AddOnFile implements Cloneable, Serializable {
 					replaceAll(" ", "+"));
 
 			//Because sometimes Curse encodes their + signs, but mostly they don't *facepalm*
-			try {
-				NetUtils.connect(downloadURL);
-			} catch(FileNotFoundException ex) {
-				downloadURL = URLUtils.url(downloadURL.toString().replaceAll("\\+", "%2B"));
-			} catch(IOException ex) {
-				throw CurseException.fromThrowable(ex);
+			//For now, only Better Builder's Wands is known to have this problem
+			if(Id == 238403) {
+				try {
+					NetUtils.connect(downloadURL);
+				} catch(FileNotFoundException ex) {
+					downloadURL = URLUtils.url(downloadURL.toString().replaceAll("\\+", "%2B"));
+				} catch(IOException ex) {
+					throw CurseException.fromThrowable(ex);
+				}
 			}
 		}
 
