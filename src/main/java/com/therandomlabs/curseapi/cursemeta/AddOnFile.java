@@ -1,6 +1,5 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
@@ -46,10 +45,8 @@ public class AddOnFile implements Cloneable, Serializable {
 			if(Id == 238403) {
 				try {
 					NetUtils.connect(downloadURL);
-				} catch(FileNotFoundException ex) {
-					downloadURL = URLUtils.url(downloadURL.toString().replaceAll("\\+", "%2B"));
 				} catch(IOException ex) {
-					throw CurseException.fromThrowable(ex);
+					downloadURL = URLUtils.url(downloadURL.toString().replaceAll("\\+", "%2B"));
 				}
 			}
 		}
