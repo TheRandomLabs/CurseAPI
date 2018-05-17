@@ -1,5 +1,7 @@
 package com.therandomlabs.curseapi.cursemeta;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import com.therandomlabs.curseapi.file.FileStatus;
 import com.therandomlabs.curseapi.util.CloneException;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
+import com.therandomlabs.utils.io.NetUtils;
 
 public class AddOnFile implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1265896534353648752L;
@@ -30,9 +33,25 @@ public class AddOnFile implements Cloneable, Serializable {
 	public String ReleaseType;
 	public ArrayList<AddOnModule> Modules;
 
+	private URL downloadURL;
+
 	public URL downloadURL() throws CurseException {
-		return URLUtils.url(DownloadURL.replace("files", "media").replace("/media/", "/files/").
-				replaceAll(" ", "+"));
+		if(downloadURL == null) {
+			downloadURL = URLUtils.url(DownloadURL.replace("files", "media").
+					replace("/media/", "/files/").
+					replaceAll(" ", "+"));
+
+			//Because sometimes Curse encodes their + signs, but mostly they don't *facepalm*
+			try {
+				NetUtils.connect(downloadURL);
+			} catch(FileNotFoundException ex) {
+				downloadURL = URLUtils.url(downloadURL.toString().replaceAll("\\+", "%2B"));
+			} catch(IOException ex) {
+				throw CurseException.fromThrowable(ex);
+			}
+		}
+
+		return downloadURL;
 	}
 
 	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
