@@ -1,6 +1,5 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import com.therandomlabs.curseapi.file.FileStatus;
 import com.therandomlabs.curseapi.util.CloneException;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.io.NetUtils;
 
 public class AddOnFile implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1265896534353648752L;
@@ -36,19 +34,17 @@ public class AddOnFile implements Cloneable, Serializable {
 
 	public URL downloadURL() throws CurseException {
 		if(downloadURL == null) {
-			downloadURL = URLUtils.url(DownloadURL.replace("files", "media").
+			String urlString = DownloadURL.replace("files", "media").
 					replace("/media/", "/files/").
-					replaceAll(" ", "+"));
+					replaceAll(" ", "+");
 
 			//Because sometimes Curse encodes their + signs, but mostly they don't *facepalm*
 			//For now, only Better Builder's Wands is known to have this problem
 			if(Id == 2443194) {
-				try {
-					NetUtils.connect(downloadURL);
-				} catch(IOException ex) {
-					downloadURL = URLUtils.url(downloadURL.toString().replaceAll("\\+", "%2B"));
-				}
+				urlString = urlString.replaceAll("\\+", "%2B");
 			}
+
+			downloadURL = URLUtils.url(urlString);
 		}
 
 		return downloadURL;
