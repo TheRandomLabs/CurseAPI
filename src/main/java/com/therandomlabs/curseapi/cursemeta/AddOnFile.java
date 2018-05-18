@@ -42,7 +42,7 @@ public class AddOnFile implements Cloneable, Serializable {
 
 			//Because sometimes Curse encodes their + signs, but mostly they don't *facepalm*
 			//For now, only Better Builder's Wands is known to have this problem
-			if(Id == 238403) {
+			if(Id == 2443194) {
 				try {
 					NetUtils.connect(downloadURL);
 				} catch(IOException ex) {
