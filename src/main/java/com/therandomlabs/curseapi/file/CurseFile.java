@@ -1,6 +1,5 @@
 package com.therandomlabs.curseapi.file;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -68,7 +67,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final TRLList<MinecraftVersion> minecraftVersions;
 	private Element changelogHTML;
 	private String changelog;
-	private boolean noCurseForgeURL;
 	private boolean hasNoProject;
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
@@ -152,22 +150,14 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public URL url() throws CurseException {
-		if(url == null && !noCurseForgeURL) {
+		if(url == null && !hasNoProject && status == FileStatus.NORMAL) {
 			try {
 				urlString = CurseForge.fromID(projectID) + "/files/" + id;
-				url = URLUtils.url(urlString);
-				DocumentUtils.get(url);
-			} catch(CurseException ex) {
-				if(!(ex.getCause() instanceof FileNotFoundException) &&
-						!(ex instanceof InvalidProjectIDException)) {
-					throw ex;
-				}
-
-				urlString = null;
-				url = null;
-				noCurseForgeURL = true;
-				status = FileStatus.SEMI_NORMAL;
+			} catch(InvalidProjectIDException ex) {
+				hasNoProject = true;
 			}
+
+			url = URLUtils.url(urlString);
 		}
 
 		return url;
@@ -502,7 +492,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	private void ensureHTMLDataRetrieved() throws CurseException {
-		if(md5 != null || noCurseForgeURL || url() == null) {
+		if(md5 != null || url() == null) {
 			return;
 		}
 
