@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +26,12 @@ import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.FileInfo;
+import com.therandomlabs.curseapi.widget.MemberInfo;
 import com.therandomlabs.curseapi.widget.ProjectInfo;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
-import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
@@ -196,6 +195,10 @@ public final class CurseProject {
 
 	public Member owner() {
 		return members(MemberType.OWNER).get(0);
+	}
+
+	public String ownerUsername() {
+		return owner().username();
 	}
 
 	public TRLList<Member> members(MemberType type) {
@@ -669,9 +672,12 @@ public final class CurseProject {
 			type = ProjectType.get(site, info.type);
 			thumbnailURL = info.thumbnail;
 			thumbnailURLString = thumbnailURL.toString();
-			members = Arrays.stream(info.members).
-					map(member -> new Member(member.title, member.username)).
-					collect(TRLCollectors.toTRLList());
+
+			members = new TRLList<>(info.members.length);
+			for(MemberInfo member : info.members) {
+				members.add(new Member(member.title, member.username));
+			}
+
 			downloads = info.downloads.total;
 			creationTime = MiscUtils.parseTime(info.created_at);
 			donateURL = info.donate;

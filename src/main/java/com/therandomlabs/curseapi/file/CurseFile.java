@@ -26,6 +26,7 @@ import com.therandomlabs.curseapi.cursemeta.CurseMetaException;
 import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
+import com.therandomlabs.curseapi.project.Member;
 import com.therandomlabs.curseapi.project.RelationType;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.MiscUtils;
@@ -58,9 +59,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final String fileSize;
 	private final int downloads;
 	private String md5;
-	private String uploader;
-	private String uploaderURLString;
-	private URL uploaderURL;
+	private Member uploader;
+	private String uploaderUsername;
 	private final Map<RelationType, TRLList<Integer>> dependencyIDs;
 	private Map<RelationType, TRLList<CurseProject>> dependencies;
 	private final TRLList<String> gameVersions;
@@ -150,14 +150,14 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public URL url() throws CurseException {
-		if(url == null && !hasNoProject && status == FileStatus.NORMAL) {
+		if(url == null && !hasNoProject &&
+				(status == FileStatus.NORMAL || status == FileStatus.SEMI_NORMAL)) {
 			try {
 				urlString = CurseForge.fromID(projectID) + "/files/" + id;
+				url = URLUtils.url(urlString);
 			} catch(InvalidProjectIDException ex) {
 				hasNoProject = true;
 			}
-
-			url = URLUtils.url(urlString);
 		}
 
 		return url;
@@ -396,19 +396,33 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return changelogHTML;
 	}
 
-	public String uploader() throws CurseException {
-		ensureHTMLDataRetrieved();
+	public Member uploader() throws CurseException {
+		final CurseProject project = project();
+
+		if(project == null) {
+			return null;
+		}
+
+		if(uploader == null) {
+			ensureHTMLDataRetrieved();
+
+			if(uploaderUsername == null) {
+				return null;
+			}
+
+			for(Member member : project.members()) {
+				if(member.username().equals(uploaderUsername)) {
+					uploader = member;
+				}
+			}
+		}
+
 		return uploader;
 	}
 
-	public String uploaderURLString() throws CurseException {
+	public String uploaderUsername() throws CurseException {
 		ensureHTMLDataRetrieved();
-		return uploaderURLString;
-	}
-
-	public URL uploaderURL() throws CurseException {
-		ensureHTMLDataRetrieved();
-		return uploaderURL;
+		return uploaderUsername;
 	}
 
 	public int projectID() {
@@ -497,9 +511,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 
 		md5 = DocumentUtils.getValue(url, "class=md5;text");
-		uploader = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
-		uploaderURLString = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;absUrl=href");
-		uploaderURL = URLUtils.url(uploaderURLString);
+		uploaderUsername = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
 	}
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
