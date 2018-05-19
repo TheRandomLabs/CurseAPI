@@ -157,6 +157,8 @@ public enum MinecraftVersion {
 	@SerializedName("1.0.0")
 	V1_0_0(V1_0_GROUP);
 
+	public static final MinecraftVersion LATEST_WITH_FORGE = V1_12_2;
+
 	private final String versionString;
 	private final TRLList<MinecraftVersion> versions = new TRLList<>(3);
 	private final MinecraftVersion group;
