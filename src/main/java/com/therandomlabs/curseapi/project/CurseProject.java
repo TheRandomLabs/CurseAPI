@@ -36,13 +36,15 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 import com.therandomlabs.utils.wrapper.Wrapper;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 //TODO Images, Issues, Source, Pages, Wiki, get number of relations, get relations on specific pages
 public final class CurseProject {
-	private static final CurseProject NULL_PROJECT = new CurseProject();
+	public static final CurseProject NULL_PROJECT = new CurseProject();
+
 	private static final Map<Integer, CurseProject> projects = new ConcurrentHashMap<>();
 
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
@@ -90,6 +92,23 @@ public final class CurseProject {
 
 	private CurseProject() {
 		curseMeta = false;
+		site = CurseForgeSite.UNKNOWN;
+		shortDescription = "Null project";
+		descriptionHTML = Jsoup.parse("Null project");
+		description = "Null project";
+		game = Game.UNKNOWN;
+		type = ProjectType.UNKNOWN;
+		categories = new ImmutableList<>(Category.UNKNOWN);
+		avatarURL = CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
+		avatarURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
+		thumbnailURL = CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
+		thumbnailURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
+		members = new ImmutableList<>(Member.UNKNOWN);
+		creationTime = ZonedDateTime.now();
+		licenseName = "Unknown License";
+		licenseHTML = Jsoup.parse("Unknown license");
+		license = "Unknown license";
+		files = new CurseFileList();
 	}
 
 	private CurseProject(int id) throws CurseException {
@@ -122,7 +141,8 @@ public final class CurseProject {
 	*/
 
 	public boolean isNull() {
-		return this == NULL_PROJECT;
+		return site == CurseForgeSite.UNKNOWN && game == Game.UNKNOWN &&
+				type == ProjectType.UNKNOWN;
 	}
 
 	public int id() {
@@ -610,6 +630,10 @@ public final class CurseProject {
 	}
 
 	private void reload(boolean useWidgetAPI) throws CurseException {
+		if(isNull()) {
+			return;
+		}
+
 		if(curseMeta) {
 			reloadCurseMeta();
 		}
@@ -729,6 +753,10 @@ public final class CurseProject {
 	}
 
 	public void reloadFiles() throws CurseException {
+		if(isNull()) {
+			return;
+		}
+
 		if(!avoidWidgetAPI && avoidCurseMeta) {
 			reload(true);
 
@@ -859,24 +887,24 @@ public final class CurseProject {
 	}
 
 	public static CurseProject fromID(int id) throws CurseException {
-		final CurseProject project = projects.get(id);
+		CurseProject project = projects.get(id);
 		if(project != null) {
 			return project;
 		}
 
 		try {
 			return new CurseProject(id);
-		} catch(InvalidProjectIDException ex) {
-			projects.put(id, NULL_PROJECT);
-			/*
-			try {
+		} catch(InvalidProjectIDException ignored) {
+			/*try {
 				return new CurseProject(id, true);
 			} catch(CurseMetaException ex2) {
 				throw ex;
 			}*/
 		}
 
-		return NULL_PROJECT;
+		project = nullProject(id);
+		projects.put(id, project);
+		return project;
 	}
 
 	public static CurseProject fromURL(URL url) throws CurseException {
@@ -912,6 +940,12 @@ public final class CurseProject {
 	public static CurseProject fromURL(String url, boolean followRedirections)
 			throws CurseException {
 		return fromURL(URLUtils.url(url), followRedirections);
+	}
+
+	public static CurseProject nullProject(int id) {
+		final CurseProject project = new CurseProject();
+		project.id = id;
+		return project;
 	}
 
 	public static void clearProjectCache() {

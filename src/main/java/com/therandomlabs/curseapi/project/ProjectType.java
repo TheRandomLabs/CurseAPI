@@ -34,6 +34,9 @@ public final class ProjectType {
 		new Staxel();
 	}
 
+	public static final ProjectType UNKNOWN =
+			new ProjectType("Unknown", CurseForgeSite.UNKNOWN, "unknown");
+
 	final String name;
 	private final CurseForgeSite site;
 	private final String sitePath;
@@ -67,7 +70,7 @@ public final class ProjectType {
 				return type;
 			}
 		}
-		return null;
+		return UNKNOWN;
 	}
 
 	public CurseForgeSite site() {

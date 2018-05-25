@@ -1,26 +1,35 @@
 package com.therandomlabs.curseapi.project;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
 import com.therandomlabs.curseapi.cursemeta.AddOnAuthor;
-import com.therandomlabs.curseapi.util.URLUtils;
 
 public final class Member implements Serializable {
 	private static final long serialVersionUID = -5874001152475689908L;
+
+	public static final Member UNKNOWN = new Member(MemberType.OWNER, "Unknown");
 
 	private final MemberType type;
 	private final String username;
 	private final String urlString;
 	private final URL url;
 
-	Member(MemberType type, String username) throws CurseException {
+	Member(MemberType type, String username) {
 		this.type = type == null ? MemberType.UNKNOWN : type;
 		this.username = username;
 		urlString = getURLString(username);
-		url = URLUtils.url(urlString);
+
+		URL url = null;
+		try {
+			url = new URL(urlString);
+		} catch(MalformedURLException ignored) {
+			//This will never happen
+		}
+		this.url = url;
 	}
 
 	public MemberType type() {

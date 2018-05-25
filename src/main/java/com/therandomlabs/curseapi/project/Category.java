@@ -8,6 +8,8 @@ import com.therandomlabs.curseapi.cursemeta.AddOnCategory;
 public final class Category implements Serializable {
 	private static final long serialVersionUID = 4578392820713062750L;
 
+	public static final Category UNKNOWN = new Category("Unknown", null, null);
+
 	private String name;
 	private URL url;
 	private URL thumbnailURL;
