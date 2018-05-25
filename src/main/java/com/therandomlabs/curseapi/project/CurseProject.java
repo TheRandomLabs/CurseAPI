@@ -943,6 +943,10 @@ public final class CurseProject {
 	}
 
 	public static CurseProject nullProject(int id) {
+		if(id == 0) {
+			return NULL_PROJECT;
+		}
+
 		final CurseProject project = new CurseProject();
 		project.id = id;
 		return project;
