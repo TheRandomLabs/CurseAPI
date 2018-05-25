@@ -45,7 +45,6 @@ import org.jsoup.nodes.Element;
 //TODO Additional Files
 public final class CurseFile implements Comparable<CurseFile> {
 	private final int projectID;
-	private Element document;
 	private CurseProject project;
 	private FileStatus status;
 	private URL url;
@@ -515,9 +514,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			return;
 		}
 
-		if(document == null) {
-			document = DocumentUtils.get(url);
-		}
+		final Element document = DocumentUtils.get(url);
 
 		changelogHTML = document.getElementsByClass("logbox").get(0);
 		changelog = DocumentUtils.getPlainText(changelogHTML);

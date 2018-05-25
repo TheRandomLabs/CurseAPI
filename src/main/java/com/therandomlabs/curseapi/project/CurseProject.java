@@ -701,6 +701,9 @@ public final class CurseProject {
 		avatarURLString = DocumentUtils.getValue(document, "class=e-avatar64;absUrl=href");
 		avatarURL = avatarURLString.isEmpty() ?
 				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLUtils.url(avatarURLString);
+
+		//So it can be garbage collected
+		document = null;
 	}
 
 	private void reloadCurseMeta() throws CurseException {
