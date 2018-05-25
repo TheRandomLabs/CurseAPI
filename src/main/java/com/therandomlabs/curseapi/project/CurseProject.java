@@ -461,58 +461,61 @@ public final class CurseProject {
 			}
 		}
 
-		boolean useCurseMeta = false;
+		if(avoidCurseMeta) {
+			if(avoidWidgetAPI) {
+				final Wrapper<CurseFile> fileWithID = new Wrapper<>();
 
-		if(avoidWidgetAPI && avoidCurseMeta) {
-			final Wrapper<CurseFile> fileWithID = new Wrapper<>();
+				incompleteFiles.addAll(DocumentUtils.iteratePages(
+						url + "/files?",
+						this::getFiles,
+						file -> {
+							if(file.id() == id) {
+								fileWithID.set(file);
+								return false;
+							}
 
-			incompleteFiles.addAll(DocumentUtils.iteratePages(
-					url + "/files?",
-					this::getFiles,
-					file -> {
-						if(!fileWithID.hasValue() && file.id() == id) {
-							fileWithID.set(file);
-							return false;
-						}
+							return file.id() > id;
+						},
+						false
+				));
 
-						return file.id() > id;
-					},
-					false
-			));
+				if(fileWithID.hasValue()) {
+					return fileWithID.get();
+				}
+			} else {
+				final CurseFile file = filesDirect().fileWithID(id);
 
-			if(fileWithID.hasValue()) {
-				return fileWithID.get();
+				if(file != null) {
+					return file;
+				}
 			}
 
-			useCurseMeta = true;
+			return CurseFile.nullFile(this.id, id);
 		}
 
-		if(!useCurseMeta) {
-			final CurseFile file = filesDirect().fileWithID(id);
-			if(file != null) {
-				return file;
-			}
-		}
-
-		return CurseFile.fromID(this.id, id);
+		return new CurseFile(this.id, CurseMeta.getFile(this.id, id));
 	}
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
 		final CurseFile fileWithID = fileWithID(id);
+
 		if(fileWithID != null) {
 			return fileWithID;
 		}
 
-		if(avoidWidgetAPI && avoidCurseMeta) {
-			//Cache files up to the first file older than the file with the specified ID
-			incompleteFiles.addAll(DocumentUtils.iteratePages(
-					url + "/files?",
-					this::getFiles,
-					file -> file.id() > id - 1,
-					false
-			));
+		if(avoidCurseMeta) {
+			if(avoidWidgetAPI) {
+				incompleteFiles.addAll(DocumentUtils.iteratePages(
+						url + "/files?",
+						this::getFiles,
+						file -> file.id() > id - 1,
+						false
+				));
 
-			return incompleteFiles.fileClosestToID(id, preferOlder);
+				return incompleteFiles.fileClosestToID(id, preferOlder);
+			}
+
+			return filesDirect().fileClosestToID(id, preferOlder);
 		}
 
 		return filesDirect().fileClosestToID(id, preferOlder);
@@ -757,8 +760,12 @@ public final class CurseProject {
 			return;
 		}
 
-		if(!avoidWidgetAPI && avoidCurseMeta) {
-			reload(true);
+		if(avoidCurseMeta) {
+			if(avoidWidgetAPI) {
+				this.files = new CurseFileList(
+						DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, true));
+				return;
+			}
 
 			final TRLList<CurseFile> files = new TRLList<>(widgetInfoFiles.size() * 10);
 
@@ -769,12 +776,6 @@ public final class CurseProject {
 			}
 
 			this.files = new CurseFileList(files);
-			return;
-		}
-
-		if(avoidCurseMeta) {
-			this.files = new CurseFileList(
-					DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, true));
 			return;
 		}
 

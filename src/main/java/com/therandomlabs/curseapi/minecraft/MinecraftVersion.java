@@ -155,7 +155,11 @@ public enum MinecraftVersion {
 	@SerializedName("1.0-Group")
 	V1_0_GROUP,
 	@SerializedName("1.0.0")
-	V1_0_0(V1_0_GROUP);
+	V1_0_0(V1_0_GROUP),
+	@SerializedName("Unknown-Group")
+	UNKNOWN_GROUP,
+	@SerializedName("Unknown")
+	UNKNOWN(UNKNOWN_GROUP);
 
 	public static final MinecraftVersion LATEST_WITH_FORGE = V1_12_2;
 

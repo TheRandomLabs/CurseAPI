@@ -69,6 +69,29 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private String changelog;
 	private boolean hasNoProject;
 
+	private CurseFile(int projectID, int id) {
+		this.projectID = projectID;
+		this.id = id;
+		project = CurseProject.nullProject(projectID);
+		status = FileStatus.DELETED;
+		name = "Null File";
+		nameOnDisk = "null-file";
+		releaseType = ReleaseType.ALPHA;
+		uploadTime = ZonedDateTime.now();
+		fileSize = "0.00 KB";
+		downloads = 0;
+		md5 = "ffffffffffffffffffffffffffffffff";
+		uploader = Member.UNKNOWN;
+		uploaderUsername = "Unknown";
+		dependencyIDs = new HashMap<>();
+		this.dependencies = new HashMap<>();
+		this.gameVersions = new TRLList<>("Unknown");
+		this.minecraftVersions = new TRLList<>();
+		changelogHTML = Jsoup.parse("No changelog provided");
+		changelog = "No changelog provided";
+		hasNoProject = true;
+	}
+
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.downloadURL(), info.releaseType(), info.FileDate, null, -1,
@@ -127,6 +150,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 		minecraftVersions.sort();
 
 		this.minecraftVersions = minecraftVersions.toImmutableList();
+	}
+
+	public boolean isNull() {
+		return "ffffffffffffffffffffffffffffffff".equals(md5);
 	}
 
 	public FileStatus status() {
@@ -341,7 +368,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public MinecraftVersion minecraftVersion() {
-		return minecraftVersions.get(0);
+		return minecraftVersions.isEmpty() ? MinecraftVersion.UNKNOWN : minecraftVersions.get(0);
 	}
 
 	public TRLList<MinecraftVersion> minecraftVersions() {
@@ -485,6 +512,25 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return Integer.compare(id, file.id);
 	}
 
+	private void ensureHTMLDataRetrieved() throws CurseException {
+		if(htmlDataRetrieved() || url() == null) {
+			return;
+		}
+
+		final Element document = DocumentUtils.get(url);
+
+		changelogHTML = document.getElementsByClass("logbox").get(0);
+		changelog = DocumentUtils.getPlainText(changelogHTML);
+		nameOnDisk =
+				DocumentUtils.getValue(document, "class=details-info;class=info-data;text");
+		md5 = DocumentUtils.getValue(document, "class=md5;text");
+		uploaderUsername = DocumentUtils.getValue(document, "class=user-tag;tag=a=1;text");
+	}
+
+	private boolean htmlDataRetrieved() {
+		return nameOnDisk != null;
+	}
+
 	public static CurseFileList filesFromProjectID(int projectID) throws CurseException {
 		if(CurseAPI.isAvoidingCurseMeta()) {
 			return CurseProject.fromID(projectID).files();
@@ -509,23 +555,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return new CurseFile(projectID, CurseMeta.getFile(projectID, fileID));
 	}
 
-	private void ensureHTMLDataRetrieved() throws CurseException {
-		if(htmlDataRetrieved() || url() == null) {
-			return;
-		}
-
-		final Element document = DocumentUtils.get(url);
-
-		changelogHTML = document.getElementsByClass("logbox").get(0);
-		changelog = DocumentUtils.getPlainText(changelogHTML);
-		nameOnDisk =
-				DocumentUtils.getValue(document, "class=details-info;class=info-data;text");
-		md5 = DocumentUtils.getValue(document, "class=md5;text");
-		uploaderUsername = DocumentUtils.getValue(document, "class=user-tag;tag=a=1;text");
-	}
-
-	private boolean htmlDataRetrieved() {
-		return nameOnDisk != null;
+	public static CurseFile nullFile(int projectID, int fileID) {
+		return new CurseFile(projectID, fileID);
 	}
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
