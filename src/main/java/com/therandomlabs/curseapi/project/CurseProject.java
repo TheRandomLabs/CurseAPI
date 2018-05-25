@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.AbstractMap;
@@ -79,6 +80,8 @@ public final class CurseProject {
 	private String donateURLString;
 
 	private Map<String, FileInfo[]> widgetInfoFiles;
+
+	private final Map<URL, WeakReference<Document>> documentCache = new ConcurrentHashMap<>();
 
 	private final boolean curseMeta;
 
@@ -353,7 +356,9 @@ public final class CurseProject {
 		if(avoidWidgetAPI && avoidCurseMeta) {
 			final Wrapper<CurseFile> latestFile = new Wrapper<>();
 
+			DocumentUtils.putTemporaryCache(this, documentCache);
 			final List<CurseFile> files = DocumentUtils.iteratePages(
+					this,
 					url + "/files?",
 					this::getFiles,
 					file -> {
@@ -365,6 +370,7 @@ public final class CurseProject {
 					},
 					false
 			);
+			DocumentUtils.removeTemporaryCache(this);
 
 			incompleteFiles.addAll(files);
 
@@ -433,12 +439,15 @@ public final class CurseProject {
 		}
 
 		if(avoidWidgetAPI && avoidCurseMeta) {
+			DocumentUtils.putTemporaryCache(this, documentCache);
 			final List<CurseFile> files = DocumentUtils.iteratePages(
+					this,
 					url + "/files?",
 					this::getFiles,
 					file -> file.id() >= oldID, //Continue as long as file.ID() >= oldID
 					false
 			);
+			DocumentUtils.removeTemporaryCache(this);
 
 			//Add to cache
 			incompleteFiles.addAll(files);
@@ -465,7 +474,9 @@ public final class CurseProject {
 			if(avoidWidgetAPI) {
 				final Wrapper<CurseFile> fileWithID = new Wrapper<>();
 
+				DocumentUtils.putTemporaryCache(this, documentCache);
 				incompleteFiles.addAll(DocumentUtils.iteratePages(
+						this,
 						url + "/files?",
 						this::getFiles,
 						file -> {
@@ -478,6 +489,7 @@ public final class CurseProject {
 						},
 						false
 				));
+				DocumentUtils.removeTemporaryCache(this);
 
 				if(fileWithID.hasValue()) {
 					return fileWithID.get();
@@ -497,20 +509,17 @@ public final class CurseProject {
 	}
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
-		final CurseFile fileWithID = fileWithID(id);
-
-		if(fileWithID != null) {
-			return fileWithID;
-		}
-
 		if(avoidCurseMeta) {
 			if(avoidWidgetAPI) {
+				DocumentUtils.putTemporaryCache(this, documentCache);
 				incompleteFiles.addAll(DocumentUtils.iteratePages(
+						this,
 						url + "/files?",
 						this::getFiles,
 						file -> file.id() > id - 1,
 						false
 				));
+				DocumentUtils.removeTemporaryCache(this);
 
 				return incompleteFiles.fileClosestToID(id, preferOlder);
 			}
@@ -573,9 +582,17 @@ public final class CurseProject {
 			baseURL += "?filter-related-" + relationName + "=" + relationType.ordinal() + "&";
 		}
 
-		return DocumentUtils.iteratePages(baseURL,
+		DocumentUtils.putTemporaryCache(this, documentCache);
+		final TRLList<Relation> relationList = DocumentUtils.iteratePages(
+				this,
+				baseURL,
 				(document, relations) -> documentToRelations(document, relations, relationType),
-				onRelationAdd, true);
+				onRelationAdd,
+				true
+		);
+		DocumentUtils.removeTemporaryCache(this);
+
+		return relationList;
 	}
 
 	private void documentToRelations(Element document, List<Relation> relations,
@@ -762,8 +779,16 @@ public final class CurseProject {
 
 		if(avoidCurseMeta) {
 			if(avoidWidgetAPI) {
-				this.files = new CurseFileList(
-						DocumentUtils.iteratePages(url + "/files?", this::getFiles, null, true));
+				DocumentUtils.putTemporaryCache(this, documentCache);
+				this.files = new CurseFileList(DocumentUtils.iteratePages(
+						this,
+						url + "/files?",
+						this::getFiles,
+						null,
+						true
+				));
+				DocumentUtils.removeTemporaryCache(this);
+
 				return;
 			}
 
@@ -955,5 +980,9 @@ public final class CurseProject {
 
 	public static void clearProjectCache() {
 		projects.clear();
+	}
+
+	public static boolean isCached(int id) {
+		return projects.containsKey(id);
 	}
 }

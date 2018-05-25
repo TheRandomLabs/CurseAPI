@@ -1,12 +1,14 @@
 package com.therandomlabs.curseapi.util;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseEventHandling;
@@ -125,6 +127,9 @@ public final class DocumentUtils {
 		}
 	}
 
+	private static final Map<Object, Map<URL, WeakReference<Document>>> cache =
+			new ConcurrentHashMap<>();
+
 	static {
 		NetUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
 	}
@@ -156,10 +161,36 @@ public final class DocumentUtils {
 	}
 
 	public static Document get(String url) throws CurseException {
-		return get(URLUtils.url(url));
+		return getWithCache(url, null);
+	}
+
+	public static Document getWithCache(String url, Object cacheKey) throws CurseException {
+		return getWithCache(URLUtils.url(url), cacheKey);
 	}
 
 	public static Document get(URL url) throws CurseException {
+		return getWithCache(url, null);
+	}
+
+	public static Document getWithCache(URL url, Object cacheKey) throws CurseException {
+		Map<URL, WeakReference<Document>> cacheMap = null;
+
+		if(cacheKey != null) {
+			cacheMap = cache.get(cacheKey);
+
+			if(cacheMap != null) {
+				final WeakReference<Document> reference = cacheMap.get(url);
+
+				if(reference != null) {
+					final Document document = reference.get();
+
+					if(document != null) {
+						return document;
+					}
+				}
+			}
+		}
+
 		try {
 			final String html = read(url);
 			if(html == null) {
@@ -168,6 +199,11 @@ public final class DocumentUtils {
 
 			final Document document = Jsoup.parse(html);
 			document.setBaseUri(url.toString());
+
+			if(cacheMap != null) {
+				cacheMap.put(url, new WeakReference<>(document));
+			}
+
 			return document;
 		} catch(IOException ex) {
 			throw CurseException.fromThrowable("An error has occurred while reading: " + url, ex);
@@ -285,8 +321,9 @@ public final class DocumentUtils {
 		return true;
 	}
 
-	public static <E> TRLList<E> iteratePages(String baseURL, DocumentToList<E> documentToList,
-			Predicate<? super E> onElementAdd, boolean threaded) throws CurseException {
+	public static <E> TRLList<E> iteratePages(Object cacheKey, String baseURL,
+			DocumentToList<E> documentToList, Predicate<? super E> onElementAdd, boolean threaded)
+			throws CurseException {
 		baseURL += "page=";
 
 		try {
@@ -298,7 +335,7 @@ public final class DocumentUtils {
 		}
 
 		//Get number of pages from the first page
-		final int pages = getNumberOfPages(get(baseURL + 1));
+		final int pages = getNumberOfPages(getWithCache(baseURL + 1, cacheKey));
 
 		final String url = baseURL;
 
@@ -310,23 +347,32 @@ public final class DocumentUtils {
 			ThreadUtils.splitWorkload(
 					CurseAPI.getMaximumThreads(),
 					pages,
-					page -> iteratePage(documentToList, onElementAdd, stopped, url, allData, page)
+					page -> iteratePage(
+							cacheKey,
+							documentToList,
+							onElementAdd,
+							stopped,
+							url,
+							allData,
+							page
+					)
 			);
 		} else {
 			for(int page = 0; page < pages; page++) {
-				iteratePage(documentToList, onElementAdd, stopped, url, allData, page);
+				iteratePage(cacheKey, documentToList, onElementAdd, stopped, url, allData, page);
 			}
 		}
 
-		final TRLList<E> sortedList =
-				new TRLList<>(allData.size() * CurseAPI.RELATIONS_PER_PAGE);
+		final TRLList<E> sortedList = new TRLList<>(allData.size() * CurseAPI.RELATIONS_PER_PAGE);
+
 		for(int i = 0; i < allData.size(); i++) {
 			sortedList.addAll(allData.get(i));
 		}
+
 		return sortedList.toImmutableList();
 	}
 
-	private static <E> void iteratePage(DocumentToList<E> documentToList,
+	private static <E> void iteratePage(Object cacheKey, DocumentToList<E> documentToList,
 			Predicate<? super E> onElementAdd, BooleanWrapper stopped, String url,
 			Map<Integer, List<E>> allData, int page) throws CurseException {
 		try {
@@ -342,7 +388,7 @@ public final class DocumentUtils {
 
 			allData.put(page, data);
 
-			documentToList.documentToList(get(url + (page + 1)), data);
+			documentToList.documentToList(getWithCache(url + (page + 1), cacheKey), data);
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 			throw CurseException.fromThrowable(ex);
 		}
@@ -363,5 +409,13 @@ public final class DocumentUtils {
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 			throw CurseException.fromThrowable(ex);
 		}
+	}
+
+	public static void putTemporaryCache(Object key, Map<URL, WeakReference<Document>> cache) {
+		DocumentUtils.cache.put(key, cache);
+	}
+
+	public static void removeTemporaryCache(Object key) {
+		cache.remove(key);
 	}
 }
