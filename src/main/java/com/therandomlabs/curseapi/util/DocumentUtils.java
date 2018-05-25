@@ -49,7 +49,10 @@ public final class DocumentUtils {
 	public static String getPlainText(Element element, int maxLineWidth) {
 		final FormattingVisitor formatter = new FormattingVisitor(maxLineWidth);
 		NodeTraversor.traverse(formatter, element);
-		return formatter.toString();
+
+		//I'm looking at you, Speiger.
+		final String string = formatter.toString().replaceAll("\n\n\n", "\n");
+		return string.startsWith("\n") ? string.substring(1) : string;
 	}
 
 	public static String read(String url) throws CurseException, IOException {
@@ -420,9 +423,7 @@ public final class DocumentUtils {
 
 		@Override
 		public String toString() {
-			//I'm looking at you, Speiger.
-			final String string = text.toString().replaceAll("\n\n\n", "\n");
-			return string.startsWith("\n") ? string.substring(1) : string;
+			return text.toString();
 		}
 	}
 }

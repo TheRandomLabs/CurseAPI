@@ -502,6 +502,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public static CurseFile fromID(int projectID, int fileID) throws CurseException {
+		if(CurseAPI.isAvoidingCurseMeta()) {
+			return CurseProject.fromID(projectID).fileWithID(fileID);
+		}
+
 		return new CurseFile(projectID, CurseMeta.getFile(projectID, fileID));
 	}
 
