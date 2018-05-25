@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import com.therandomlabs.curseapi.curseforge.CurseForge;
 import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
 import com.therandomlabs.curseapi.cursemeta.AddOn;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
-import com.therandomlabs.curseapi.cursemeta.CurseMetaException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.file.ReleaseType;
@@ -36,6 +36,7 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 import com.therandomlabs.utils.wrapper.Wrapper;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -52,6 +53,7 @@ public final class CurseProject {
 	private URL url;
 	private URL mainCurseForgeURL;
 	private CurseForgeSite site;
+	private Element document;
 
 	private int id;
 	private String title;
@@ -94,17 +96,18 @@ public final class CurseProject {
 		this(CurseForge.fromID(id));
 	}
 
-	private CurseProject(URL url) throws CurseException {
-		CurseException.validateProject(url);
-
+	private CurseProject(Map.Entry<URL, Document> project) throws CurseException {
+		this.url = project.getKey();
+		this.document = project.getValue();
 		curseMeta = false;
-		this.url = url;
-		this.mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
+		this.mainCurseForgeURL = CurseForge.toMainCurseForgeProject(document);
+
 		reload(false);
 
 		projects.put(id, this);
 	}
 
+	/* CurseMeta constructor - not needed ATM, but might be in the future
 	private CurseProject(int id, boolean curseMeta) throws CurseException {
 		this.curseMeta = curseMeta;
 		avoidWidgetAPI = true;
@@ -116,6 +119,7 @@ public final class CurseProject {
 
 		projects.put(id, this);
 	}
+	*/
 
 	public boolean isNull() {
 		return this == NULL_PROJECT;
@@ -595,7 +599,9 @@ public final class CurseProject {
 	}
 
 	public void reloadURL() throws CurseException {
-		url = CurseForge.fromID(id);
+		final Map.Entry<URL, Document> project = CurseForge.fromID(id);
+		url = project.getKey();
+		document = project.getValue();
 		mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
 	}
 
@@ -611,16 +617,16 @@ public final class CurseProject {
 		site = CurseForgeSite.fromURL(url);
 
 		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
-			id = CurseForge.getID(url);
-			title = DocumentUtils.getValue(url, "class=project-title;class=overflow-tip;text");
-			shortDescription = DocumentUtils.getValue(url, "name=description=1;attr=content");
+			id = CurseForge.getID(document);
+			title = DocumentUtils.getValue(document, "class=project-title;class=overflow-tip;text");
+			shortDescription = DocumentUtils.getValue(document, "name=description=1;attr=content");
 			game = site.game();
 			type = ProjectType.get(site,
-					DocumentUtils.getValue(url, "tag=title;text").split(" - ")[2]);
+					DocumentUtils.getValue(document, "tag=title;text").split(" - ")[2]);
 
 			try {
 				thumbnailURLString =
-						DocumentUtils.getValue(url, "class=e-avatar64;tag=img;absUrl=src");
+						DocumentUtils.getValue(document, "class=e-avatar64;tag=img;absUrl=src");
 				thumbnailURL = URLUtils.url(thumbnailURLString);
 			} catch(CurseException ex) {
 				thumbnailURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
@@ -628,7 +634,7 @@ public final class CurseProject {
 			}
 
 			members.clear();
-			for(Element member : DocumentUtils.get(url).getElementsByClass("project-members")) {
+			for(Element member : document.getElementsByClass("project-members")) {
 				members.add(new Member(
 						MemberType.fromName(DocumentUtils.getValue(member, "class=title;text")),
 						DocumentUtils.getValue(member, "tag=span;text")
@@ -636,17 +642,17 @@ public final class CurseProject {
 			}
 
 			downloads = Integer.parseInt(
-					DocumentUtils.getValue(url, "class=info-data=3;text").replaceAll(",", ""));
-			creationTime = MiscUtils.parseTime(DocumentUtils.getValue(url,
+					DocumentUtils.getValue(document, "class=info-data=3;text").replaceAll(",", ""));
+			creationTime = MiscUtils.parseTime(DocumentUtils.getValue(document,
 					"class=project-details;class=standard-date;attr=data-epoch"));
 
 			try {
 				donateURLString =
-						DocumentUtils.getValue(url, "class=icon-donate;attr=href;absUrl=href");
+						DocumentUtils.getValue(document, "class=icon-donate;attr=href;absUrl=href");
 			} catch(CurseException ignored) {}
 
 			donateURL = donateURLString == null ? null : URLUtils.url(donateURLString);
-			licenseName = DocumentUtils.getValue(url, "class=info-data=4;tag=a;text");
+			licenseName = DocumentUtils.getValue(document, "class=info-data=4;tag=a;text");
 		} else {
 			if(mainCurseForgeURL == null) {
 				avoidWidgetAPI = true;
@@ -686,14 +692,13 @@ public final class CurseProject {
 			widgetInfoFiles = info.versions;
 		}
 
-		descriptionHTML = DocumentUtils.get(url, "class=project-description");
+		descriptionHTML = DocumentUtils.get(document, "class=project-description");
 		description = DocumentUtils.getPlainText(descriptionHTML);
 		categories = getCategories(
-				DocumentUtils.get(url).
-						getElementsByClass("project-categories").get(0).
-						getElementsByTag("li")
+				document.getElementsByClass("project-categories").get(0).
+				getElementsByTag("li")
 		).toImmutableList();
-		avatarURLString = DocumentUtils.getValue(url, "class=e-avatar64;absUrl=href");
+		avatarURLString = DocumentUtils.getValue(document, "class=e-avatar64;absUrl=href");
 		avatarURL = avatarURLString.isEmpty() ?
 				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLUtils.url(avatarURLString);
 	}
@@ -853,23 +858,22 @@ public final class CurseProject {
 	public static CurseProject fromID(int id) throws CurseException {
 		final CurseProject project = projects.get(id);
 		if(project != null) {
-			if(project == NULL_PROJECT) {
-				throw new InvalidProjectIDException(id);
-			}
-
 			return project;
 		}
 
 		try {
 			return new CurseProject(id);
 		} catch(InvalidProjectIDException ex) {
+			projects.put(id, NULL_PROJECT);
+			/*
 			try {
-				projects.put(id, NULL_PROJECT);
 				return new CurseProject(id, true);
 			} catch(CurseMetaException ex2) {
 				throw ex;
-			}
+			}*/
 		}
+
+		return NULL_PROJECT;
 	}
 
 	public static CurseProject fromURL(URL url) throws CurseException {
@@ -887,7 +891,7 @@ public final class CurseProject {
 			}
 		}
 
-		return new CurseProject(url);
+		return new CurseProject(new AbstractMap.SimpleEntry<>(url, DocumentUtils.get(url)));
 	}
 
 	public static CurseProject fromSlug(String site, String slug) throws CurseException {

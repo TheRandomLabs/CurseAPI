@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi.cursemeta;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -113,17 +114,27 @@ public final class CurseMeta {
 	private static <T> T get(String path, Class<T> clazz, boolean ignoreNull)
 			throws CurseMetaException {
 		final Wrapper<T> data = new Wrapper<>();
+
 		try {
 			CurseAPI.doWithRetries(() -> data.set(getWithoutRetries(path, clazz, ignoreNull)));
 		} catch(CurseException ex) {
 			throw (CurseMetaException) ex;
 		}
+
 		return data.get();
 	}
 
 	private static <T> T getWithoutRetries(String path, Class<T> clazz, boolean ignoreNull)
 			throws CurseMetaException {
-		final String url = BASE_URL + path;
+		URL tempURL = null;
+
+		try {
+			tempURL = new URL(BASE_URL + path);
+		} catch(MalformedURLException ignored) {
+			//This will never happen
+		}
+
+		final URL url = tempURL;
 
 		CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(url));
 
@@ -132,7 +143,7 @@ public final class CurseMeta {
 		try {
 			json = NetUtils.read(url);
 		} catch(IOException ex) {
-			throw new CurseMetaException("An error has occured while reading from: " + url, ex);
+			throw new CurseMetaException("An error occurred while reading from: " + url, ex);
 		}
 
 		if(json == null) {
@@ -160,8 +171,7 @@ public final class CurseMeta {
 
 			return new Gson().fromJson(json, clazz);
 		} catch(JsonSyntaxException ex) {
-			throw new CurseMetaException("An error has occurred while parsing data from " +
-					"the URL: " + url, ex);
+			throw new CurseMetaException("An error occurred while parsing data from: " + url, ex);
 		}
 	}
 }

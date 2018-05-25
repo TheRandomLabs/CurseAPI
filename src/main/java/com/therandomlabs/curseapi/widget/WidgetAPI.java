@@ -9,8 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
-import com.therandomlabs.curseapi.CurseEventHandling;
-import com.therandomlabs.utils.io.NetUtils;
+import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
 /**
@@ -49,9 +48,7 @@ public final class WidgetAPI {
 
 	private static ProjectInfo doGet(String path, String jsonURL) throws CurseException {
 		try {
-			CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(jsonURL));
-			final String json = NetUtils.read(jsonURL);
-			CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(jsonURL));
+			final String json = DocumentUtils.read(jsonURL);
 
 			if(json == null) {
 				throw new CurseUnavailableException();

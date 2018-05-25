@@ -45,13 +45,14 @@ import org.jsoup.nodes.Element;
 //TODO Additional Files
 public final class CurseFile implements Comparable<CurseFile> {
 	private final int projectID;
+	private Element document;
 	private CurseProject project;
 	private FileStatus status;
 	private URL url;
 	private String urlString;
 	private final int id;
 	private final String name;
-	private final String nameOnDisk;
+	private String nameOnDisk;
 	private String downloadURLString;
 	private URL downloadURL;
 	private final ReleaseType releaseType;
@@ -75,23 +76,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 				getDependencyIDs(info.Dependencies), info.GameVersion);
 	}
 
-	public CurseFile(CurseProject project, AddOnFile info) throws CurseException {
-		this(project.id(), project, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.downloadURL(), info.releaseType(), info.FileDate, null, -1,
-				getDependencyIDs(info.Dependencies), info.GameVersion);
-	}
-
-	public CurseFile(int projectID, FileInfo info) throws CurseException {
-		this(projectID, null, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
-				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
-	}
-
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
 		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
 				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
 	}
 
-	public CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
+	private CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
 			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,
 			String[] gameVersions) throws CurseException {
@@ -106,10 +96,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		this.id = id;
 		this.name = name;
-		this.nameOnDisk = nameOnDisk == null ?
-				DocumentUtils.getValue(url, "class=details-info;class=info-data;text") : nameOnDisk;
+		this.nameOnDisk = nameOnDisk;
+
 		this.downloadURL = downloadURL;
-		downloadURLString = downloadURL ==  null ? null : this.downloadURL.toString();
+		if(downloadURL != null) {
+			downloadURLString = downloadURL.toString();
+		}
+
 		this.releaseType = releaseType;
 		this.uploadTime = MiscUtils.parseTime(uploadTime);
 		this.fileSize = fileSize;
@@ -119,17 +112,21 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.dependencies = new HashMap<>(dependencyIDs == null ? 1 : dependencyIDs.size());
 
 		final TRLList<String> gameVersionList = new TRLList<>();
+
 		for(String gameVersion : gameVersions) {
 			if(!gameVersion.startsWith("Java ")) {
 				gameVersionList.add(gameVersion);
 			}
 		}
+
 		this.gameVersions = gameVersionList.toImmutableList();
 
 		final TRLList<MinecraftVersion> minecraftVersions =
 					CollectionUtils.map(this.gameVersions, MinecraftVersion::fromString);
+
 		minecraftVersions.removeIf(Objects::isNull);
 		minecraftVersions.sort();
+
 		this.minecraftVersions = minecraftVersions.toImmutableList();
 	}
 
@@ -145,7 +142,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return name;
 	}
 
-	public String nameOnDisk() {
+	public String nameOnDisk() throws CurseException {
+		ensureHTMLDataRetrieved();
 		return nameOnDisk;
 	}
 
@@ -214,6 +212,9 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		return dependencies.get(relationType);
 	}
+
+	//TODO use predicates instead of versions/stability
+	//Maybe utility class for creating predicates for game versions/stability?
 
 	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
 			MinecraftVersion... mcVersions) throws CurseException {
@@ -380,17 +381,17 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public Element changelogHTML() throws CurseException {
 		if(changelogHTML == null) {
-			if(url == null || !DocumentUtils.isCached(url)) {
+			if(url() == null || (!htmlDataRetrieved() && !CurseAPI.isAvoidingCurseMeta())) {
 				try {
 					changelogHTML = CurseMeta.getChangelog(projectID, id);
 				} catch(CurseMetaException ex) {
 					changelogHTML = Jsoup.parse("No changelog provided");
 				}
-			} else {
-				changelogHTML = DocumentUtils.get(url, "class=logbox");
-			}
 
-			changelog = DocumentUtils.getPlainText(changelogHTML);
+				changelog = DocumentUtils.getPlainText(changelogHTML);
+			} else {
+				ensureHTMLDataRetrieved();
+			}
 		}
 
 		return changelogHTML;
@@ -510,12 +511,24 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	private void ensureHTMLDataRetrieved() throws CurseException {
-		if(md5 != null || url() == null) {
+		if(htmlDataRetrieved() || url() == null) {
 			return;
 		}
 
-		md5 = DocumentUtils.getValue(url, "class=md5;text");
-		uploaderUsername = DocumentUtils.getValue(url, "class=user-tag;tag=a=1;text");
+		if(document == null) {
+			document = DocumentUtils.get(url);
+		}
+
+		changelogHTML = document.getElementsByClass("logbox").get(0);
+		changelog = DocumentUtils.getPlainText(changelogHTML);
+		nameOnDisk =
+				DocumentUtils.getValue(document, "class=details-info;class=info-data;text");
+		md5 = DocumentUtils.getValue(document, "class=md5;text");
+		uploaderUsername = DocumentUtils.getValue(document, "class=user-tag;tag=a=1;text");
+	}
+
+	private boolean htmlDataRetrieved() {
+		return nameOnDisk != null;
 	}
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(

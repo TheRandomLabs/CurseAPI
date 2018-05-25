@@ -3,6 +3,8 @@ package com.therandomlabs.curseapi.curseforge;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.AbstractMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -11,6 +13,8 @@ import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.StringUtils;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import static com.therandomlabs.utils.logging.Logging.getLogger;
 
@@ -38,17 +42,31 @@ public final class CurseForge {
 	}
 
 	public static boolean is(String url) throws CurseException {
-		if(url == null) {
-			return false;
-		}
-		return is(URLUtils.url(url));
+		return url != null && is(URLUtils.url(url));
 	}
 
 	public static boolean is(URL url) {
 		if(url == null) {
 			return false;
 		}
+
 		return CurseForgeSite.HOST_PATTERN.matcher(url.getHost()).matches();
+	}
+
+	public static boolean isUnredirected(String url) throws CurseException {
+		return isUnredirected(URLUtils.url(url));
+	}
+
+	public static boolean isUnredirected(URL url) {
+		return is(url) && UNREDIRECTED_PROJECT_PATH_PATTERN.matcher(url.getPath()).matches();
+	}
+
+	public static URL redirectIfNecessary(String url) throws CurseException {
+		return redirectIfNecessary(URLUtils.url(url));
+	}
+
+	public static URL redirectIfNecessary(URL url) throws CurseException {
+		return isUnredirected(url) ? URLUtils.redirect(url) : url;
 	}
 
 	public static boolean isProject(String url) throws CurseException {
@@ -73,81 +91,56 @@ public final class CurseForge {
 		}
 
 		url = redirectIfNecessary(url);
+		return isValidProjectURL(url) && isProject(DocumentUtils.get(url));
+	}
 
-		String path = url.getPath();
+	public static boolean isValidProjectURL(URL url) {
+		return is(url) && PROJECT_PATH_PATTERN.matcher(url.getPath()).matches();
+	}
 
+	public static boolean isProject(Element document) {
 		try {
-			if(!is(url) || !PROJECT_PATH_PATTERN.matcher(path).matches()) {
-				return false;
-			}
+			//Ensure the project title and child elements exist
+			DocumentUtils.get(document, "class=project-title;index=0");
+			return true;
+		} catch(CurseException ignored) {}
 
-			//CurseForge project titles:
-			//<h1 class="project-title">
-			//The index=0 is to ensure that it has child elements
-			DocumentUtils.get(url, "class=project-title;index=0");
-		} catch(IndexOutOfBoundsException | NullPointerException ex) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public static URL redirectIfNecessary(URL url) throws CurseException {
-		return isUnredirected(url) ? URLUtils.redirect(url) : url;
-	}
-
-	public static boolean isUnredirected(URL url) {
-		return is(url) && UNREDIRECTED_PROJECT_PATH_PATTERN.matcher(url.getPath()).matches();
+		return false;
 	}
 
 	public static boolean isFile(String url) throws CurseException {
-		URL urlObject;
-
 		try {
-			urlObject = new URL(url);
-		} catch(MalformedURLException ex) {
-			return false;
-		}
+			return isFile(new URL(url));
+		} catch(MalformedURLException ignored) {}
 
-		return isFile(urlObject);
+		return false;
 	}
 
 	public static boolean isFile(URL url) throws CurseException {
-		String path = url.getPath();
+		return isValidFileURL(url) && isFile(DocumentUtils.get(url));
+	}
 
+	public static boolean isValidFileURL(URL url) {
+		return is(url) && !FILE_PATH_PATTERN.matcher(url.getPath()).matches();
+	}
+
+	public static boolean isFile(Element document) {
 		try {
-			if(!is(url) || !FILE_PATH_PATTERN.matcher(path).matches()) {
-				return false;
-			}
+			//Ensure the release type and child elements exist
+			DocumentUtils.get(document, "class=project-file-release-type;index=0");
+			return true;
+		} catch(CurseException ignored) {}
 
-			//Ensure that this is actually a file
-			DocumentUtils.get(url, "class=project-file-release-type;index=0");
-		} catch(IndexOutOfBoundsException | NullPointerException ex) {
-			return false;
-		}
-
-		return true;
+		return false;
 	}
 
 	public static URL getProjectURLFromFile(URL url) throws CurseException {
-		if(!isFile(url)) {
-			return null;
-		}
-
 		try {
-			return new URL(url.getProtocol(), url.getHost(),
-					"projects/" + url.getPath().split("/")[1]);
-		} catch(MalformedURLException ex) {
+			final String[] path = url.getPath().split("/");
+			return new URL(url.getProtocol(), url.getHost(), "projects/" + path[1]);
+		} catch(ArrayIndexOutOfBoundsException | MalformedURLException ex) {
 			throw CurseException.fromThrowable(ex);
 		}
-	}
-
-	public static boolean isUnredirected(String url) throws CurseException {
-		return isUnredirected(URLUtils.url(url));
-	}
-
-	public static URL redirectIfNecessary(String url) throws CurseException {
-		return redirectIfNecessary(URLUtils.url(url));
 	}
 
 	public static boolean isMainCurseForgeProject(String url) throws CurseException {
@@ -155,28 +148,21 @@ public final class CurseForge {
 	}
 
 	public static boolean isMainCurseForgeProject(URL url) throws CurseException {
-		final String path = url.getPath();
+		return isValidMainCurseForgeProjectURL(url) &&
+				isMainCurseForgeProject(DocumentUtils.get(url));
+	}
 
+	public static boolean isValidMainCurseForgeProjectURL(URL url) throws CurseException {
+		return is(url) && MainCurseForgeSite.PATH_PATTERN.matcher(url.getPath()).matches();
+	}
+
+	public static boolean isMainCurseForgeProject(Element document) {
 		try {
-			if(!is(url) || !MainCurseForgeSite.PATH_PATTERN.matcher(path).matches()) {
-				return false;
-			}
+			DocumentUtils.get(document, "class=overview;index=0");
+			return true;
+		} catch(CurseException ignored) {}
 
-			//Curse Mods project overviews:
-			//<div id="project-overview" class="overview">
-			//The index=0 is to ensure that it has child elements
-			DocumentUtils.get(url, "class=overview;index=0");
-		} catch(IndexOutOfBoundsException | NullPointerException ex) {
-			return false;
-		} catch(CurseException ex) {
-			if(ex.getCause() instanceof FileNotFoundException) {
-				return false;
-			}
-
-			throw ex;
-		}
-
-		return true;
+		return false;
 	}
 
 	public static URL fromMainCurseForgeProject(String url) throws CurseException {
@@ -184,15 +170,21 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(URL url) throws CurseException {
-		CurseException.validateMainCurseForgeProject(url);
+		return fromMainCurseForgeProject(CurseException.validateMainCurseForgeProject(url));
+	}
+
+	public static URL fromMainCurseForgeProject(Element document) throws CurseException {
 		return URLUtils.url(
-				DocumentUtils.getValue(url, "class=curseforge;attr=href;absUrl=href"));
+				DocumentUtils.getValue(document, "class=curseforge;attr=href;absUrl=href"));
 	}
 
 	public static URL toMainCurseForgeProject(URL url) throws CurseException {
-		CurseException.validateProject(url);
+		return toMainCurseForgeProject(CurseException.validateMainCurseForgeProject(url));
+	}
 
-		final Elements viewOnCurse = DocumentUtils.get(url).getElementsByClass("view-on-curse");
+	public static URL toMainCurseForgeProject(Element document) throws CurseException {
+		final Elements viewOnCurse = document.getElementsByClass("view-on-curse");
+
 		if(viewOnCurse.isEmpty()) {
 			return null;
 		}
@@ -206,24 +198,25 @@ public final class CurseForge {
 		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
 	}
 
-	public static URL fromID(int projectID) throws CurseException {
+	public static Map.Entry<URL, Document> fromID(int projectID) throws CurseException {
 		CurseAPI.validateID(projectID);
 
-		URL project = URLUtils.redirect(URL + "projects/" + projectID);
-		if(!is(project) || !PROJECT_PATH_PATTERN.matcher(project.getPath()).matches()) {
+		final URL url = URLUtils.redirect(URL + "projects/" + projectID);
+
+		if(!isValidProjectURL(url)) {
 			throw new InvalidProjectIDException(projectID);
 		}
 
 		try {
-			DocumentUtils.get(project);
+			final Document document = DocumentUtils.get(url);
+			return new AbstractMap.SimpleEntry<>(url, document);
 		} catch(CurseException ex) {
 			if(ex.getCause() instanceof FileNotFoundException) {
 				throw new InvalidProjectIDException(projectID);
 			}
+
 			throw new InvalidProjectIDException(projectID, ex);
 		}
-
-		return project;
 	}
 
 	public static int getFileID(String url) throws CurseException {
@@ -231,7 +224,6 @@ public final class CurseForge {
 	}
 
 	public static int getFileID(URL url) throws CurseException {
-		CurseException.validateFile(url);
 		return Integer.parseInt(ArrayUtils.last(StringUtils.split(url.getPath(), '/')));
 	}
 
@@ -240,27 +232,15 @@ public final class CurseForge {
 	}
 
 	public static int getID(URL url) throws CurseException {
-		//First, check if the path contains the project ID so we don't have to unnecessarily
-		//download the document
+		//If isUnredirected, the last part should be an ID
 		if(isUnredirected(url)) {
-			try {
-				//Example:
-				//https://www.curseforge.com/projects/258205
-				//We're trying to get the "258205"
-				final String[] parts = url.getPath().split("/");
-				return Integer.parseInt(ArrayUtils.last(parts));
-			} catch(NumberFormatException ex) {
-				//isUnredirected should rule this out as it checks if the last part is a number
-				throw CurseException.fromThrowable(ex);
-			}
+			return Integer.parseInt(url.getPath().split("/")[3]);
 		}
 
-		CurseException.validateProject(url);
+		return getID(CurseException.validateProject(url));
+	}
 
-		try {
-			return Integer.parseInt(DocumentUtils.getValue(url, "class=info-data;text"));
-		} catch(NumberFormatException ex) {
-			throw CurseException.fromThrowable(ex);
-		}
+	public static int getID(Element document) throws CurseException {
+		return Integer.parseInt(DocumentUtils.getValue(document, "class=info-data;text"));
 	}
 }

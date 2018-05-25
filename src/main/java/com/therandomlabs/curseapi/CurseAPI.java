@@ -7,7 +7,6 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.project.CurseProject;
-import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.io.NetUtils;
@@ -39,7 +38,7 @@ public final class CurseAPI {
 		try {
 			url = new URL(PLACEHOLDER_THUMBNAIL_URL_STRING);
 		} catch(MalformedURLException ex) {
-			ThrowableHandling.handle(ex);
+			//This will never happen
 		}
 
 		PLACEHOLDER_THUMBNAIL_URL = url;
@@ -134,7 +133,6 @@ public final class CurseAPI {
 
 		CurseMeta.clearCache();
 		CurseProject.clearProjectCache();
-		DocumentUtils.clearCache();
 		URLUtils.clearRedirectionCache();
 		WidgetAPI.clearCache();
 

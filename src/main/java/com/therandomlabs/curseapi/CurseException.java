@@ -5,6 +5,9 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.util.DocumentUtils;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class CurseException extends Exception {
 	private static final long serialVersionUID = -7778596309352978036L;
@@ -17,22 +20,37 @@ public class CurseException extends Exception {
 		super(message, throwable);
 	}
 
-	public static void validateProject(URL url) throws CurseException {
-		if(!CurseForge.isProject(url)) {
-			throw new CurseException("Invalid CurseForge project URL: " + url);
+	public static Document validateProject(URL url) throws CurseException {
+		if(CurseForge.isValidProjectURL(url)) {
+			final Document document = DocumentUtils.get(url);
+			if(CurseForge.isProject(document)) {
+				return document;
+			}
 		}
+
+		throw new CurseException("Invalid CurseForge project URL: " + url);
 	}
 
-	public static void validateMainCurseForgeProject(URL url) throws CurseException {
-		if(!CurseForge.isMainCurseForgeProject(url)) {
-			throw new CurseException("Invalid Main CurseForge project URL: " + url);
+	public static Document validateMainCurseForgeProject(URL url) throws CurseException {
+		if(CurseForge.isValidMainCurseForgeProjectURL(url)) {
+			final Document document = DocumentUtils.get(url);
+			if(CurseForge.isMainCurseForgeProject(document)) {
+				return document;
+			}
 		}
+
+		throw new CurseException("Invalid Main CurseForge project URL: " + url);
 	}
 
-	public static void validateFile(URL url) throws CurseException {
-		if(!CurseForge.isFile(url)) {
-			throw new CurseException("The following URL is not a valid CurseForge file: " + url);
+	public static Document validateFile(URL url) throws CurseException {
+		if(CurseForge.isValidFileURL(url)) {
+			final Document document = DocumentUtils.get(url);
+			if(CurseForge.isFile(document)) {
+				return document;
+			}
 		}
+
+		throw new CurseException("The following URL is not a valid CurseForge file: " + url);
 	}
 
 	public static CurseException fromThrowable(Throwable throwable) {

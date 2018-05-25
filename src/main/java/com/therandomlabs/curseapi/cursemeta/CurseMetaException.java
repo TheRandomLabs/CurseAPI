@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.cursemeta;
 
+import java.net.URL;
 import com.therandomlabs.curseapi.CurseException;
 
 public class CurseMetaException extends CurseException {
@@ -18,7 +19,7 @@ public class CurseMetaException extends CurseException {
 		super(message, throwable);
 	}
 
-	public CurseMetaException(String description, int status, String url) {
+	public CurseMetaException(String description, int status, URL url) {
 		super(String.format("CurseMeta request failed. Description: \"%s\", status: %d, URL: %s",
 				description, status, url));
 	}

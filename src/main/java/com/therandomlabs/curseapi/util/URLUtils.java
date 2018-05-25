@@ -13,9 +13,9 @@ import com.therandomlabs.utils.io.NetUtils;
 public final class URLUtils {
 	//Curse usually redirects to URLs with "cookieTest=" at the end of them.
 	public static final Pattern COOKIE_TEST =
-			Pattern.compile("\\?cookieTest=*(?=&)|\\?cookieTest=[^&]*");
+			Pattern.compile("\\?cookieTest=(.*(?=&)|[^&]*)");
 
-	private static final Map<String, String> redirectionCache = new ConcurrentHashMap<>(50);
+	private static final Map<URL, URL> redirectionCache = new ConcurrentHashMap<>(50);
 
 	private URLUtils() {}
 
@@ -24,23 +24,19 @@ public final class URLUtils {
 	}
 
 	public static URL redirect(URL url) throws CurseException {
-		final String urlString = url.toString();
-
-		if(redirectionCache.containsKey(urlString)) {
-			return URLUtils.url(redirectionCache.get(urlString));
+		if(redirectionCache.containsKey(url)) {
+			return redirectionCache.get(url);
 		}
 
 		try {
-			CurseEventHandling.forEach(eventHandler -> eventHandler.preRedirect(urlString));
+			CurseEventHandling.forEach(eventHandler -> eventHandler.preRedirect(url));
 
 			final URL redirected = stripCookieTestString(
 					NetUtils.getRedirectedURL(url, NetUtils.DEFAULT_REDIRECTIONS, false));
-			final String redirectedString = redirected.toString();
 
-			CurseEventHandling.forEach(eventHandler ->
-					eventHandler.postRedirect(urlString, redirectedString));
+			CurseEventHandling.forEach(eventHandler -> eventHandler.postRedirect(url, redirected));
 
-			redirectionCache.put(urlString, redirectedString);
+			redirectionCache.put(url, redirected);
 
 			return redirected;
 		} catch(IOException ex) {

@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.util.URLUtils;
-import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 /**
  * An {@code enum} containing all of the Main CurseForge sites.
@@ -75,14 +74,13 @@ public enum MainCurseForgeSite {
 		this.pattern = Pattern.compile(patternString);
 
 		URL url = null;
+
 		try {
 			url = new URL(CurseForge.URL + path);
-		} catch(MalformedURLException ex) {
-			getLogger().fatalError("An error occurred while initializing CurseForgeSite. " +
-					"This should not have occurred.");
-			getLogger().printStackTrace(ex);
-			System.exit(1);
+		} catch(MalformedURLException ignored) {
+			//This will never happen
 		}
+
 		this.url = url;
 
 		this.game = game;
