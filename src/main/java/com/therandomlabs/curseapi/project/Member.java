@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.curseforge.CurseForge;
-import com.therandomlabs.curseapi.curseforge.CurseForgeSite;
+import com.therandomlabs.curseapi.CurseForge;
+import com.therandomlabs.curseapi.CurseForgeSite;
 import com.therandomlabs.curseapi.cursemeta.AddOnAuthor;
 
 public final class Member implements Serializable {

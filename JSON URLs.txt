@@ -1,0 +1,5 @@
+https://clientupdate-v6.cursecdn.com/feed/gamelookups/v10/gamelookups.json
+https://clientupdate-v6.cursecdn.com/feed/games/v10/games.json
+https://clientupdate-v6.cursecdn.com/feed/categories/v10/categories.json.bz2
+https://clientupdate-v6.cursecdn.com/feed/gameversions/432/v10/gameversions.json.bz2
+https://clientupdate-v6.cursecdn.com/feed/modloaders/432/v10/modloaders.json.bz2

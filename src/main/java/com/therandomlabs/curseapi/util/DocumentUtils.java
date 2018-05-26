@@ -14,7 +14,7 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
-import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
@@ -206,7 +206,7 @@ public final class DocumentUtils {
 
 			return document;
 		} catch(IOException ex) {
-			throw CurseException.fromThrowable("An error has occurred while reading: " + url, ex);
+			throw CurseException.fromThrowable("An error occurred while reading: " + url, ex);
 		}
 	}
 

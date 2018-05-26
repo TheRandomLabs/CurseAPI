@@ -38,6 +38,8 @@ public enum Game {
 	DARKEST_DUNGEON("Darkest Dungeon", 608),
 	@SerializedName("Surviving Mars")
 	SURVIVING_MARS("Surviving Mars", 61489),
+	@SerializedName("Grand Theft Auto V")
+	GRAND_THEFT_AUTO_V("Grand Theft Auto V", 496),
 	@SerializedName("Stardew Valley")
 	STARDEW_VALLEY("Stardew Valley", 669),
 	@SerializedName("Staxel")
@@ -59,7 +61,7 @@ public enum Game {
 				return game;
 			}
 		}
-		return null;
+		return UNKNOWN;
 	}
 
 	public static Game fromID(int id) {

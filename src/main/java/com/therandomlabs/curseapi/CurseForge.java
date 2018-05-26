@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi.curseforge;
+package com.therandomlabs.curseapi;
 
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -6,9 +6,8 @@ import java.net.URL;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import com.therandomlabs.curseapi.CurseAPI;
-import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
+import com.therandomlabs.curseapi.project.ProjectType;
 import com.therandomlabs.curseapi.util.DocumentUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.collection.ArrayUtils;
@@ -153,7 +152,7 @@ public final class CurseForge {
 	}
 
 	public static boolean isValidMainCurseForgeProjectURL(URL url) throws CurseException {
-		return is(url) && MainCurseForgeSite.PATH_PATTERN.matcher(url.getPath()).matches();
+		return is(url) && ProjectType.MAIN_CURSEFORGE_PATH_PATTERN.matcher(url.getPath()).matches();
 	}
 
 	public static boolean isMainCurseForgeProject(Element document) {

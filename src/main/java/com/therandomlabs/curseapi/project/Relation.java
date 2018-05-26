@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi.project;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.util.MiscUtils;
 import com.therandomlabs.curseapi.util.URLUtils;
 

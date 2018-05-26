@@ -18,7 +18,7 @@ import java.util.Queue;
 import java.util.Set;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.curseforge.CurseForge;
+import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.cursemeta.AddOnFile;
 import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;

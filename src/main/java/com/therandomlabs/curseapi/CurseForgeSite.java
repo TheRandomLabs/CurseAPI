@@ -1,14 +1,11 @@
-package com.therandomlabs.curseapi.curseforge;
+package com.therandomlabs.curseapi;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
-import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.project.ProjectType;
 import com.therandomlabs.curseapi.util.URLUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
-import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 public enum CurseForgeSite {
 	BUKKIT("dev.bukkit.org", Game.MINECRAFT),
@@ -16,7 +13,7 @@ public enum CurseForgeSite {
 	FEED_THE_BEAST("www.feed-the-beast.com", Game.MINECRAFT),
 	WOW_ACE("www.wowace.com", Game.WORLD_OF_WARCRAFT),
 	WORLD_OF_WARCRAFT("wow", Game.WORLD_OF_WARCRAFT),
-	SC_II_MAPSTER("www.sc2mapster.com", Game.STARCRAFT_II),
+	SC2MAPSTER("www.sc2mapster.com", Game.STARCRAFT_II),
 	KERBAL_SPACE_PROGRAM("kerbal", Game.KERBAL_SPACE_PROGRAM),
 	WILDSTAR("wildstar", Game.WILDSTAR),
 	WORLD_OF_TANKS("worldoftanks", Game.WORLD_OF_TANKS),
@@ -27,8 +24,9 @@ public enum CurseForgeSite {
 	THE_SECRET_WORLD("tsw", Game.THE_SECRET_WORLD),
 	THE_ELDER_SCROLLS_ONLINE("teso", Game.THE_ELDER_SCROLLS),
 	SECRET_WORLD_LEGENDS("swl", Game.SECRET_WORLD_LEGENDS),
-	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON),
 	SURVIVING_MARS("survivingmars", Game.SURVIVING_MARS),
+	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON),
+	GRAND_THEFT_AUTO_V("gta", Game.GRAND_THEFT_AUTO_V),
 	STARDEW_VALLEY("stardewvalley", Game.STARDEW_VALLEY),
 	STAXEL("staxel", Game.STAXEL),
 	UNKNOWN("unknown", Game.UNKNOWN);
@@ -60,6 +58,7 @@ public enum CurseForgeSite {
 	private final String host;
 	private final String patternString;
 	private final Pattern pattern;
+	private final String urlString;
 	private final URL url;
 	private final Game game;
 
@@ -68,59 +67,21 @@ public enum CurseForgeSite {
 		host = subdomain == null ? name : name + ".curseforge.com";
 		patternString = "^" + host.replaceAll("\\.", "\\.") + "$";
 		pattern = Pattern.compile(patternString);
+		urlString = "https://" + host + "/";
 
 		URL url = null;
 		try {
-			url = new URL("https://" + host + "/");
-		} catch(MalformedURLException ex) {
-			getLogger().fatalError("An error occurred while initializing CurseForgeSite. " +
-					"This should not have occurred.");
-			getLogger().printStackTrace(ex);
-			System.exit(1);
+			url = new URL(urlString);
+		} catch(MalformedURLException ignored) {
+			//This will never happen
 		}
 		this.url = url;
 
 		this.game = game;
 	}
 
-	/**
-	 * Returns the {@link CurseForgeSite} with the host of the specified URL.
-	 *
-	 * @param url a URL.
-	 * @return the {@link CurseForgeSite} that matches {@code url}'s host,
-	 * or {@code null} if {@code url} isn't a CurseForge site.
-	 */
-	public static CurseForgeSite fromURL(URL url) {
-		for(CurseForgeSite site : values()) {
-			if(site.pattern.matcher(url.getHost()).matches()) {
-				return site;
-			}
-		}
-		return UNKNOWN;
-	}
-
-	public static CurseForgeSite fromString(String string) {
-		for(CurseForgeSite site : values()) {
-			if(site.toString().equalsIgnoreCase(string)) {
-				return site;
-			}
-			if(site.subdomain != null && site.subdomain.equalsIgnoreCase(string)) {
-				return site;
-			}
-			if(site.host.equalsIgnoreCase(string)) {
-				return site;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public String toString() {
-		return urlString();
-	}
-
 	public String urlString() {
-		return url.toString();
+		return urlString;
 	}
 
 	/**
@@ -185,12 +146,46 @@ public enum CurseForgeSite {
 	 * @throws CurseException if something goes wrong.
 	 */
 	public URL getProjectURLBySlug(String slug) throws CurseException {
-		final URL project = URLUtils.url("https://" + host + "/projects/" + slug);
-		CurseException.validateProject(project);
-		return project;
+		return URLUtils.url("https://" + host + "/projects/" + slug);
 	}
 
 	public boolean is(String host) {
 		return pattern.matcher(host).matches();
+	}
+
+	@Override
+	public String toString() {
+		return game.toString();
+	}
+
+	/**
+	 * Returns the {@link CurseForgeSite} with the host of the specified URL.
+	 *
+	 * @param url a URL.
+	 * @return the {@link CurseForgeSite} that matches {@code url}'s host,
+	 * or {@code null} if {@code url} isn't a CurseForge site.
+	 */
+	public static CurseForgeSite fromURL(URL url) {
+		for(CurseForgeSite site : values()) {
+			if(site.pattern.matcher(url.getHost()).matches()) {
+				return site;
+			}
+		}
+		return UNKNOWN;
+	}
+
+	public static CurseForgeSite fromString(String string) {
+		for(CurseForgeSite site : values()) {
+			if(site.toString().equalsIgnoreCase(string)) {
+				return site;
+			}
+			if(site.subdomain != null && site.subdomain.equalsIgnoreCase(string)) {
+				return site;
+			}
+			if(site.host.equalsIgnoreCase(string)) {
+				return site;
+			}
+		}
+		return null;
 	}
 }
