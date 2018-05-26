@@ -31,7 +31,7 @@ import org.jsoup.select.Elements;
 import org.jsoup.select.NodeTraversor;
 import org.jsoup.select.NodeVisitor;
 
-public final class DocumentUtils {
+public final class Documents {
 	@FunctionalInterface
 	public interface DocumentToList<E> {
 		void documentToList(Element document, List<E> list) throws CurseException;
@@ -134,7 +134,7 @@ public final class DocumentUtils {
 		NetUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
 	}
 
-	private DocumentUtils() {}
+	private Documents() {}
 
 	public static String getPlainText(Element element) {
 		return getPlainText(element, -1);
@@ -150,7 +150,7 @@ public final class DocumentUtils {
 	}
 
 	public static String read(String url) throws CurseException, IOException {
-		return read(URLUtils.url(url));
+		return read(URLs.url(url));
 	}
 
 	public static String read(URL url) throws CurseException, IOException {
@@ -165,7 +165,7 @@ public final class DocumentUtils {
 	}
 
 	public static Document getWithCache(String url, Object cacheKey) throws CurseException {
-		return getWithCache(URLUtils.url(url), cacheKey);
+		return getWithCache(URLs.url(url), cacheKey);
 	}
 
 	public static Document get(URL url) throws CurseException {
@@ -272,7 +272,7 @@ public final class DocumentUtils {
 				case "redirectAbsUrl":
 				case "absUrl":
 					final String absUrl = element.absUrl(split[1]);
-					value = split[0].equals("absUrl") ? absUrl : URLUtils.redirect(absUrl)
+					value = split[0].equals("absUrl") ? absUrl : URLs.redirect(absUrl)
 							.toString();
 					break;
 				case "class":
@@ -303,7 +303,7 @@ public final class DocumentUtils {
 	}
 
 	public static boolean isAvailable(String url) throws CurseException {
-		return isAvailable(URLUtils.url(url));
+		return isAvailable(URLs.url(url));
 	}
 
 	public static boolean isAvailable(URL url) throws CurseException {
@@ -412,7 +412,7 @@ public final class DocumentUtils {
 	}
 
 	public static void putTemporaryCache(Object key, Map<URL, WeakReference<Document>> cache) {
-		DocumentUtils.cache.put(key, cache);
+		Documents.cache.put(key, cache);
 	}
 
 	public static void removeTemporaryCache(Object key) {

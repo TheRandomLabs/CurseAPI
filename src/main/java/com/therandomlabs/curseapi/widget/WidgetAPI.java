@@ -9,7 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseUnavailableException;
-import com.therandomlabs.curseapi.util.DocumentUtils;
+import com.therandomlabs.curseapi.util.Documents;
 import com.therandomlabs.utils.wrapper.Wrapper;
 
 /**
@@ -48,7 +48,7 @@ public final class WidgetAPI {
 
 	private static ProjectInfo doGet(String path, String jsonURL) throws CurseException {
 		try {
-			final String json = DocumentUtils.read(jsonURL);
+			final String json = Documents.read(jsonURL);
 
 			if(json == null) {
 				throw new CurseUnavailableException();

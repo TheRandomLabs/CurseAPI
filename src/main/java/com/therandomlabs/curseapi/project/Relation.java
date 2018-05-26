@@ -4,8 +4,8 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
-import com.therandomlabs.curseapi.util.MiscUtils;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.Utils;
+import com.therandomlabs.curseapi.util.URLs;
 
 public final class Relation {
 	private final URL url;
@@ -47,7 +47,7 @@ public final class Relation {
 	}
 
 	public URL authorURL() throws CurseException {
-		return URLUtils.url(authorURLString());
+		return URLs.url(authorURLString());
 	}
 
 	public String authorURLString() {
@@ -63,7 +63,7 @@ public final class Relation {
 	}
 
 	public ZonedDateTime lastUpdateTime() {
-		return MiscUtils.parseTime(lastUpdateTime);
+		return Utils.parseTime(lastUpdateTime);
 	}
 
 	public long lastUpdateTimeSinceEpoch() {

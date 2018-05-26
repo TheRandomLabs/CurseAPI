@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import com.therandomlabs.curseapi.util.DocumentUtils;
+import com.therandomlabs.curseapi.util.Documents;
 import org.jsoup.nodes.Document;
 
 public class CurseException extends Exception {
@@ -20,7 +20,7 @@ public class CurseException extends Exception {
 
 	public static Document validateProject(URL url) throws CurseException {
 		if(CurseForge.isValidProjectURL(url)) {
-			final Document document = DocumentUtils.get(url);
+			final Document document = Documents.get(url);
 			if(CurseForge.isProject(document)) {
 				return document;
 			}
@@ -31,7 +31,7 @@ public class CurseException extends Exception {
 
 	public static Document validateMainCurseForgeProject(URL url) throws CurseException {
 		if(CurseForge.isValidMainCurseForgeProjectURL(url)) {
-			final Document document = DocumentUtils.get(url);
+			final Document document = Documents.get(url);
 			if(CurseForge.isMainCurseForgeProject(document)) {
 				return document;
 			}

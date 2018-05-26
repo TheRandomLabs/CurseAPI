@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import com.therandomlabs.curseapi.Game;
-import com.therandomlabs.curseapi.util.CloneException;
+import com.therandomlabs.curseapi.util.Utils;
 
 public final class ProjectInfo implements Cloneable, Serializable {
 	private static final long serialVersionUID = -7608267242380681184L;
@@ -83,10 +83,10 @@ public final class ProjectInfo implements Cloneable, Serializable {
 			final ProjectInfo info = (ProjectInfo) super.clone();
 
 			info.urls = urls == null ? null : urls.clone();
-			info.files = CloneException.tryClone(files);
-			info.links = CloneException.tryClone(links);
-			info.members = CloneException.tryClone(members);
-			info.versions = CloneException.tryClone(versions);
+			info.files = Utils.tryClone(files);
+			info.links = Utils.tryClone(links);
+			info.members = Utils.tryClone(members);
+			info.versions = Utils.tryClone(versions);
 			info.downloads = downloads.clone();
 			info.categories = categories.clone();
 			info.download = download.clone();

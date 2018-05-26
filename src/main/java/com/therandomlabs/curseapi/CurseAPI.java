@@ -7,7 +7,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.project.CurseProject;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.Assertions;
@@ -133,7 +133,7 @@ public final class CurseAPI {
 
 		CurseMeta.clearCache();
 		CurseProject.clearProjectCache();
-		URLUtils.clearRedirectionCache();
+		URLs.clearRedirectionCache();
 		WidgetAPI.clearCache();
 
 		try {

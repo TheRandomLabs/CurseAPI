@@ -8,8 +8,8 @@ import java.util.Map;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
-import com.therandomlabs.curseapi.util.CloneException;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.URLs;
+import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.utils.collection.TRLList;
 
 public class AddOnFile implements Cloneable, Serializable {
@@ -38,13 +38,13 @@ public class AddOnFile implements Cloneable, Serializable {
 					replace("/media/", "/files/").
 					replaceAll(" ", "+");
 
-			//Because sometimes Curse encodes their + signs, but mostly they don't *facepalm*
+			//Because sometimes Curse encodes their + signs, but mostly they don't
 			//For now, only Better Builder's Wands is known to have this problem
 			if(Id == 2443194) {
 				urlString = urlString.replaceAll("\\+", "%2B");
 			}
 
-			downloadURL = URLUtils.url(urlString);
+			downloadURL = URLs.url(urlString);
 		}
 
 		return downloadURL;
@@ -60,8 +60,8 @@ public class AddOnFile implements Cloneable, Serializable {
 		try {
 			final AddOnFile file = (AddOnFile) super.clone();
 
-			file.Dependencies = CloneException.tryClone(Dependencies);
-			file.Modules = CloneException.tryClone(Modules);
+			file.Dependencies = Utils.tryClone(Dependencies);
+			file.Modules = Utils.tryClone(Modules);
 
 			return file;
 		} catch(CloneNotSupportedException ignored) {}

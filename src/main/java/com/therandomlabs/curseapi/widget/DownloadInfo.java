@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import com.therandomlabs.curseapi.file.ReleaseType;
-import com.therandomlabs.curseapi.util.MiscUtils;
+import com.therandomlabs.curseapi.util.Utils;
 
 public final class DownloadInfo implements Cloneable, Serializable {
 	private static final long serialVersionUID = 3102780175131514338L;
@@ -31,7 +31,7 @@ public final class DownloadInfo implements Cloneable, Serializable {
 		info.versions = fileInfo.versions.clone();
 
 		info.uploaded_at = new DateInfo();
-		info.uploaded_at.date = MiscUtils.parseTime(fileInfo.uploaded_at).
+		info.uploaded_at.date = Utils.parseTime(fileInfo.uploaded_at).
 				format(DateTimeFormatter.ISO_INSTANT);
 		info.uploaded_at.timezone_type = 1;
 		info.uploaded_at.timezone = "+00:00";

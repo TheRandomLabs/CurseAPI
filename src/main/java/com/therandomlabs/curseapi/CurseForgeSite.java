@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.project.ProjectType;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 
 public enum CurseForgeSite {
@@ -145,8 +145,8 @@ public enum CurseForgeSite {
 	 * @return the URL to the project on this site with the specified slug.
 	 * @throws CurseException if something goes wrong.
 	 */
-	public URL getProjectURLBySlug(String slug) throws CurseException {
-		return URLUtils.url("https://" + host + "/projects/" + slug);
+	public URL withSlug(String slug) throws CurseException {
+		return URLs.url("https://" + host + "/projects/" + slug);
 	}
 
 	public boolean is(String host) {

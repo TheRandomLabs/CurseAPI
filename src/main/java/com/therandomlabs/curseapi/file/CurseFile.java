@@ -28,9 +28,9 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.Member;
 import com.therandomlabs.curseapi.project.RelationType;
-import com.therandomlabs.curseapi.util.DocumentUtils;
-import com.therandomlabs.curseapi.util.MiscUtils;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.Documents;
+import com.therandomlabs.curseapi.util.Utils;
+import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
@@ -113,7 +113,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		if(project != null) {
 			urlString = project.urlString() + "/files/" + id;
-			url = URLUtils.url(urlString);
+			url = URLs.url(urlString);
 		}
 
 		this.id = id;
@@ -126,7 +126,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 
 		this.releaseType = releaseType;
-		this.uploadTime = MiscUtils.parseTime(uploadTime);
+		this.uploadTime = Utils.parseTime(uploadTime);
 		this.fileSize = fileSize;
 		this.downloads = downloads;
 		this.dependencyIDs =
@@ -178,7 +178,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 				(status == FileStatus.NORMAL || status == FileStatus.SEMI_NORMAL)) {
 			try {
 				urlString = CurseForge.fromID(projectID) + "/files/" + id;
-				url = URLUtils.url(urlString);
+				url = URLs.url(urlString);
 			} catch(InvalidProjectIDException ex) {
 				hasNoProject = true;
 			}
@@ -414,7 +414,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 					changelogHTML = Jsoup.parse("No changelog provided");
 				}
 
-				changelog = DocumentUtils.getPlainText(changelogHTML);
+				changelog = Documents.getPlainText(changelogHTML);
 			} else {
 				ensureHTMLDataRetrieved();
 			}
@@ -517,14 +517,14 @@ public final class CurseFile implements Comparable<CurseFile> {
 			return;
 		}
 
-		final Element document = DocumentUtils.get(url);
+		final Element document = Documents.get(url);
 
 		changelogHTML = document.getElementsByClass("logbox").get(0);
-		changelog = DocumentUtils.getPlainText(changelogHTML);
+		changelog = Documents.getPlainText(changelogHTML);
 		nameOnDisk =
-				DocumentUtils.getValue(document, "class=details-info;class=info-data;text");
-		md5 = DocumentUtils.getValue(document, "class=md5;text");
-		uploaderUsername = DocumentUtils.getValue(document, "class=user-tag;tag=a=1;text");
+				Documents.getValue(document, "class=details-info;class=info-data;text");
+		md5 = Documents.getValue(document, "class=md5;text");
+		uploaderUsername = Documents.getValue(document, "class=user-tag;tag=a=1;text");
 	}
 
 	private boolean htmlDataRetrieved() {

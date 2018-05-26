@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.ProjectType;
-import com.therandomlabs.curseapi.util.DocumentUtils;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.Documents;
+import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import org.jsoup.nodes.Document;
@@ -31,7 +31,7 @@ public final class CurseForge {
 
 	public static boolean isAvailable() {
 		try {
-			return DocumentUtils.isAvailable(URL);
+			return Documents.isAvailable(URL);
 		} catch(CurseException ex) {
 			getLogger().printStackTrace(ex);
 			getLogger().warning("Assuming CurseForge is not available...");
@@ -41,7 +41,7 @@ public final class CurseForge {
 	}
 
 	public static boolean is(String url) throws CurseException {
-		return url != null && is(URLUtils.url(url));
+		return url != null && is(URLs.url(url));
 	}
 
 	public static boolean is(URL url) {
@@ -53,7 +53,7 @@ public final class CurseForge {
 	}
 
 	public static boolean isUnredirected(String url) throws CurseException {
-		return isUnredirected(URLUtils.url(url));
+		return isUnredirected(URLs.url(url));
 	}
 
 	public static boolean isUnredirected(URL url) {
@@ -61,11 +61,11 @@ public final class CurseForge {
 	}
 
 	public static URL redirectIfNecessary(String url) throws CurseException {
-		return redirectIfNecessary(URLUtils.url(url));
+		return redirectIfNecessary(URLs.url(url));
 	}
 
 	public static URL redirectIfNecessary(URL url) throws CurseException {
-		return isUnredirected(url) ? URLUtils.redirect(url) : url;
+		return isUnredirected(url) ? URLs.redirect(url) : url;
 	}
 
 	public static boolean isProject(String url) throws CurseException {
@@ -90,7 +90,7 @@ public final class CurseForge {
 		}
 
 		url = redirectIfNecessary(url);
-		return isValidProjectURL(url) && isProject(DocumentUtils.get(url));
+		return isValidProjectURL(url) && isProject(Documents.get(url));
 	}
 
 	public static boolean isValidProjectURL(URL url) {
@@ -100,7 +100,7 @@ public final class CurseForge {
 	public static boolean isProject(Element document) {
 		try {
 			//Ensure the project title and child elements exist
-			DocumentUtils.get(document, "class=project-title;index=0");
+			Documents.get(document, "class=project-title;index=0");
 			return true;
 		} catch(CurseException ignored) {}
 
@@ -116,7 +116,7 @@ public final class CurseForge {
 	}
 
 	public static boolean isFile(URL url) throws CurseException {
-		return isValidFileURL(url) && isFile(DocumentUtils.get(url));
+		return isValidFileURL(url) && isFile(Documents.get(url));
 	}
 
 	public static boolean isValidFileURL(URL url) {
@@ -126,7 +126,7 @@ public final class CurseForge {
 	public static boolean isFile(Element document) {
 		try {
 			//Ensure the release type and child elements exist
-			DocumentUtils.get(document, "class=project-file-release-type;index=0");
+			Documents.get(document, "class=project-file-release-type;index=0");
 			return true;
 		} catch(CurseException ignored) {}
 
@@ -143,12 +143,12 @@ public final class CurseForge {
 	}
 
 	public static boolean isMainCurseForgeProject(String url) throws CurseException {
-		return isMainCurseForgeProject(URLUtils.url(url));
+		return isMainCurseForgeProject(URLs.url(url));
 	}
 
 	public static boolean isMainCurseForgeProject(URL url) throws CurseException {
 		return isValidMainCurseForgeProjectURL(url) &&
-				isMainCurseForgeProject(DocumentUtils.get(url));
+				isMainCurseForgeProject(Documents.get(url));
 	}
 
 	public static boolean isValidMainCurseForgeProjectURL(URL url) throws CurseException {
@@ -157,7 +157,7 @@ public final class CurseForge {
 
 	public static boolean isMainCurseForgeProject(Element document) {
 		try {
-			DocumentUtils.get(document, "class=overview;index=0");
+			Documents.get(document, "class=overview;index=0");
 			return true;
 		} catch(CurseException ignored) {}
 
@@ -165,7 +165,7 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(String url) throws CurseException {
-		return fromMainCurseForgeProject(URLUtils.url(url));
+		return fromMainCurseForgeProject(URLs.url(url));
 	}
 
 	public static URL fromMainCurseForgeProject(URL url) throws CurseException {
@@ -173,8 +173,8 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(Element document) throws CurseException {
-		return URLUtils.url(
-				DocumentUtils.getValue(document, "class=curseforge;attr=href;absUrl=href"));
+		return URLs.url(
+				Documents.getValue(document, "class=curseforge;attr=href;absUrl=href"));
 	}
 
 	public static URL toMainCurseForgeProject(URL url) throws CurseException {
@@ -188,26 +188,26 @@ public final class CurseForge {
 			return null;
 		}
 
-		return URLUtils.url(
-				DocumentUtils.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
+		return URLs.url(
+				Documents.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
 	}
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
 		CurseAPI.validateID(projectID, fileID);
-		return URLUtils.redirect(fromID(projectID) + "/files/" + fileID + "/download");
+		return URLs.redirect(fromID(projectID) + "/files/" + fileID + "/download");
 	}
 
 	public static Map.Entry<URL, Document> fromID(int projectID) throws CurseException {
 		CurseAPI.validateID(projectID);
 
-		final URL url = URLUtils.redirect(URL + "projects/" + projectID);
+		final URL url = URLs.redirect(URL + "projects/" + projectID);
 
 		if(!isValidProjectURL(url)) {
 			throw new InvalidProjectIDException(projectID);
 		}
 
 		try {
-			final Document document = DocumentUtils.get(url);
+			final Document document = Documents.get(url);
 			return new AbstractMap.SimpleEntry<>(url, document);
 		} catch(CurseException ex) {
 			if(ex.getCause() instanceof FileNotFoundException) {
@@ -219,7 +219,7 @@ public final class CurseForge {
 	}
 
 	public static int getFileID(String url) throws CurseException {
-		return getFileID(URLUtils.url(url));
+		return getFileID(URLs.url(url));
 	}
 
 	public static int getFileID(URL url) throws CurseException {
@@ -227,7 +227,7 @@ public final class CurseForge {
 	}
 
 	public static int getID(String url) throws CurseException {
-		return getID(URLUtils.url(url));
+		return getID(URLs.url(url));
 	}
 
 	public static int getID(URL url) throws CurseException {
@@ -240,6 +240,6 @@ public final class CurseForge {
 	}
 
 	public static int getID(Element document) throws CurseException {
-		return Integer.parseInt(DocumentUtils.getValue(document, "class=info-data;text"));
+		return Integer.parseInt(Documents.getValue(document, "class=info-data;text"));
 	}
 }

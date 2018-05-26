@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.net.URL;
 import com.therandomlabs.curseapi.project.ProjectStage;
 import com.therandomlabs.curseapi.project.ProjectStatus;
-import com.therandomlabs.curseapi.util.CloneException;
+import com.therandomlabs.curseapi.util.Utils;
 
 public class AddOn implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1888244561525104543L;
@@ -46,11 +46,11 @@ public class AddOn implements Cloneable, Serializable {
 		try {
 			final AddOn addon = (AddOn) super.clone();
 
-			addon.Attachments = CloneException.tryClone(Attachments);
-			addon.Authors = CloneException.tryClone(Authors);
-			addon.Categories = CloneException.tryClone(Categories);
+			addon.Attachments = Utils.tryClone(Attachments);
+			addon.Authors = Utils.tryClone(Authors);
+			addon.Categories = Utils.tryClone(Categories);
 			addon.CategorySection = CategorySection.clone();
-			addon.LatestFiles = CloneException.tryClone(LatestFiles);
+			addon.LatestFiles = Utils.tryClone(LatestFiles);
 
 			return addon;
 		} catch(CloneNotSupportedException ignored) {}

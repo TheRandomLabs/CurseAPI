@@ -10,7 +10,7 @@ import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseEventHandling;
-import com.therandomlabs.curseapi.util.URLUtils;
+import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.wrapper.Wrapper;
@@ -38,7 +38,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getAddOnURL(int projectID) throws CurseException {
-		return URLUtils.url(getAddOnURLString(projectID));
+		return URLs.url(getAddOnURLString(projectID));
 	}
 
 	public static TRLList<AddOnFile> getFiles(int projectID) throws CurseMetaException {
@@ -58,7 +58,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getFilesURL(int projectID) throws CurseException {
-		return URLUtils.url(getFilesURLString(projectID));
+		return URLs.url(getFilesURLString(projectID));
 	}
 
 	public static AddOnFile getFile(int projectID, int fileID) throws CurseMetaException {
@@ -70,7 +70,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
-		return URLUtils.url(getFileURLString(projectID, fileID));
+		return URLs.url(getFileURLString(projectID, fileID));
 	}
 
 	public static Element getDescription(int projectID) throws CurseMetaException {
@@ -82,7 +82,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getDescriptionURL(int projectID) throws CurseException {
-		return URLUtils.url(getDescriptionURLString(projectID));
+		return URLs.url(getDescriptionURLString(projectID));
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
@@ -100,7 +100,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getChangelogURL(int projectID, int fileID) throws CurseException {
-		return URLUtils.url(getChangelogURLString(projectID, fileID));
+		return URLs.url(getChangelogURLString(projectID, fileID));
 	}
 
 	public static void clearCache() {
