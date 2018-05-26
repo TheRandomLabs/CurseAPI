@@ -2,10 +2,7 @@ package com.therandomlabs.curseapi;
 
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.net.UnknownHostException;
-import com.therandomlabs.curseapi.util.Documents;
-import org.jsoup.nodes.Document;
 
 public class CurseException extends Exception {
 	private static final long serialVersionUID = -7778596309352978036L;
@@ -16,28 +13,6 @@ public class CurseException extends Exception {
 
 	protected CurseException(String message, Throwable throwable) {
 		super(message, throwable);
-	}
-
-	public static Document validateProject(URL url) throws CurseException {
-		if(CurseForge.isValidProjectURL(url)) {
-			final Document document = Documents.get(url);
-			if(CurseForge.isProject(document)) {
-				return document;
-			}
-		}
-
-		throw new CurseException("Invalid CurseForge project URL: " + url);
-	}
-
-	public static Document validateMainCurseForgeProject(URL url) throws CurseException {
-		if(CurseForge.isValidMainCurseForgeProjectURL(url)) {
-			final Document document = Documents.get(url);
-			if(CurseForge.isMainCurseForgeProject(document)) {
-				return document;
-			}
-		}
-
-		throw new CurseException("Invalid Main CurseForge project URL: " + url);
 	}
 
 	public static CurseException fromThrowable(Throwable throwable) {

@@ -17,6 +17,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
+import com.therandomlabs.curseapi.InvalidCurseForgeProjectException;
 import com.therandomlabs.curseapi.cursemeta.AddOn;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.file.CurseFile;
@@ -966,7 +967,7 @@ public final class CurseProject {
 		}
 
 		return new CurseProject(new AbstractMap.SimpleEntry<>(url,
-				CurseException.validateProject(url)));
+				InvalidCurseForgeProjectException.validate(url)));
 	}
 
 	public static CurseProject nullProject(int id) {

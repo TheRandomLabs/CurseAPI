@@ -169,7 +169,7 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(URL url) throws CurseException {
-		return fromMainCurseForgeProject(CurseException.validateMainCurseForgeProject(url));
+		return fromMainCurseForgeProject(InvalidMainCurseForgeProjectException.validate(url));
 	}
 
 	public static URL fromMainCurseForgeProject(Element document) throws CurseException {
@@ -178,7 +178,7 @@ public final class CurseForge {
 	}
 
 	public static URL toMainCurseForgeProject(URL url) throws CurseException {
-		return toMainCurseForgeProject(CurseException.validateMainCurseForgeProject(url));
+		return toMainCurseForgeProject(InvalidMainCurseForgeProjectException.validate(url));
 	}
 
 	public static URL toMainCurseForgeProject(Element document) throws CurseException {
@@ -236,7 +236,7 @@ public final class CurseForge {
 			return Integer.parseInt(url.getPath().split("/")[3]);
 		}
 
-		return getID(CurseException.validateProject(url));
+		return getID(InvalidCurseForgeProjectException.validate(url));
 	}
 
 	public static int getID(Element document) throws CurseException {
