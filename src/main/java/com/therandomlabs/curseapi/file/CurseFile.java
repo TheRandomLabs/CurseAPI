@@ -414,7 +414,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 					changelogHTML = Jsoup.parse("No changelog provided");
 				}
 
-				changelog = Documents.getPlainText(changelogHTML);
+				getChangelogString();
 			} else {
 				ensureHTMLDataRetrieved();
 			}
@@ -520,7 +520,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		final Element document = Documents.get(url);
 
 		changelogHTML = document.getElementsByClass("logbox").get(0);
-		changelog = Documents.getPlainText(changelogHTML);
+		getChangelogString();
 		nameOnDisk =
 				Documents.getValue(document, "class=details-info;class=info-data;text");
 		md5 = Documents.getValue(document, "class=md5;text");
@@ -529,6 +529,14 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private boolean htmlDataRetrieved() {
 		return nameOnDisk != null;
+	}
+
+	private void getChangelogString() {
+		changelog = Documents.getPlainText(changelogHTML);
+
+		if(StringUtils.lastChar(changelog) == '\n') {
+			changelog = StringUtils.removeLastChar(changelog);
+		}
 	}
 
 	public static CurseFileList filesFromProjectID(int projectID) throws CurseException {

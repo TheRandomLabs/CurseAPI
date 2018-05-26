@@ -5,7 +5,6 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,8 +12,8 @@ import java.util.function.Predicate;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseEventHandling;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseUnavailableException;
 import com.therandomlabs.curseapi.CurseForge;
+import com.therandomlabs.curseapi.CurseUnavailableException;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
@@ -339,7 +338,7 @@ public final class Documents {
 
 		final String url = baseURL;
 
-		final Map<Integer, List<E>> allData = new HashMap<>();
+		final Map<Integer, List<E>> allData = new ConcurrentHashMap<>();
 
 		final BooleanWrapper stopped = new BooleanWrapper();
 
