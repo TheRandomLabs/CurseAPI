@@ -171,6 +171,7 @@ public enum CurseForgeSite {
 				return site;
 			}
 		}
+
 		return UNKNOWN;
 	}
 
@@ -179,13 +180,16 @@ public enum CurseForgeSite {
 			if(site.toString().equalsIgnoreCase(string)) {
 				return site;
 			}
+
 			if(site.subdomain != null && site.subdomain.equalsIgnoreCase(string)) {
 				return site;
 			}
+
 			if(site.host.equalsIgnoreCase(string)) {
 				return site;
 			}
 		}
-		return null;
+
+		return UNKNOWN;
 	}
 }
