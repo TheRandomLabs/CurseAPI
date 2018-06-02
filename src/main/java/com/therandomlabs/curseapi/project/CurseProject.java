@@ -898,11 +898,22 @@ public final class CurseProject {
 	}
 
 	public static CurseProject fromSlug(String site, String slug) throws CurseException {
-		return fromSlug(CurseForgeSite.fromString(site), slug);
+		return fromSlug(site, slug, false);
 	}
 
-	public static CurseProject fromSlug(CurseForgeSite site, String slug) throws CurseException {
-		return fromURL(site.url() + "projects/" + slug, true);
+	public static CurseProject fromSlug(String site, String slug, boolean followRedirections)
+			throws CurseException {
+		return fromSlug(CurseForgeSite.fromString(site), slug, followRedirections);
+	}
+
+	public static CurseProject fromSlug(CurseForgeSite site, String slug)
+			throws CurseException {
+		return fromSlug(site, slug, false);
+	}
+
+	public static CurseProject fromSlug(CurseForgeSite site, String slug,
+			boolean followRedirections) throws CurseException {
+		return fromURL(site.url() + "projects/" + slug, followRedirections);
 	}
 
 	public static CurseProject fromURL(String url) throws CurseException {
