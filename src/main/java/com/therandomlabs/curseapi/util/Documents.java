@@ -149,7 +149,7 @@ public final class Documents {
 	}
 
 	public static String read(String url) throws CurseException, IOException {
-		return read(URLs.url(url));
+		return read(URLs.of(url));
 	}
 
 	public static String read(URL url) throws CurseException, IOException {
@@ -164,7 +164,7 @@ public final class Documents {
 	}
 
 	public static Document getWithCache(String url, Object cacheKey) throws CurseException {
-		return getWithCache(URLs.url(url), cacheKey);
+		return getWithCache(URLs.of(url), cacheKey);
 	}
 
 	public static Document get(URL url) throws CurseException {
@@ -302,7 +302,7 @@ public final class Documents {
 	}
 
 	public static boolean isAvailable(String url) throws CurseException {
-		return isAvailable(URLs.url(url));
+		return isAvailable(URLs.of(url));
 	}
 
 	public static boolean isAvailable(URL url) throws CurseException {

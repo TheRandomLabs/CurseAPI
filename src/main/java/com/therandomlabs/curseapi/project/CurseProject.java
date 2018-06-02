@@ -91,9 +91,6 @@ public final class CurseProject {
 	//Incomplete list of files used as a cache
 	private final CurseFileList incompleteFiles = new CurseFileList();
 
-	private boolean avoidWidgetAPI = CurseAPI.isAvoidingWidgetAPI();
-	private boolean avoidCurseMeta = CurseAPI.isAvoidingCurseMeta();
-
 	private CurseProject() {
 		curseMeta = false;
 		site = CurseForgeSite.UNKNOWN;
@@ -129,20 +126,6 @@ public final class CurseProject {
 
 		projects.put(id, this);
 	}
-
-	/* CurseMeta constructor - not needed ATM, but might be in the future
-	private CurseProject(int id, boolean curseMeta) throws CurseException {
-		this.curseMeta = curseMeta;
-		avoidWidgetAPI = true;
-		avoidCurseMeta = false;
-
-		this.id = id;
-
-		reload();
-
-		projects.put(id, this);
-	}
-	*/
 
 	public boolean isNull() {
 		return site == CurseForgeSite.UNKNOWN && game == Game.UNKNOWN &&
@@ -295,7 +278,7 @@ public final class CurseProject {
 	}
 
 	public Element descriptionHTML() throws CurseException {
-		if(curseMeta && descriptionHTML == null) {
+		if(descriptionHTML == null) {
 			descriptionHTML = CurseMeta.getDescription(id);
 			description = Documents.getPlainText(descriptionHTML);
 		}
@@ -307,32 +290,12 @@ public final class CurseProject {
 		return categories;
 	}
 
-	public boolean isAvoidingWidgetAPI() {
-		return avoidWidgetAPI;
-	}
-
-	public void avoidWidgetAPI(boolean flag) {
-		if(!curseMeta) {
-			avoidWidgetAPI = flag;
-		}
-	}
-
-	public boolean isAvoidingCurseMeta() {
-		return avoidCurseMeta;
-	}
-
-	public void avoidCurseMeta(boolean flag) {
-		if(!curseMeta) {
-			avoidCurseMeta = flag;
-		}
-	}
-
 	public CurseFile latestFile() throws CurseException {
 		if(!incompleteFiles.isEmpty()) {
 			return incompleteFiles.latest();
 		}
 
-		if(avoidWidgetAPI && avoidCurseMeta) {
+		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
 			final List<CurseFile> files = new TRLList<>();
 
 			getFiles(Documents.get(url + "/files?page=1"), files);
@@ -354,7 +317,7 @@ public final class CurseProject {
 			}
 		}
 
-		if(avoidWidgetAPI && avoidCurseMeta) {
+		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
 			final Wrapper<CurseFile> latestFile = new Wrapper<>();
 
 			Documents.putTemporaryCache(this, documentCache);
@@ -439,7 +402,7 @@ public final class CurseProject {
 			return files;
 		}
 
-		if(avoidWidgetAPI && avoidCurseMeta) {
+		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
 			Documents.putTemporaryCache(this, documentCache);
 			final List<CurseFile> files = Documents.iteratePages(
 					this,
@@ -471,8 +434,8 @@ public final class CurseProject {
 			}
 		}
 
-		if(avoidCurseMeta) {
-			if(avoidWidgetAPI) {
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			if(shouldAvoidWidgetAPI()) {
 				final Wrapper<CurseFile> fileWithID = new Wrapper<>();
 
 				Documents.putTemporaryCache(this, documentCache);
@@ -510,8 +473,8 @@ public final class CurseProject {
 	}
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
-		if(avoidCurseMeta) {
-			if(avoidWidgetAPI) {
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			if(shouldAvoidWidgetAPI()) {
 				Documents.putTemporaryCache(this, documentCache);
 				incompleteFiles.addAll(Documents.iteratePages(
 						this,
@@ -603,7 +566,7 @@ public final class CurseProject {
 					Documents.getValue(relation, "class=name-wrapper;tag=a;absUrl=href");
 			//Some elements are empty for some reason
 			if(!projectURL.isEmpty()) {
-				relations.add(getRelationInfo(relation, URLs.url(projectURL), relationType));
+				relations.add(getRelationInfo(relation, URLs.of(projectURL), relationType));
 			}
 		}
 	}
@@ -630,9 +593,9 @@ public final class CurseProject {
 		final TRLList<Category> categories = new TRLList<>();
 		for(Element category : categoryElements) {
 			final String name = Documents.getValue(category, "tag=a;attr=title");
-			final URL url = URLs.url(Documents.getValue(category, "tag=a;absUrl=href"));
+			final URL url = URLs.of(Documents.getValue(category, "tag=a;absUrl=href"));
 			final URL thumbnailURL =
-					URLs.url(Documents.getValue(category, "tag=img;absUrl=src"));
+					URLs.of(Documents.getValue(category, "tag=img;absUrl=src"));
 
 			categories.add(new Category(name, url, thumbnailURL));
 		}
@@ -661,7 +624,7 @@ public final class CurseProject {
 
 		site = CurseForgeSite.fromURL(url);
 
-		if(avoidWidgetAPI || !useWidgetAPI || mainCurseForgeURL == null) {
+		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
 			id = CurseForge.getID(document);
 			title = Documents.getValue(document, "class=project-title;class=overflow-tip;text");
 			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
@@ -672,7 +635,7 @@ public final class CurseProject {
 			try {
 				thumbnailURLString =
 						Documents.getValue(document, "class=e-avatar64;tag=img;absUrl=src");
-				thumbnailURL = URLs.url(thumbnailURLString);
+				thumbnailURL = URLs.of(thumbnailURLString);
 			} catch(CurseException ex) {
 				thumbnailURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
 				thumbnailURL = CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
@@ -696,11 +659,10 @@ public final class CurseProject {
 						Documents.getValue(document, "class=icon-donate;attr=href;absUrl=href");
 			} catch(CurseException ignored) {}
 
-			donateURL = donateURLString == null ? null : URLs.url(donateURLString);
+			donateURL = donateURLString == null ? null : URLs.of(donateURLString);
 			licenseName = Documents.getValue(document, "class=info-data=4;tag=a;text");
 		} else {
 			if(mainCurseForgeURL == null) {
-				avoidWidgetAPI = true;
 				reload(false);
 				return;
 			}
@@ -711,7 +673,6 @@ public final class CurseProject {
 				info = WidgetAPI.get(mainCurseForgeURL.getPath());
 			} catch(CurseException ex) {
 				ThrowableHandling.handleWithoutExit(ex);
-				avoidWidgetAPI = true;
 				reload(false);
 				return;
 			}
@@ -741,11 +702,11 @@ public final class CurseProject {
 		description = Documents.getPlainText(descriptionHTML);
 		categories = getCategories(
 				document.getElementsByClass("project-categories").get(0).
-				getElementsByTag("li")
+						getElementsByTag("li")
 		).toImmutableList();
 		avatarURLString = Documents.getValue(document, "class=e-avatar64;absUrl=href");
 		avatarURL = avatarURLString.isEmpty() ?
-				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLs.url(avatarURLString);
+				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLs.of(avatarURLString);
 
 		//So it can be garbage collected
 		document = null;
@@ -778,8 +739,8 @@ public final class CurseProject {
 			return;
 		}
 
-		if(avoidCurseMeta) {
-			if(avoidWidgetAPI) {
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			if(shouldAvoidWidgetAPI()) {
 				Documents.putTemporaryCache(this, documentCache);
 				this.files = new CurseFileList(Documents.iteratePages(
 						this,
@@ -814,7 +775,7 @@ public final class CurseProject {
 				final int id = Integer.parseInt(ArrayUtils.last(Documents.getValue(
 						file, "class=twitch-link;attr=href").split("/")));
 
-				final URL url = URLs.url(Documents.getValue(
+				final URL url = URLs.of(Documents.getValue(
 						file, "class=twitch-link;attr=href;absUrl=href"));
 
 				final String name = Documents.getValue(file, "class=twitch-link;text");
@@ -852,6 +813,10 @@ public final class CurseProject {
 		} catch(NullPointerException | NumberFormatException ex) {
 			throw CurseException.fromThrowable(ex);
 		}
+	}
+
+	private boolean shouldAvoidWidgetAPI() {
+		return !CurseAPI.isWidgetAPIEnabled() || mainCurseForgeURL == null;
 	}
 
 	public void clearAvatarCache() {
@@ -921,13 +886,7 @@ public final class CurseProject {
 
 		try {
 			return new CurseProject(id);
-		} catch(InvalidProjectIDException ignored) {
-			/*try {
-				return new CurseProject(id, true);
-			} catch(CurseMetaException ex2) {
-				throw ex;
-			}*/
-		}
+		} catch(InvalidProjectIDException ignored) {}
 
 		project = nullProject(id);
 		projects.put(id, project);
@@ -952,7 +911,7 @@ public final class CurseProject {
 
 	public static CurseProject fromURL(String url, boolean followRedirections)
 			throws CurseException {
-		return fromURL(URLs.url(url), followRedirections);
+		return fromURL(URLs.of(url), followRedirections);
 	}
 
 	public static CurseProject fromURL(URL url, boolean followRedirections) throws CurseException {

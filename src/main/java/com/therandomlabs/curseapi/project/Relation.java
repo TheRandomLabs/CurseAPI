@@ -47,7 +47,7 @@ public final class Relation {
 	}
 
 	public URL authorURL() throws CurseException {
-		return URLs.url(authorURLString());
+		return URLs.of(authorURLString());
 	}
 
 	public String authorURLString() {

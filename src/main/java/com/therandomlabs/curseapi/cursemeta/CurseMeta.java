@@ -18,7 +18,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 public final class CurseMeta {
-	public static final String BASE_URL = "https://cursemeta.dries007.net/api/v2/direct/";
+	public static final String URL = "https://cursemeta.dries007.net/";
+	public static final String API_STATUS = URL + "api";
+	public static final String BASE_URL = URL + "api/v2/direct/";
+
 	public static final String GET_ADDON = "GetAddOn/";
 	public static final String GET_ALL_FILES_FOR_ADDON = "GetAllFilesForAddOn/";
 	public static final String GET_ADDON_FILE = "GetAddOnFile/";
@@ -29,6 +32,20 @@ public final class CurseMeta {
 
 	private CurseMeta() {}
 
+	public static boolean isAvailable() {
+		try {
+			final CurseMetaStatus status = get(API_STATUS, CurseMetaStatus.class, true);
+
+			if(status == null) {
+				return false;
+			}
+
+			return status.status.equals("OK") && status.apis.length > 1;
+		} catch(CurseMetaException ignored) {}
+
+		return false;
+	}
+
 	public static AddOn getAddOn(int projectID) throws CurseMetaException {
 		return get(GET_ADDON + projectID, AddOn.class, false);
 	}
@@ -38,7 +55,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getAddOnURL(int projectID) throws CurseException {
-		return URLs.url(getAddOnURLString(projectID));
+		return URLs.of(getAddOnURLString(projectID));
 	}
 
 	public static TRLList<AddOnFile> getFiles(int projectID) throws CurseMetaException {
@@ -58,7 +75,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getFilesURL(int projectID) throws CurseException {
-		return URLs.url(getFilesURLString(projectID));
+		return URLs.of(getFilesURLString(projectID));
 	}
 
 	public static AddOnFile getFile(int projectID, int fileID) throws CurseMetaException {
@@ -70,7 +87,7 @@ public final class CurseMeta {
 	}
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
-		return URLs.url(getFileURLString(projectID, fileID));
+		return URLs.of(getFileURLString(projectID, fileID));
 	}
 
 	public static Element getDescription(int projectID) throws CurseMetaException {
@@ -81,8 +98,12 @@ public final class CurseMeta {
 		return BASE_URL + GET_ADDON_DESCRIPTION + projectID;
 	}
 
-	public static URL getDescriptionURL(int projectID) throws CurseException {
-		return URLs.url(getDescriptionURLString(projectID));
+	public static URL getDescriptionURL(int projectID) {
+		try {
+			return URLs.of(getDescriptionURLString(projectID));
+		} catch(CurseException ignored) {}
+
+		return null;
 	}
 
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
@@ -99,8 +120,12 @@ public final class CurseMeta {
 		return BASE_URL + GET_CHANGELOG + projectID + "/" + fileID;
 	}
 
-	public static URL getChangelogURL(int projectID, int fileID) throws CurseException {
-		return URLs.url(getChangelogURLString(projectID, fileID));
+	public static URL getChangelogURL(int projectID, int fileID) {
+		try {
+			return URLs.of(getChangelogURLString(projectID, fileID));
+		} catch(CurseException ignored) {}
+
+		return null;
 	}
 
 	public static void clearCache() {

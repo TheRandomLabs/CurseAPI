@@ -11,16 +11,14 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.utils.io.NetUtils;
 
 public final class URLs {
-	//Curse usually redirects to URLs with "cookieTest=" at the end of them.
-	public static final Pattern COOKIE_TEST =
-			Pattern.compile("\\?cookieTest=(.*(?=&)|[^&]*)");
+	public static final Pattern COOKIE_TEST = Pattern.compile("\\?cookieTest=(.*(?=&)|[^&]*)");
 
 	private static final Map<URL, URL> redirectionCache = new ConcurrentHashMap<>(50);
 
 	private URLs() {}
 
 	public static URL redirect(String url) throws CurseException {
-		return redirect(URLs.url(url));
+		return redirect(of(url));
 	}
 
 	public static URL redirect(URL url) throws CurseException {
@@ -44,7 +42,7 @@ public final class URLs {
 		}
 	}
 
-	public static URL url(String url) throws CurseException {
+	public static URL of(String url) throws CurseException {
 		try {
 			return new URL(url);
 		} catch(MalformedURLException ex) {
@@ -53,7 +51,7 @@ public final class URLs {
 	}
 
 	public static URL stripCookieTestString(URL url) throws CurseException {
-		return URLs.url(stripCookieTestString(url.toString()));
+		return of(stripCookieTestString(url.toString()));
 	}
 
 	public static String stripCookieTestString(String string) {

@@ -38,13 +38,13 @@ public class AddOnFile implements Cloneable, Serializable {
 					replace("/media/", "/files/").
 					replaceAll(" ", "+");
 
-			//Because sometimes Curse encodes their + signs, but mostly they don't
-			//For now, only Better Builder's Wands is known to have this problem
+			//Because apparently Curse only sometimes encodes their + symbols
+			//For now, only Better Builder's Wands seems to have this problem
 			if(Id == 2443194) {
 				urlString = urlString.replaceAll("\\+", "%2B");
 			}
 
-			downloadURL = URLs.url(urlString);
+			downloadURL = URLs.of(urlString);
 		}
 
 		return downloadURL;

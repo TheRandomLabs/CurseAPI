@@ -27,8 +27,6 @@ public class CurseException extends Exception {
 
 		if(message == null) {
 			message = "";
-		} else {
-			message += "Additional information: ";
 		}
 
 		if(throwable instanceof MalformedURLException) {

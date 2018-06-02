@@ -146,7 +146,7 @@ public enum CurseForgeSite {
 	 * @throws CurseException if something goes wrong.
 	 */
 	public URL withSlug(String slug) throws CurseException {
-		return URLs.url("https://" + host + "/projects/" + slug);
+		return URLs.of("https://" + host + "/projects/" + slug);
 	}
 
 	public boolean is(String host) {
@@ -177,7 +177,7 @@ public enum CurseForgeSite {
 
 	public static CurseForgeSite fromString(String string) {
 		for(CurseForgeSite site : values()) {
-			if(site.toString().equalsIgnoreCase(string)) {
+			if(site.urlString.equalsIgnoreCase(string)) {
 				return site;
 			}
 

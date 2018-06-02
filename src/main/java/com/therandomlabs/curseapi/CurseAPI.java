@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.URLs;
-import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.runnable.RunnableWithThrowable;
@@ -29,8 +28,8 @@ public final class CurseAPI {
 	private static int maxRetries = 5;
 	private static int retryTime = 5;
 
-	private static boolean avoidWidgetAPI = true;
-	private static boolean avoidCurseMeta;
+	private static boolean widgetAPI;
+	private static boolean curseMeta = true;
 
 	static {
 		URL url = null;
@@ -80,20 +79,26 @@ public final class CurseAPI {
 		retryTime = time;
 	}
 
-	public static boolean isAvoidingWidgetAPI() {
-		return avoidWidgetAPI;
+	public static boolean isWidgetAPIEnabled() {
+		return widgetAPI;
 	}
 
-	public static void avoidWidgetAPI(boolean flag) {
-		avoidWidgetAPI = flag;
+	public static void setWidgetAPIEnabled(boolean flag) {
+		widgetAPI = flag;
 	}
 
-	public static boolean isAvoidingCurseMeta() {
-		return avoidCurseMeta;
+	public static boolean isCurseMetaEnabled() {
+		return curseMeta;
 	}
 
-	public static void avoidCurseMeta(boolean flag) {
-		avoidCurseMeta = flag;
+	public static void setCurseMetaEnabled(boolean flag) {
+		curseMeta = flag;
+	}
+
+	public static void disableCurseMetaIfNecessary() {
+		if(!CurseMeta.isAvailable()) {
+			curseMeta = false;
+		}
 	}
 
 	public static boolean isValidID(int id) {
@@ -134,15 +139,5 @@ public final class CurseAPI {
 		CurseMeta.clearCache();
 		CurseProject.clearProjectCache();
 		URLs.clearRedirectionCache();
-		WidgetAPI.clearCache();
-
-		try {
-			Class.forName("com.therandomlabs.curseapi.minecraft.CurseAPIMinecraft").
-					getDeclaredMethod("clearAllCache").invoke(null);
-		} catch(Exception ex) {
-			if(!(ex instanceof ClassNotFoundException)) {
-				ThrowableHandling.handle(ex);
-			}
-		}
 	}
 }

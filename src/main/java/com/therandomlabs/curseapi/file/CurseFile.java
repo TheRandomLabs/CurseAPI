@@ -41,9 +41,13 @@ import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 //TODO Additional Files
 public final class CurseFile implements Comparable<CurseFile> {
+	private static final String NO_CHANGELOG_PROVIDED_STRING = "No changelog provided";
+	private static final Element NO_CHANGELOG_PROVIDED = Jsoup.parse(NO_CHANGELOG_PROVIDED_STRING);
+
 	private final int projectID;
 	private CurseProject project;
 	private FileStatus status;
@@ -61,8 +65,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private String md5;
 	private Member uploader;
 	private String uploaderUsername;
-	private final Map<RelationType, TRLList<Integer>> dependencyIDs;
-	private Map<RelationType, TRLList<CurseProject>> dependencies;
+	private Map<RelationType, TRLList<Integer>> dependencyIDs;
+	private Map<RelationType, TRLList<CurseProject>> dependencies = new HashMap<>();
 	private final TRLList<String> gameVersions;
 	private final TRLList<MinecraftVersion> minecraftVersions;
 	private Element changelogHTML;
@@ -87,8 +91,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.dependencies = new HashMap<>();
 		this.gameVersions = new TRLList<>("Unknown");
 		this.minecraftVersions = new TRLList<>();
-		changelogHTML = Jsoup.parse("No changelog provided");
-		changelog = "No changelog provided";
+		changelogHTML = NO_CHANGELOG_PROVIDED;
+		changelog = NO_CHANGELOG_PROVIDED_STRING;
 		hasNoProject = true;
 	}
 
@@ -113,7 +117,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		if(project != null) {
 			urlString = project.urlString() + "/files/" + id;
-			url = URLs.url(urlString);
+			url = URLs.of(urlString);
 		}
 
 		this.id = id;
@@ -129,9 +133,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.uploadTime = Utils.parseTime(uploadTime);
 		this.fileSize = fileSize;
 		this.downloads = downloads;
-		this.dependencyIDs =
-				dependencyIDs == null ? getDependencies(url) : dependencyIDs;
-		this.dependencies = new HashMap<>(dependencyIDs == null ? 1 : dependencyIDs.size());
+		this.dependencyIDs = dependencyIDs;
 
 		final TRLList<String> gameVersionList = new TRLList<>();
 
@@ -178,7 +180,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 				(status == FileStatus.NORMAL || status == FileStatus.SEMI_NORMAL)) {
 			try {
 				urlString = CurseForge.fromID(projectID) + "/files/" + id;
-				url = URLs.url(urlString);
+				url = URLs.of(urlString);
 			} catch(InvalidProjectIDException ex) {
 				hasNoProject = true;
 			}
@@ -210,11 +212,19 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return releaseType;
 	}
 
-	public TRLList<Integer> dependencyIDs() {
+	public TRLList<Integer> dependencyIDs() throws CurseException {
 		return dependencyIDs(RelationType.ALL_TYPES);
 	}
 
-	public TRLList<Integer> dependencyIDs(RelationType relationType) {
+	public TRLList<Integer> dependencyIDs(RelationType relationType) throws CurseException {
+		if(dependencyIDs == null) {
+			ensureHTMLDataRetrieved();
+
+			if(dependencyIDs == null) {
+				return new TRLList<>();
+			}
+		}
+
 		final TRLList<Integer> ids = dependencyIDs.get(relationType);
 		return ids == null ? ImmutableList.empty() : ids;
 	}
@@ -327,6 +337,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 			while(!toCheck.isEmpty()) {
 				final CurseFile file = toCheck.poll();
 
+				if(file == null) {
+					continue;
+				}
+
 				for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
 					toCheck.add(getFile(files, id, minimumStabililty, gameVersions));
 				}
@@ -337,6 +351,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			}
 		});
 
+		dependencies.remove(null);
 		return new TRLList<>(dependencies);
 	}
 
@@ -401,22 +416,35 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public String changelog() throws CurseException {
-		changelogHTML();
+		return changelog(false);
+	}
+
+	public String changelog(boolean preferCurseMeta) throws CurseException {
+		changelogHTML(preferCurseMeta);
 		return changelog;
 	}
 
 	public Element changelogHTML() throws CurseException {
+		return changelogHTML(false);
+	}
+
+	public Element changelogHTML(boolean preferCurseMeta) throws CurseException {
 		if(changelogHTML == null) {
-			if(url() == null || (!htmlDataRetrieved() && !CurseAPI.isAvoidingCurseMeta())) {
+			if(preferCurseMeta) {
 				try {
 					changelogHTML = CurseMeta.getChangelog(projectID, id);
+					getChangelogString();
 				} catch(CurseMetaException ex) {
-					changelogHTML = Jsoup.parse("No changelog provided");
+					changelogHTML = NO_CHANGELOG_PROVIDED;
+					changelog = NO_CHANGELOG_PROVIDED_STRING;
 				}
-
-				getChangelogString();
 			} else {
 				ensureHTMLDataRetrieved();
+
+				if(changelogHTML == null) {
+					changelogHTML = NO_CHANGELOG_PROVIDED;
+					changelog = NO_CHANGELOG_PROVIDED_STRING;
+				}
 			}
 		}
 
@@ -490,13 +518,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	@Override
 	public int hashCode() {
-		return id();
+		return id;
 	}
 
 	@Override
 	public boolean equals(Object anotherObject) {
 		if(anotherObject instanceof CurseFile) {
-			return ((CurseFile) anotherObject).id() == id();
+			return ((CurseFile) anotherObject).id == id;
 		}
 
 		return false;
@@ -504,7 +532,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	@Override
 	public String toString() {
-		return "[id=" + id() + ",name=\"" + name() + "\"]";
+		return "[id=" + id + ",name=\"" + name + "\"]";
 	}
 
 	@Override
@@ -525,6 +553,46 @@ public final class CurseFile implements Comparable<CurseFile> {
 				Documents.getValue(document, "class=details-info;class=info-data;text");
 		md5 = Documents.getValue(document, "class=md5;text");
 		uploaderUsername = Documents.getValue(document, "class=user-tag;tag=a=1;text");
+
+		if(dependencyIDs == null) {
+			try {
+				final Elements relatedProjects =
+						document.getElementsByClass("details-related-projects");
+
+				if(relatedProjects.isEmpty()) {
+					return;
+				}
+
+				final Elements elements = relatedProjects.get(0).getAllElements();
+
+				RelationType type = null;
+				dependencyIDs = new HashMap<>();
+
+				for(Element element : elements) {
+					if("h5".equals(element.tagName())) {
+						type = RelationType.fromName(element.text());
+						continue;
+					}
+
+					if(!"ul".equals(element.tagName())) {
+						continue;
+					}
+
+					final Elements related = element.getElementsByAttribute("href");
+					final TRLList<Integer> ids = new TRLList<>();
+
+					for(Element element2 : related) {
+						ids.add(Integer.parseInt(element2.attr("href").split("/")[2]));
+					}
+
+					dependencyIDs.put(type, ids);
+				}
+			} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
+				dependencyIDs = null;
+				throw CurseException.fromThrowable("Error while retrieving dependency IDs for " +
+						"file with ID: " + id, ex);
+			}
+		}
 	}
 
 	private boolean htmlDataRetrieved() {
@@ -540,7 +608,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public static CurseFileList filesFromProjectID(int projectID) throws CurseException {
-		if(CurseAPI.isAvoidingCurseMeta()) {
+		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).files();
 		}
 
@@ -556,7 +624,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public static CurseFile fromID(int projectID, int fileID) throws CurseException {
-		if(CurseAPI.isAvoidingCurseMeta()) {
+		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).fileWithID(fileID);
 		}
 
@@ -588,12 +656,5 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 
 		return ids;
-	}
-
-	@SuppressWarnings("all")
-	private static Map<RelationType, TRLList<Integer>> getDependencies(URL url)
-			throws CurseException {
-		//TODO parse from HTML - get dependencies and dependencyIDs
-		return Collections.emptyMap();
 	}
 }

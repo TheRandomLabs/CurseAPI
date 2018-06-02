@@ -41,7 +41,7 @@ public final class CurseForge {
 	}
 
 	public static boolean is(String url) throws CurseException {
-		return url != null && is(URLs.url(url));
+		return url != null && is(URLs.of(url));
 	}
 
 	public static boolean is(URL url) {
@@ -53,7 +53,7 @@ public final class CurseForge {
 	}
 
 	public static boolean isUnredirected(String url) throws CurseException {
-		return isUnredirected(URLs.url(url));
+		return isUnredirected(URLs.of(url));
 	}
 
 	public static boolean isUnredirected(URL url) {
@@ -61,7 +61,7 @@ public final class CurseForge {
 	}
 
 	public static URL redirectIfNecessary(String url) throws CurseException {
-		return redirectIfNecessary(URLs.url(url));
+		return redirectIfNecessary(URLs.of(url));
 	}
 
 	public static URL redirectIfNecessary(URL url) throws CurseException {
@@ -143,7 +143,7 @@ public final class CurseForge {
 	}
 
 	public static boolean isMainCurseForgeProject(String url) throws CurseException {
-		return isMainCurseForgeProject(URLs.url(url));
+		return isMainCurseForgeProject(URLs.of(url));
 	}
 
 	public static boolean isMainCurseForgeProject(URL url) throws CurseException {
@@ -165,7 +165,7 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(String url) throws CurseException {
-		return fromMainCurseForgeProject(URLs.url(url));
+		return fromMainCurseForgeProject(URLs.of(url));
 	}
 
 	public static URL fromMainCurseForgeProject(URL url) throws CurseException {
@@ -173,7 +173,7 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(Element document) throws CurseException {
-		return URLs.url(
+		return URLs.of(
 				Documents.getValue(document, "class=curseforge;attr=href;absUrl=href"));
 	}
 
@@ -188,7 +188,7 @@ public final class CurseForge {
 			return null;
 		}
 
-		return URLs.url(
+		return URLs.of(
 				Documents.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
 	}
 
@@ -219,7 +219,7 @@ public final class CurseForge {
 	}
 
 	public static int getFileID(String url) throws CurseException {
-		return getFileID(URLs.url(url));
+		return getFileID(URLs.of(url));
 	}
 
 	public static int getFileID(URL url) throws CurseException {
@@ -227,7 +227,7 @@ public final class CurseForge {
 	}
 
 	public static int getID(String url) throws CurseException {
-		return getID(URLs.url(url));
+		return getID(URLs.of(url));
 	}
 
 	public static int getID(URL url) throws CurseException {
