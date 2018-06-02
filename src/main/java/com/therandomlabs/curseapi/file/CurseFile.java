@@ -63,8 +63,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final int id;
 	private final String name;
 	private String nameOnDisk;
-	private final String downloadURLString;
-	private final URL downloadURL;
+	private String downloadURLString;
+	private URL downloadURL;
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
 	private String fileSize;
@@ -112,8 +112,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.id = id;
 		this.url = url;
 		urlString = url.toString();
+
+		ensureHTMLDataRetrieved(document);
+
 		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
-		nameOnDisk = Documents.getValue(document, "class=details-info;class=info-data;text");
 		downloadURLString = getDownloadURLString();
 		downloadURL = URLs.of(downloadURLString);
 		releaseType = ReleaseType.fromName(Documents.getValue(document,
@@ -131,8 +133,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 				"class=details-info;class=info-data=4;text").replaceAll(",", ""));
 		uploadTime = Utils.parseTime(Documents.getValue(document,
 				"class=details-info;attr=data-epoch;attr=data-epoch"));
-
-		ensureHTMLDataRetrieved(document);
 	}
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
@@ -162,8 +162,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.id = id;
 		this.name = name;
 		this.nameOnDisk = nameOnDisk;
-		downloadURLString = getDownloadURLString();
-		downloadURL = URLs.of(downloadURLString);
 		this.releaseType = releaseType;
 		this.uploadTime = Utils.parseTime(uploadTime);
 		this.fileSize = fileSize;
@@ -225,6 +223,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public URL downloadURL() throws CurseException {
+		if(downloadURL == null) {
+			ensureHTMLDataRetrieved();
+			downloadURLString = getDownloadURLString();
+			downloadURL = URLs.of(downloadURLString);
+		}
+
 		return downloadURL;
 	}
 
@@ -571,7 +575,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			final String idString = Integer.toString(id);
 			final String id1 = StringUtils.removeLastChars(idString, 3);
 			final String id2 = idString.substring(id1.length());
-			final String fileName = URLEncoder.encode(nameOnDisk, "UTF-8").replaceAll("%20", "+");
+			final String fileName = URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20", "+");
 
 			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).
 					replace(FILE_NAME, fileName);
@@ -593,6 +597,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			document = Documents.get(url);
 		}
 
+		nameOnDisk = Documents.getValue(document, "class=details-info;class=info-data;text");
 		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
 		changelogHTML = document.getElementsByClass("logbox").get(0);
 		getChangelogString();
