@@ -20,7 +20,7 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
-import com.therandomlabs.utils.wrapper.BooleanWrapper;
+import com.therandomlabs.utils.wrapper.IntWrapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -340,7 +340,7 @@ public final class Documents {
 
 		final Map<Integer, List<E>> allData = new ConcurrentHashMap<>();
 
-		final BooleanWrapper stopped = new BooleanWrapper();
+		final IntWrapper stoppedPage = new IntWrapper(-1);
 
 		if(threaded) {
 			ThreadUtils.splitWorkload(
@@ -350,7 +350,7 @@ public final class Documents {
 							cacheKey,
 							documentToList,
 							onElementAdd,
-							stopped,
+							stoppedPage,
 							url,
 							allData,
 							page
@@ -358,7 +358,7 @@ public final class Documents {
 			);
 		} else {
 			for(int page = 0; page < pages; page++) {
-				iteratePage(cacheKey, documentToList, onElementAdd, stopped, url, allData, page);
+				iteratePage(cacheKey, documentToList, onElementAdd, stoppedPage, url, allData, page);
 			}
 		}
 
@@ -372,17 +372,21 @@ public final class Documents {
 	}
 
 	private static <E> void iteratePage(Object cacheKey, DocumentToList<E> documentToList,
-			Predicate<? super E> onElementAdd, BooleanWrapper stopped, String url,
+			Predicate<? super E> onElementAdd, IntWrapper stoppedPage, String url,
 			Map<Integer, List<E>> allData, int page) throws CurseException {
 		try {
-			if(stopped.get()) {
+			if(stoppedPage.get() != -1 && page > stoppedPage.get()) {
 				return;
 			}
 
 			final TRLList<E> data = new TRLList<>(CurseAPI.RELATIONS_PER_PAGE);
 
 			if(onElementAdd != null) {
-				data.setOnAdd(element -> stopped.set(!onElementAdd.test(element)));
+				data.setOnAdd(element -> {
+					if(!onElementAdd.test(element)) {
+						stoppedPage.set(page);
+					}
+				});
 			}
 
 			allData.put(page, data);
