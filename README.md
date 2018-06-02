@@ -54,8 +54,10 @@ Features:
 * Basic event handling
 
 CurseAPI does not use the Curse widget API by default as it does not provide as much information
-as the other sources and is currently not being updated. CurseAPI can choose whether to retrieve
-information from CurseForge or CurseMeta depending on context.
+as the other sources and is currently not being updated.
+
+CurseAPI can choose whether to retrieve information from CurseForge or CurseMeta depending on
+context, and as a result, is able to provide more accurate information than either.
 
 TODO:
 * More project, file and member data

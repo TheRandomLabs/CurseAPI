@@ -327,7 +327,7 @@ public final class CurseProject {
 					url + "/files?",
 					this::getFiles,
 					file -> {
-						if(predicate.test(file)) {
+						if(predicate.test(file) && !latestFile.hasValue()) {
 							latestFile.set(file);
 							return false;
 						}
