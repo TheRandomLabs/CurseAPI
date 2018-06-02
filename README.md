@@ -124,8 +124,7 @@ File information example:
 
 	getLogger().disableDebug();
 
-	final CurseFile file = CurseProject.fromSlug("minecraft", "randomtweaks").
-			fileWithID(2565899);
+	final CurseFile file = CurseProject.fromSlug("minecraft", "randomtweaks").fileWithID(2565899);
 
 	getLogger().info("Project ID: " + file.projectID());
 	getLogger().info("File ID: " + file.id());
