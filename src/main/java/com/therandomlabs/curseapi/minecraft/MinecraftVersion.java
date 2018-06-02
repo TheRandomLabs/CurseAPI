@@ -2,8 +2,10 @@ package com.therandomlabs.curseapi.minecraft;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import com.google.gson.annotations.SerializedName;
+import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
 
 /**
@@ -181,53 +183,6 @@ public enum MinecraftVersion {
 				replaceAll(".GROUP", "-Group").replaceAll(".SNAPSHOT", "-Snapshot");
 	}
 
-	public static MinecraftVersion latest() {
-		return values()[1];
-	}
-
-	public static MinecraftVersion latestGroup() {
-		return values()[0];
-	}
-
-	public static MinecraftVersion groupFromString(String version) {
-		final MinecraftVersion mcVersion = fromString(version);
-		return mcVersion == null ? null : mcVersion.getGroup();
-	}
-
-	/**
-	 * Returns the {@link MinecraftVersion} with the specified version string.
-	 *
-	 * @param version a version string.
-	 * @return the {@link MinecraftVersion} with the specified version string,
-	 * or {@code null} if it does not exist.
-	 */
-	public static MinecraftVersion fromString(String version) {
-		for(MinecraftVersion mcVersion : values()) {
-			if(mcVersion.versionString.equalsIgnoreCase(version)) {
-				return mcVersion;
-			}
-		}
-		return null;
-	}
-
-	public static Set<MinecraftVersion> getVersions(Collection<MinecraftVersion> versions) {
-		return getVersions(versions.toArray(new MinecraftVersion[0]));
-	}
-
-	public static Set<MinecraftVersion> getVersions(MinecraftVersion... versions) {
-		final Set<MinecraftVersion> versionSet = new HashSet<>();
-
-		for(MinecraftVersion version : versions) {
-			if(version.isGroup()) {
-				versionSet.addAll(version.getVersions());
-			} else {
-				versionSet.add(version);
-			}
-		}
-
-		return versionSet;
-	}
-
 	public MinecraftVersion getGroup() {
 		return group;
 	}
@@ -271,5 +226,62 @@ public enum MinecraftVersion {
 	@Override
 	public String toString() {
 		return versionString;
+	}
+
+	public static MinecraftVersion latest() {
+		return values()[1];
+	}
+
+	public static MinecraftVersion latestGroup() {
+		return values()[0];
+	}
+
+	public static MinecraftVersion groupFromString(String version) {
+		final MinecraftVersion mcVersion = fromString(version);
+		return mcVersion == null ? null : mcVersion.getGroup();
+	}
+
+	/**
+	 * Returns the {@link MinecraftVersion} with the specified version string.
+	 *
+	 * @param version a version string.
+	 * @return the {@link MinecraftVersion} with the specified version string,
+	 * or {@code null} if it does not exist.
+	 */
+	public static MinecraftVersion fromString(String version) {
+		for(MinecraftVersion mcVersion : values()) {
+			if(mcVersion.versionString.equalsIgnoreCase(version)) {
+				return mcVersion;
+			}
+		}
+		return null;
+	}
+
+	public static TRLList<MinecraftVersion> fromStrings(Collection<String> versions) {
+		final TRLList<MinecraftVersion> minecraftVersions =
+				CollectionUtils.map(versions, MinecraftVersion::fromString);
+
+		minecraftVersions.removeIf(Objects::isNull);
+		minecraftVersions.sort();
+
+		return minecraftVersions;
+	}
+
+	public static Set<MinecraftVersion> getVersions(Collection<MinecraftVersion> versions) {
+		return getVersions(versions.toArray(new MinecraftVersion[0]));
+	}
+
+	public static Set<MinecraftVersion> getVersions(MinecraftVersion... versions) {
+		final Set<MinecraftVersion> versionSet = new HashSet<>();
+
+		for(MinecraftVersion version : versions) {
+			if(version.isGroup()) {
+				versionSet.addAll(version.getVersions());
+			} else {
+				versionSet.add(version);
+			}
+		}
+
+		return versionSet;
 	}
 }

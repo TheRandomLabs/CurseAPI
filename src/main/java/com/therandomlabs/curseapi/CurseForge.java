@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.ProjectType;
 import com.therandomlabs.curseapi.util.Documents;
@@ -194,7 +195,16 @@ public final class CurseForge {
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
 		CurseAPI.validateID(projectID, fileID);
-		return URLs.redirect(fromID(projectID) + "/files/" + fileID + "/download");
+
+		final String projectURL;
+
+		if(CurseProject.isCached(projectID)) {
+			projectURL = CurseProject.fromID(projectID).urlString();
+		} else {
+			projectURL = URLs.redirect(URL + "projects/" + projectID).toString();
+		}
+
+		return URLs.redirect(projectURL + "/files/" + fileID + "/download");
 	}
 
 	public static Map.Entry<URL, Document> fromID(int projectID) throws CurseException {

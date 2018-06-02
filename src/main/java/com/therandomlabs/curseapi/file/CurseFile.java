@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -29,8 +28,8 @@ import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.Member;
 import com.therandomlabs.curseapi.project.RelationType;
 import com.therandomlabs.curseapi.util.Documents;
-import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.curseapi.util.URLs;
+import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
@@ -40,6 +39,7 @@ import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -50,7 +50,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private final int projectID;
 	private CurseProject project;
-	private FileStatus status;
+	private FileStatus status = FileStatus.NORMAL;
 	private URL url;
 	private String urlString;
 	private final int id;
@@ -60,7 +60,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private URL downloadURL;
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
-	private final String fileSize;
+	private String fileSize;
 	private final int downloads;
 	private String md5;
 	private Member uploader;
@@ -89,11 +89,36 @@ public final class CurseFile implements Comparable<CurseFile> {
 		uploaderUsername = "Unknown";
 		dependencyIDs = new HashMap<>();
 		this.dependencies = new HashMap<>();
-		this.gameVersions = new TRLList<>("Unknown");
-		this.minecraftVersions = new TRLList<>();
+		this.gameVersions = new ImmutableList<>("Unknown");
+		this.minecraftVersions = new ImmutableList<>();
 		changelogHTML = NO_CHANGELOG_PROVIDED;
 		changelog = NO_CHANGELOG_PROVIDED_STRING;
 		hasNoProject = true;
+	}
+
+	public CurseFile(CurseProject project, int id, Document document) throws CurseException {
+		projectID = project.id();
+		this.project = project;
+		this.id = id;
+		url = URLs.of(document.baseUri());
+		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
+		releaseType = ReleaseType.fromName(Documents.getValue(document,
+				"class=project-file-release-type;class=tip;attr=title"));
+
+		final Elements versions = document.getElementsByClass("details-versions").
+				get(0).getElementsByTag("li");
+
+		final TRLList<String> gameVersions = CollectionUtils.map(versions, Element::text);
+		gameVersions.removeIf(version -> version.startsWith("Java "));
+
+		this.gameVersions = gameVersions.toImmutableList();
+		minecraftVersions = MinecraftVersion.fromStrings(gameVersions);
+		downloads = Integer.parseInt(Documents.getValue(document,
+				"class=details-info;class=info-data=4;text").replaceAll(",", ""));
+		uploadTime = Utils.parseTime(Documents.getValue(document,
+				"class=details-info;attr=data-epoch;attr=data-epoch"));
+
+		ensureHTMLDataRetrieved(document);
 	}
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
@@ -138,20 +163,15 @@ public final class CurseFile implements Comparable<CurseFile> {
 		final TRLList<String> gameVersionList = new TRLList<>();
 
 		for(String gameVersion : gameVersions) {
+			//Stay consistent with CurseMeta
+			//CurseMeta doesn't include Java versions for some reason
 			if(!gameVersion.startsWith("Java ")) {
 				gameVersionList.add(gameVersion);
 			}
 		}
 
 		this.gameVersions = gameVersionList.toImmutableList();
-
-		final TRLList<MinecraftVersion> minecraftVersions =
-					CollectionUtils.map(this.gameVersions, MinecraftVersion::fromString);
-
-		minecraftVersions.removeIf(Objects::isNull);
-		minecraftVersions.sort();
-
-		this.minecraftVersions = minecraftVersions.toImmutableList();
+		this.minecraftVersions = MinecraftVersion.fromStrings(gameVersionList).toImmutableList();
 	}
 
 	public boolean isNull() {
@@ -394,7 +414,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return uploadTime;
 	}
 
-	public String fileSize() {
+	public String fileSize() throws CurseException {
+		ensureHTMLDataRetrieved();
 		return fileSize;
 	}
 
@@ -541,12 +562,19 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	private void ensureHTMLDataRetrieved() throws CurseException {
+		ensureHTMLDataRetrieved(null);
+	}
+
+	private void ensureHTMLDataRetrieved(Element document) throws CurseException {
 		if(htmlDataRetrieved() || url() == null) {
 			return;
 		}
 
-		final Element document = Documents.get(url);
+		if(document == null) {
+			document = Documents.get(url);
+		}
 
+		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
 		changelogHTML = document.getElementsByClass("logbox").get(0);
 		getChangelogString();
 		nameOnDisk =

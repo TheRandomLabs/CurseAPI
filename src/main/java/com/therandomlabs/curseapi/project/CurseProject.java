@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URL;
@@ -436,27 +437,12 @@ public final class CurseProject {
 
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			if(shouldAvoidWidgetAPI()) {
-				final Wrapper<CurseFile> fileWithID = new Wrapper<>();
-
-				Documents.putTemporaryCache(this, documentCache);
-				incompleteFiles.addAll(Documents.iteratePages(
-						this,
-						url + "/files?",
-						this::getFiles,
-						file -> {
-							if(file.id() == id) {
-								fileWithID.set(file);
-								return false;
-							}
-
-							return file.id() > id;
-						},
-						false
-				));
-				Documents.removeTemporaryCache(this);
-
-				if(fileWithID.hasValue()) {
-					return fileWithID.get();
+				try {
+					return new CurseFile(this, id, Documents.get(url + "/files/" + id));
+				} catch(CurseException ex) {
+					if(!(ex.getCause() instanceof FileNotFoundException)) {
+						throw ex;
+					}
 				}
 			} else {
 				final CurseFile file = filesDirect().fileWithID(id);
@@ -782,14 +768,18 @@ public final class CurseProject {
 
 				//<div class="alpha-phase tip">
 				final ReleaseType type = ReleaseType.fromName(Documents.getValue(file,
-						"class=project-file-release-type;class=tip;class").
-						split("-")[0]);
+						"class=project-file-release-type;class=tip;attr=title"));
 
 				final String[] versions;
 				if(file.getElementsByClass("additional-versions").isEmpty()) {
-					versions = new String[] {
-							Documents.getValue(file, "class=version-label;text")
-					};
+					final String version = Documents.getValue(file, "class=version-label;text");
+					if(version.equals("-")) {
+						versions = new String[0];
+					} else {
+						versions = new String[] {
+								version
+						};
+					}
 				} else {
 					String value =
 							Documents.getValue(file, "class=additional-versions;attr=title");

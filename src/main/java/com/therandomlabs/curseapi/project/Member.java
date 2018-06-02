@@ -50,7 +50,8 @@ public final class Member implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[type=\"" + type + "\",username=\"" + username + "\"]";
+		return getClass().getSimpleName() +
+				"[type=\"" + type + "\",username=\"" + username + "\"]";
 	}
 
 	static Member[] fromAuthors(AddOnAuthor[] authors) throws CurseException {
