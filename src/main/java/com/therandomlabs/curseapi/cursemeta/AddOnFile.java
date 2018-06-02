@@ -1,14 +1,12 @@
 package com.therandomlabs.curseapi.cursemeta;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
-import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.utils.collection.TRLList;
 
@@ -29,26 +27,6 @@ public class AddOnFile implements Cloneable, Serializable {
 	public long PackageFingerprint;
 	public String ReleaseType;
 	public ArrayList<AddOnModule> Modules;
-
-	private URL downloadURL;
-
-	public URL downloadURL() throws CurseException {
-		if(downloadURL == null) {
-			String urlString = DownloadURL.replace("files", "media").
-					replace("/media/", "/files/").
-					replaceAll(" ", "+");
-
-			//Because apparently Curse only sometimes encodes their + symbols
-			//For now, only Better Builder's Wands seems to have this problem
-			if(Id == 2443194) {
-				urlString = urlString.replaceAll("\\+", "%2B");
-			}
-
-			downloadURL = URLs.of(urlString);
-		}
-
-		return downloadURL;
-	}
 
 	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
 		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);

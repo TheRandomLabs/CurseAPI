@@ -2,7 +2,9 @@ package com.therandomlabs.curseapi.file;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -47,6 +49,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private static final String NO_CHANGELOG_PROVIDED_STRING = "No changelog provided";
 	private static final Element NO_CHANGELOG_PROVIDED = Jsoup.parse(NO_CHANGELOG_PROVIDED_STRING);
 
+	private static final String ID_1 = "::ID_1::";
+	private static final String ID_2 = "::ID_2::";
+	private static final String FILE_NAME = "::FILE_NAME::";
+	private static final String FILE_DOWNLOAD_URL =
+			"https://media.forgecdn.net/files/" + ID_1 + "/" + ID_2 + "/" + FILE_NAME;
+
 	private final int projectID;
 	private CurseProject project;
 	private FileStatus status = FileStatus.NORMAL;
@@ -55,8 +63,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final int id;
 	private final String name;
 	private String nameOnDisk;
-	private String downloadURLString;
-	private URL downloadURL;
+	private final String downloadURLString;
+	private final URL downloadURL;
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
 	private String fileSize;
@@ -79,6 +87,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		status = FileStatus.DELETED;
 		name = "Null File";
 		nameOnDisk = "null-file";
+		downloadURLString = null;
+		downloadURL = null;
 		releaseType = ReleaseType.ALPHA;
 		uploadTime = ZonedDateTime.now();
 		fileSize = "0.00 KB";
@@ -103,6 +113,9 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.url = url;
 		urlString = url.toString();
 		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
+		nameOnDisk = Documents.getValue(document, "class=details-info;class=info-data;text");
+		downloadURLString = getDownloadURLString();
+		downloadURL = URLs.of(downloadURLString);
 		releaseType = ReleaseType.fromName(Documents.getValue(document,
 				"class=project-file-release-type;class=tip;attr=title"));
 
@@ -124,17 +137,17 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public CurseFile(int projectID, AddOnFile info) throws CurseException {
 		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.downloadURL(), info.releaseType(), info.FileDate, null, -1,
-				getDependencyIDs(info.Dependencies), info.GameVersion);
+				info.releaseType(), info.FileDate, null, -1, getDependencyIDs(info.Dependencies),
+				info.GameVersion);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
-		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, null, info.type,
+		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, info.type,
 				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
 	}
 
 	private CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
-			String nameOnDisk, URL downloadURL, ReleaseType releaseType, String uploadTime,
+			String nameOnDisk, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,
 			String[] gameVersions) throws CurseException {
 		this.projectID = projectID;
@@ -149,12 +162,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.id = id;
 		this.name = name;
 		this.nameOnDisk = nameOnDisk;
-
-		this.downloadURL = downloadURL;
-		if(downloadURL != null) {
-			downloadURLString = downloadURL.toString();
-		}
-
+		downloadURLString = getDownloadURLString();
+		downloadURL = URLs.of(downloadURLString);
 		this.releaseType = releaseType;
 		this.uploadTime = Utils.parseTime(uploadTime);
 		this.fileSize = fileSize;
@@ -200,8 +209,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		if(url == null && !hasNoProject &&
 				(status == FileStatus.NORMAL || status == FileStatus.SEMI_NORMAL)) {
 			try {
-				url = CurseForge.getFileURL(projectID, id);
-				urlString = url.toString();
+				urlString = CurseForge.fromIDNoValidation(projectID) + "/files" + id;
+				url = URLs.of(urlString);
 			} catch(InvalidProjectIDException ex) {
 				hasNoProject = true;
 			}
@@ -216,11 +225,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public URL downloadURL() throws CurseException {
-		if(downloadURL == null) {
-			downloadURL = CurseForge.getFileURL(projectID, id);
-			downloadURLString = downloadURL.toString();
-		}
-
 		return downloadURL;
 	}
 
@@ -562,6 +566,20 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return Integer.compare(id, file.id);
 	}
 
+	private String getDownloadURLString() throws CurseException {
+		try {
+			final String idString = Integer.toString(id);
+			final String id1 = StringUtils.removeLastChars(idString, 3);
+			final String id2 = idString.substring(id1.length());
+			final String fileName = URLEncoder.encode(nameOnDisk, "UTF-8").replaceAll("%20", "+");
+
+			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).
+					replace(FILE_NAME, fileName);
+		} catch(UnsupportedEncodingException ignored) {}
+
+		return null;
+	}
+
 	private void ensureHTMLDataRetrieved() throws CurseException {
 		ensureHTMLDataRetrieved(null);
 	}
@@ -578,8 +596,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
 		changelogHTML = document.getElementsByClass("logbox").get(0);
 		getChangelogString();
-		nameOnDisk =
-				Documents.getValue(document, "class=details-info;class=info-data;text");
 		md5 = Documents.getValue(document, "class=md5;text");
 		uploaderUsername = Documents.getValue(document, "class=user-tag;tag=a=1;text");
 

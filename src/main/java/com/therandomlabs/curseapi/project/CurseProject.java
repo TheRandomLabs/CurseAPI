@@ -866,10 +866,19 @@ public final class CurseProject {
 	}
 
 	public static CurseProject fromID(String id) throws CurseException {
-		return fromID(Integer.parseInt(id));
+		return fromID(id, false);
+	}
+
+	public static CurseProject fromID(String id, boolean dontThrowIfInvalidID)
+			throws CurseException {
+		return fromID(Integer.parseInt(id), dontThrowIfInvalidID);
 	}
 
 	public static CurseProject fromID(int id) throws CurseException {
+		return fromID(id, false);
+	}
+
+	public static CurseProject fromID(int id, boolean dontThrowIfInvalidID) throws CurseException {
 		CurseProject project = projects.get(id);
 		if(project != null) {
 			return project;
@@ -877,7 +886,11 @@ public final class CurseProject {
 
 		try {
 			return new CurseProject(id);
-		} catch(InvalidProjectIDException ignored) {}
+		} catch(InvalidProjectIDException ex) {
+			if(!dontThrowIfInvalidID) {
+				throw ex;
+			}
+		}
 
 		project = nullProject(id);
 		projects.put(id, project);
