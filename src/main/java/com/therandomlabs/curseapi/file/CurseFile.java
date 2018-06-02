@@ -39,7 +39,6 @@ import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -96,11 +95,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 		hasNoProject = true;
 	}
 
-	public CurseFile(CurseProject project, int id, Document document) throws CurseException {
+	public CurseFile(CurseProject project, int id, URL url, Element document)
+			throws CurseException {
 		projectID = project.id();
 		this.project = project;
 		this.id = id;
-		url = URLs.of(document.baseUri());
+		this.url = url;
+		urlString = url.toString();
 		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
 		releaseType = ReleaseType.fromName(Documents.getValue(document,
 				"class=project-file-release-type;class=tip;attr=title"));
@@ -199,8 +200,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		if(url == null && !hasNoProject &&
 				(status == FileStatus.NORMAL || status == FileStatus.SEMI_NORMAL)) {
 			try {
-				urlString = CurseForge.fromID(projectID) + "/files/" + id;
-				url = URLs.of(urlString);
+				url = CurseForge.getFileURL(projectID, id);
+				urlString = url.toString();
 			} catch(InvalidProjectIDException ex) {
 				hasNoProject = true;
 			}

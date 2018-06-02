@@ -201,7 +201,7 @@ public final class CurseForge {
 		if(CurseProject.isCached(projectID)) {
 			projectURL = CurseProject.fromID(projectID).urlString();
 		} else {
-			projectURL = URLs.redirect(URL + "projects/" + projectID).toString();
+			projectURL = fromIDNoValidation(projectID).toString();
 		}
 
 		return URLs.redirect(projectURL + "/files/" + fileID + "/download");
@@ -210,11 +210,7 @@ public final class CurseForge {
 	public static Map.Entry<URL, Document> fromID(int projectID) throws CurseException {
 		CurseAPI.validateID(projectID);
 
-		final URL url = URLs.redirect(URL + "projects/" + projectID);
-
-		if(!isValidProjectURL(url)) {
-			throw new InvalidProjectIDException(projectID);
-		}
+		final URL url = fromIDNoValidation(projectID);
 
 		try {
 			final Document document = Documents.get(url);
@@ -226,6 +222,16 @@ public final class CurseForge {
 
 			throw new InvalidProjectIDException(projectID, ex);
 		}
+	}
+
+	public static URL fromIDNoValidation(int projectID) throws CurseException {
+		final URL url = URLs.redirect(URL + "projects/" + projectID);
+
+		if(!isValidProjectURL(url)) {
+			throw new InvalidProjectIDException(projectID);
+		}
+
+		return url;
 	}
 
 	public static int getFileID(String url) throws CurseException {

@@ -8,6 +8,7 @@ import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
 import com.therandomlabs.curseapi.cursemeta.AddOnAuthor;
 
+//TODO avatar and projects
 public final class Member implements Serializable {
 	private static final long serialVersionUID = -5874001152475689908L;
 
@@ -24,11 +25,11 @@ public final class Member implements Serializable {
 		urlString = getURLString(username);
 
 		URL url = null;
+
 		try {
 			url = new URL(urlString);
-		} catch(MalformedURLException ignored) {
-			//This will never happen
-		}
+		} catch(MalformedURLException ignored) {}
+
 		this.url = url;
 	}
 

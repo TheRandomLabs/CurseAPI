@@ -438,7 +438,8 @@ public final class CurseProject {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			if(shouldAvoidWidgetAPI()) {
 				try {
-					return new CurseFile(this, id, Documents.get(url + "/files/" + id));
+					final URL fileURL = URLs.of(url + "/files/" + id);
+					return new CurseFile(this, id, fileURL, Documents.get(fileURL));
 				} catch(CurseException ex) {
 					if(!(ex.getCause() instanceof FileNotFoundException)) {
 						throw ex;
