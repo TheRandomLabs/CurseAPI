@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi.project;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * An {@code enum} containing Curse project member types.
+ * An {@code enum} containing values to represent the Curse project member types.
  *
  * @author TheRandomLabs
  */
