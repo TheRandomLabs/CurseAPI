@@ -48,6 +48,9 @@ import org.jsoup.select.Elements;
 public final class CurseProject {
 	public static final CurseProject NULL_PROJECT = new CurseProject();
 
+	public static final String UNKNOWN_TITLE = "Unknown Name";
+	public static final String CUSTOM_LICENSE = "Custom License";
+
 	private static final Map<Integer, CurseProject> projects = new ConcurrentHashMap<>();
 
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
@@ -95,6 +98,7 @@ public final class CurseProject {
 	private CurseProject() {
 		curseMeta = false;
 		site = CurseForgeSite.UNKNOWN;
+		title = CurseProject.UNKNOWN_TITLE;
 		shortDescription = "Null project";
 		descriptionHTML = Jsoup.parse("Null project");
 		description = "Null project";
