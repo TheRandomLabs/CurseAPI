@@ -192,8 +192,9 @@ public final class Documents {
 
 		try {
 			final String html = read(url);
+
 			if(html == null) {
-				throw new CurseUnavailableException();
+				throw new CurseUnavailableException(url);
 			}
 
 			final Document document = Jsoup.parse(html);
@@ -205,7 +206,7 @@ public final class Documents {
 
 			return document;
 		} catch(IOException ex) {
-			throw CurseException.fromThrowable("An error occurred while reading: " + url, ex);
+			throw CurseException.fromThrowable("An error occurred while reading: " + url, ex, url);
 		}
 	}
 
@@ -311,7 +312,7 @@ public final class Documents {
 			connection.connect();
 			connection.disconnect();
 		} catch(IOException ex) {
-			final CurseException curseException = CurseException.fromThrowable(ex);
+			final CurseException curseException = CurseException.fromThrowable(ex, url);
 			if(!(curseException instanceof CurseUnavailableException)) {
 				throw curseException;
 			}
@@ -358,7 +359,8 @@ public final class Documents {
 			);
 		} else {
 			for(int page = 0; page < pages; page++) {
-				iteratePage(cacheKey, documentToList, onElementAdd, stoppedPage, url, allData, page);
+				iteratePage(cacheKey, documentToList, onElementAdd, stoppedPage, url, allData,
+						page);
 			}
 		}
 

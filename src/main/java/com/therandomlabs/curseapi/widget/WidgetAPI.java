@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.widget;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -30,11 +31,14 @@ public final class WidgetAPI {
 	}
 
 	private static ProjectInfo get(String path, String jsonURL) throws CurseException {
+		URL url = null;
+
 		try {
-			final String json = Documents.read(jsonURL);
+			url = new URL(jsonURL);
+			final String json = Documents.read(url);
 
 			if(json == null) {
-				throw new CurseUnavailableException();
+				throw new CurseUnavailableException(url);
 			}
 
 			final ProjectInfo info = new Gson().fromJson(json, ProjectInfo.class);
@@ -51,7 +55,7 @@ public final class WidgetAPI {
 				throw new CurseException("Invalid widget API path: " + path);
 			}
 
-			throw CurseException.fromThrowable(ex);
+			throw CurseException.fromThrowable(ex, url);
 		}
 	}
 }

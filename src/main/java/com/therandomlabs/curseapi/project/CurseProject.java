@@ -757,7 +757,7 @@ public final class CurseProject {
 			return;
 		}
 
-		files = CurseFile.filesFromProjectID(id);
+		files = CurseFile.getFiles(id);
 	}
 
 	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
@@ -814,51 +814,23 @@ public final class CurseProject {
 		return !CurseAPI.isWidgetAPIEnabled() || mainCurseForgeURL == null;
 	}
 
-	public void clearAvatarCache() {
+	public void clearCache() {
 		avatar = null;
-	}
-
-	public void clearLicenseCache() {
 		licenseHTML = null;
 		license = null;
-	}
-
-	public void clearDependencyCache() {
 		dependencies.clear();
-	}
-
-	public void clearDependentCache() {
 		dependents.clear();
-	}
-
-	public void clearDependencyCache(RelationType relationType) {
-		dependencies.remove(relationType);
-	}
-
-	public void clearDependentCache(RelationType relationType) {
-		dependents.remove(relationType);
-	}
-
-	public void clearRelationCache() {
-		clearDependencyCache();
-		clearDependentCache();
-	}
-
-	public void clearCache() {
-		clearAvatarCache();
-		clearLicenseCache();
-		clearRelationCache();
 	}
 
 	@Override
 	public int hashCode() {
-		return id();
+		return id;
 	}
 
 	@Override
 	public boolean equals(Object anotherObject) {
 		if(anotherObject instanceof CurseProject) {
-			return ((CurseProject) anotherObject).id() == id();
+			return ((CurseProject) anotherObject).id == id;
 		}
 
 		return false;
@@ -866,7 +838,7 @@ public final class CurseProject {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[id=" + id() + ",title=" + title() + ",game=" + game() + "]";
+		return getClass().getName() + "[id=" + id + ",title=" + title + ",game=" + game + "]";
 	}
 
 	public static CurseProject fromID(String id) throws CurseException {
@@ -882,7 +854,7 @@ public final class CurseProject {
 		return fromID(id, false);
 	}
 
-	public static CurseProject fromID(int id, boolean dontThrowIfInvalidID) throws CurseException {
+	public static CurseProject fromID(int id, boolean ignoreInvalidID) throws CurseException {
 		CurseProject project = projects.get(id);
 		if(project != null) {
 			return project;
@@ -891,7 +863,7 @@ public final class CurseProject {
 		try {
 			return new CurseProject(id);
 		} catch(InvalidProjectIDException ex) {
-			if(!dontThrowIfInvalidID) {
+			if(!ignoreInvalidID) {
 				throw ex;
 			}
 		}

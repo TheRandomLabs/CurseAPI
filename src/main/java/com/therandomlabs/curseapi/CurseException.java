@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi;
 
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.net.UnknownHostException;
 
 public class CurseException extends Exception {
@@ -16,13 +17,21 @@ public class CurseException extends Exception {
 	}
 
 	public static CurseException fromThrowable(Throwable throwable) {
-		return fromThrowable(null, throwable);
+		return fromThrowable(throwable, null);
+	}
+
+	public static CurseException fromThrowable(Throwable throwable, URL url) {
+		return fromThrowable(null, throwable, url);
 	}
 
 	public static CurseException fromThrowable(String message, Throwable throwable) {
+		return fromThrowable(message, throwable, null);
+	}
+
+	public static CurseException fromThrowable(String message, Throwable throwable, URL url) {
 		if(throwable instanceof SocketTimeoutException ||
 				throwable instanceof UnknownHostException) {
-			return new CurseUnavailableException();
+			return new CurseUnavailableException(url);
 		}
 
 		if(message == null) {

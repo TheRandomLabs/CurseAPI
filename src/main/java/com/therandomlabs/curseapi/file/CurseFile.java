@@ -389,11 +389,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 		if(files.containsKey(projectID)) {
 			final int fileID = files.get(projectID);
 			if(fileID >= CurseAPI.MIN_PROJECT_ID) {
-				return fromID(projectID, files.get(projectID));
+				return getFile(projectID, files.get(projectID));
 			}
 		}
 
-		final CurseFileList fileList = filesFromProjectID(projectID);
+		final CurseFileList fileList = getFiles(projectID);
 		final CurseFile fallback = fileList.latest(gameVersions);
 
 		fileList.filterMinimumStability(minimumStability);
@@ -449,8 +449,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return changelog(false);
 	}
 
-	public String changelog(boolean preferCurseMeta) throws CurseException {
-		changelogHTML(preferCurseMeta);
+	public String changelog(boolean minimalOverhead) throws CurseException {
+		changelogHTML(minimalOverhead);
 		return changelog;
 	}
 
@@ -458,9 +458,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return changelogHTML(false);
 	}
 
-	public Element changelogHTML(boolean preferCurseMeta) throws CurseException {
+	//If minimalOverhead is true, use CurseMeta if it is enabled and the changelog is not
+	//already cached since CurseMeta is faster than downloading a full document
+	//Changelog generators are the main use case
+	public Element changelogHTML(boolean minimalOverhead) throws CurseException {
 		if(changelogHTML == null) {
-			if(preferCurseMeta) {
+			if(minimalOverhead && CurseAPI.isCurseMetaEnabled()) {
 				try {
 					changelogHTML = CurseMeta.getChangelog(projectID, id);
 					getChangelogString();
@@ -658,7 +661,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 	}
 
-	public static CurseFileList filesFromProjectID(int projectID) throws CurseException {
+	public static CurseFileList getFiles(int projectID) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).files();
 		}
@@ -674,12 +677,32 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return curseFiles;
 	}
 
-	public static CurseFile fromID(int projectID, int fileID) throws CurseException {
+	public static CurseFileList getFilesBetween(int projectID, int oldID, int newID)
+			throws CurseException {
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			return CurseProject.fromID(projectID).filesBetween(oldID, newID);
+		}
+
+		final CurseFileList files = getFiles(projectID);
+		files.between(oldID, newID);
+		return files;
+	}
+
+	public static CurseFile getFile(int projectID, int fileID) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).fileWithID(fileID);
 		}
 
 		return new CurseFile(projectID, CurseMeta.getFile(projectID, fileID));
+	}
+
+	public static CurseFile getClosestFile(int projectID, int fileID, boolean preferOlder)
+			throws CurseException {
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			return CurseProject.fromID(projectID).fileClosestToID(fileID, preferOlder);
+		}
+
+		return getFiles(projectID).fileClosestToID(fileID, preferOlder);
 	}
 
 	public static CurseFile nullFile(int projectID, int fileID) {

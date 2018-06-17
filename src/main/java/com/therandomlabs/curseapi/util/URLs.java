@@ -38,7 +38,7 @@ public final class URLs {
 
 			return redirected;
 		} catch(IOException ex) {
-			throw CurseException.fromThrowable(ex);
+			throw CurseException.fromThrowable(ex, url);
 		}
 	}
 
