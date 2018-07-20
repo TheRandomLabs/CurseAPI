@@ -31,6 +31,10 @@ public enum ReleaseType {
 		return StringUtils.capitalizeRegion(toString(), 0, 0);
 	}
 
+	public boolean matchesMinimumStability(ReleaseType releaseType) {
+		return ordinal() <= releaseType.ordinal();
+	}
+
 	/**
 	 * Returns the {@link ReleaseType} with the specified name.
 	 *

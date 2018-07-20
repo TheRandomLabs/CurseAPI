@@ -7,16 +7,16 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
@@ -278,90 +278,29 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return dependencies.get(relationType);
 	}
 
-	//TODO use predicates instead of versions/stability
-	//Maybe utility class for creating predicates for game versions/stability?
-
-	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
-			MinecraftVersion... mcVersions) throws CurseException {
-		return dependenciesRecursiveMC(minimumStability, new ImmutableList<>(mcVersions));
+	public TRLList<CurseFile> dependenciesRecursive(FilePredicate predicate) throws CurseException {
+		return dependenciesRecursive(new ConcurrentHashMap<>(), predicate);
 	}
 
-	public TRLList<CurseFile> dependenciesRecursiveMC(ReleaseType minimumStability,
-			Collection<MinecraftVersion> mcVersions) throws CurseException {
-		return dependenciesRecursive(minimumStability,
-				CollectionUtils.toStrings(MinecraftVersion.getVersions(mcVersions)));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursive(ReleaseType minimumStability,
-			String... gameVersions) throws CurseException {
-		return dependenciesRecursive(minimumStability, new ImmutableList<>(gameVersions));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursive(ReleaseType minimumStability,
-			Collection<String> gameVersions) throws CurseException {
-		return dependenciesRecursive(Collections.emptyMap(), minimumStability, gameVersions);
-	}
-
-	public TRLList<CurseFile> dependenciesRecursiveMC(Collection<CurseFile> files,
-			ReleaseType minimumStability, MinecraftVersion... mcVersions)
-			throws CurseException {
-		return dependenciesRecursiveMC(files, minimumStability, new ImmutableList<>(mcVersions));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursiveMC(Collection<CurseFile> files,
-			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
-			throws CurseException {
-		return dependenciesRecursive(files, minimumStability,
-				CollectionUtils.toStrings(MinecraftVersion.getVersions(mcVersions)));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursive(Collection<CurseFile> files,
-			ReleaseType minimumStability, String... gameVersions) throws CurseException {
-		return dependenciesRecursive(files, minimumStability, new ImmutableList<>(gameVersions));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursive(Collection<CurseFile> files,
-			ReleaseType minimumStability, Collection<String> gameVersions) throws CurseException {
-		final Map<Integer, Integer> map = new HashMap<>(files.size());
-		for(CurseFile file : files) {
-			map.put(file.projectID, file.id);
-		}
-		return dependenciesRecursive(map, minimumStability, gameVersions);
-	}
-
-	public TRLList<CurseFile> dependenciesRecursiveMC(Map<Integer, Integer> files,
-			ReleaseType minimumStability, MinecraftVersion... mcVersions)
-			throws CurseException {
-		return dependenciesRecursiveMC(files, minimumStability, new ImmutableList<>(mcVersions));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursiveMC(Map<Integer, Integer> files,
-			ReleaseType minimumStability, Collection<MinecraftVersion> mcVersions)
-			throws CurseException {
-		return dependenciesRecursive(files, minimumStability,
-				CollectionUtils.toStrings(MinecraftVersion.getVersions(mcVersions)));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
-			ReleaseType minimumStabililty, String... gameVersions) throws CurseException {
-		return dependenciesRecursive(files, minimumStabililty, new ImmutableList<>(gameVersions));
-	}
-
-	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
-			ReleaseType minimumStabililty, Collection<String> gameVersions) throws CurseException {
+	private TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
+			FilePredicate predicate) throws CurseException {
 		final Set<CurseFile> dependencies = new HashSet<>();
 		final List<CurseFile> firstIterationDependencies = new TRLList<>();
 
 		for(int id : dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
-			final CurseFile file = getFile(files, id, minimumStabililty, gameVersions);
+			final CurseFile file = getFile(files, id, predicate);
 			firstIterationDependencies.add(file);
 			dependencies.add(file);
 		}
 
 		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), firstIterationDependencies.size(),
 				index -> {
-			final Queue<CurseFile> toCheck = new PriorityQueue<>();
-			toCheck.add(firstIterationDependencies.get(index));
+			final Queue<CurseFile> toCheck = new PriorityBlockingQueue<>();
+			final CurseFile toAdd = firstIterationDependencies.get(index);
+
+			if(toAdd != null) {
+				toCheck.add(toAdd);
+			}
 
 			while(!toCheck.isEmpty()) {
 				final CurseFile file = toCheck.poll();
@@ -371,7 +310,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 				}
 
 				for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
-					toCheck.add(getFile(files, id, minimumStabililty, gameVersions));
+					toCheck.add(getFile(files, id, predicate));
 				}
 
 				if(file != this) {
@@ -384,19 +323,25 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return new TRLList<>(dependencies);
 	}
 
-	private CurseFile getFile(Map<Integer, Integer> files, int projectID,
-			ReleaseType minimumStability, Collection<String> gameVersions) throws CurseException {
+	private CurseFile getFile(Map<Integer, Integer> files, int projectID, FilePredicate predicate)
+			throws CurseException {
 		if(files.containsKey(projectID)) {
 			final int fileID = files.get(projectID);
-			if(fileID >= CurseAPI.MIN_PROJECT_ID) {
+			if(fileID >= CurseAPI.MIN_FILE_ID) {
 				return getFile(projectID, files.get(projectID));
 			}
 		}
 
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			return CurseProject.fromID(projectID).latestFile(predicate);
+		}
+
+		final Set<String> gameVersions = predicate.gameVersions();
+
 		final CurseFileList fileList = getFiles(projectID);
 		final CurseFile fallback = fileList.latest(gameVersions);
 
-		fileList.filterMinimumStability(minimumStability);
+		fileList.filterMinimumStability(predicate.minimumStability());
 		final CurseFile file = fileList.latest(gameVersions);
 
 		//Bypass minimumStability if there are no dependency files matching it
@@ -545,8 +490,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return NIOUtils.downloadToDirectory(downloadURL(), directory);
 	}
 
-	public boolean matchesMinimumStability(ReleaseType releaseType) {
-		return releaseType.ordinal() >= releaseType().ordinal();
+	public boolean matchesMinimumStability(ReleaseType stability) {
+		return releaseType.matchesMinimumStability(stability);
 	}
 
 	@Override
@@ -576,9 +521,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private String getDownloadURLString() throws CurseException {
 		try {
 			final String idString = Integer.toString(id);
+
+			//First three digits/other digits
 			final String id1 = StringUtils.removeLastChars(idString, 3);
-			final String id2 =
-					Integer.toString(Integer.parseInt(idString.substring(id1.length())));
+			final String id2 = idString.substring(id1.length());
 			final String fileName = URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20", "+");
 
 			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).

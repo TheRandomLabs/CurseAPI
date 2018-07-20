@@ -7,7 +7,6 @@ import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.AbstractMap;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,25 +14,23 @@ import java.util.function.Predicate;
 import javax.imageio.ImageIO;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
+import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.InvalidCurseForgeProjectException;
 import com.therandomlabs.curseapi.cursemeta.AddOn;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.file.ReleaseType;
-import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
 import com.therandomlabs.curseapi.util.Documents;
-import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.curseapi.util.URLs;
+import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.curseapi.widget.MemberInfo;
 import com.therandomlabs.curseapi.widget.ProjectInfo;
 import com.therandomlabs.curseapi.widget.WidgetAPI;
 import com.therandomlabs.utils.collection.ArrayUtils;
-import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
@@ -85,15 +82,12 @@ public final class CurseProject {
 	private String donateURLString;
 
 	private Map<String, FileInfo[]> widgetInfoFiles;
-
 	private final Map<URL, WeakReference<Document>> documentCache = new ConcurrentHashMap<>();
-
 	private final boolean curseMeta;
-
 	private CurseFileList files;
-
 	//Incomplete list of files used as a cache
 	private final CurseFileList incompleteFiles = new CurseFileList();
+	private boolean forceMultithreadedFileSearches;
 
 	private CurseProject() {
 		curseMeta = false;
@@ -295,23 +289,30 @@ public final class CurseProject {
 		return categories;
 	}
 
+	public boolean forcedMultithreadedFileSearches() {
+		return forceMultithreadedFileSearches;
+	}
+
+	public void forceMultithreadedFileSearches(boolean flag) {
+		forceMultithreadedFileSearches = flag;
+	}
+
 	public CurseFile latestFile() throws CurseException {
 		if(!incompleteFiles.isEmpty()) {
 			return incompleteFiles.latest();
 		}
 
-		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
-			final List<CurseFile> files = new TRLList<>();
-
-			getFiles(Documents.get(url + "/files?page=1"), files);
-
-			//Add to cache
-			incompleteFiles.addAll(files);
-
-			return files.get(0);
+		if(!shouldAvoidWidgetAPI() || CurseAPI.isCurseMetaEnabled()) {
+			return filesDirect().latest();
 		}
 
-		return filesDirect().latest();
+		final List<CurseFile> files = new TRLList<>();
+
+		getFiles(Documents.get(url + "/files?page=1"), files);
+		//Add to cache
+		incompleteFiles.addAll(files);
+
+		return files.get(0);
 	}
 
 	public CurseFile latestFile(Predicate<CurseFile> predicate) throws CurseException {
@@ -335,9 +336,10 @@ public final class CurseProject {
 							latestFile.set(file);
 							return false;
 						}
+
 						return true;
 					},
-					false
+					forceMultithreadedFileSearches
 			);
 			Documents.removeTemporaryCache(this);
 
@@ -347,44 +349,6 @@ public final class CurseProject {
 		}
 
 		return filesDirect().latest(predicate);
-	}
-
-	public CurseFile latestFile(Collection<String> versions) throws CurseException {
-		return latestFile(file -> file.gameVersions().containsAny(versions));
-	}
-
-	public CurseFile latestFile(Collection<String> versions, ReleaseType minimumStability)
-			throws CurseException {
-		return latestFile(file -> file.gameVersions().containsAny(versions) &&
-				file.matchesMinimumStability(minimumStability));
-	}
-
-	public CurseFile latestFile(String... versions) throws CurseException {
-		return latestFile(new ImmutableList<>(versions));
-	}
-
-	public CurseFile latestFile(ReleaseType minimumStability, String... versions)
-			throws CurseException {
-		return latestFile(new ImmutableList<>(versions), minimumStability);
-	}
-
-	public CurseFile latestFile(MinecraftVersion... versions) throws CurseException {
-		return latestFile(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
-	}
-
-	public CurseFile latestFile(ReleaseType minimumStability, MinecraftVersion... versions)
-			throws CurseException {
-		return latestFile(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)),
-				minimumStability);
-	}
-
-	public CurseFile latestFileWithMCVersionGroup(String version) throws CurseException {
-		return latestFile(MinecraftVersion.groupFromString(version));
-	}
-
-	public CurseFile latestFileWithMCVersionGroup(String version, ReleaseType minimumStability)
-			throws CurseException {
-		return latestFile(minimumStability, MinecraftVersion.groupFromString(version));
 	}
 
 	public CurseFileList files() throws CurseException {
@@ -414,7 +378,7 @@ public final class CurseProject {
 					url + "/files?",
 					this::getFiles,
 					file -> file.id() >= oldID, //Continue as long as file.ID() >= oldID
-					false
+					forceMultithreadedFileSearches
 			);
 			Documents.removeTemporaryCache(this);
 
@@ -440,20 +404,12 @@ public final class CurseProject {
 		}
 
 		if(!CurseAPI.isCurseMetaEnabled()) {
-			if(shouldAvoidWidgetAPI()) {
-				try {
-					final URL fileURL = URLs.of(url + "/files/" + id);
-					return new CurseFile(this, id, fileURL, Documents.get(fileURL));
-				} catch(CurseException ex) {
-					if(!(ex.getCause() instanceof FileNotFoundException)) {
-						throw ex;
-					}
-				}
-			} else {
-				final CurseFile file = filesDirect().fileWithID(id);
-
-				if(file != null) {
-					return file;
+			try {
+				final URL fileURL = URLs.of(url + "/files/" + id);
+				return new CurseFile(this, id, fileURL, Documents.get(fileURL));
+			} catch(CurseException ex) {
+				if(!(ex.getCause() instanceof FileNotFoundException)) {
+					throw ex;
 				}
 			}
 
@@ -472,7 +428,7 @@ public final class CurseProject {
 						url + "/files?",
 						this::getFiles,
 						file -> file.id() > id - 1,
-						false
+						forceMultithreadedFileSearches
 				));
 				Documents.removeTemporaryCache(this);
 
@@ -889,6 +845,12 @@ public final class CurseProject {
 
 	public static CurseProject fromSlug(CurseForgeSite site, String slug,
 			boolean followRedirections) throws CurseException {
+		for(CurseProject project : projects.values()) {
+			if(project.site == site && slug.equals(project.slug())) {
+				return project;
+			}
+		}
+
 		return fromURL(site.url() + "projects/" + slug, followRedirections);
 	}
 

@@ -21,6 +21,7 @@ import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
 import com.therandomlabs.utils.wrapper.IntWrapper;
+import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -190,24 +191,31 @@ public final class Documents {
 			}
 		}
 
-		try {
-			final String html = read(url);
+		final Wrapper<String> htmlWrapper = new Wrapper<>();
 
-			if(html == null) {
-				throw new CurseUnavailableException(url);
+		CurseAPI.doWithRetries(() -> {
+			try {
+				htmlWrapper.set(read(url));
+			} catch(IOException ex) {
+				throw CurseException.fromThrowable("An error occurred while reading: " + url, ex,
+						url);
 			}
+		});
 
-			final Document document = Jsoup.parse(html);
-			document.setBaseUri(url.toString());
+		final String html = htmlWrapper.get();
 
-			if(cacheMap != null) {
-				cacheMap.put(url, new WeakReference<>(document));
-			}
-
-			return document;
-		} catch(IOException ex) {
-			throw CurseException.fromThrowable("An error occurred while reading: " + url, ex, url);
+		if(html == null) {
+			throw new CurseUnavailableException(url);
 		}
+
+		final Document document = Jsoup.parse(html);
+		document.setBaseUri(url.toString());
+
+		if(cacheMap != null) {
+			cacheMap.put(url, new WeakReference<>(document));
+		}
+
+		return document;
 	}
 
 	public static Element get(URL url, String data) throws CurseException {
@@ -336,11 +344,8 @@ public final class Documents {
 
 		//Get number of pages from the first page
 		final int pages = getNumberOfPages(getWithCache(baseURL + 1, cacheKey));
-
 		final String url = baseURL;
-
 		final Map<Integer, List<E>> allData = new ConcurrentHashMap<>();
-
 		final IntWrapper stoppedPage = new IntWrapper(-1);
 
 		if(threaded) {

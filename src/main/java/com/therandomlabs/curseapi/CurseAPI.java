@@ -15,6 +15,7 @@ import com.therandomlabs.utils.throwable.ThrowableHandling;
 
 public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
+	public static final int MIN_FILE_ID = 1000;
 	public static final int RELATIONS_PER_PAGE = 20;
 
 	public static final String PLACEHOLDER_THUMBNAIL_URL_STRING =
@@ -25,7 +26,7 @@ public final class CurseAPI {
 
 	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
 
-	private static int maxRetries = 5;
+	private static int maxRetries = 3;
 	private static int retryTime = 5;
 
 	private static boolean widgetAPI;
