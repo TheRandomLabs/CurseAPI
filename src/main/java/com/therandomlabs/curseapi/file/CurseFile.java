@@ -282,7 +282,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return dependenciesRecursive(new ConcurrentHashMap<>(), predicate);
 	}
 
-	private TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
+	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
 			FilePredicate predicate) throws CurseException {
 		final Set<CurseFile> dependencies = new HashSet<>();
 		final List<CurseFile> firstIterationDependencies = new TRLList<>();
