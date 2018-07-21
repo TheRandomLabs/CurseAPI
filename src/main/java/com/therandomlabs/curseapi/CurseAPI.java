@@ -102,15 +102,23 @@ public final class CurseAPI {
 		}
 	}
 
-	public static boolean isValidID(int id) {
+	public static boolean isValidProjectID(int id) {
 		return id >= CurseAPI.MIN_PROJECT_ID;
 	}
 
-	public static void validateID(int... ids) {
-		for(int id : ids) {
-			if(!isValidID(id)) {
-				throw new IllegalArgumentException("Invalid Curse ID: " + id);
-			}
+	public static void validateProjectID(int id) {
+		if(!isValidProjectID(id)) {
+			throw new IllegalArgumentException("Invalid Curse project ID: " + id);
+		}
+	}
+
+	public static boolean isValidFileID(int id) {
+		return id >= CurseAPI.MIN_FILE_ID;
+	}
+
+	public static void validateFileID(int id) {
+		if(!isValidFileID(id)) {
+			throw new IllegalArgumentException("Invalid Curse file ID: " + id);
 		}
 	}
 

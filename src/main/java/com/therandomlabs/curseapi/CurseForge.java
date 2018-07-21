@@ -189,12 +189,12 @@ public final class CurseForge {
 			return null;
 		}
 
-		return URLs.of(
-				Documents.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
+		return URLs.of(Documents.getValue(viewOnCurse.get(0), "attr=href;absUrl=href"));
 	}
 
 	public static URL getFileURL(int projectID, int fileID) throws CurseException {
-		CurseAPI.validateID(projectID, fileID);
+		CurseAPI.validateProjectID(projectID);
+		CurseAPI.validateFileID(fileID);
 
 		final String projectURL;
 
@@ -208,7 +208,7 @@ public final class CurseForge {
 	}
 
 	public static Map.Entry<URL, Document> fromID(int projectID) throws CurseException {
-		CurseAPI.validateID(projectID);
+		CurseAPI.validateProjectID(projectID);
 
 		final URL url = fromIDNoValidation(projectID);
 

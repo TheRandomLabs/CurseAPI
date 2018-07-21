@@ -327,7 +327,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 			throws CurseException {
 		if(files.containsKey(projectID)) {
 			final int fileID = files.get(projectID);
-			if(fileID >= CurseAPI.MIN_FILE_ID) {
+
+			if(CurseAPI.isValidFileID(fileID)) {
 				return getFile(projectID, files.get(projectID));
 			}
 		}
