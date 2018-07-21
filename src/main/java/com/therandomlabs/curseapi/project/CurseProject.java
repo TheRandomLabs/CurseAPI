@@ -830,7 +830,12 @@ public final class CurseProject {
 	}
 
 	public static CurseProject fromSlug(String site, String slug) throws CurseException {
-		return fromSlug(site, slug, false);
+		return fromSlug(site, slug, true);
+	}
+
+	public static CurseProject fromSlug(CurseForgeSite site, String slug)
+			throws CurseException {
+		return fromSlug(site, slug, true);
 	}
 
 	public static CurseProject fromSlug(String site, String slug, boolean followRedirections)
@@ -838,10 +843,7 @@ public final class CurseProject {
 		return fromSlug(CurseForgeSite.fromString(site), slug, followRedirections);
 	}
 
-	public static CurseProject fromSlug(CurseForgeSite site, String slug)
-			throws CurseException {
-		return fromSlug(site, slug, false);
-	}
+
 
 	public static CurseProject fromSlug(CurseForgeSite site, String slug,
 			boolean followRedirections) throws CurseException {
