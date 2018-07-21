@@ -133,6 +133,7 @@ public final class CurseAPI {
 					if(i == maxRetries - 1) {
 						throw ex;
 					}
+
 					ThrowableHandling.handleWithoutExit(ex);
 					Thread.sleep(retryTime * 1000L);
 				}

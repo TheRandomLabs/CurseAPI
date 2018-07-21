@@ -278,6 +278,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return dependencies.get(relationType);
 	}
 
+	public TRLList<CurseFile> dependenciesRecursive() throws CurseException {
+		return dependenciesRecursive(new FilePredicate().withGameVersions(gameVersions));
+	}
+
 	public TRLList<CurseFile> dependenciesRecursive(FilePredicate predicate) throws CurseException {
 		return dependenciesRecursive(new ConcurrentHashMap<>(), predicate);
 	}
