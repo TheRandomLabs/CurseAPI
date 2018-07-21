@@ -28,7 +28,7 @@ public enum ReleaseType {
 	}
 
 	public String friendlyName() {
-		return StringUtils.capitalizeRegion(toString(), 0, 0);
+		return StringUtils.capitalizeRegion(toString(), 0, 1);
 	}
 
 	public boolean matchesMinimumStability(ReleaseType releaseType) {

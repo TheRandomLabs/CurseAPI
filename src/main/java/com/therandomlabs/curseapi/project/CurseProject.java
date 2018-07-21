@@ -34,6 +34,7 @@ import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
+import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
 import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.Jsoup;
@@ -258,6 +259,10 @@ public final class CurseProject {
 		if(licenseHTML == null) {
 			licenseHTML = Documents.get(url + "/license");
 			license = Documents.getPlainText(licenseHTML);
+
+			if(license.endsWith("\n")) {
+				license = StringUtils.removeLastChar(license);
+			}
 		}
 
 		return licenseHTML;
