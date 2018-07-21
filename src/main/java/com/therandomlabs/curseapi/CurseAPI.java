@@ -30,7 +30,7 @@ public final class CurseAPI {
 	private static int retryTime = 5;
 
 	private static boolean widgetAPI;
-	private static boolean curseMeta = true;
+	private static boolean curseMeta;
 
 	static {
 		URL url = null;
