@@ -524,7 +524,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 			//First three digits/other digits
 			final String id1 = StringUtils.removeLastChars(idString, 3);
-			final String id2 = idString.substring(id1.length());
+			//Remove leading zeros
+			final String id2 = idString.substring(id1.length()).replaceAll("^0+", "");
 			final String fileName = URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20", "+");
 
 			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).
