@@ -27,7 +27,7 @@ public enum ReleaseType {
 		return super.toString().toLowerCase(Locale.ENGLISH);
 	}
 
-	public String getName() {
+	public String friendlyName() {
 		return StringUtils.capitalizeRegion(toString(), 0, 0);
 	}
 
