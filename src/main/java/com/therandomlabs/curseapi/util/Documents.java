@@ -44,6 +44,7 @@ public final class Documents {
 		private final int maxWidth;
 		private final StringBuilder text = new StringBuilder();
 		private int width = 0;
+		private boolean wholeText;
 
 		FormattingVisitor(int maxWidth) {
 			this.maxWidth = maxWidth < 1 ? Integer.MAX_VALUE : maxWidth;
@@ -54,9 +55,15 @@ public final class Documents {
 		public void head(Node node, int depth) {
 			final String name = node.nodeName();
 
-			if(node instanceof TextNode) {
-				//TextNodes carry all user-readable text in the DOM.
-				append(((TextNode) node).text());
+			if(name.equals("pre")) {
+				wholeText = true;
+			} else if(node instanceof TextNode) {
+				final TextNode text = (TextNode) node;
+				if(wholeText) {
+					append(text.getWholeText().trim());
+				} else {
+					append(text.text());
+				}
 			} else if(name.equals("a")) {
 				append("[");
 			} else if(name.equals("li")) {
@@ -77,6 +84,8 @@ public final class Documents {
 				append("\n");
 			} else if(name.equals("a")) {
 				append(String.format("](%s)", node.absUrl("href")));
+			} else if(name.equals("pre")) {
+				wholeText = false;
 			}
 		}
 
