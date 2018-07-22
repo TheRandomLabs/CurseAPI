@@ -389,9 +389,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public boolean hasChangelog() throws CurseException {
 		String changelog = changelog().trim().toLowerCase(Locale.ENGLISH);
+
 		if(StringUtils.lastChar(changelog) == '.') {
 			changelog = StringUtils.removeLastChar(changelog);
 		}
+
 		return !changelog.equals("no changelog provided") && !changelog.equals("n/a");
 	}
 

@@ -13,6 +13,7 @@ import com.therandomlabs.curseapi.util.Documents;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.misc.StringUtils;
+import com.therandomlabs.utils.wrapper.Wrapper;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -225,13 +226,19 @@ public final class CurseForge {
 	}
 
 	public static URL fromIDNoValidation(int projectID) throws CurseException {
-		final URL url = URLs.redirect(URL + "projects/" + projectID);
+		final Wrapper<URL> urlWrapper = new Wrapper<>();
+		
+		CurseAPI.doWithRetries(() -> {
+			final URL url = URLs.redirect(URL + "projects/" + projectID);
+			
+			if(!isValidProjectURL(url)) {
+				throw new InvalidProjectIDException(projectID);
+			}
+			
+			urlWrapper.set(url);
+		});
 
-		if(!isValidProjectURL(url)) {
-			throw new InvalidProjectIDException(projectID);
-		}
-
-		return url;
+		return urlWrapper.get();
 	}
 
 	public static int getFileID(String url) throws CurseException {
