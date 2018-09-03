@@ -2,11 +2,6 @@ package com.therandomlabs.curseapi.project;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * An {@code enum} containing values to represent the Curse project member types.
- *
- * @author TheRandomLabs
- */
 public enum MemberType {
 	@SerializedName("Owner")
 	OWNER("Owner"),
@@ -32,20 +27,12 @@ public enum MemberType {
 	@SerializedName("Unknown")
 	UNKNOWN("Unknown");
 
-
 	private final String name;
 
 	MemberType(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * Returns the {@link MemberType} with the specified name.
-	 *
-	 * @param name a release type name.
-	 * @return the {@link MemberType} with the specified name,
-	 * or {@code null} if it does not exist.
-	 */
 	public static MemberType fromName(String name) {
 		for(MemberType type : values()) {
 			if(type.toString().equalsIgnoreCase(name)) {
@@ -55,11 +42,6 @@ public enum MemberType {
 		return null;
 	}
 
-	/**
-	 * Returns a string representation of this member type.
-	 *
-	 * @return a string representation of this member type.
-	 */
 	@Override
 	public String toString() {
 		return name;

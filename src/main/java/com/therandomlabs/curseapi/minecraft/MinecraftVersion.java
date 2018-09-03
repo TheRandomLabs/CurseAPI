@@ -16,6 +16,10 @@ import com.therandomlabs.utils.collection.TRLList;
 public enum MinecraftVersion {
 	@SerializedName("1.13-Group")
 	V1_13_GROUP,
+	@SerializedName("1.13.1")
+	V1_13_1(V1_13_GROUP),
+	@SerializedName("1.13")
+	V1_13(V1_13_GROUP),
 	@SerializedName("1.13-Snapshot")
 	V1_13_SNAPSHOT(V1_13_GROUP),
 	@SerializedName("1.12-Group")
