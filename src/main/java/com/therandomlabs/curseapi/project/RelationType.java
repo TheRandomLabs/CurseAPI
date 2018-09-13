@@ -8,9 +8,9 @@ public enum RelationType {
 	@SerializedName("Embedded")
 	EMBEDDED_LIBRARY("Embedded Library"),
 	@SerializedName("Optional")
-	OPTIONAL_LIBRARY("Optional Library"),
+	OPTIONAL_LIBRARY("Optional Dependency"),
 	@SerializedName("Required")
-	REQUIRED_LIBRARY("Required Library"),
+	REQUIRED_LIBRARY("Required Dependency"),
 	@SerializedName("Tool")
 	TOOL("Tool"),
 	@SerializedName("Incompatible")
