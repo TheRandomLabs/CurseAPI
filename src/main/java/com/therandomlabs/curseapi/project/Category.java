@@ -19,9 +19,9 @@ public final class Category implements Serializable {
 	Category(String name, URL url, URL thumbnailURL) {
 		this.name = name;
 		this.url = url;
-		this.urlString = url.toString();
+		this.urlString = url == null ? null : url.toString();
 		this.thumbnailURL = thumbnailURL;
-		this.thumbnailURLString = thumbnailURL.toString();
+		this.thumbnailURLString = thumbnailURL == null ? null : thumbnailURL.toString();
 	}
 
 	@Override

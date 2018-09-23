@@ -447,11 +447,15 @@ public final class ProjectType {
 			return new ProjectType(name, CurseForgeSite.STAXEL, path, mainCurseForgePath);
 		}
 	}
+
+	private static final List<ProjectType> values = new TRLList<>();
+
 	public static final ProjectType UNKNOWN =
 			new ProjectType("Unknown", CurseForgeSite.UNKNOWN, "unknown", "unknown");
+
 	public static final Pattern MAIN_CURSEFORGE_PATH_PATTERN;
 	public static final String MAIN_CURSEFORGE_PATH_PATTERN_STRING;
-	private static final List<ProjectType> values = new TRLList<>();
+
 	private final String name;
 	private final String singularName;
 	private final String fullName;

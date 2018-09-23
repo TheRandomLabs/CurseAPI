@@ -12,13 +12,21 @@ public enum ReleaseType {
 	@SerializedName("alpha")
 	ALPHA;
 
+	private final String lowerCase;
+	private final String friendlyName;
+
+	ReleaseType() {
+		lowerCase = super.toString().toLowerCase(Locale.ENGLISH);
+		friendlyName = StringUtils.capitalize(lowerCase, 0);
+	}
+
 	@Override
 	public String toString() {
-		return super.toString().toLowerCase(Locale.ENGLISH);
+		return lowerCase;
 	}
 
 	public String friendlyName() {
-		return StringUtils.capitalizeRegion(toString(), 0, 1);
+		return friendlyName;
 	}
 
 	public boolean matchesMinimumStability(ReleaseType releaseType) {

@@ -633,7 +633,7 @@ public final class CurseProject {
 		slug = ArrayUtils.last(url.getPath().split("/"));
 
 		this.mainCurseForgeURL = mainCurseForgeURL;
-		mainCurseForgeURLString = String.valueOf(mainCurseForgeURL);
+		mainCurseForgeURLString = mainCurseForgeURL == null ? null : mainCurseForgeURL.toString();
 	}
 
 	private void reload(boolean useWidgetAPI) throws CurseException {
