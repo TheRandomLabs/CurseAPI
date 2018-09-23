@@ -20,12 +20,16 @@ public final class LinkInfo implements Cloneable, Serializable {
 
 	@Override
 	public LinkInfo clone() {
-		final LinkInfo info = new LinkInfo();
+		try {
+			final LinkInfo info = (LinkInfo) super.clone();
 
-		info.href = href;
-		info.title = title;
+			info.href = href;
+			info.title = title;
 
-		return info;
+			return info;
+		} catch(CloneNotSupportedException ignored) {}
+
+		return null;
 	}
 
 	@Override

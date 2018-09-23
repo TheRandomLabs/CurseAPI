@@ -9,6 +9,8 @@ import com.therandomlabs.curseapi.util.Utils;
 
 public final class Relation {
 	private final URL url;
+	private final RelationType relationType;
+	private final String urlString;
 	private final String authorURLString;
 	private final URL authorURL;
 	private final String title;
@@ -19,8 +21,6 @@ public final class Relation {
 	private final String shortDescription;
 	private final Category[] categories;
 	private final CurseProject relatedFrom;
-	private final RelationType relationType;
-	private String urlString;
 
 	Relation(URL url, String title, String author, int downloads, long lastUpdateTimeSinceEpoch,
 			String shortDescription, Category[] categories, CurseProject relatedFrom,

@@ -339,9 +339,11 @@ public final class Documents {
 		} catch(IOException ex) {
 			final CurseException curseException = CurseException.fromThrowable(ex, url);
 
-			if(!(curseException instanceof CurseUnavailableException)) {
-				throw curseException;
+			if(curseException instanceof CurseUnavailableException) {
+				return false;
 			}
+
+			throw curseException;
 		}
 
 		return true;
