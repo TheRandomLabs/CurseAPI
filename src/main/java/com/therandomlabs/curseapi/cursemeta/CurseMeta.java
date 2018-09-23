@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.therandomlabs.curseapi.CurseAPI;
-import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseEventHandling;
+import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.io.NetUtils;
@@ -177,23 +177,25 @@ public final class CurseMeta {
 
 		CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(url));
 
+		CurseMetaError error = null;
+
 		try {
-			try {
-				final CurseMetaError error = new Gson().fromJson(json, CurseMetaError.class);
+			error = new Gson().fromJson(json, CurseMetaError.class);
+		} catch(JsonSyntaxException ignored) {}
 
-				if(error == null) {
-					if(ignoreNull) {
-						return null;
-					}
+		if(error == null) {
+			if(ignoreNull) {
+				return null;
+			}
 
-					throw new NullCurseMetaException(url);
-				}
+			throw new NullCurseMetaException(url);
+		}
 
-				if(error.error) {
-					throw new CurseMetaException(error.description, error.status, url);
-				}
-			} catch(JsonSyntaxException ignored) {}
+		if(error.error) {
+			throw new CurseMetaException(error.description, error.status, url);
+		}
 
+		try {
 			return new Gson().fromJson(json, clazz);
 		} catch(JsonSyntaxException ex) {
 			throw new CurseMetaException("An error occurred while parsing data from: " + url, ex);

@@ -47,6 +47,7 @@ public enum FileStatus {
 				return status;
 			}
 		}
+
 		return null;
 	}
 }

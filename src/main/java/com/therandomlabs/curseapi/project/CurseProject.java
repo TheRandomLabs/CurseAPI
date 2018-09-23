@@ -53,14 +53,19 @@ public final class CurseProject {
 
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
 	private final Map<RelationType, TRLList<Relation>> dependents = new ConcurrentHashMap<>();
-
+	private final boolean isNull;
+	private final boolean curseMeta;
+	private final Map<String, WeakReference<Document>> documentCache = new ConcurrentHashMap<>();
+	//Incomplete list of files used as a cache
+	private final CurseFileList incompleteFiles = new CurseFileList();
 	private BufferedImage avatar;
-
 	private URL url;
+	private String urlString;
+	private String slug;
 	private URL mainCurseForgeURL;
+	private String mainCurseForgeURLString;
 	private CurseForgeSite site;
 	private Element document;
-
 	private int id;
 	private String title;
 	private String shortDescription;
@@ -81,16 +86,12 @@ public final class CurseProject {
 	private String license;
 	private URL donateURL;
 	private String donateURLString;
-
 	private Map<String, FileInfo[]> widgetInfoFiles;
-	private final Map<URL, WeakReference<Document>> documentCache = new ConcurrentHashMap<>();
-	private final boolean curseMeta;
 	private CurseFileList files;
-	//Incomplete list of files used as a cache
-	private final CurseFileList incompleteFiles = new CurseFileList();
 	private boolean forceMultithreadedFileSearches;
 
 	private CurseProject() {
+		isNull = true;
 		curseMeta = false;
 		site = CurseForgeSite.UNKNOWN;
 		title = CurseProject.UNKNOWN_TITLE;
@@ -117,19 +118,39 @@ public final class CurseProject {
 	}
 
 	private CurseProject(Map.Entry<URL, Document> project) throws CurseException {
-		this.url = project.getKey();
-		this.document = project.getValue();
+		url = project.getKey();
+		document = project.getValue();
+		reloadURL(CurseForge.toMainCurseForgeProject(document));
+
+		isNull = false;
 		curseMeta = false;
-		this.mainCurseForgeURL = CurseForge.toMainCurseForgeProject(document);
 
 		reload(false);
 
 		projects.put(id, this);
 	}
 
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object anotherObject) {
+		if(anotherObject instanceof CurseProject) {
+			return ((CurseProject) anotherObject).id == id;
+		}
+
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + "[id=" + id + ",title=" + title + ",game=" + game + "]";
+	}
+
 	public boolean isNull() {
-		return site == CurseForgeSite.UNKNOWN && game == Game.UNKNOWN &&
-				type == ProjectType.UNKNOWN;
+		return isNull;
 	}
 
 	public int id() {
@@ -148,12 +169,16 @@ public final class CurseProject {
 		return url;
 	}
 
+	public String urlString() {
+		return urlString;
+	}
+
 	public URL mainCurseForgeURL() {
 		return mainCurseForgeURL;
 	}
 
 	public String mainCurseForgeURLString() {
-		return mainCurseForgeURL.toString();
+		return mainCurseForgeURLString;
 	}
 
 	public boolean hasMainCurseForgePage() {
@@ -161,7 +186,7 @@ public final class CurseProject {
 	}
 
 	public String slug() {
-		return ArrayUtils.last(url.getPath().split("/"));
+		return slug;
 	}
 
 	public ProjectType type() {
@@ -201,7 +226,7 @@ public final class CurseProject {
 	}
 
 	public BufferedImage thumbnail() throws IOException {
-		return ImageIO.read(NetUtils.download(thumbnailURL()));
+		return ImageIO.read(NetUtils.download(thumbnailURL));
 	}
 
 	public Member owner() {
@@ -214,11 +239,13 @@ public final class CurseProject {
 
 	public TRLList<Member> members(MemberType type) {
 		final TRLList<Member> membersWithType = new TRLList<>(members.size());
+
 		for(Member member : members) {
 			if(member.type() == type) {
 				membersWithType.add(member);
 			}
 		}
+
 		return membersWithType;
 	}
 
@@ -266,10 +293,6 @@ public final class CurseProject {
 		}
 
 		return licenseHTML;
-	}
-
-	public String urlString() {
-		return url.toString();
 	}
 
 	public String shortDescription() {
@@ -360,14 +383,6 @@ public final class CurseProject {
 		return filesDirect().clone();
 	}
 
-	private CurseFileList filesDirect() throws CurseException {
-		if(files == null) {
-			reloadFiles();
-		}
-
-		return files;
-	}
-
 	public CurseFileList filesBetween(int oldID, int newID) throws CurseException {
 		if(incompleteFiles.hasFileOlderThan(oldID) &&
 				incompleteFiles.hasFileNewerThanOrEqualTo(newID)) {
@@ -378,6 +393,7 @@ public final class CurseProject {
 
 		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
 			Documents.putTemporaryCache(this, documentCache);
+
 			final List<CurseFile> files = Documents.iteratePages(
 					this,
 					url + "/files?",
@@ -385,6 +401,7 @@ public final class CurseProject {
 					file -> file.id() >= oldID, //Continue as long as file.ID() >= oldID
 					forceMultithreadedFileSearches
 			);
+
 			Documents.removeTemporaryCache(this);
 
 			//Add to cache
@@ -403,6 +420,7 @@ public final class CurseProject {
 	public CurseFile fileWithID(int id) throws CurseException {
 		if(!incompleteFiles.isEmpty()) {
 			final CurseFile file = incompleteFiles.fileWithID(id);
+
 			if(file != null) {
 				return file;
 			}
@@ -428,6 +446,7 @@ public final class CurseProject {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			if(shouldAvoidWidgetAPI()) {
 				Documents.putTemporaryCache(this, documentCache);
+
 				incompleteFiles.addAll(Documents.iteratePages(
 						this,
 						url + "/files?",
@@ -435,6 +454,7 @@ public final class CurseProject {
 						file -> file.id() > id - 1,
 						forceMultithreadedFileSearches
 				));
+
 				Documents.removeTemporaryCache(this);
 
 				return incompleteFiles.fileClosestToID(id, preferOlder);
@@ -464,7 +484,8 @@ public final class CurseProject {
 
 	public void reloadDependencies(RelationType relationType, Predicate<Relation> onDependencyAdd)
 			throws CurseException {
-		dependencies.put(relationType, getRelations("dependencies", relationType, onDependencyAdd));
+		dependencies.put(relationType, getRelations("dependencies", relationType,
+				onDependencyAdd));
 	}
 
 	public TRLList<Relation> dependents() throws CurseException {
@@ -488,202 +509,17 @@ public final class CurseProject {
 		dependents.put(relationType, getRelations("dependents", relationType, onDependentAdd));
 	}
 
-	private TRLList<Relation> getRelations(String relationName, RelationType relationType,
-			Predicate<Relation> onRelationAdd) throws CurseException {
-		String baseURL = urlString() + "/relations/" + relationName;
-
-		if(relationType == RelationType.ALL_TYPES) {
-			baseURL += "?";
-		} else {
-			baseURL += "?filter-related-" + relationName + "=" + relationType.ordinal() + "&";
-		}
-
-		Documents.putTemporaryCache(this, documentCache);
-		final TRLList<Relation> relationList = Documents.iteratePages(
-				this,
-				baseURL,
-				(document, relations) -> documentToRelations(document, relations, relationType),
-				onRelationAdd,
-				true
-		);
-		Documents.removeTemporaryCache(this);
-
-		return relationList;
-	}
-
-	private void documentToRelations(Element document, List<Relation> relations,
-			RelationType relationType) throws CurseException {
-		for(Element relation : document.getElementsByClass("project-list-item")) {
-			final String projectURL =
-					Documents.getValue(relation, "class=name-wrapper;tag=a;absUrl=href");
-			//Some elements are empty for some reason
-			if(!projectURL.isEmpty()) {
-				relations.add(getRelationInfo(relation, URLs.of(projectURL), relationType));
-			}
-		}
-	}
-
-	private Relation getRelationInfo(Element element, URL url, RelationType relationType)
-			throws CurseException {
-		final String title = Documents.getValue(element, "class=name-wrapper;tag=a;text");
-		final String author = Documents.getValue(element, "tag=span;tag=a;text");
-		final int downloads = Integer.parseInt(Documents.getValue(
-				element, "class=e-download-count;text").replaceAll(",", ""));
-		final long lastUpdateTime = Long.parseLong(
-				Documents.getValue(element, "class=standard-date;attr=data-epoch"));
-		final String shortDescription =
-				Documents.getValue(element, "class=description;tag=p;text");
-		final Category[] categories = getCategories(
-				element.getElementsByClass("category-icons")).toArray(new Category[0]);
-
-		return new Relation(url, title, author, downloads, lastUpdateTime,
-				shortDescription, categories, this, relationType);
-	}
-
-	private static TRLList<Category> getCategories(Elements categoryElements)
-			throws CurseException {
-		final TRLList<Category> categories = new TRLList<>();
-		for(Element category : categoryElements) {
-			final String name = Documents.getValue(category, "tag=a;attr=title");
-			final URL url = URLs.of(Documents.getValue(category, "tag=a;absUrl=href"));
-			final URL thumbnailURL =
-					URLs.of(Documents.getValue(category, "tag=img;absUrl=src"));
-
-			categories.add(new Category(name, url, thumbnailURL));
-		}
-		return categories;
-	}
-
 	public void reloadURL() throws CurseException {
 		final Map.Entry<URL, Document> project = CurseForge.fromID(id);
+
 		url = project.getKey();
 		document = project.getValue();
-		mainCurseForgeURL = CurseForge.toMainCurseForgeProject(url);
+
+		reloadURL(CurseForge.toMainCurseForgeProject(url));
 	}
 
 	public void reload() throws CurseException {
 		reload(false);
-	}
-
-	private void reload(boolean useWidgetAPI) throws CurseException {
-		if(isNull()) {
-			return;
-		}
-
-		if(curseMeta) {
-			reloadCurseMeta();
-		}
-
-		site = CurseForgeSite.fromURL(url);
-
-		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
-			id = CurseForge.getID(document);
-			title = Documents.getValue(document, "class=project-title;class=overflow-tip;text");
-			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
-			game = site.game();
-			type = ProjectType.get(site,
-					Documents.getValue(document, "tag=title;text").split(" - ")[2]);
-
-			try {
-				thumbnailURLString =
-						Documents.getValue(document, "class=e-avatar64;tag=img;absUrl=src");
-				thumbnailURL = URLs.of(thumbnailURLString);
-			} catch(CurseException ex) {
-				thumbnailURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
-				thumbnailURL = CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
-			}
-
-			members.clear();
-			for(Element member : document.getElementsByClass("project-members")) {
-				members.add(new Member(
-						MemberType.fromName(Documents.getValue(member, "class=title;text")),
-						Documents.getValue(member, "tag=span;text")
-				));
-			}
-
-			downloads = Integer.parseInt(
-					Documents.getValue(document, "class=info-data=3;text").replaceAll(",", ""));
-			creationTime = Utils.parseTime(Documents.getValue(document,
-					"class=project-details;class=standard-date;attr=data-epoch"));
-
-			try {
-				donateURLString =
-						Documents.getValue(document, "class=icon-donate;attr=href;absUrl=href");
-			} catch(CurseException ignored) {}
-
-			donateURL = donateURLString == null ? null : URLs.of(donateURLString);
-			licenseName = Documents.getValue(document, "class=info-data=4;tag=a;text");
-		} else {
-			if(mainCurseForgeURL == null) {
-				reload(false);
-				return;
-			}
-
-			ProjectInfo info;
-
-			try {
-				info = WidgetAPI.get(mainCurseForgeURL.getPath());
-			} catch(CurseException ex) {
-				ThrowableHandling.handleWithoutExit(ex);
-				reload(false);
-				return;
-			}
-
-			id = info.id;
-			title = info.title;
-			shortDescription = info.description;
-			game = info.game;
-			type = ProjectType.get(site, info.type);
-			thumbnailURL = info.thumbnail;
-			thumbnailURLString = thumbnailURL.toString();
-
-			members = new TRLList<>(info.members.length);
-			for(MemberInfo member : info.members) {
-				members.add(new Member(member.title, member.username));
-			}
-
-			downloads = info.downloads.total;
-			creationTime = Utils.parseTime(info.created_at);
-			donateURL = info.donate;
-			donateURLString = donateURL == null ? null : donateURLString;
-			licenseName = info.license;
-			widgetInfoFiles = info.versions;
-		}
-
-		descriptionHTML = Documents.get(document, "class=project-description");
-		description = Documents.getPlainText(descriptionHTML);
-		categories = getCategories(
-				document.getElementsByClass("project-categories").get(0).
-						getElementsByTag("li")
-		).toImmutableList();
-		avatarURLString = Documents.getValue(document, "class=e-avatar64;absUrl=href");
-		avatarURL = avatarURLString.isEmpty() ?
-				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLs.of(avatarURLString);
-
-		//So it can be garbage collected
-		document = null;
-	}
-
-	private void reloadCurseMeta() throws CurseException {
-		final AddOn addon = CurseMeta.getAddOn(id);
-
-		id = addon.Id;
-		title = addon.Name;
-		game = Game.fromID(addon.GameId);
-		url = URLs.redirect(CurseForge.URL + "projects/" + id);
-		site = CurseForgeSite.UNKNOWN;
-		mainCurseForgeURL = addon.WebSiteURL;
-		avatarURL = addon.AvatarUrl == null ? CurseAPI.PLACEHOLDER_THUMBNAIL_URL : addon.AvatarUrl;
-		avatarURLString = avatarURL.toString();
-		thumbnailURL = avatarURL;
-		thumbnailURLString = avatarURLString;
-		members = new TRLList<>(Member.fromAuthors(addon.Authors));
-		downloads = (int) addon.DownloadCount;
-		creationTime = null;
-		donateURL = addon.DonationUrl;
-		donateURLString = donateURL == null ? null : donateURL.toString();
-		shortDescription = addon.Summary;
-		categories = new TRLList<>(Category.fromAddOnCategories(addon.Categories));
 	}
 
 	public void reloadFiles() throws CurseException {
@@ -721,60 +557,6 @@ public final class CurseProject {
 		files = CurseFile.getFiles(id);
 	}
 
-	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
-		try {
-			for(Element file : document.getElementsByClass("project-file-list-item")) {
-				final int id = Integer.parseInt(ArrayUtils.last(Documents.getValue(
-						file, "class=twitch-link;attr=href").split("/")));
-
-				final URL url = URLs.of(Documents.getValue(
-						file, "class=twitch-link;attr=href;absUrl=href"));
-
-				final String name = Documents.getValue(file, "class=twitch-link;text");
-
-				//<div class="alpha-phase tip">
-				final ReleaseType type = ReleaseType.fromName(Documents.getValue(file,
-						"class=project-file-release-type;class=tip;attr=title"));
-
-				final String[] versions;
-				if(file.getElementsByClass("additional-versions").isEmpty()) {
-					final String version = Documents.getValue(file, "class=version-label;text");
-					if(version.equals("-")) {
-						versions = new String[0];
-					} else {
-						versions = new String[] {
-								version
-						};
-					}
-				} else {
-					String value =
-							Documents.getValue(file, "class=additional-versions;attr=title");
-					value = value.substring(5, value.length() - 6);
-					versions = value.split("</div><div>");
-				}
-
-				final String fileSize =
-						Documents.getValue(file, "class=project-file-size;text");
-
-				final int downloads = Integer.parseInt(
-						Documents.getValue(file, "class=project-file-downloads;text").
-								replaceAll(",", ""));
-
-				final String uploadedAt = Documents.getValue(file,
-						"class=standard-date;attr=data-epoch");
-
-				files.add(new CurseFile(CurseProject.this, new FileInfo(
-						id, url, name, type, versions, fileSize, downloads, uploadedAt)));
-			}
-		} catch(NullPointerException | NumberFormatException ex) {
-			throw CurseException.fromThrowable(ex);
-		}
-	}
-
-	private boolean shouldAvoidWidgetAPI() {
-		return !CurseAPI.isWidgetAPIEnabled() || mainCurseForgeURL == null;
-	}
-
 	public void clearCache() {
 		avatar = null;
 		licenseHTML = null;
@@ -783,23 +565,263 @@ public final class CurseProject {
 		dependents.clear();
 	}
 
-	@Override
-	public int hashCode() {
-		return id;
-	}
-
-	@Override
-	public boolean equals(Object anotherObject) {
-		if(anotherObject instanceof CurseProject) {
-			return ((CurseProject) anotherObject).id == id;
+	private CurseFileList filesDirect() throws CurseException {
+		if(files == null) {
+			reloadFiles();
 		}
 
-		return false;
+		return files;
 	}
 
-	@Override
-	public String toString() {
-		return getClass().getName() + "[id=" + id + ",title=" + title + ",game=" + game + "]";
+	private TRLList<Relation> getRelations(String relationName, RelationType relationType,
+			Predicate<Relation> onRelationAdd) throws CurseException {
+		String baseURL = urlString() + "/relations/" + relationName;
+
+		if(relationType == RelationType.ALL_TYPES) {
+			baseURL += "?";
+		} else {
+			baseURL += "?filter-related-" + relationName + "=" + relationType.ordinal() + "&";
+		}
+
+		Documents.putTemporaryCache(this, documentCache);
+
+		final TRLList<Relation> relationList = Documents.iteratePages(
+				this,
+				baseURL,
+				(document, relations) -> documentToRelations(document, relations, relationType),
+				onRelationAdd,
+				true
+		);
+
+		Documents.removeTemporaryCache(this);
+
+		return relationList;
+	}
+
+	private void documentToRelations(Element document, List<Relation> relations,
+			RelationType relationType) throws CurseException {
+		for(Element relation : document.getElementsByClass("project-list-item")) {
+			final String projectURL =
+					Documents.getValue(relation, "class=name-wrapper;tag=a;absUrl=href");
+
+			//Some elements are empty for some reason
+			if(!projectURL.isEmpty()) {
+				relations.add(getRelationInfo(relation, URLs.of(projectURL), relationType));
+			}
+		}
+	}
+
+	private Relation getRelationInfo(Element element, URL url, RelationType relationType)
+			throws CurseException {
+		final String title = Documents.getValue(element, "class=name-wrapper;tag=a;text");
+		final String author = Documents.getValue(element, "tag=span;tag=a;text");
+		final int downloads = Integer.parseInt(Documents.getValue(
+				element, "class=e-download-count;text").replaceAll(",", ""));
+		final long lastUpdateTime = Long.parseLong(
+				Documents.getValue(element, "class=standard-date;attr=data-epoch"));
+		final String shortDescription =
+				Documents.getValue(element, "class=description;tag=p;text");
+		final Category[] categories = getCategories(
+				element.getElementsByClass("category-icons")).toArray(new Category[0]);
+
+		return new Relation(url, title, author, downloads, lastUpdateTime,
+				shortDescription, categories, this, relationType);
+	}
+
+	private void reloadURL(URL mainCurseForgeURL) {
+		urlString = url.toString();
+		slug = ArrayUtils.last(url.getPath().split("/"));
+
+		this.mainCurseForgeURL = mainCurseForgeURL;
+		mainCurseForgeURLString = String.valueOf(mainCurseForgeURL);
+	}
+
+	private void reload(boolean useWidgetAPI) throws CurseException {
+		if(isNull()) {
+			return;
+		}
+
+		if(curseMeta) {
+			reloadCurseMeta();
+		}
+
+		site = CurseForgeSite.fromURL(url);
+
+		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
+			id = CurseForge.getID(document);
+			title = Documents.getValue(document, "class=project-title;class=overflow-tip;text");
+			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
+			game = site.game();
+			type = ProjectType.get(site,
+					Documents.getValue(document, "tag=title;text").split(" - ")[2]);
+
+			try {
+				thumbnailURLString =
+						Documents.getValue(document, "class=e-avatar64;tag=img;absUrl=src");
+				thumbnailURL = URLs.of(thumbnailURLString);
+			} catch(CurseException ex) {
+				thumbnailURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
+				thumbnailURL = CurseAPI.PLACEHOLDER_THUMBNAIL_URL;
+			}
+
+			members.clear();
+
+			for(Element member : document.getElementsByClass("project-members")) {
+				members.add(new Member(
+						MemberType.fromName(Documents.getValue(member, "class=title;text")),
+						Documents.getValue(member, "tag=span;text")
+				));
+			}
+
+			downloads = Integer.parseInt(
+					Documents.getValue(document, "class=info-data=3;text").replaceAll(",", ""));
+			creationTime = Utils.parseTime(Documents.getValue(document,
+					"class=project-details;class=standard-date;attr=data-epoch"));
+
+			try {
+				donateURLString =
+						Documents.getValue(document, "class=icon-donate;attr=href;absUrl=href");
+			} catch(CurseException ignored) {}
+
+			donateURL = donateURLString == null ? null : URLs.of(donateURLString);
+			licenseName = Documents.getValue(document, "class=info-data=4;tag=a;text");
+		} else {
+			ProjectInfo info;
+
+			try {
+				info = WidgetAPI.get(mainCurseForgeURL.getPath());
+			} catch(CurseException ex) {
+				ThrowableHandling.handleWithoutExit(ex);
+				reload(false);
+				return;
+			}
+
+			id = info.id;
+			title = info.title;
+			shortDescription = info.description;
+			game = info.game;
+			type = ProjectType.get(site, info.type);
+			thumbnailURL = info.thumbnail;
+			thumbnailURLString = thumbnailURL.toString();
+
+			members = new TRLList<>(info.members.length);
+
+			for(MemberInfo member : info.members) {
+				members.add(new Member(member.title, member.username));
+			}
+
+			downloads = info.downloads.total;
+			creationTime = Utils.parseTime(info.created_at);
+			donateURL = info.donate;
+			donateURLString = donateURL == null ? null : donateURLString;
+			licenseName = info.license;
+			widgetInfoFiles = info.versions;
+		}
+
+		descriptionHTML = Documents.get(document, "class=project-description");
+		description = Documents.getPlainText(descriptionHTML);
+
+		categories = getCategories(
+				document.getElementsByClass("project-categories").get(0).
+						getElementsByTag("li")
+		).toImmutableList();
+
+		avatarURLString = Documents.getValue(document, "class=e-avatar64;absUrl=href");
+		avatarURL = avatarURLString.isEmpty() ?
+				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLs.of(avatarURLString);
+
+		//So it can be garbage collected
+		document = null;
+	}
+
+	private void reloadCurseMeta() throws CurseException {
+		final AddOn addon = CurseMeta.getAddOn(id);
+
+		id = addon.Id;
+		title = addon.Name;
+		game = Game.fromID(addon.GameId);
+		url = URLs.redirect(CurseForge.URL + "projects/" + id);
+		site = CurseForgeSite.UNKNOWN;
+		mainCurseForgeURL = addon.WebSiteURL;
+		avatarURL = addon.AvatarUrl == null ? CurseAPI.PLACEHOLDER_THUMBNAIL_URL : addon.AvatarUrl;
+		avatarURLString = avatarURL.toString();
+		thumbnailURL = avatarURL;
+		thumbnailURLString = avatarURLString;
+		members = new TRLList<>(Member.fromAuthors(addon.Authors));
+		downloads = (int) addon.DownloadCount;
+		creationTime = null;
+		donateURL = addon.DonationUrl;
+		donateURLString = donateURL == null ? null : donateURL.toString();
+		shortDescription = addon.Summary;
+		categories = new TRLList<>(Category.fromAddOnCategories(addon.Categories));
+
+		reloadURL(mainCurseForgeURL);
+	}
+
+	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
+		try {
+			actuallyGetFiles(document, files);
+		} catch(NullPointerException | NumberFormatException ex) {
+			throw CurseException.fromThrowable(ex);
+		}
+	}
+
+	private void actuallyGetFiles(Element document, List<CurseFile> files) throws CurseException {
+		for(Element file : document.getElementsByClass("project-file-list-item")) {
+			final int id = Integer.parseInt(ArrayUtils.last(Documents.getValue(
+					file,
+					"class=twitch-link;attr=href"
+			).split("/")));
+
+			final URL url = URLs.of(Documents.getValue(
+					file,
+					"class=twitch-link;attr=href;absUrl=href"
+			));
+
+			final String name = Documents.getValue(file, "class=twitch-link;text");
+
+			//<div class="alpha-phase tip">
+			final ReleaseType type = ReleaseType.fromName(Documents.getValue(
+					file,
+					"class=project-file-release-type;class=tip;attr=title"
+			));
+
+			final String[] versions;
+
+			if(file.getElementsByClass("additional-versions").isEmpty()) {
+				final String version = Documents.getValue(file, "class=version-label;text");
+
+				if(version.equals("-")) {
+					versions = new String[0];
+				} else {
+					versions = new String[] {
+							version
+					};
+				}
+			} else {
+				String value = Documents.getValue(file, "class=additional-versions;attr=title");
+				value = value.substring(5, value.length() - 6);
+				versions = value.split("</div><div>");
+			}
+
+			final String fileSize = Documents.getValue(file, "class=project-file-size;text");
+
+			final int downloads = Integer.parseInt(Documents.getValue(
+					file,
+					"class=project-file-downloads;text"
+			).replaceAll(",", ""));
+
+			final String uploadedAt =
+					Documents.getValue(file, "class=standard-date;attr=data-epoch");
+
+			files.add(new CurseFile(CurseProject.this, new FileInfo(
+					id, url, name, type, versions, fileSize, downloads, uploadedAt
+			)));
+		}
+	}
+
+	private boolean shouldAvoidWidgetAPI() {
+		return !CurseAPI.isWidgetAPIEnabled() || mainCurseForgeURL == null;
 	}
 
 	public static CurseProject fromID(String id) throws CurseException {
@@ -817,6 +839,7 @@ public final class CurseProject {
 
 	public static CurseProject fromID(int id, boolean ignoreInvalidID) throws CurseException {
 		CurseProject project = projects.get(id);
+
 		if(project != null) {
 			return project;
 		}
@@ -848,8 +871,6 @@ public final class CurseProject {
 		return fromSlug(CurseForgeSite.fromString(site), slug, followRedirections);
 	}
 
-
-
 	public static CurseProject fromSlug(CurseForgeSite site, String slug,
 			boolean followRedirections) throws CurseException {
 		for(CurseProject project : projects.values()) {
@@ -879,14 +900,18 @@ public final class CurseProject {
 			url = URLs.redirect(url);
 		}
 
+		final String urlString = url.toString();
+
 		for(CurseProject project : projects.values()) {
-			if(url.equals(project.url)) {
+			if(urlString.equals(project.urlString)) {
 				return project;
 			}
 		}
 
-		return new CurseProject(new AbstractMap.SimpleEntry<>(url,
-				InvalidCurseForgeProjectException.validate(url)));
+		return new CurseProject(new AbstractMap.SimpleEntry<>(
+				url,
+				InvalidCurseForgeProjectException.validate(url)
+		));
 	}
 
 	public static CurseProject nullProject(int id) {
@@ -905,5 +930,21 @@ public final class CurseProject {
 
 	public static boolean isCached(int id) {
 		return projects.containsKey(id);
+	}
+
+	private static TRLList<Category> getCategories(Elements categoryElements)
+			throws CurseException {
+		final TRLList<Category> categories = new TRLList<>();
+
+		for(Element category : categoryElements) {
+			final String name = Documents.getValue(category, "tag=a;attr=title");
+			final URL url = URLs.of(Documents.getValue(category, "tag=a;absUrl=href"));
+			final URL thumbnailURL =
+					URLs.of(Documents.getValue(category, "tag=img;absUrl=src"));
+
+			categories.add(new Category(name, url, thumbnailURL));
+		}
+
+		return categories;
 	}
 }

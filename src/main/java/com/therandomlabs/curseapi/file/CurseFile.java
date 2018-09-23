@@ -8,7 +8,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +36,7 @@ import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.io.NIOUtils;
+import com.therandomlabs.utils.io.IOUtils;
 import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
@@ -56,54 +56,44 @@ public final class CurseFile implements Comparable<CurseFile> {
 			"https://media.forgecdn.net/files/" + ID_1 + "/" + ID_2 + "/" + FILE_NAME;
 
 	private final int projectID;
-	private CurseProject project;
-	private FileStatus status = FileStatus.NORMAL;
-	private URL url;
-	private String urlString;
 	private final int id;
 	private final String name;
-	private String nameOnDisk;
-	private String downloadURLString;
-	private URL downloadURL;
+
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
-	private String fileSize;
 	private final int downloads;
+
+	private final TRLList<String> gameVersions;
+	private final String gameVersion;
+	private final TRLList<MinecraftVersion> minecraftVersions;
+
+	private CurseProject project;
+
+	private FileStatus status = FileStatus.NORMAL;
+
+	private URL url;
+	private String urlString;
+
+	private String nameOnDisk;
+
+	private String downloadURLString;
+	private URL downloadURL;
+
+	private String fileSize;
 	private String md5;
+
 	private Member uploader;
 	private String uploaderUsername;
+
 	private Map<RelationType, TRLList<Integer>> dependencyIDs;
-	private Map<RelationType, TRLList<CurseProject>> dependencies = new HashMap<>();
-	private final TRLList<String> gameVersions;
-	private final TRLList<MinecraftVersion> minecraftVersions;
+	private Map<RelationType, TRLList<CurseProject>> dependencies =
+			new EnumMap<>(RelationType.class);
+
 	private Element changelogHTML;
 	private String changelog;
-	private boolean hasNoProject;
+	private boolean hasChangelog;
 
-	private CurseFile(int projectID, int id) {
-		this.projectID = projectID;
-		this.id = id;
-		project = CurseProject.nullProject(projectID);
-		status = FileStatus.DELETED;
-		name = "Null File";
-		nameOnDisk = "null-file";
-		downloadURLString = null;
-		downloadURL = null;
-		releaseType = ReleaseType.ALPHA;
-		uploadTime = ZonedDateTime.now();
-		fileSize = "0.00 KB";
-		downloads = 0;
-		md5 = "ffffffffffffffffffffffffffffffff";
-		uploader = Member.UNKNOWN;
-		uploaderUsername = "Unknown";
-		dependencyIDs = new HashMap<>();
-		this.dependencies = new HashMap<>();
-		this.gameVersions = new ImmutableList<>("Unknown");
-		this.minecraftVersions = new ImmutableList<>();
-		changelogHTML = NO_CHANGELOG_PROVIDED;
-		changelog = NO_CHANGELOG_PROVIDED_STRING;
-		hasNoProject = true;
-	}
+	private boolean hasNoProject;
 
 	public CurseFile(CurseProject project, int id, URL url, Element document)
 			throws CurseException {
@@ -128,7 +118,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 		gameVersions.removeIf(version -> version.startsWith("Java "));
 
 		this.gameVersions = gameVersions.toImmutableList();
+		gameVersion = gameVersions.get(0);
+
 		minecraftVersions = MinecraftVersion.fromStrings(gameVersions);
+
 		downloads = Integer.parseInt(Documents.getValue(document,
 				"class=details-info;class=info-data=4;text").replaceAll(",", ""));
 		uploadTime = Utils.parseTime(Documents.getValue(document,
@@ -144,6 +137,32 @@ public final class CurseFile implements Comparable<CurseFile> {
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
 		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, info.type,
 				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
+	}
+
+	private CurseFile(int projectID, int id) {
+		this.projectID = projectID;
+		this.id = id;
+		project = CurseProject.nullProject(projectID);
+		status = FileStatus.DELETED;
+		name = "Null File";
+		nameOnDisk = "null-file";
+		downloadURLString = null;
+		downloadURL = null;
+		releaseType = ReleaseType.ALPHA;
+		uploadTime = ZonedDateTime.now();
+		fileSize = "0.00 KB";
+		downloads = 0;
+		md5 = "ffffffffffffffffffffffffffffffff";
+		uploader = Member.UNKNOWN;
+		uploaderUsername = "Unknown";
+		dependencyIDs = new EnumMap<>(RelationType.class);
+		this.dependencies = new EnumMap<>(RelationType.class);
+		this.gameVersions = new ImmutableList<>("Unknown");
+		gameVersion = "Unknown";
+		this.minecraftVersions = new ImmutableList<>();
+		changelogHTML = NO_CHANGELOG_PROVIDED;
+		changelog = NO_CHANGELOG_PROVIDED_STRING;
+		hasNoProject = true;
 	}
 
 	private CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
@@ -179,7 +198,33 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 
 		this.gameVersions = gameVersionList.toImmutableList();
+		gameVersion = gameVersionList.get(0);
+
 		this.minecraftVersions = MinecraftVersion.fromStrings(gameVersionList).toImmutableList();
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object anotherObject) {
+		if(anotherObject instanceof CurseFile) {
+			return ((CurseFile) anotherObject).id == id;
+		}
+
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "[id=" + id + ",name=\"" + name + "\"]";
+	}
+
+	@Override
+	public int compareTo(CurseFile file) {
+		return Integer.compare(id, file.id);
 	}
 
 	public boolean isNull() {
@@ -265,13 +310,19 @@ public final class CurseFile implements Comparable<CurseFile> {
 	public TRLList<CurseProject> dependencies(RelationType relationType) throws CurseException {
 		if(dependencies.get(relationType) == null) {
 			final TRLList<Integer> ids = dependencyIDs(relationType);
+
 			if(ids.isEmpty()) {
 				return ImmutableList.empty();
 			}
 
 			final TRLList<CurseProject> dependencyList = new TRLList<>(ids.size());
-			ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), ids.size(),
-					index -> dependencyList.add(CurseProject.fromID(ids.get(index))));
+
+			ThreadUtils.splitWorkload(
+					CurseAPI.getMaximumThreads(),
+					ids.size(),
+					index -> dependencyList.add(CurseProject.fromID(ids.get(index)))
+			);
+
 			dependencies.put(relationType, dependencyList.toImmutableList());
 		}
 
@@ -297,64 +348,25 @@ public final class CurseFile implements Comparable<CurseFile> {
 			dependencies.add(file);
 		}
 
-		ThreadUtils.splitWorkload(CurseAPI.getMaximumThreads(), firstIterationDependencies.size(),
-				index -> {
-			final Queue<CurseFile> toCheck = new PriorityBlockingQueue<>();
-			final CurseFile toAdd = firstIterationDependencies.get(index);
-
-			if(toAdd != null) {
-				toCheck.add(toAdd);
-			}
-
-			while(!toCheck.isEmpty()) {
-				final CurseFile file = toCheck.poll();
-
-				if(file == null) {
-					continue;
-				}
-
-				for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
-					toCheck.add(getFile(files, id, predicate));
-				}
-
-				if(file != this) {
-					dependencies.add(file);
-				}
-			}
-		});
+		ThreadUtils.splitWorkload(
+				CurseAPI.getMaximumThreads(),
+				firstIterationDependencies.size(),
+				index -> retrieveDependencies(
+						files,
+						predicate,
+						dependencies,
+						firstIterationDependencies,
+						index
+				)
+		);
 
 		dependencies.remove(null);
 		return new TRLList<>(dependencies);
 	}
 
-	private CurseFile getFile(Map<Integer, Integer> files, int projectID, FilePredicate predicate)
-			throws CurseException {
-		if(files.containsKey(projectID)) {
-			final int fileID = files.get(projectID);
-
-			if(CurseAPI.isValidFileID(fileID)) {
-				return getFile(projectID, files.get(projectID));
-			}
-		}
-
-		if(!CurseAPI.isCurseMetaEnabled()) {
-			return CurseProject.fromID(projectID).latestFile(predicate);
-		}
-
-		final Set<String> gameVersions = predicate.gameVersions();
-
-		final CurseFileList fileList = getFiles(projectID);
-		final CurseFile fallback = fileList.latest(gameVersions);
-
-		fileList.filterMinimumStability(predicate.minimumStability());
-		final CurseFile file = fileList.latest(gameVersions);
-
-		//Bypass minimumStability if there are no dependency files matching it
-		return file == null ? fallback : file;
-	}
-
+	//TODO refer to MinecraftVersion TOOD
 	public String gameVersion() {
-		return gameVersions.get(0);
+		return gameVersion;
 	}
 
 	public TRLList<String> gameVersions() {
@@ -388,13 +400,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public boolean hasChangelog() throws CurseException {
-		String changelog = changelog().trim().toLowerCase(Locale.ENGLISH);
-
-		if(StringUtils.lastChar(changelog) == '.') {
-			changelog = StringUtils.removeLastChar(changelog);
-		}
-
-		return !changelog.equals("no changelog provided") && !changelog.equals("n/a");
+		changelog();
+		return hasChangelog;
 	}
 
 	public String changelog() throws CurseException {
@@ -432,6 +439,15 @@ public final class CurseFile implements Comparable<CurseFile> {
 				}
 			}
 		}
+
+		String trimmedChangelog = changelog.trim().toLowerCase(Locale.ENGLISH);
+
+		if(StringUtils.lastChar(trimmedChangelog) == '.') {
+			trimmedChangelog = StringUtils.removeLastChar(trimmedChangelog);
+		}
+
+		hasChangelog = !trimmedChangelog.equals("no changelog provided") &&
+				!trimmedChangelog.equals("n/a");
 
 		return changelogHTML;
 	}
@@ -490,39 +506,68 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public Path download(Path location) throws CurseException, IOException {
-		return NIOUtils.download(downloadURL(), location);
+		return IOUtils.download(downloadURL(), location);
 	}
 
 	public Path downloadToDirectory(Path directory) throws CurseException, IOException {
-		return NIOUtils.downloadToDirectory(downloadURL(), directory);
+		return IOUtils.downloadToDirectory(downloadURL(), directory);
 	}
 
 	public boolean matchesMinimumStability(ReleaseType stability) {
 		return releaseType.matchesMinimumStability(stability);
 	}
 
-	@Override
-	public int hashCode() {
-		return id;
-	}
+	private void retrieveDependencies(Map<Integer, Integer> files, FilePredicate predicate,
+			Set<CurseFile> dependencies, List<CurseFile> firstIterationDependencies, int index)
+			throws CurseException {
+		final Queue<CurseFile> toCheck = new PriorityBlockingQueue<>();
+		final CurseFile toAdd = firstIterationDependencies.get(index);
 
-	@Override
-	public boolean equals(Object anotherObject) {
-		if(anotherObject instanceof CurseFile) {
-			return ((CurseFile) anotherObject).id == id;
+		if(toAdd != null) {
+			toCheck.add(toAdd);
 		}
 
-		return false;
+		while(!toCheck.isEmpty()) {
+			final CurseFile file = toCheck.poll();
+
+			if(file == null) {
+				continue;
+			}
+
+			for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
+				toCheck.add(getFile(files, id, predicate));
+			}
+
+			if(file != this) {
+				dependencies.add(file);
+			}
+		}
 	}
 
-	@Override
-	public String toString() {
-		return "[id=" + id + ",name=\"" + name + "\"]";
-	}
+	private CurseFile getFile(Map<Integer, Integer> files, int projectID, FilePredicate predicate)
+			throws CurseException {
+		if(files.containsKey(projectID)) {
+			final int fileID = files.get(projectID);
 
-	@Override
-	public int compareTo(CurseFile file) {
-		return Integer.compare(id, file.id);
+			if(CurseAPI.isValidFileID(fileID)) {
+				return getFile(projectID, files.get(projectID));
+			}
+		}
+
+		if(!CurseAPI.isCurseMetaEnabled()) {
+			return CurseProject.fromID(projectID).latestFile(predicate);
+		}
+
+		final Set<String> gameVersions = predicate.gameVersions();
+
+		final CurseFileList fileList = getFiles(projectID);
+		final CurseFile fallback = fileList.latest(gameVersions);
+
+		fileList.filterMinimumStability(predicate.minimumStability());
+		final CurseFile file = fileList.latest(gameVersions);
+
+		//Bypass minimumStability if there are no dependency files matching it
+		return file == null ? fallback : file;
 	}
 
 	private String getDownloadURLString() throws CurseException {
@@ -533,7 +578,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 			final String id1 = StringUtils.removeLastChars(idString, 3);
 			//Remove leading zeros
 			final String id2 = idString.substring(id1.length()).replaceAll("^0+", "");
-			final String fileName = URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20", "+");
+			final String fileName = URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20",
+					"+");
 
 			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).
 					replace(FILE_NAME, fileName);
@@ -575,7 +621,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 				final Elements elements = relatedProjects.get(0).getAllElements();
 
 				RelationType type = null;
-				dependencyIDs = new HashMap<>();
+				dependencyIDs = new EnumMap<>(RelationType.class);
 
 				for(Element element : elements) {
 					if("h5".equals(element.tagName())) {
@@ -670,7 +716,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			return Collections.emptyMap();
 		}
 
-		final Map<RelationType, TRLList<Integer>> ids = new HashMap<>(RelationType.values().length);
+		final Map<RelationType, TRLList<Integer>> ids = new EnumMap<>(RelationType.class);
 		final TRLList<Integer> all = new TRLList<>(dependencies.size());
 		ids.put(RelationType.ALL_TYPES, all);
 

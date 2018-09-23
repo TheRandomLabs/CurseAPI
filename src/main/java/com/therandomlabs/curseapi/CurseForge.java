@@ -153,7 +153,7 @@ public final class CurseForge {
 				isMainCurseForgeProject(Documents.get(url));
 	}
 
-	public static boolean isValidMainCurseForgeProjectURL(URL url) throws CurseException {
+	public static boolean isValidMainCurseForgeProjectURL(URL url) {
 		return is(url) && ProjectType.MAIN_CURSEFORGE_PATH_PATTERN.matcher(url.getPath()).matches();
 	}
 
@@ -175,8 +175,7 @@ public final class CurseForge {
 	}
 
 	public static URL fromMainCurseForgeProject(Element document) throws CurseException {
-		return URLs.of(
-				Documents.getValue(document, "class=curseforge;attr=href;absUrl=href"));
+		return URLs.of(Documents.getValue(document, "class=curseforge;attr=href;absUrl=href"));
 	}
 
 	public static URL toMainCurseForgeProject(URL url) throws CurseException {
@@ -227,14 +226,14 @@ public final class CurseForge {
 
 	public static URL fromIDNoValidation(int projectID) throws CurseException {
 		final Wrapper<URL> urlWrapper = new Wrapper<>();
-		
+
 		CurseAPI.doWithRetries(() -> {
 			final URL url = URLs.redirect(URL + "projects/" + projectID);
-			
+
 			if(!isValidProjectURL(url)) {
 				throw new InvalidProjectIDException(projectID);
 			}
-			
+
 			urlWrapper.set(url);
 		});
 
@@ -245,7 +244,7 @@ public final class CurseForge {
 		return getFileID(URLs.of(url));
 	}
 
-	public static int getFileID(URL url) throws CurseException {
+	public static int getFileID(URL url) {
 		return Integer.parseInt(ArrayUtils.last(StringUtils.split(url.getPath(), '/')));
 	}
 

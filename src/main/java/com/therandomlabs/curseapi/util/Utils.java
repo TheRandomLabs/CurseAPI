@@ -14,7 +14,7 @@ import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.MapUtils;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.io.NIOUtils;
+import com.therandomlabs.utils.io.IOUtils;
 import com.therandomlabs.utils.misc.ReflectionUtils;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
@@ -23,7 +23,7 @@ public final class Utils {
 	private Utils() {}
 
 	public static <T> T fromJson(Path path, Class<T> clazz) throws IOException {
-		return new Gson().fromJson(NIOUtils.readFile(path), clazz);
+		return new Gson().fromJson(IOUtils.readFile(path), clazz);
 	}
 
 	public static ZonedDateTime parseTime(String time) {

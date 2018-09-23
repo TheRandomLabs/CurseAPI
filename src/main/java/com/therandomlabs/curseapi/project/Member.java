@@ -33,6 +33,12 @@ public final class Member implements Serializable {
 		this.url = url;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[type=\"" + type + "\",username=\"" + username +
+				"\"]";
+	}
+
 	public MemberType type() {
 		return type;
 	}
@@ -49,25 +55,21 @@ public final class Member implements Serializable {
 		return urlString;
 	}
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() +
-				"[type=\"" + type + "\",username=\"" + username + "\"]";
-	}
-
-	static Member[] fromAuthors(AddOnAuthor[] authors) throws CurseException {
-		final Member[] members = new Member[authors.length];
-		for(int i = 0; i < authors.length; i++) {
-			members[i] = new Member(null, authors[i].Name);
-		}
-		return members;
-	}
-
 	public static String getURLString(String username) {
 		return CurseForge.URL + "members/" + username;
 	}
 
 	public static String getURLString(CurseForgeSite site, String username) {
 		return site.urlString() + "members/" + username;
+	}
+
+	static Member[] fromAuthors(AddOnAuthor[] authors) throws CurseException {
+		final Member[] members = new Member[authors.length];
+
+		for(int i = 0; i < authors.length; i++) {
+			members[i] = new Member(null, authors[i].Name);
+		}
+
+		return members;
 	}
 }

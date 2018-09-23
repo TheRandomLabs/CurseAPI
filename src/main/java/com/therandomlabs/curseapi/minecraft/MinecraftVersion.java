@@ -8,11 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
 
-/**
- * An {@code enum} containing all Minecraft versions listed on Curse.
- *
- * @author TheRandomLabs
- */
+//TODO GameVersion interface, move this to CurseAPI-Minecraft as MCVersion
 public enum MinecraftVersion {
 	@SerializedName("1.13-Group")
 	V1_13_GROUP,
@@ -187,6 +183,11 @@ public enum MinecraftVersion {
 				replaceAll(".GROUP", "-Group").replaceAll(".SNAPSHOT", "-Snapshot");
 	}
 
+	@Override
+	public String toString() {
+		return versionString;
+	}
+
 	public MinecraftVersion getGroup() {
 		return group;
 	}
@@ -195,6 +196,7 @@ public enum MinecraftVersion {
 		if(immutableVersions == null) {
 			immutableVersions = versions.toImmutableList();
 		}
+
 		return immutableVersions;
 	}
 
@@ -222,16 +224,6 @@ public enum MinecraftVersion {
 		return compareTo(version) <= 0;
 	}
 
-	/**
-	 * Returns a string representation of this Minecraft version.
-	 *
-	 * @return a string representation of this Minecraft version.
-	 */
-	@Override
-	public String toString() {
-		return versionString;
-	}
-
 	public static MinecraftVersion latest() {
 		return values()[1];
 	}
@@ -245,13 +237,6 @@ public enum MinecraftVersion {
 		return mcVersion == null ? null : mcVersion.getGroup();
 	}
 
-	/**
-	 * Returns the {@link MinecraftVersion} with the specified version string.
-	 *
-	 * @param version a version string.
-	 * @return the {@link MinecraftVersion} with the specified version string,
-	 * or {@code null} if it does not exist.
-	 */
 	public static MinecraftVersion fromString(String version) {
 		for(MinecraftVersion mcVersion : values()) {
 			if(mcVersion.versionString.equalsIgnoreCase(version)) {

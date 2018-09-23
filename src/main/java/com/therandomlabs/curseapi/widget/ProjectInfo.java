@@ -56,17 +56,6 @@ public final class ProjectInfo implements Cloneable, Serializable {
 		this.last_fetch = lastFetch;
 	}
 
-	public FileInfo getFileInfo(int id) {
-		for(FileInfo[] infos : versions.values()) {
-			for(FileInfo info : infos) {
-				if(info.id == id) {
-					return info;
-				}
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public int hashCode() {
 		return id;
@@ -100,5 +89,17 @@ public final class ProjectInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[id=" + id + ",title=\"" + title + "\"]";
+	}
+
+	public FileInfo getFileInfo(int id) {
+		for(FileInfo[] infos : versions.values()) {
+			for(FileInfo info : infos) {
+				if(info.id == id) {
+					return info;
+				}
+			}
+		}
+
+		return null;
 	}
 }

@@ -35,6 +35,7 @@ public enum RelationType {
 				return type;
 			}
 		}
+
 		return null;
 	}
 }

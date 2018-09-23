@@ -13,7 +13,7 @@ import com.therandomlabs.utils.io.NetUtils;
 public final class URLs {
 	public static final Pattern COOKIE_TEST = Pattern.compile("\\?cookieTest=(.*(?=&)|[^&]*)");
 
-	private static final Map<URL, URL> redirectionCache = new ConcurrentHashMap<>(50);
+	private static final Map<String, String> redirectionCache = new ConcurrentHashMap<>(50);
 
 	private URLs() {}
 
@@ -22,8 +22,10 @@ public final class URLs {
 	}
 
 	public static URL redirect(URL url) throws CurseException {
-		if(redirectionCache.containsKey(url)) {
-			return redirectionCache.get(url);
+		final String urlString = url.toString();
+
+		if(redirectionCache.containsKey(urlString)) {
+			return URLs.of(redirectionCache.get(urlString));
 		}
 
 		try {
@@ -34,7 +36,7 @@ public final class URLs {
 
 			CurseEventHandling.forEach(eventHandler -> eventHandler.postRedirect(url, redirected));
 
-			redirectionCache.put(url, redirected);
+			redirectionCache.put(urlString, redirected.toString());
 
 			return redirected;
 		} catch(IOException ex) {

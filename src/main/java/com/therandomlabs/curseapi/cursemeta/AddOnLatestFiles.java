@@ -8,10 +8,6 @@ public class AddOnLatestFiles {
 	public int ProjectFileID;
 	public String ProjectFileName;
 
-	public ReleaseType releaseType() {
-		return ReleaseType.fromName(FileType);
-	}
-
 	@Override
 	public AddOnLatestFiles clone() {
 		try {
@@ -19,5 +15,9 @@ public class AddOnLatestFiles {
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;
+	}
+
+	public ReleaseType releaseType() {
+		return ReleaseType.fromName(FileType);
 	}
 }

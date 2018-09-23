@@ -32,11 +32,6 @@ import org.jsoup.select.NodeTraversor;
 import org.jsoup.select.NodeVisitor;
 
 public final class Documents {
-	@FunctionalInterface
-	public interface DocumentToList<E> {
-		void documentToList(Element document, List<E> list) throws CurseException;
-	}
-
 	//Taken and adapted from
 	//https://github.com/jhy/jsoup/blob/master/src/main/java/org/jsoup/examples/HtmlToPlainText
 	// .java
@@ -59,6 +54,7 @@ public final class Documents {
 				wholeText = true;
 			} else if(node instanceof TextNode) {
 				final TextNode text = (TextNode) node;
+
 				if(wholeText) {
 					append(text.getWholeText().trim());
 				} else {
@@ -87,6 +83,11 @@ public final class Documents {
 			} else if(name.equals("pre")) {
 				wholeText = false;
 			}
+		}
+
+		@Override
+		public String toString() {
+			return text.toString();
 		}
 
 		//Appends text to the StringBuilder with a simple word wrap method
@@ -129,14 +130,13 @@ public final class Documents {
 				width += string.length();
 			}
 		}
-
-		@Override
-		public String toString() {
-			return text.toString();
-		}
 	}
 
-	private static final Map<Object, Map<URL, WeakReference<Document>>> cache =
+	@FunctionalInterface
+	public interface DocumentToList<E> {
+		void documentToList(Element document, List<E> list) throws CurseException;
+	}
+	private static final Map<Object, Map<String, WeakReference<Document>>> cache =
 			new ConcurrentHashMap<>();
 
 	static {
@@ -153,7 +153,7 @@ public final class Documents {
 		final FormattingVisitor formatter = new FormattingVisitor(maxLineWidth);
 		NodeTraversor.traverse(formatter, element);
 
-		//I'm looking at you, Speiger.
+		//Some people (e.g. Speiger) do this in their changelogs
 		final String string = formatter.toString().replaceAll("\n\n\n", "\n");
 		return string.startsWith("\n") ? string.substring(1) : string;
 	}
@@ -164,8 +164,11 @@ public final class Documents {
 
 	public static String read(URL url) throws CurseException, IOException {
 		CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(url));
+
 		final String string = NetUtils.read(url);
+
 		CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(url));
+
 		return string;
 	}
 
@@ -182,13 +185,13 @@ public final class Documents {
 	}
 
 	public static Document getWithCache(URL url, Object cacheKey) throws CurseException {
-		Map<URL, WeakReference<Document>> cacheMap = null;
+		Map<String, WeakReference<Document>> cacheMap = null;
 
 		if(cacheKey != null) {
 			cacheMap = cache.get(cacheKey);
 
 			if(cacheMap != null) {
-				final WeakReference<Document> reference = cacheMap.get(url);
+				final WeakReference<Document> reference = cacheMap.get(url.toString());
 
 				if(reference != null) {
 					final Document document = reference.get();
@@ -206,8 +209,11 @@ public final class Documents {
 			try {
 				htmlWrapper.set(read(url));
 			} catch(IOException ex) {
-				throw CurseException.fromThrowable("An error occurred while reading: " + url, ex,
-						url);
+				throw CurseException.fromThrowable(
+						"An error occurred while reading: " + url,
+						ex,
+						url
+				);
 			}
 		});
 
@@ -221,7 +227,7 @@ public final class Documents {
 		document.setBaseUri(url.toString());
 
 		if(cacheMap != null) {
-			cacheMap.put(url, new WeakReference<>(document));
+			cacheMap.put(url.toString(), new WeakReference<>(document));
 		}
 
 		return document;
@@ -244,26 +250,28 @@ public final class Documents {
 				final int index = split.length < 3 ? 0 : Integer.parseInt(split[2]);
 
 				switch(split[0]) {
-					case "attr":
-						element = element.getElementsByAttribute(split[1]).get(index);
-						break;
-					case "class":
-						element = element.getElementsByClass(split[1]).get(index);
-						break;
-					case "tag":
-						element = element.getElementsByTag(split[1]).get(index);
-						break;
-					case "name":
-						final Elements elements = element.getElementsByAttribute("name");
-						for(int i = 0, j = 0; i < elements.size(); i++) {
-							if(split[1].equals(elements.get(i).attr("name")) && j++ == index) {
-								element = elements.get(i);
-								break;
-							}
+				case "attr":
+					element = element.getElementsByAttribute(split[1]).get(index);
+					break;
+				case "class":
+					element = element.getElementsByClass(split[1]).get(index);
+					break;
+				case "tag":
+					element = element.getElementsByTag(split[1]).get(index);
+					break;
+				case "name":
+					final Elements elements = element.getElementsByAttribute("name");
+
+					for(int i = 0, j = 0; i < elements.size(); i++) {
+						if(split[1].equals(elements.get(i).attr("name")) && j++ == index) {
+							element = elements.get(i);
+							break;
 						}
-						break;
-					default:
-						return null;
+					}
+
+					break;
+				default:
+					return null;
 				}
 			}
 			return element;
@@ -286,27 +294,27 @@ public final class Documents {
 			final String value;
 
 			switch(split[0]) {
-				case "redirectAbsUrl":
-				case "absUrl":
-					final String absUrl = element.absUrl(split[1]);
-					value = split[0].equals("absUrl") ? absUrl : URLs.redirect(absUrl)
-							.toString();
-					break;
-				case "class":
-					final int index = split.length < 2 ? 0 : Integer.parseInt(split[1]);
-					value = element.classNames().toArray(new String[0])[index];
-					break;
-				case "attr":
-					value = element.attr(split[1]);
-					break;
-				case "html":
-					value = element.html();
-					break;
-				case "text":
-					value = element.text();
-					break;
-				default:
-					return null;
+			case "redirectAbsUrl":
+			case "absUrl":
+				final String absUrl = element.absUrl(split[1]);
+				value = split[0].equals("absUrl") ? absUrl : URLs.redirect(absUrl)
+						.toString();
+				break;
+			case "class":
+				final int index = split.length < 2 ? 0 : Integer.parseInt(split[1]);
+				value = element.classNames().toArray(new String[0])[index];
+				break;
+			case "attr":
+				value = element.attr(split[1]);
+				break;
+			case "html":
+				value = element.html();
+				break;
+			case "text":
+				value = element.text();
+				break;
+			default:
+				return null;
 			}
 
 			return value;
@@ -330,6 +338,7 @@ public final class Documents {
 			connection.disconnect();
 		} catch(IOException ex) {
 			final CurseException curseException = CurseException.fromThrowable(ex, url);
+
 			if(!(curseException instanceof CurseUnavailableException)) {
 				throw curseException;
 			}
@@ -387,6 +396,31 @@ public final class Documents {
 		return sortedList.toImmutableList();
 	}
 
+	public static int getNumberOfPages(Document document) throws CurseException {
+		try {
+			final Elements paginations = document.getElementsByClass("b-pagination");
+
+			if(paginations.isEmpty()) {
+				return 1;
+			}
+
+			final Elements paginationItems =
+					paginations.get(1).getElementsByClass("b-pagination-item");
+
+			return Integer.parseInt(CollectionUtils.fromLast(paginationItems, 1).text());
+		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
+			throw CurseException.fromThrowable(ex);
+		}
+	}
+
+	public static void putTemporaryCache(Object key, Map<String, WeakReference<Document>> cache) {
+		Documents.cache.put(key, cache);
+	}
+
+	public static void removeTemporaryCache(Object key) {
+		cache.remove(key);
+	}
+
 	private static <E> void iteratePage(Object cacheKey, DocumentToList<E> documentToList,
 			Predicate<? super E> onElementAdd, IntWrapper stoppedPage, String url,
 			Map<Integer, List<E>> allData, int page) throws CurseException {
@@ -411,30 +445,5 @@ public final class Documents {
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 			throw CurseException.fromThrowable(ex);
 		}
-	}
-
-	public static int getNumberOfPages(Document document) throws CurseException {
-		try {
-			final Elements paginations = document.getElementsByClass("b-pagination");
-
-			if(paginations.isEmpty()) {
-				return 1;
-			}
-
-			final Elements paginationItems =
-					paginations.get(1).getElementsByClass("b-pagination-item");
-
-			return Integer.parseInt(CollectionUtils.fromLast(paginationItems, 1).text());
-		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
-			throw CurseException.fromThrowable(ex);
-		}
-	}
-
-	public static void putTemporaryCache(Object key, Map<URL, WeakReference<Document>> cache) {
-		Documents.cache.put(key, cache);
-	}
-
-	public static void removeTemporaryCache(Object key) {
-		cache.remove(key);
 	}
 }

@@ -28,10 +28,6 @@ public class AddOnFile implements Cloneable, Serializable {
 	public String ReleaseType;
 	public ArrayList<AddOnModule> Modules;
 
-	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
-		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public AddOnFile clone() {
@@ -47,14 +43,20 @@ public class AddOnFile implements Cloneable, Serializable {
 		return null;
 	}
 
+	public com.therandomlabs.curseapi.file.ReleaseType releaseType() {
+		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);
+	}
+
 	public static TRLList<CurseFile> toCurseFiles(Map<Integer, Collection<AddOnFile>> files)
 			throws CurseException {
 		final TRLList<CurseFile> curseFiles = new TRLList<>(files.size());
+
 		for(Map.Entry<Integer, Collection<AddOnFile>> entry : files.entrySet()) {
 			for(AddOnFile file : entry.getValue()) {
 				curseFiles.add(new CurseFile(entry.getKey(), file));
 			}
 		}
+
 		return curseFiles;
 	}
 }

@@ -36,25 +36,6 @@ public class FilePredicate implements Predicate<CurseFile> {
 		withGameVersions(gameVersions);
 	}
 
-	public static FilePredicate mc(MinecraftVersion... mcVersions) {
-		return new FilePredicate().withMCVersions(mcVersions);
-	}
-
-	public static FilePredicate mc(Collection<MinecraftVersion> mcVersions) {
-		return new FilePredicate().withMCVersions(mcVersions);
-	}
-
-	public static FilePredicate mc(ReleaseType minimumStability, MinecraftVersion... mcVersions) {
-		return new FilePredicate().withMinimumStability(minimumStability).
-				withMCVersions(mcVersions);
-	}
-
-	public static FilePredicate mc(ReleaseType minimumStability,
-			Collection<MinecraftVersion> mcVersions) {
-		return new FilePredicate().withMinimumStability(minimumStability).
-				withMCVersions(mcVersions);
-	}
-
 	@Override
 	public boolean test(CurseFile file) {
 		if(!file.gameVersions().containsAny(gameVersions)) {
@@ -162,5 +143,24 @@ public class FilePredicate implements Predicate<CurseFile> {
 		Assertions.nonNull(condition, "condition");
 		conditions.add(condition);
 		return this;
+	}
+
+	public static FilePredicate mc(MinecraftVersion... mcVersions) {
+		return new FilePredicate().withMCVersions(mcVersions);
+	}
+
+	public static FilePredicate mc(Collection<MinecraftVersion> mcVersions) {
+		return new FilePredicate().withMCVersions(mcVersions);
+	}
+
+	public static FilePredicate mc(ReleaseType minimumStability, MinecraftVersion... mcVersions) {
+		return new FilePredicate().withMinimumStability(minimumStability).
+				withMCVersions(mcVersions);
+	}
+
+	public static FilePredicate mc(ReleaseType minimumStability,
+			Collection<MinecraftVersion> mcVersions) {
+		return new FilePredicate().withMinimumStability(minimumStability).
+				withMCVersions(mcVersions);
 	}
 }

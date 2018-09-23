@@ -14,6 +14,7 @@ public class InvalidMainCurseForgeProjectException extends CurseException {
 	public static Document validate(URL url) throws CurseException {
 		if(CurseForge.isValidMainCurseForgeProjectURL(url)) {
 			final Document document = Documents.get(url);
+
 			if(CurseForge.isMainCurseForgeProject(document)) {
 				return document;
 			}

@@ -125,19 +125,7 @@ public final class CurseAPI {
 	public static void doWithRetries(RunnableWithThrowable<CurseException> runnable)
 			throws CurseException {
 		try {
-			for(int i = 0; i < maxRetries; i++) {
-				try {
-					runnable.run();
-					break;
-				} catch(CurseException ex) {
-					if(i == maxRetries - 1) {
-						throw ex;
-					}
-
-					ThrowableHandling.handleWithoutExit(ex);
-					Thread.sleep(retryTime * 1000L);
-				}
-			}
+			actuallyDoWithRetries(runnable);
 		} catch(InterruptedException ex) {
 			ThrowableHandling.handle(ex);
 		}
@@ -149,5 +137,22 @@ public final class CurseAPI {
 		CurseMeta.clearCache();
 		CurseProject.clearProjectCache();
 		URLs.clearRedirectionCache();
+	}
+
+	private static void actuallyDoWithRetries(RunnableWithThrowable<CurseException> runnable)
+			throws CurseException, InterruptedException {
+		for(int i = 0; i < maxRetries; i++) {
+			try {
+				runnable.run();
+				break;
+			} catch(CurseException ex) {
+				if(i == maxRetries - 1) {
+					throw ex;
+				}
+
+				ThrowableHandling.handleWithoutExit(ex);
+				Thread.sleep(retryTime * 1000L);
+			}
+		}
 	}
 }

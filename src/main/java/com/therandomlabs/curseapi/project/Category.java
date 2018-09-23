@@ -10,14 +10,34 @@ public final class Category implements Serializable {
 
 	public static final Category UNKNOWN = new Category("Unknown", null, null);
 
-	private String name;
-	private URL url;
-	private URL thumbnailURL;
+	private final String name;
+	private final URL url;
+	private final String urlString;
+	private final URL thumbnailURL;
+	private final String thumbnailURLString;
 
 	Category(String name, URL url, URL thumbnailURL) {
 		this.name = name;
 		this.url = url;
+		this.urlString = url.toString();
 		this.thumbnailURL = thumbnailURL;
+		this.thumbnailURLString = thumbnailURL.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return urlString.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof Category && ((Category) object).urlString.equals(urlString);
+	}
+
+	@Override
+	public String toString() {
+		return "[name=\"" + name + "\",url=\"" + urlString + "\",thumbnailURL=\"" +
+				thumbnailURLString + "\"]";
 	}
 
 	public String name() {
@@ -29,7 +49,7 @@ public final class Category implements Serializable {
 	}
 
 	public String urlString() {
-		return url.toString();
+		return urlString;
 	}
 
 	public URL thumbnailURL() {
@@ -37,31 +57,20 @@ public final class Category implements Serializable {
 	}
 
 	public String thumbnailURLString() {
-		return thumbnailURL.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return url.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return object instanceof Category && ((Category) object).url.equals(url);
-	}
-
-	@Override
-	public String toString() {
-		return "[name=\"" + name + "\",url=\"" + url + "\",thumbnailURL=\"" + thumbnailURL + "\"]";
+		return thumbnailURLString;
 	}
 
 	public static Category[] fromAddOnCategories(AddOnCategory[] addOnCategories) {
 		final Category[] categories = new Category[addOnCategories.length];
+
 		for(int i = 0; i < addOnCategories.length; i++) {
 			final AddOnCategory category = addOnCategories[i];
-			categories[i] =
-					new Category(category.Name, category.URL, CurseAPI.PLACEHOLDER_THUMBNAIL_URL);
+			categories[i] = new Category(category.Name,
+					category.URL,
+					CurseAPI.PLACEHOLDER_THUMBNAIL_URL
+			);
 		}
+
 		return categories;
 	}
 }

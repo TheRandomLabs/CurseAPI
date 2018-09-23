@@ -34,6 +34,7 @@ public enum PackageType {
 				return type;
 			}
 		}
+
 		return null;
 	}
 }

@@ -58,6 +58,33 @@ public class CurseFileList extends TRLList<CurseFile> {
 		}
 	}
 
+	@Override
+	public CurseFileList clone() {
+		return new CurseFileList(toArray());
+	}
+
+	@Override
+	public boolean add(CurseFile file) {
+		if(contains(file)) {
+			return false;
+		}
+
+		super.add(file);
+		return true;
+	}
+
+	@Override
+	public void add(int index, CurseFile file) {
+		if(!contains(file)) {
+			super.add(index, file);
+		}
+	}
+
+	@Override
+	public CurseFile[] toArray() {
+		return toArray(new CurseFile[0]);
+	}
+
 	public CurseFile latest() {
 		return latest(file -> true);
 	}
@@ -115,6 +142,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 				if(preferOlder) {
 					return file;
 				}
+
 				return lastFile == null ? file : lastFile;
 			}
 
@@ -130,6 +158,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -143,6 +172,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -187,8 +217,9 @@ public class CurseFileList extends TRLList<CurseFile> {
 	public void between(int oldID, int newID, boolean includeOlder, boolean includeNewer) {
 		final int older = includeOlder ? oldID - 1 : oldID;
 		final int newer = includeNewer ? newID + 1 : newID;
+
 		filter(file -> file.id() > older && file.id() < newer);
-}
+	}
 
 	public void filterMCVersionGroup(String version) {
 		filterVersions(MinecraftVersion.groupFromString(version));
@@ -258,31 +289,8 @@ public class CurseFileList extends TRLList<CurseFile> {
 		sort(Comparator.comparing(CurseFile::projectTitle));
 	}
 
-	@Override
-	public CurseFileList clone() {
-		return new CurseFileList(toArray());
-	}
-
-	@Override
-	public CurseFile[] toArray() {
-		return toArray(new CurseFile[0]);
-	}
-
-	@Override
-	public boolean add(CurseFile file) {
-		if(contains(file)) {
-			return false;
-		}
-
-		super.add(file);
-		return true;
-	}
-
-	@Override
-	public void add(int index, CurseFile file) {
-		if(!contains(file)) {
-			super.add(index, file);
-		}
+	public static Collector<CurseFile, ?, CurseFileList> toCurseFileList() {
+		return TRLCollectors.toCollection(CurseFileList::new);
 	}
 
 	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
@@ -299,10 +307,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 		}
 
 		files.removeAll(duplicates);
-		return files;
-	}
 
-	public static Collector<CurseFile, ?, CurseFileList> toCurseFileList() {
-		return TRLCollectors.toCollection(CurseFileList::new);
+		return files;
 	}
 }

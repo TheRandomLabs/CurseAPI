@@ -6,11 +6,6 @@ import com.therandomlabs.curseapi.CurseException;
 public class CurseMetaException extends CurseException {
 	private static final long serialVersionUID = 6701322810093597285L;
 
-	public static final String UNAVAILABLE_MESSAGE = "CurseMeta seems to be unavailable. " +
-			"This could be due to a bug in CurseAPI, because CurseMeta is not working " +
-			"as intended, or because Java or the system cannot access the internet. " +
-			"Remember that CurseMeta is a community-run project, and may not always be reliable.";
-
 	public CurseMetaException(String message) {
 		super(message);
 	}
@@ -25,6 +20,9 @@ public class CurseMetaException extends CurseException {
 	}
 
 	public static void unavailable() throws CurseMetaException {
-		throw new CurseMetaException(UNAVAILABLE_MESSAGE);
+		throw new CurseMetaException("CurseMeta seems to be unavailable. " +
+				"This could be due to a bug in CurseAPI, because CurseMeta is not working " +
+				"as intended, or because Java or the system cannot access the internet. " +
+				"Remember that CurseMeta is a community-run project and is not always reliable.");
 	}
 }

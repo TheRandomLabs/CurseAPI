@@ -21,7 +21,8 @@ public class CurseMetaStatus implements Cloneable, Serializable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[status=" + status + ",message=" + message + ",apis=" +
+		return getClass().getSimpleName() + "[status=" + status + ",message=" + message + ",apis" +
+				"=" +
 				Arrays.toString(apis) + "]";
 	}
 }

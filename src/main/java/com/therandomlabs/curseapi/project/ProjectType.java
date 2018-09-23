@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 import com.google.gson.annotations.SerializedName;
-import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
+import com.therandomlabs.curseapi.Game;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StringUtils;
@@ -196,7 +196,8 @@ public final class ProjectType {
 		@SerializedName("Mods")
 		public static final ProjectType MODS = get("Mods", "wot-mods", "worldoftanks/wot-mods");
 		@SerializedName("Skins")
-		public static final ProjectType SKINS = get("Skins", "wot-skins", "worldoftanks/wot-skins");
+		public static final ProjectType SKINS = get("Skins", "wot-skins", "worldoftanks/wot" +
+				"-skins");
 
 		private WorldOfTanks() {}
 
@@ -304,7 +305,8 @@ public final class ProjectType {
 		}
 
 		private static ProjectType get(String name, String path, String mainCurseForgePath) {
-			return new ProjectType(name, CurseForgeSite.THE_SECRET_WORLD, path, mainCurseForgePath);
+			return new ProjectType(name, CurseForgeSite.THE_SECRET_WORLD, path,
+					mainCurseForgePath);
 		}
 	}
 
@@ -445,34 +447,43 @@ public final class ProjectType {
 			return new ProjectType(name, CurseForgeSite.STAXEL, path, mainCurseForgePath);
 		}
 	}
-
-	private static final List<ProjectType> values = new TRLList<>();
-
 	public static final ProjectType UNKNOWN =
 			new ProjectType("Unknown", CurseForgeSite.UNKNOWN, "unknown", "unknown");
-
 	public static final Pattern MAIN_CURSEFORGE_PATH_PATTERN;
 	public static final String MAIN_CURSEFORGE_PATH_PATTERN_STRING;
+	private static final List<ProjectType> values = new TRLList<>();
+	private final String name;
+	private final String singularName;
+	private final String fullName;
+	private final String fullSingularName;
+	private final CurseForgeSite site;
+	private final Game game;
+	private final String sitePath;
+	private final String mainCurseForgeSitePath;
+	private final Pattern mainCurseForgePattern;
+	private final String mainCurseForgePatternString;
+	private final URL mainCurseForgeURL;
+	private final String mainCurseForgeURLString;
 
 	static {
 		//Initialize all project type classes
-		new Bukkit();
-		new Minecraft();
-		new KerbalSpaceProgram();
-		new WildStar();
-		new WorldOfTanks();
-		new Terraria();
-		new Rift();
-		new RunesOfMagic();
-		new Skyrim();
-		new TheSecretWorld();
-		new TheElderScrollsOnline();
-		new SecretWorldLegends();
-		new DarkestDungeon();
-		new SurvivingMars();
-		new GrandTheftAutoV();
-		new StardewValley();
-		new Staxel();
+		Bukkit.values();
+		Minecraft.values();
+		KerbalSpaceProgram.values();
+		WildStar.values();
+		WorldOfTanks.values();
+		Terraria.values();
+		Rift.values();
+		RunesOfMagic.values();
+		Skyrim.values();
+		TheSecretWorld.values();
+		TheElderScrollsOnline.values();
+		SecretWorldLegends.values();
+		DarkestDungeon.values();
+		SurvivingMars.values();
+		GrandTheftAutoV.values();
+		StardewValley.values();
+		Staxel.values();
 
 		//Main CurseForge path pattern
 
@@ -489,17 +500,12 @@ public final class ProjectType {
 		MAIN_CURSEFORGE_PATH_PATTERN = Pattern.compile(MAIN_CURSEFORGE_PATH_PATTERN_STRING);
 	}
 
-	private final String name;
-	private final CurseForgeSite site;
-	private final String sitePath;
-	private final String mainCurseForgeSitePath;
-	private final Pattern mainCurseForgePattern;
-	private final String mainCurseForgePatternString;
-	private final URL mainCurseForgeURL;
-	private final String mainCurseForgeURLString;
-
 	ProjectType(String name, CurseForgeSite site, String sitePath, String mainCurseForgeSitePath) {
 		this.name = name;
+		singularName = StringUtils.removeLastChar(name);
+		game = site.game();
+		fullName = game + " " + name;
+		fullSingularName = game + " " + singularName;
 		this.site = site;
 		this.sitePath = sitePath;
 
@@ -519,6 +525,11 @@ public final class ProjectType {
 		mainCurseForgeURL = url;
 
 		values.add(this);
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	public CurseForgeSite site() {
@@ -549,25 +560,20 @@ public final class ProjectType {
 		return mainCurseForgeURLString;
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
 	public String fullName() {
-		return game() + " " + name;
+		return fullName;
 	}
 
 	public Game game() {
-		return site.game();
+		return game;
 	}
 
 	public String fullSingularName() {
-		return game() + " " + singularName();
+		return fullSingularName;
 	}
 
 	public String singularName() {
-		return StringUtils.removeLastChar(name);
+		return singularName;
 	}
 
 	public static ProjectType[] values() {
@@ -610,6 +616,7 @@ public final class ProjectType {
 				return type;
 			}
 		}
+
 		return UNKNOWN;
 	}
 }

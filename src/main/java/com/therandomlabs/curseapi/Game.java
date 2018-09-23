@@ -2,11 +2,6 @@ package com.therandomlabs.curseapi;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * An {@code enum} containing all of the games supported by Curse.
- *
- * @author TheRandomLabs
- */
 public enum Game {
 	@SerializedName("Minecraft")
 	MINECRAFT("Minecraft", 432),
@@ -55,6 +50,11 @@ public enum Game {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 	public static Game fromName(String name) {
 		for(Game game : values()) {
 			if(game.name.equalsIgnoreCase(name)) {
@@ -71,15 +71,5 @@ public enum Game {
 			}
 		}
 		return UNKNOWN;
-	}
-
-	/**
-	 * Returns the name of this game.
-	 *
-	 * @return the name of this game.
-	 */
-	@Override
-	public String toString() {
-		return name;
 	}
 }

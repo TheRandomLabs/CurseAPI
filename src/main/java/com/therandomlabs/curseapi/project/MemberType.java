@@ -15,9 +15,8 @@ public enum MemberType {
 	AUTHOR("AddOnAuthor"),
 	@SerializedName("Former AddOnAuthor")
 	FORMER_AUTHOR("Former AddOnAuthor"),
-	//Apparently it's misspelt
-	@SerializedName("Ticket Manger")
-	TICKET_MANAGER("Ticket Manger"),
+	@SerializedName("Ticket Manager")
+	TICKET_MANAGER("Ticket Manager"),
 	@SerializedName("Tester")
 	TESTER("Tester"),
 	@SerializedName("Artist")
@@ -33,17 +32,18 @@ public enum MemberType {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 	public static MemberType fromName(String name) {
 		for(MemberType type : values()) {
 			if(type.toString().equalsIgnoreCase(name)) {
 				return type;
 			}
 		}
-		return null;
-	}
 
-	@Override
-	public String toString() {
-		return name;
+		return null;
 	}
 }

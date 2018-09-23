@@ -36,6 +36,7 @@ public enum ProjectStage {
 				return stage;
 			}
 		}
+
 		return null;
 	}
 }

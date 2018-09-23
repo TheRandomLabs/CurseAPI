@@ -6,8 +6,7 @@ public final class DateInfo implements Cloneable, Serializable {
 	private static final long serialVersionUID = 3437565908465622016L;
 
 	public String date;
-	//https://stackoverflow.com/questions/17694894/different-timezone-types-on-datetime-object/
-	//17711005#17711005
+	//https://stackoverflow.com/a/17711005/5076824
 	public int timezone_type;
 	public String timezone;
 
@@ -33,7 +32,6 @@ public final class DateInfo implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" +
-				timezone +
-				"\"]";
+				timezone + "\"]";
 	}
 }
