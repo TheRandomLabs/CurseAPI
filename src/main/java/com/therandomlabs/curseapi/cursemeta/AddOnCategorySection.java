@@ -1,10 +1,6 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.Serializable;
-
-public class AddOnCategorySection implements Cloneable, Serializable {
-	private static final long serialVersionUID = 6343148244101167939L;
-
+public class AddOnCategorySection implements Cloneable {
 	public String ExtraIncludePattern;
 	public int GameID;
 	public int ID;

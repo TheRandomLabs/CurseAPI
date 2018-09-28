@@ -1,11 +1,8 @@
 package com.therandomlabs.curseapi.widget;
 
-import java.io.Serializable;
 import com.therandomlabs.curseapi.project.MemberType;
 
-public final class MemberInfo implements Cloneable, Serializable {
-	private static final long serialVersionUID = -5874001152475689908L;
-
+public final class MemberInfo implements Cloneable {
 	public MemberType title;
 	public String username;
 

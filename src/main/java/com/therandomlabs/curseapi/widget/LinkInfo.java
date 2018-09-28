@@ -1,10 +1,6 @@
 package com.therandomlabs.curseapi.widget;
 
-import java.io.Serializable;
-
-public final class LinkInfo implements Cloneable, Serializable {
-	private static final long serialVersionUID = -7219342283246695113L;
-
+public final class LinkInfo implements Cloneable {
 	public String href;
 	public String title;
 

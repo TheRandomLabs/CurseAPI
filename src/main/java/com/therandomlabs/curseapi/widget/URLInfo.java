@@ -1,17 +1,14 @@
 package com.therandomlabs.curseapi.widget;
 
-import java.io.Serializable;
 import java.net.URL;
 
-public final class URLInfo implements Cloneable, Serializable {
-	private static final long serialVersionUID = 8414622257848610580L;
-
+public final class URLInfo implements Cloneable {
 	public URL project;
 	public URL curseforge;
 
 	@Override
 	public int hashCode() {
-		return project.hashCode() + curseforge.hashCode();
+		return project.toString().hashCode() + curseforge.toString().hashCode();
 	}
 
 	@Override

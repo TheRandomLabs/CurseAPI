@@ -1,14 +1,11 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.Serializable;
 import java.net.URL;
 import com.therandomlabs.curseapi.project.ProjectStage;
 import com.therandomlabs.curseapi.project.ProjectStatus;
 import com.therandomlabs.curseapi.util.Utils;
 
-public class AddOn implements Cloneable, Serializable {
-	private static final long serialVersionUID = -1888244561525104543L;
-
+public class AddOn implements Cloneable {
 	public AddOnAttachment[] Attachments;
 	public AddOnAuthor[] Authors;
 	public URL AvatarUrl;

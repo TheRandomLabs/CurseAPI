@@ -1,11 +1,8 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.Serializable;
 import java.net.URL;
 
-public class AddOnAuthor implements Cloneable, Serializable {
-	private static final long serialVersionUID = 2325859921135090509L;
-
+public class AddOnAuthor implements Cloneable {
 	public String Name;
 	public URL Url;
 

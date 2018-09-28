@@ -1,11 +1,8 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
-public class CurseMetaStatus implements Cloneable, Serializable {
-	private static final long serialVersionUID = -460290357893113377L;
-
+public class CurseMetaStatus implements Cloneable {
 	public String status;
 	public String message;
 	public String[] apis;

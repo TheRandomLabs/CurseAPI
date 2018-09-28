@@ -1,13 +1,10 @@
 package com.therandomlabs.curseapi.project;
 
-import java.io.Serializable;
 import java.net.URL;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.cursemeta.AddOnCategory;
 
-public final class Category implements Serializable {
-	private static final long serialVersionUID = 4578392820713062750L;
-
+public final class Category {
 	public static final Category UNKNOWN = new Category("Unknown", null, null);
 
 	private final String name;

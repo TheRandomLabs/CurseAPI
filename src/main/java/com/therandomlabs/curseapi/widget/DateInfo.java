@@ -1,10 +1,6 @@
 package com.therandomlabs.curseapi.widget;
 
-import java.io.Serializable;
-
-public final class DateInfo implements Cloneable, Serializable {
-	private static final long serialVersionUID = 3437565908465622016L;
-
+public final class DateInfo implements Cloneable {
 	public String date;
 	//https://stackoverflow.com/a/17711005/5076824
 	public int timezone_type;

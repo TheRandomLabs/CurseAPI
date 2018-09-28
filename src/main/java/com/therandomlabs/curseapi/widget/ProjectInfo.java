@@ -1,12 +1,11 @@
 package com.therandomlabs.curseapi.widget;
 
-import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Utils;
 
-public final class ProjectInfo implements Cloneable, Serializable {
+public final class ProjectInfo implements Cloneable {
 	private static final long serialVersionUID = -7608267242380681184L;
 
 	public int id;

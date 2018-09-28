@@ -1,6 +1,5 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -11,9 +10,7 @@ import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.utils.collection.TRLList;
 
-public class AddOnFile implements Cloneable, Serializable {
-	private static final long serialVersionUID = -1265896534353648752L;
-
+public class AddOnFile implements Cloneable {
 	public int Id;
 	public int AlternateFileId;
 	public ArrayList<AddOnFileDependency> Dependencies;

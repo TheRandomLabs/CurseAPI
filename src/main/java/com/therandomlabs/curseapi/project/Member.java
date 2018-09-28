@@ -1,17 +1,13 @@
 package com.therandomlabs.curseapi.project;
 
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
 import com.therandomlabs.curseapi.cursemeta.AddOnAuthor;
 
 //TODO avatar and projects
-public final class Member implements Serializable {
-	private static final long serialVersionUID = -5874001152475689908L;
-
+public final class Member {
 	public static final Member UNKNOWN = new Member(MemberType.OWNER, "Unknown");
 
 	private final MemberType type;
@@ -63,7 +59,7 @@ public final class Member implements Serializable {
 		return site.urlString() + "members/" + username;
 	}
 
-	static Member[] fromAuthors(AddOnAuthor[] authors) throws CurseException {
+	static Member[] fromAuthors(AddOnAuthor[] authors) {
 		final Member[] members = new Member[authors.length];
 
 		for(int i = 0; i < authors.length; i++) {
