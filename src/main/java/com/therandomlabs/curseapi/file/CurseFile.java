@@ -20,6 +20,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
+import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.cursemeta.AddOnFile;
 import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
@@ -30,7 +31,6 @@ import com.therandomlabs.curseapi.game.GameVersions;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.Member;
-import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.util.Documents;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.util.Utils;
@@ -101,6 +101,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private boolean hasNoProject;
 
+	@SuppressWarnings("unchecked")
 	public CurseFile(CurseProject project, int id, URL url, Element document)
 			throws CurseException {
 		projectID = project.id();
@@ -175,6 +176,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		hasNoProject = true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private CurseFile(int projectID, Game game, CurseProject project, FileStatus status, int id,
 			String name, String nameOnDisk, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,

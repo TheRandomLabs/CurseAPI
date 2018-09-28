@@ -23,7 +23,7 @@ public interface GameVersionHandler<V extends GameVersion<V, G>, G extends GameV
 
 	default TRLList<V> get(Collection<String> ids) {
 		final TRLList<V> versions = CollectionUtils.map(new TRLList<>(ids.size()), ids, this::get);
-		versions.remove(GameVersions.unknown());
+		versions.remove(GameVersions.<V>unknown());
 		return versions;
 	}
 }
