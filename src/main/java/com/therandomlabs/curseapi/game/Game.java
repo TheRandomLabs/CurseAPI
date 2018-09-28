@@ -13,10 +13,10 @@ public enum Game {
 	KERBAL_SPACE_PROGRAM("Kerbal Space Program", 4401),
 	@SerializedName("WildStar")
 	WILDSTAR("WildStar", 454),
-	@SerializedName("World of Tanks")
-	WORLD_OF_TANKS("World of Tanks", 423),
 	@SerializedName("Terraria")
 	TERRARIA("Terraria", 431),
+	@SerializedName("World of Tanks")
+	WORLD_OF_TANKS("World of Tanks", 423),
 	@SerializedName("Rift")
 	RIFT("Rift", 424),
 	@SerializedName("Runes of Magic")
@@ -29,14 +29,14 @@ public enum Game {
 	THE_ELDER_SCROLLS("The Elder Scrolls Online", 455),
 	@SerializedName("Secret World Legends")
 	SECRET_WORLD_LEGENDS("Secret World Legends", 4455),
-	@SerializedName("Darkest Dungeon")
-	DARKEST_DUNGEON("Darkest Dungeon", 608),
-	@SerializedName("Surviving Mars")
-	SURVIVING_MARS("Surviving Mars", 61489),
-	@SerializedName("Grand Theft Auto V")
-	GRAND_THEFT_AUTO_V("Grand Theft Auto V", 496),
 	@SerializedName("Stardew Valley")
 	STARDEW_VALLEY("Stardew Valley", 669),
+	@SerializedName("Surviving Mars")
+	SURVIVING_MARS("Surviving Mars", 61489),
+	@SerializedName("Darkest Dungeon")
+	DARKEST_DUNGEON("Darkest Dungeon", 608),
+	@SerializedName("Grand Theft Auto V")
+	GRAND_THEFT_AUTO_V("Grand Theft Auto V", 496),
 	@SerializedName("Staxel")
 	STAXEL("Staxel", 18237),
 	@SerializedName("Unknown")
