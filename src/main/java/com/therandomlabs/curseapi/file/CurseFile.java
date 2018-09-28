@@ -129,7 +129,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		gameVersionString = gameVersions.get(0);
 
 		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
-		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
+		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN :
+				this.gameVersions.get(0);
 
 		downloads = Integer.parseInt(Documents.getValue(document,
 				"class=details-info;class=info-data=4;text").replaceAll(",", ""));
@@ -201,21 +202,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.downloads = downloads;
 		this.dependencyIDs = dependencyIDs;
 
-		final TRLList<String> gameVersionList = new TRLList<>();
-
-		for(String gameVersion : gameVersions) {
-			//Stay consistent with CurseMeta
-			//CurseMeta doesn't include Java versions for some reason
-			if(!gameVersion.startsWith("Java ")) {
-				gameVersionList.add(gameVersion);
-			}
-		}
-
-		gameVersionStrings = gameVersionList.toImmutableList();
-		gameVersionString = gameVersionList.get(0);
+		gameVersionStrings = new ImmutableList<>(gameVersions);
+		gameVersionString = gameVersionStrings.get(0);
 
 		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
-		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
+		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN :
+				this.gameVersions.get(0);
 	}
 
 	@Override
