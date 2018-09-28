@@ -16,7 +16,6 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
-import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.InvalidCurseForgeProjectException;
 import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.cursemeta.AddOn;
@@ -24,6 +23,7 @@ import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
 import com.therandomlabs.curseapi.file.ReleaseType;
+import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Documents;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.util.Utils;
@@ -211,7 +211,7 @@ public final class CurseProject {
 			if(avatarURL == CurseAPI.PLACEHOLDER_THUMBNAIL_URL) {
 				avatar = CurseAPI.getPlaceholderThumbnail();
 			} else {
-				avatar = ImageIO.read(NetUtils.download(avatarURL));
+				avatar = ImageIO.read(NetUtils.getInputStream(avatarURL));
 			}
 		}
 
@@ -227,7 +227,7 @@ public final class CurseProject {
 	}
 
 	public BufferedImage thumbnail() throws IOException {
-		return ImageIO.read(NetUtils.download(thumbnailURL));
+		return ImageIO.read(NetUtils.getInputStream(thumbnailURL));
 	}
 
 	public Member owner() {
@@ -399,7 +399,7 @@ public final class CurseProject {
 					this,
 					url + "/files?",
 					this::getFiles,
-					file -> file.id() >= oldID, //Continue as long as file.ID() >= oldID
+					file -> file.id() >= oldID, //Continue as long as oldID has not been found
 					forceMultithreadedFileSearches
 			);
 

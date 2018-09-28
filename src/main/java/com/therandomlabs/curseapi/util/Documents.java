@@ -162,7 +162,7 @@ public final class Documents {
 		return read(URLs.of(url));
 	}
 
-	public static String read(URL url) throws CurseException, IOException {
+	public static String read(URL url) throws IOException {
 		CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(url));
 
 		final String string = NetUtils.read(url);
@@ -426,11 +426,13 @@ public final class Documents {
 	private static <E> void iteratePage(Object cacheKey, DocumentToList<E> documentToList,
 			Predicate<? super E> onElementAdd, IntWrapper stoppedPage, String url,
 			Map<Integer, List<E>> allData, int page) throws CurseException {
-		try {
-			if(stoppedPage.get() != -1 && page > stoppedPage.get()) {
-				return;
-			}
+		final int stopped = stoppedPage.get();
 
+		if(stopped != -1 && page > stopped) {
+			return;
+		}
+
+		try {
 			final TRLList<E> data = new TRLList<>(CurseAPI.RELATIONS_PER_PAGE);
 
 			if(onElementAdd != null) {

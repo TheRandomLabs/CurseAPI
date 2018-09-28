@@ -26,7 +26,7 @@ public final class CurseAPI {
 
 	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
 
-	private static int maxRetries = 10;
+	private static int maxRetries = 3;
 	private static int retryTime = 10;
 
 	private static boolean widgetAPI;
@@ -48,7 +48,7 @@ public final class CurseAPI {
 
 	public static BufferedImage getPlaceholderThumbnail() throws IOException {
 		if(placeholderThumbnail == null) {
-			placeholderThumbnail = ImageIO.read(NetUtils.download(PLACEHOLDER_THUMBNAIL_URL));
+			placeholderThumbnail = ImageIO.read(NetUtils.getInputStream(PLACEHOLDER_THUMBNAIL_URL));
 		}
 
 		return placeholderThumbnail;

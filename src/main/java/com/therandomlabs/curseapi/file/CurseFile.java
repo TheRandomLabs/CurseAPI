@@ -510,7 +510,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public InputStream download() throws CurseException, IOException {
-		return NetUtils.download(downloadURL());
+		return NetUtils.getInputStream(downloadURL());
 	}
 
 	public Path download(Path location) throws CurseException, IOException {
