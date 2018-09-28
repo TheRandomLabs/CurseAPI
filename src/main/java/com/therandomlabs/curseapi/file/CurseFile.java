@@ -123,7 +123,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 				get(0).getElementsByTag("li");
 
 		final TRLList<String> gameVersions = CollectionUtils.map(versions, Element::text);
-		gameVersions.removeIf(version -> version.startsWith("Java "));
 
 		gameVersionStrings = gameVersions.toImmutableList();
 		gameVersionString = gameVersions.get(0);
