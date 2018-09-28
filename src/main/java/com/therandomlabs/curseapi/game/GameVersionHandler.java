@@ -4,15 +4,15 @@ import java.util.Collection;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.TRLList;
 
-public interface GameVersionHandler {
+public interface GameVersionHandler<V extends GameVersion, G extends GameVersionGroup> {
 	Game getGame();
 
-	TRLList<GameVersion> getVersions();
+	TRLList<V> getVersions();
 
-	TRLList<GameVersionGroup> getGroups();
+	TRLList<G> getGroups();
 
 	default GameVersion get(String id) {
-		for(GameVersion version : getVersions()) {
+		for(V version : getVersions()) {
 			if(version.id().equalsIgnoreCase(id) || version.toString().equalsIgnoreCase(id)) {
 				return version;
 			}

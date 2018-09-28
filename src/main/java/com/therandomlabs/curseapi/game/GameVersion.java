@@ -2,12 +2,13 @@ package com.therandomlabs.curseapi.game;
 
 import java.util.Locale;
 
-public interface GameVersion<V extends GameVersion> extends Comparable<V> {
+public interface GameVersion<V extends GameVersion, G extends GameVersionGroup>
+		extends Comparable<V> {
 	default String id() {
 		return toString().toLowerCase(Locale.ENGLISH);
 	}
 
-	default GameVersionGroup getGroup() {
+	default G getGroup() {
 		return null;
 	}
 
