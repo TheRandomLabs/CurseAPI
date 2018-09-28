@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi.game;
 import java.util.Locale;
 import com.therandomlabs.utils.collection.TRLList;
 
-public interface GameVersionGroup<V extends GameVersion, G extends GameVersionGroup>
+public interface GameVersionGroup<V extends GameVersion<V, G>, G extends GameVersionGroup<V, G>>
 		extends Comparable<G> {
 	default String id() {
 		return toString().toLowerCase(Locale.ENGLISH);

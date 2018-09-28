@@ -51,6 +51,11 @@ public final class GameVersions {
 		handlers.remove(handler);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <V extends GameVersion<V, ?>> V unknown() {
+		return (V) UNKNOWN;
+	}
+
 	static GameVersionHandler getHandler(Game game) {
 		for(GameVersionHandler handler : handlers) {
 			if(handler.getGame() == game) {
