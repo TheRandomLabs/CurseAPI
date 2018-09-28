@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
+import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.project.ProjectType;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.utils.throwable.ThrowableHandling;

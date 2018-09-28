@@ -7,6 +7,7 @@ import java.util.Map;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.FileStatus;
+import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.utils.collection.TRLList;
 
@@ -47,13 +48,13 @@ public class AddOnFile implements Cloneable, Serializable {
 		return com.therandomlabs.curseapi.file.ReleaseType.fromName(ReleaseType);
 	}
 
-	public static TRLList<CurseFile> toCurseFiles(Map<Integer, Collection<AddOnFile>> files)
-			throws CurseException {
+	public static TRLList<CurseFile> toCurseFiles(Map<Integer, Collection<AddOnFile>> files,
+			Game game) throws CurseException {
 		final TRLList<CurseFile> curseFiles = new TRLList<>(files.size());
 
 		for(Map.Entry<Integer, Collection<AddOnFile>> entry : files.entrySet()) {
 			for(AddOnFile file : entry.getValue()) {
-				curseFiles.add(new CurseFile(entry.getKey(), file));
+				curseFiles.add(new CurseFile(entry.getKey(), game, file));
 			}
 		}
 

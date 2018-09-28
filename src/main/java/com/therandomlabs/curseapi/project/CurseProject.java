@@ -16,8 +16,9 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
-import com.therandomlabs.curseapi.Game;
+import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.InvalidCurseForgeProjectException;
+import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.cursemeta.AddOn;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.file.CurseFile;
@@ -439,7 +440,7 @@ public final class CurseProject {
 			return CurseFile.nullFile(this.id, id);
 		}
 
-		return new CurseFile(this.id, CurseMeta.getFile(this.id, id));
+		return new CurseFile(this.id, game, CurseMeta.getFile(this.id, id));
 	}
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {

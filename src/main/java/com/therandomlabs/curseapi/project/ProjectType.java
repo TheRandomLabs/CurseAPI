@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import com.google.gson.annotations.SerializedName;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
-import com.therandomlabs.curseapi.Game;
+import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.StringUtils;

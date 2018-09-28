@@ -5,36 +5,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
-import com.therandomlabs.utils.collection.CollectionUtils;
+import com.therandomlabs.curseapi.game.GameVersion;
+import com.therandomlabs.curseapi.game.GameVersionGroup;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.Assertions;
 
 public class FilePredicate implements Predicate<CurseFile> {
-	private final HashSet<String> gameVersions = new HashSet<>(2);
+	private final HashSet<GameVersionGroup> gameVersionGroups = new HashSet<>(2);
+	private final HashSet<GameVersion> gameVersions = new HashSet<>(2);
+	private final HashSet<String> gameVersionStrings = new HashSet<>(2);
+
 	private final HashSet<IntPredicate> idConditions = new HashSet<>(1);
 	private final HashSet<Predicate<CurseFile>> conditions = new HashSet<>(1);
+
 	private ReleaseType minimumStability = ReleaseType.ALPHA;
-
-	public FilePredicate(String... gameVersions) {
-		withGameVersions(gameVersions);
-	}
-
-	public FilePredicate(Collection<String> gameVersions) {
-		withGameVersions(gameVersions);
-	}
-
-
-	public FilePredicate(ReleaseType minimumStability, String... gameVersions) {
-		withMinimumStability(minimumStability);
-		withGameVersions(gameVersions);
-	}
-
-	public FilePredicate(ReleaseType minimumStability, Collection<String> gameVersions) {
-		withMinimumStability(minimumStability);
-		withGameVersions(gameVersions);
-	}
 
 	@Override
 	public boolean test(CurseFile file) {
@@ -80,8 +65,18 @@ public class FilePredicate implements Predicate<CurseFile> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<String> gameVersions() {
-		return (Set<String>) gameVersions.clone();
+	public Set<GameVersion> gameVersions() {
+		return (Set<GameVersion>) gameVersions.clone();
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<GameVersionGroup> gameVersionGroups() {
+		return (Set<GameVersionGroup>) gameVersionGroups.clone();
+	}
+
+	@SuppressWarnings("unchecked")
+	public Set<String> gameVersionStrings() {
+		return (Set<String>) gameVersionStrings.clone();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -98,33 +93,36 @@ public class FilePredicate implements Predicate<CurseFile> {
 		return minimumStability;
 	}
 
-	public FilePredicate withGameVersions(String... versions) {
+	public FilePredicate withGameVersions(GameVersion... versions) {
 		withGameVersions(new ImmutableList<>(versions));
 		return this;
 	}
 
-	public FilePredicate withGameVersions(Collection<String> versions) {
+	public FilePredicate withGameVersions(Collection<GameVersion> versions) {
 		versions.forEach(version -> Assertions.nonNull(version, "version"));
 		gameVersions.addAll(versions);
 		return this;
 	}
 
-	public FilePredicate withMCVersions(MinecraftVersion... versions) {
-		for(MinecraftVersion version : versions) {
-			Assertions.nonNull(version, "version");
-		}
-
-		gameVersions.addAll(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
+	public FilePredicate withGameVersionGroups(GameVersionGroup... groups) {
+		withGameVersionGroups(new ImmutableList<>(groups));
 		return this;
 	}
 
-	public FilePredicate withMCVersions(Collection<MinecraftVersion> versions) {
-		withMCVersions(versions.toArray(new MinecraftVersion[0]));
+	public FilePredicate withGameVersionGroups(Collection<GameVersionGroup> groups) {
+		groups.forEach(group -> Assertions.nonNull(group, "group"));
+		gameVersionGroups.addAll(groups);
 		return this;
 	}
 
-	public FilePredicate withMCVersionGroup(String version) {
-		withMCVersions(MinecraftVersion.groupFromString(version).getVersions());
+	public FilePredicate withGameVersionStrings(String... versions) {
+		withGameVersionStrings(new ImmutableList<>(versions));
+		return this;
+	}
+
+	public FilePredicate withGameVersionStrings(Collection<String> versions) {
+		versions.forEach(version -> Assertions.nonNull(version, "version"));
+		gameVersionStrings.addAll(versions);
 		return this;
 	}
 
@@ -143,24 +141,5 @@ public class FilePredicate implements Predicate<CurseFile> {
 		Assertions.nonNull(condition, "condition");
 		conditions.add(condition);
 		return this;
-	}
-
-	public static FilePredicate mc(MinecraftVersion... mcVersions) {
-		return new FilePredicate().withMCVersions(mcVersions);
-	}
-
-	public static FilePredicate mc(Collection<MinecraftVersion> mcVersions) {
-		return new FilePredicate().withMCVersions(mcVersions);
-	}
-
-	public static FilePredicate mc(ReleaseType minimumStability, MinecraftVersion... mcVersions) {
-		return new FilePredicate().withMinimumStability(minimumStability).
-				withMCVersions(mcVersions);
-	}
-
-	public static FilePredicate mc(ReleaseType minimumStability,
-			Collection<MinecraftVersion> mcVersions) {
-		return new FilePredicate().withMinimumStability(minimumStability).
-				withMCVersions(mcVersions);
 	}
 }

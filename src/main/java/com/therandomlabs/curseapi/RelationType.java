@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi.project;
+package com.therandomlabs.curseapi;
 
 import com.google.gson.annotations.SerializedName;
 

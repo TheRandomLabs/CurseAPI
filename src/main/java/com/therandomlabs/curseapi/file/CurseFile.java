@@ -24,11 +24,13 @@ import com.therandomlabs.curseapi.cursemeta.AddOnFile;
 import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.cursemeta.CurseMetaException;
-import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
+import com.therandomlabs.curseapi.game.Game;
+import com.therandomlabs.curseapi.game.GameVersion;
+import com.therandomlabs.curseapi.game.GameVersions;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.Member;
-import com.therandomlabs.curseapi.project.RelationType;
+import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.util.Documents;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.util.Utils;
@@ -56,6 +58,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 			"https://media.forgecdn.net/files/" + ID_1 + "/" + ID_2 + "/" + FILE_NAME;
 
 	private final int projectID;
+	private final Game game;
+
 	private final int id;
 	private final String name;
 
@@ -63,9 +67,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final ZonedDateTime uploadTime;
 	private final int downloads;
 
-	private final TRLList<String> gameVersions;
-	private final String gameVersion;
-	private final TRLList<MinecraftVersion> minecraftVersions;
+	private final TRLList<String> gameVersionStrings;
+	private final String gameVersionString;
+
+	private TRLList<GameVersion> gameVersions;
+	private GameVersion gameVersion;
 
 	private CurseProject project;
 
@@ -98,6 +104,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 	public CurseFile(CurseProject project, int id, URL url, Element document)
 			throws CurseException {
 		projectID = project.id();
+		game = project.game();
+
 		this.project = project;
 		this.id = id;
 		this.url = url;
@@ -117,10 +125,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 		final TRLList<String> gameVersions = CollectionUtils.map(versions, Element::text);
 		gameVersions.removeIf(version -> version.startsWith("Java "));
 
-		this.gameVersions = gameVersions.toImmutableList();
-		gameVersion = gameVersions.get(0);
+		gameVersionStrings = gameVersions.toImmutableList();
+		gameVersionString = gameVersions.get(0);
 
-		minecraftVersions = MinecraftVersion.fromStrings(gameVersions);
+		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
+		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
 
 		downloads = Integer.parseInt(Documents.getValue(document,
 				"class=details-info;class=info-data=4;text").replaceAll(",", ""));
@@ -128,19 +137,20 @@ public final class CurseFile implements Comparable<CurseFile> {
 				"class=details-info;attr=data-epoch;attr=data-epoch"));
 	}
 
-	public CurseFile(int projectID, AddOnFile info) throws CurseException {
-		this(projectID, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
+	public CurseFile(int projectID, Game game, AddOnFile info) throws CurseException {
+		this(projectID, game, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.releaseType(), info.FileDate, null, -1, getDependencyIDs(info.Dependencies),
 				info.GameVersion);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
-		this(project.id(), project, FileStatus.NORMAL, info.id, info.name, null, info.type,
-				info.uploaded_at, info.filesize, info.downloads, null, info.versions);
+		this(project.id(), project.game(), project, FileStatus.NORMAL, info.id, info.name, null,
+				info.type, info.uploaded_at, info.filesize, info.downloads, null, info.versions);
 	}
 
 	private CurseFile(int projectID, int id) {
 		this.projectID = projectID;
+		game = Game.UNKNOWN;
 		this.id = id;
 		project = CurseProject.nullProject(projectID);
 		status = FileStatus.DELETED;
@@ -156,20 +166,23 @@ public final class CurseFile implements Comparable<CurseFile> {
 		uploader = Member.UNKNOWN;
 		uploaderUsername = "Unknown";
 		dependencyIDs = new EnumMap<>(RelationType.class);
-		this.dependencies = new EnumMap<>(RelationType.class);
-		this.gameVersions = new ImmutableList<>("Unknown");
-		gameVersion = "Unknown";
-		this.minecraftVersions = new ImmutableList<>();
+		dependencies = new EnumMap<>(RelationType.class);
+		gameVersionStrings = new ImmutableList<>("Unknown");
+		gameVersionString = "Unknown";
+		gameVersions = new ImmutableList<>(GameVersions.UNKNOWN);
+		gameVersion = GameVersions.UNKNOWN;
 		changelogHTML = NO_CHANGELOG_PROVIDED;
 		changelog = NO_CHANGELOG_PROVIDED_STRING;
 		hasNoProject = true;
 	}
 
-	private CurseFile(int projectID, CurseProject project, FileStatus status, int id, String name,
-			String nameOnDisk, ReleaseType releaseType, String uploadTime,
+	private CurseFile(int projectID, Game game, CurseProject project, FileStatus status, int id,
+			String name, String nameOnDisk, ReleaseType releaseType, String uploadTime,
 			String fileSize, int downloads, Map<RelationType, TRLList<Integer>> dependencyIDs,
 			String[] gameVersions) throws CurseException {
 		this.projectID = projectID;
+		this.game = game;
+
 		this.project = project;
 		this.status = status;
 
@@ -197,10 +210,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 			}
 		}
 
-		this.gameVersions = gameVersionList.toImmutableList();
-		gameVersion = gameVersionList.get(0);
+		gameVersionStrings = gameVersionList.toImmutableList();
+		gameVersionString = gameVersionList.get(0);
 
-		this.minecraftVersions = MinecraftVersion.fromStrings(gameVersionList).toImmutableList();
+		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
+		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
 	}
 
 	@Override
@@ -364,21 +378,22 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return new TRLList<>(dependencies);
 	}
 
-	//TODO refer to MinecraftVersion TOOD
-	public String gameVersion() {
-		return gameVersion;
+	public String gameVersionString() {
+		return gameVersionString;
 	}
 
-	public TRLList<String> gameVersions() {
-		return gameVersions;
+	public TRLList<String> gameVersionStrings() {
+		return gameVersionStrings;
 	}
 
-	public MinecraftVersion minecraftVersion() {
-		return minecraftVersions.isEmpty() ? MinecraftVersion.UNKNOWN : minecraftVersions.get(0);
+	@SuppressWarnings("unchecked")
+	public <G extends GameVersion> G gameVersion() {
+		return (G) gameVersion;
 	}
 
-	public TRLList<MinecraftVersion> minecraftVersions() {
-		return minecraftVersions;
+	@SuppressWarnings("unchecked")
+	public <G extends GameVersion> TRLList<G> gameVersions() {
+		return (TRLList<G>) gameVersions;
 	}
 
 	public ZonedDateTime uploadTime() {
@@ -550,7 +565,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			final int fileID = files.get(projectID);
 
 			if(CurseAPI.isValidFileID(fileID)) {
-				return getFile(projectID, files.get(projectID));
+				return getFile(projectID, game, files.get(projectID));
 			}
 		}
 
@@ -558,13 +573,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 			return CurseProject.fromID(projectID).latestFile(predicate);
 		}
 
-		final Set<String> gameVersions = predicate.gameVersions();
+		final Set<String> gameVersions = predicate.gameVersionStrings();
 
-		final CurseFileList fileList = getFiles(projectID);
-		final CurseFile fallback = fileList.latest(gameVersions);
+		final CurseFileList fileList = getFiles(projectID, game);
+		final CurseFile fallback = fileList.latestWithGameVersionString(gameVersions);
 
 		fileList.filterMinimumStability(predicate.minimumStability());
-		final CurseFile file = fileList.latest(gameVersions);
+		final CurseFile file = fileList.latestWithGameVersionString(gameVersions);
 
 		//Bypass minimumStability if there are no dependency files matching it
 		return file == null ? fallback : file;
@@ -663,6 +678,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public static CurseFileList getFiles(int projectID) throws CurseException {
+		return getFiles(projectID, Game.UNKNOWN);
+	}
+
+	public static CurseFileList getFiles(int projectID, Game game) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).files();
 		}
@@ -671,7 +690,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		final CurseFileList curseFiles = new CurseFileList(files.size());
 
 		for(AddOnFile file : files) {
-			curseFiles.add(new CurseFile(projectID, file));
+			curseFiles.add(new CurseFile(projectID, game, file));
 		}
 
 		curseFiles.sortByNewest();
@@ -680,30 +699,44 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public static CurseFileList getFilesBetween(int projectID, int oldID, int newID)
 			throws CurseException {
+		return getFilesBetween(projectID, Game.UNKNOWN, oldID, newID);
+	}
+
+	public static CurseFileList getFilesBetween(int projectID, Game game, int oldID, int newID)
+			throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).filesBetween(oldID, newID);
 		}
 
-		final CurseFileList files = getFiles(projectID);
+		final CurseFileList files = getFiles(projectID, game);
 		files.between(oldID, newID);
 		return files;
 	}
 
 	public static CurseFile getFile(int projectID, int fileID) throws CurseException {
+		return getFile(projectID, Game.UNKNOWN, fileID);
+	}
+
+	public static CurseFile getFile(int projectID, Game game, int fileID) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).fileWithID(fileID);
 		}
 
-		return new CurseFile(projectID, CurseMeta.getFile(projectID, fileID));
+		return new CurseFile(projectID, game, CurseMeta.getFile(projectID, fileID));
 	}
 
 	public static CurseFile getClosestFile(int projectID, int fileID, boolean preferOlder)
 			throws CurseException {
+		return getClosestFile(projectID, Game.UNKNOWN, fileID, preferOlder);
+	}
+
+	public static CurseFile getClosestFile(int projectID, Game game, int fileID,
+			boolean preferOlder) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).fileClosestToID(fileID, preferOlder);
 		}
 
-		return getFiles(projectID).fileClosestToID(fileID, preferOlder);
+		return getFiles(projectID, game).fileClosestToID(fileID, preferOlder);
 	}
 
 	public static CurseFile nullFile(int projectID, int fileID) {

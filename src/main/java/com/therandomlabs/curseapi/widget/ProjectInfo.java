@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi.widget;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
-import com.therandomlabs.curseapi.Game;
+import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Utils;
 
 public final class ProjectInfo implements Cloneable, Serializable {

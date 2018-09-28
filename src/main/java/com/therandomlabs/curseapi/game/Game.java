@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.game;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -55,12 +55,17 @@ public enum Game {
 		return name;
 	}
 
+	public GameVersionHandler versionHandler() {
+		return GameVersions.getHandler(this);
+	}
+
 	public static Game fromName(String name) {
 		for(Game game : values()) {
 			if(game.name.equalsIgnoreCase(name)) {
 				return game;
 			}
 		}
+
 		return UNKNOWN;
 	}
 
@@ -70,6 +75,7 @@ public enum Game {
 				return game;
 			}
 		}
+
 		return UNKNOWN;
 	}
 }

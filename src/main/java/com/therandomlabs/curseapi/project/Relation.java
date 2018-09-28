@@ -5,6 +5,7 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
+import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.util.Utils;
 
 public final class Relation {

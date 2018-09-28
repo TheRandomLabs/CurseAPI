@@ -11,8 +11,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.cursemeta.AddOnFile;
-import com.therandomlabs.curseapi.minecraft.MinecraftVersion;
-import com.therandomlabs.utils.collection.CollectionUtils;
+import com.therandomlabs.curseapi.game.Game;
+import com.therandomlabs.curseapi.game.GameVersion;
+import com.therandomlabs.curseapi.game.GameVersionGroup;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLCollectors;
 import com.therandomlabs.utils.collection.TRLList;
@@ -26,17 +27,19 @@ public class CurseFileList extends TRLList<CurseFile> {
 		super(initialCapacity);
 	}
 
-	public CurseFileList(int projectID, Collection<AddOnFile> files) throws CurseException {
-		this(Collections.singletonMap(projectID, files), true);
-	}
-
-	public CurseFileList(Map<Integer, Collection<AddOnFile>> files) throws CurseException {
-		this(files, true);
-	}
-
-	public CurseFileList(Map<Integer, Collection<AddOnFile>> files, boolean sortByNewest)
+	public CurseFileList(int projectID, Collection<AddOnFile> files, Game game)
 			throws CurseException {
-		this(AddOnFile.toCurseFiles(files), sortByNewest);
+		this(Collections.singletonMap(projectID, files), game, true);
+	}
+
+	public CurseFileList(Map<Integer, Collection<AddOnFile>> files, Game game)
+			throws CurseException {
+		this(files, game, true);
+	}
+
+	public CurseFileList(Map<Integer, Collection<AddOnFile>> files, Game game, boolean sortByNewest)
+			throws CurseException {
+		this(AddOnFile.toCurseFiles(files, game), sortByNewest);
 	}
 
 	public CurseFileList(CurseFile... files) {
@@ -53,6 +56,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	public CurseFileList(Collection<CurseFile> files, boolean sortByNewest) {
 		super(filter(files));
+
 		if(sortByNewest) {
 			sortByNewest();
 		}
@@ -89,7 +93,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 		return latest(file -> true);
 	}
 
-	public CurseFile latest(Predicate<CurseFile> predicate) {
+	public CurseFile latest(Predicate<? super CurseFile> predicate) {
 		if(isEmpty()) {
 			return null;
 		}
@@ -105,20 +109,32 @@ public class CurseFileList extends TRLList<CurseFile> {
 		return latest;
 	}
 
-	public CurseFile latest(Collection<String> versions) {
-		return latest(file -> file.gameVersions().containsAny(versions));
+	public CurseFile latestWithMinimumStabillity(ReleaseType releaseType) {
+		return latest(new FilePredicate().withMinimumStability(releaseType));
 	}
 
-	public CurseFile latest(String... versions) {
-		return latest(new ImmutableList<>(versions));
+	public CurseFile latestWithGameVersion(GameVersion... gameVersions) {
+		return latestWithGameVersion(new ImmutableList<>(gameVersions));
 	}
 
-	public CurseFile latest(MinecraftVersion... versions) {
-		return latest(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
+	public CurseFile latestWithGameVersion(Collection<GameVersion> gameVersions) {
+		return latest(new FilePredicate().withGameVersions(gameVersions));
 	}
 
-	public CurseFile latestWithMCVersionGroup(String version) {
-		return latest(MinecraftVersion.groupFromString(version));
+	public CurseFile latestWithGameVersionGroup(GameVersionGroup... gameVersionGroups) {
+		return latestWithGameVersionGroup(new ImmutableList<>(gameVersionGroups));
+	}
+
+	public CurseFile latestWithGameVersionGroup(Collection<GameVersionGroup> gameVersionGroups) {
+		return latest(new FilePredicate().withGameVersionGroups(gameVersionGroups));
+	}
+
+	public CurseFile latestWithGameVersionString(String... gameVersionStrings) {
+		return latestWithGameVersionString(new ImmutableList<>(gameVersionStrings));
+	}
+
+	public CurseFile latestWithGameVersionString(Collection<String> gameVersionStrings) {
+		return latest(new FilePredicate().withGameVersionStrings(gameVersionStrings));
 	}
 
 	public CurseFile fileWithID(int id) {
@@ -127,6 +143,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 				return file;
 			}
 		}
+
 		return null;
 	}
 
@@ -205,8 +222,8 @@ public class CurseFileList extends TRLList<CurseFile> {
 		between(oldFile, newFile, false, true);
 	}
 
-	public void between(CurseFile oldFile, CurseFile newFile,
-			boolean includeOlder, boolean includeNewer) {
+	public void between(CurseFile oldFile, CurseFile newFile, boolean includeOlder,
+			boolean includeNewer) {
 		between(oldFile.id(), newFile.id(), includeOlder, includeNewer);
 	}
 
@@ -221,41 +238,32 @@ public class CurseFileList extends TRLList<CurseFile> {
 		filter(file -> file.id() > older && file.id() < newer);
 	}
 
-	public void filterMCVersionGroup(String version) {
-		filterVersions(MinecraftVersion.groupFromString(version));
+	public void filterMinimumStability(ReleaseType releaseType) {
+		filter(new FilePredicate().withMinimumStability(releaseType));
 	}
 
-	public void filterVersions(MinecraftVersion... versions) {
-		filterVersions(CollectionUtils.toStrings(MinecraftVersion.getVersions(versions)));
+	public void filterGameVersions(GameVersion... gameVersions) {
+		filterGameVersions(new ImmutableList<>(gameVersions));
 	}
 
-	public void filterVersions(Collection<String> versions) {
-		filter(file -> file.gameVersions().containsAny(versions));
+	public void filterGameVersions(Collection<GameVersion> gameVersions) {
+		filter(new FilePredicate().withGameVersions(gameVersions));
 	}
 
-	public void filterVersions(String... versions) {
-		filterVersions(new ImmutableList<>(versions));
+	public void filterGameVersionGroups(GameVersionGroup... gameVersionGroups) {
+		filterGameVersionGroups(new ImmutableList<>(gameVersionGroups));
 	}
 
-	public void filterMinimumStability(ReleaseType type) {
-		if(type == ReleaseType.ALPHA) {
-			return;
-		}
-
-		if(type == ReleaseType.BETA) {
-			filterReleaseTypes(ReleaseType.RELEASE, ReleaseType.BETA);
-			return;
-		}
-
-		filterReleaseTypes(ReleaseType.RELEASE);
+	public void filterGameVersionGroups(Collection<GameVersionGroup> gameVersionGroups) {
+		filter(new FilePredicate().withGameVersionGroups(gameVersionGroups));
 	}
 
-	public void filterReleaseTypes(ReleaseType... versions) {
-		filterReleaseTypes(new ImmutableList<>(versions));
+	public void filterGameVersionStrings(String... gameVersionStrings) {
+		filterGameVersionStrings(new ImmutableList<>(gameVersionStrings));
 	}
 
-	public void filterReleaseTypes(Collection<ReleaseType> versions) {
-		filter(file -> versions.contains(file.releaseType()));
+	public void filterGameVersionStrings(Collection<String> gameVersionStrings) {
+		filter(new FilePredicate().withGameVersionStrings(gameVersionStrings));
 	}
 
 	public void removeDuplicateProjects() {
@@ -289,14 +297,15 @@ public class CurseFileList extends TRLList<CurseFile> {
 		sort(Comparator.comparing(CurseFile::projectTitle));
 	}
 
-	public static Collector<CurseFile, ?, CurseFileList> toCurseFileList() {
+	public static Collector<CurseFile, ?, CurseFileList> collector() {
 		return TRLCollectors.toCollection(CurseFileList::new);
 	}
 
 	private static <E extends CurseFile> Collection<E> filter(Collection<E> collection) {
 		final List<E> files = new TRLList<>(collection);
-		files.removeIf(Objects::isNull);
 		final List<E> duplicates = new TRLList<>();
+
+		files.removeIf(Objects::isNull);
 
 		for(int i = 0; i < files.size(); i++) {
 			for(int j = 0; j < files.size(); j++) {
