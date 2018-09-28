@@ -7,6 +7,8 @@ import com.therandomlabs.utils.collection.TRLList;
 public interface GameVersionHandler<V extends GameVersion<V, G>, G extends GameVersionGroup<V, G>> {
 	Game getGame();
 
+	V getUnknownVersion();
+
 	TRLList<V> getVersions();
 
 	TRLList<G> getGroups();
@@ -18,12 +20,12 @@ public interface GameVersionHandler<V extends GameVersion<V, G>, G extends GameV
 			}
 		}
 
-		return GameVersions.unknown();
+		return getUnknownVersion();
 	}
 
 	default TRLList<V> get(Collection<String> ids) {
 		final TRLList<V> versions = CollectionUtils.map(new TRLList<>(ids.size()), ids, this::get);
-		versions.remove(GameVersions.<V>unknown());
+		versions.remove(getUnknownVersion());
 		return versions;
 	}
 }

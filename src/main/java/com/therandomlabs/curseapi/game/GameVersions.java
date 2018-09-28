@@ -29,6 +29,11 @@ public final class GameVersions {
 		}
 
 		@Override
+		public GameVersion getUnknownVersion() {
+			return UNKNOWN;
+		}
+
+		@Override
 		public TRLList<GameVersion> getVersions() {
 			return new TRLList<>(UNKNOWN);
 		}
@@ -49,11 +54,6 @@ public final class GameVersions {
 
 	public static void unregisterHandler(GameVersionHandler handler) {
 		handlers.remove(handler);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <V extends GameVersion<V, ?>> V unknown() {
-		return (V) UNKNOWN;
 	}
 
 	static GameVersionHandler getHandler(Game game) {
