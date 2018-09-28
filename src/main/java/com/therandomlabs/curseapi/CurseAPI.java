@@ -26,8 +26,8 @@ public final class CurseAPI {
 
 	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
 
-	private static int maxRetries = 3;
-	private static int retryTime = 5;
+	private static int maxRetries = 10;
+	private static int retryTime = 10;
 
 	private static boolean widgetAPI;
 	private static boolean curseMeta;
