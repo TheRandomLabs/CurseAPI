@@ -12,6 +12,7 @@ import com.therandomlabs.utils.io.NetUtils;
 import com.therandomlabs.utils.misc.Assertions;
 import com.therandomlabs.utils.runnable.RunnableWithThrowable;
 import com.therandomlabs.utils.throwable.ThrowableHandling;
+import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 public final class CurseAPI {
 	public static final int MIN_PROJECT_ID = 10;
@@ -42,6 +43,16 @@ public final class CurseAPI {
 		}
 
 		PLACEHOLDER_THUMBNAIL_URL = url;
+
+		try {
+			//Initialize CurseAPIMinecraft
+
+			final Class<?> caMinecraft =
+					Class.forName("com.therandomlabs.curseapi.minecraft.CurseAPIMinecraft");
+			caMinecraft.getDeclaredField("LIGHTCHOCOLATE_ID").get(null);
+		} catch(NoSuchFieldException | IllegalAccessException ex) {
+			getLogger().printStackTrace(ex);
+		} catch(ClassNotFoundException ignored) {}
 	}
 
 	private CurseAPI() {}
