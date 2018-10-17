@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.game;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import com.therandomlabs.utils.collection.TRLList;
@@ -41,6 +42,11 @@ public final class GameVersions {
 		@Override
 		public TRLList<GameVersionGroup> getGroups() {
 			return null;
+		}
+
+		@Override
+		public TRLList get(Collection ids) {
+			return new TRLList<>();
 		}
 	};
 

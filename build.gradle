@@ -1,8 +1,6 @@
 apply plugin: "java"
 
 repositories {
-	jcenter()
-
 	maven {
 		url "https://jitpack.io"
 	}
@@ -10,7 +8,7 @@ repositories {
 
 dependencies {
 	compile "com.github.jhy:jsoup:master-SNAPSHOT"
-	compile "com.github.google:gson:gson-parent-2.8.2"
+	compile "com.github.google:gson:gson-parent-2.8.4"
 	compile "com.github.TheRandomLabs:TRLUtils:master-SNAPSHOT"
 }
 
