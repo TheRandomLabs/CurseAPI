@@ -245,6 +245,7 @@ public final class Documents {
 		try {
 			final String[] parts = data.split(";");
 			Element element = document;
+
 			for(String part : parts) {
 				final String[] split = part.split("=");
 				final int index = split.length < 3 ? 0 : Integer.parseInt(split[2]);
@@ -261,10 +262,11 @@ public final class Documents {
 					break;
 				case "name":
 					final Elements elements = element.getElementsByAttribute("name");
+					int currentIndex = 0;
 
-					for(int i = 0, j = 0; i < elements.size(); i++) {
-						if(split[1].equals(elements.get(i).attr("name")) && j++ == index) {
-							element = elements.get(i);
+					for(Element childElement : elements) {
+						if(split[1].equals(childElement.attr("name")) && currentIndex++ == index) {
+							element = childElement;
 							break;
 						}
 					}

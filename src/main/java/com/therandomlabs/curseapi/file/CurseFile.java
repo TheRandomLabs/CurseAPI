@@ -609,12 +609,17 @@ public final class CurseFile implements Comparable<CurseFile> {
 			document = Documents.get(url);
 		}
 
-		nameOnDisk = Documents.get(document, "class=details-info;class=info-data").textNodes().
-				get(0).getWholeText();
+		nameOnDisk = Documents.get(document, "class=details-info;class=info-data").
+				textNodes().get(0).getWholeText();
+
 		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
+
 		changelogHTML = document.getElementsByClass("logbox").get(0);
+
 		getChangelogString();
+
 		md5 = Documents.getValue(document, "class=md5;text");
+
 		uploaderUsername = Documents.getValue(document, "class=user-tag;tag=a=1;text");
 
 		if(dependencyIDs == null) {

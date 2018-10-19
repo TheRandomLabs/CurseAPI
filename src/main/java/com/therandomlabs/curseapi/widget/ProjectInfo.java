@@ -2,12 +2,11 @@ package com.therandomlabs.curseapi.widget;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Utils;
 
 public final class ProjectInfo implements Cloneable {
-	private static final long serialVersionUID = -7608267242380681184L;
-
 	public int id;
 	public Game game;
 	public String type;
@@ -18,7 +17,7 @@ public final class ProjectInfo implements Cloneable {
 	public URL donate;
 	public String license;
 	public MemberInfo[] members;
-	public HashMap<String, FileInfo[]> versions;
+	public Map<String, FileInfo[]> versions;
 	public DownloadsInfo downloads;
 	public URL thumbnail;
 	public String[] categories;

@@ -1,7 +1,7 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
@@ -13,7 +13,7 @@ import com.therandomlabs.utils.collection.TRLList;
 public class AddOnFile implements Cloneable {
 	public int Id;
 	public int AlternateFileId;
-	public ArrayList<AddOnFileDependency> Dependencies;
+	public List<AddOnFileDependency> Dependencies;
 	public String DownloadURL;
 	public String FileDate;
 	public String FileName;
@@ -24,9 +24,8 @@ public class AddOnFile implements Cloneable {
 	public boolean IsAvailable;
 	public long PackageFingerprint;
 	public String ReleaseType;
-	public ArrayList<AddOnModule> Modules;
+	public List<AddOnModule> Modules;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public AddOnFile clone() {
 		try {

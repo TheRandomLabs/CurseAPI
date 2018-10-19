@@ -51,7 +51,8 @@ public final class WidgetAPI {
 			info.json = json;
 			return info;
 		} catch(IOException | JsonSyntaxException ex) {
-			if(ex instanceof MalformedURLException || ex.getMessage().contains("400 for URL")) {
+			if(ex.getClass() == MalformedURLException.class ||
+					ex.getMessage().contains("400 for URL")) {
 				throw new CurseException("Invalid widget API path: " + path);
 			}
 

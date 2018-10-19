@@ -64,7 +64,7 @@ public class CurseFileList extends TRLList<CurseFile> {
 
 	@Override
 	public CurseFileList clone() {
-		return new CurseFileList(toArray());
+		return (CurseFileList) super.clone();
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import com.google.gson.Gson;
 import com.therandomlabs.utils.collection.ArrayUtils;
@@ -59,7 +58,7 @@ public final class Utils {
 			}
 		}
 
-		return null;
+		return array.clone();
 	}
 
 	public static <E extends Cloneable> TRLList<E> tryClone(Collection<E> list) {
@@ -76,7 +75,7 @@ public final class Utils {
 		return null;
 	}
 
-	public static <K, V> HashMap<K, V> tryClone(Map<K, V> map) {
+	public static <K, V> Map<K, V> tryClone(Map<K, V> map) {
 		try {
 			return MapUtils.clone(map);
 		} catch(Exception ex) {
