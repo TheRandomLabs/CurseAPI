@@ -580,18 +580,6 @@ public final class ProjectType {
 		return singularName;
 	}
 
-	public static ProjectType[] values() {
-		return values.toArray(new ProjectType[0]);
-	}
-
-	public static ProjectType[] values(CurseForgeSite site) {
-		return values.stream().filter(type -> type.site == site).toArray(ProjectType[]::new);
-	}
-
-	public static ProjectType get(CurseForgeSite site, String name) {
-		return valueOf(values(site), name);
-	}
-
 	public static boolean isValidMainCurseForgePath(String path) {
 		return MAIN_CURSEFORGE_PATH_PATTERN.matcher(path).matches();
 	}
@@ -610,13 +598,25 @@ public final class ProjectType {
 		return UNKNOWN;
 	}
 
+	public static ProjectType get(CurseForgeSite site, String name) {
+		return valueOf(values(site), name);
+	}
+
+	public static ProjectType[] values() {
+		return values.toArray(new ProjectType[0]);
+	}
+
+	public static ProjectType[] values(CurseForgeSite site) {
+		return values.stream().filter(type -> type.site == site).toArray(ProjectType[]::new);
+	}
+
 	static ProjectType valueOf(ProjectType[] values, String name) {
 		return valueOf(new ImmutableList<>(values), name);
 	}
 
 	static ProjectType valueOf(Collection<ProjectType> values, String name) {
 		for(ProjectType type : values) {
-			if(type.name.equalsIgnoreCase(name)) {
+			if(type.name.equalsIgnoreCase(name) || type.singularName.equalsIgnoreCase(name)) {
 				return type;
 			}
 		}
