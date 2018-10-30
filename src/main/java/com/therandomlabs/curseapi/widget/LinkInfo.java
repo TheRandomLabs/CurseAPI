@@ -11,6 +11,10 @@ public final class LinkInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof LinkInfo && object.hashCode() == hashCode();
 	}
 

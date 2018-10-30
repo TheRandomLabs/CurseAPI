@@ -31,8 +31,7 @@ public final class Member {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[type=\"" + type + "\",username=\"" + username +
-				"\"]";
+		return getClass().getSimpleName() + "[type=\"" + type + "\",username=\"" + username + "\"]";
 	}
 
 	public MemberType type() {

@@ -6,10 +6,10 @@ public class InvalidProjectIDException extends CurseException {
 	private static final long serialVersionUID = -6454156481960479703L;
 
 	public InvalidProjectIDException(int id) {
-		super("No project found with ID: " + id);
+		super("Project with ID " + id + " not found");
 	}
 
 	public InvalidProjectIDException(int id, Throwable throwable) {
-		super("No project found with ID: " + id, throwable);
+		super("Project with ID " + id + " not found", throwable);
 	}
 }

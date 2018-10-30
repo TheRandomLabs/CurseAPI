@@ -356,6 +356,7 @@ public final class CurseProject {
 			final Wrapper<CurseFile> latestFile = new Wrapper<>();
 
 			Documents.putTemporaryCache(this, documentCache);
+
 			final List<CurseFile> files = Documents.iteratePages(
 					this,
 					url + "/files?",
@@ -370,6 +371,7 @@ public final class CurseProject {
 					},
 					forceMultithreadedFileSearches
 			);
+
 			Documents.removeTemporaryCache(this);
 
 			incompleteFiles.addAll(files);
@@ -531,6 +533,7 @@ public final class CurseProject {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			if(shouldAvoidWidgetAPI()) {
 				Documents.putTemporaryCache(this, documentCache);
+
 				this.files = new CurseFileList(Documents.iteratePages(
 						this,
 						url + "/files?",
@@ -538,6 +541,7 @@ public final class CurseProject {
 						null,
 						true
 				));
+
 				Documents.removeTemporaryCache(this);
 
 				return;
@@ -615,18 +619,28 @@ public final class CurseProject {
 	private Relation getRelationInfo(Element element, URL url, RelationType relationType)
 			throws CurseException {
 		final String title = Documents.getValue(element, "class=name-wrapper;tag=a;text");
-		final String author = Documents.getValue(element, "tag=span;tag=a;text");
-		final int downloads = Integer.parseInt(Documents.getValue(
-				element, "class=e-download-count;text").replaceAll(",", ""));
-		final long lastUpdateTime = Long.parseLong(
-				Documents.getValue(element, "class=standard-date;attr=data-epoch"));
-		final String shortDescription =
-				Documents.getValue(element, "class=description;tag=p;text");
-		final Category[] categories = getCategories(
-				element.getElementsByClass("category-icons")).toArray(new Category[0]);
 
-		return new Relation(url, title, author, downloads, lastUpdateTime,
-				shortDescription, categories, this, relationType);
+		final String author = Documents.getValue(element, "tag=span;tag=a;text");
+
+		final int downloads = Integer.parseInt(Documents.getValue(
+				element,
+				"class=e-download-count;text"
+		).replaceAll(",", ""));
+
+		final long lastUpdateTime = Long.parseLong(Documents.getValue(
+				element, "class=standard-date;attr=data-epoch"
+		));
+
+		final String shortDescription = Documents.getValue(element, "class=description;tag=p;text");
+
+		final Category[] categories = getCategories(
+				element.getElementsByClass("category-icons")
+		).toArray(new Category[0]);
+
+		return new Relation(
+				url, title, author, downloads, lastUpdateTime, shortDescription, categories, this,
+				relationType
+		);
 	}
 
 	private void reloadURL(URL mainCurseForgeURL) {
@@ -650,15 +664,24 @@ public final class CurseProject {
 
 		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
 			id = CurseForge.getID(document);
+
 			title = Documents.getValue(document, "class=project-title;class=overflow-tip;text");
+
 			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
+
 			game = site.game();
-			type = ProjectType.get(site,
-					Documents.getValue(document, "tag=title;text").split(" - ")[2]);
+
+			type = ProjectType.get(site, Documents.getValue(
+					document,
+					"tag=title;text"
+			).split(" - ")[2]);
 
 			try {
-				thumbnailURLString =
-						Documents.getValue(document, "class=e-avatar64;tag=img;absUrl=src");
+				thumbnailURLString = Documents.getValue(
+						document,
+						"class=e-avatar64;tag=img;absUrl=src"
+				);
+
 				thumbnailURL = URLs.of(thumbnailURLString);
 			} catch(CurseException ex) {
 				thumbnailURLString = CurseAPI.PLACEHOLDER_THUMBNAIL_URL_STRING;
@@ -674,17 +697,25 @@ public final class CurseProject {
 				));
 			}
 
-			downloads = Integer.parseInt(
-					Documents.getValue(document, "class=info-data=3;text").replaceAll(",", ""));
-			creationTime = Utils.parseTime(Documents.getValue(document,
-					"class=project-details;class=standard-date;attr=data-epoch"));
+			downloads = Integer.parseInt(Documents.getValue(
+					document,
+					"class=info-data=3;text"
+			).replaceAll(",", ""));
+
+			creationTime = Utils.parseTime(Documents.getValue(
+					document,
+					"class=project-details;class=standard-date;attr=data-epoch"
+			));
 
 			try {
-				donateURLString =
-						Documents.getValue(document, "class=icon-donate;attr=href;absUrl=href");
+				donateURLString = Documents.getValue(
+						document,
+						"class=icon-donate;attr=href;absUrl=href"
+				);
 			} catch(CurseException ignored) {}
 
 			donateURL = donateURLString == null ? null : URLs.of(donateURLString);
+
 			licenseName = Documents.getValue(document, "class=info-data=4;tag=a;text");
 		} else {
 			ProjectInfo info;
@@ -720,14 +751,15 @@ public final class CurseProject {
 		}
 
 		descriptionHTML = Documents.get(document, "class=project-description");
+
 		description = Documents.getPlainText(descriptionHTML);
 
 		categories = getCategories(
-				document.getElementsByClass("project-categories").get(0).
-						getElementsByTag("li")
+				document.getElementsByClass("project-categories").get(0).getElementsByTag("li")
 		).toImmutableList();
 
 		avatarURLString = Documents.getValue(document, "class=e-avatar64;absUrl=href");
+
 		avatarURL = avatarURLString.isEmpty() ?
 				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLs.of(avatarURLString);
 
@@ -801,7 +833,9 @@ public final class CurseProject {
 				}
 			} else {
 				String value = Documents.getValue(file, "class=additional-versions;attr=title");
+
 				value = value.substring(5, value.length() - 6);
+
 				versions = value.split("</div><div>");
 			}
 
@@ -939,9 +973,10 @@ public final class CurseProject {
 
 		for(Element category : categoryElements) {
 			final String name = Documents.getValue(category, "tag=a;attr=title");
+
 			final URL url = URLs.of(Documents.getValue(category, "tag=a;absUrl=href"));
-			final URL thumbnailURL =
-					URLs.of(Documents.getValue(category, "tag=img;absUrl=src"));
+
+			final URL thumbnailURL = URLs.of(Documents.getValue(category, "tag=img;absUrl=src"));
 
 			categories.add(new Category(name, url, thumbnailURL));
 		}

@@ -28,6 +28,10 @@ public final class Category {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof Category && ((Category) object).urlString.equals(urlString);
 	}
 

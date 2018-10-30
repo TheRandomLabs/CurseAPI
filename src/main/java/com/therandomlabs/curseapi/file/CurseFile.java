@@ -115,13 +115,17 @@ public final class CurseFile implements Comparable<CurseFile> {
 		ensureHTMLDataRetrieved(document);
 
 		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
+
 		downloadURLString = getDownloadURLString();
 		downloadURL = URLs.of(downloadURLString);
-		releaseType = ReleaseType.fromName(Documents.getValue(document,
-				"class=project-file-release-type;class=tip;attr=title"));
 
-		final Elements versions = document.getElementsByClass("details-versions").
-				get(0).getElementsByTag("li");
+		releaseType = ReleaseType.fromName(Documents.getValue(
+				document,
+				"class=project-file-release-type;class=tip;attr=title"
+		));
+
+		final Elements versions =
+				document.getElementsByClass("details-versions").get(0).getElementsByTag("li");
 
 		final TRLList<String> gameVersions = CollectionUtils.map(versions, Element::text);
 
@@ -129,24 +133,32 @@ public final class CurseFile implements Comparable<CurseFile> {
 		gameVersionString = gameVersions.get(0);
 
 		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
-		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN :
-				this.gameVersions.get(0);
+		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
 
-		downloads = Integer.parseInt(Documents.getValue(document,
-				"class=details-info;class=info-data=4;text").replaceAll(",", ""));
-		uploadTime = Utils.parseTime(Documents.getValue(document,
-				"class=details-info;attr=data-epoch;attr=data-epoch"));
+		downloads = Integer.parseInt(Documents.getValue(
+				document,
+				"class=details-info;class=info-data=4;text"
+		).replaceAll(",", ""));
+
+		uploadTime = Utils.parseTime(Documents.getValue(
+				document,
+				"class=details-info;attr=data-epoch;attr=data-epoch"
+		));
 	}
 
 	public CurseFile(int projectID, Game game, AddOnFile info) throws CurseException {
-		this(projectID, game, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
+		this(
+				projectID, game, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
 				info.releaseType(), info.FileDate, null, -1, getDependencyIDs(info.Dependencies),
-				info.GameVersion);
+				info.GameVersion
+		);
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
-		this(project.id(), project.game(), project, FileStatus.NORMAL, info.id, info.name, null,
-				info.type, info.uploaded_at, info.filesize, info.downloads, null, info.versions);
+		this(
+				project.id(), project.game(), project, FileStatus.NORMAL, info.id, info.name, null,
+				info.type, info.uploaded_at, info.filesize, info.downloads, null, info.versions
+		);
 	}
 
 	private CurseFile(int projectID, int id) {
@@ -206,8 +218,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		gameVersionString = gameVersionStrings.get(0);
 
 		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
-		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN :
-				this.gameVersions.get(0);
+		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
 	}
 
 	@Override
@@ -426,7 +437,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	//If minimalOverhead is true, use CurseMeta if it is enabled and the changelog is not
-	//already cached since CurseMeta is faster than downloading a full document
+	//already cached since CurseMeta is faster than downloading a full CurseForge page
 	//Changelog generators are the main use case
 	public Element changelogHTML(boolean minimalOverhead) throws CurseException {
 		if(changelogHTML == null) {
@@ -584,10 +595,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 			//First three digits/other digits
 			final String id1 = StringUtils.removeLastChars(idString, 3);
+
 			//Remove leading zeros
 			final String id2 = idString.substring(id1.length()).replaceAll("^0+", "");
-			final String fileName = URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20",
-					"+");
+
+			final String fileName =
+					URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20", "+");
 
 			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).
 					replace(FILE_NAME, fileName);
@@ -657,8 +670,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 				}
 			} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 				dependencyIDs = null;
-				throw CurseException.fromThrowable("Error while retrieving dependency IDs for " +
-						"file with ID: " + id, ex);
+
+				throw CurseException.fromThrowable(
+						"Error while retrieving dependency IDs for file with ID: " + id, ex
+				);
 			}
 		}
 	}

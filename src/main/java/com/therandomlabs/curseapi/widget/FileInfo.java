@@ -36,6 +36,10 @@ public final class FileInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof FileInfo && ((FileInfo) object).id == id;
 	}
 

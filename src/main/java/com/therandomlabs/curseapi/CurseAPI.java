@@ -49,6 +49,7 @@ public final class CurseAPI {
 
 			final Class<?> caMinecraft =
 					Class.forName("com.therandomlabs.curseapi.minecraft.CurseAPIMinecraft");
+
 			caMinecraft.getDeclaredField("LIGHTCHOCOLATE_ID").get(null);
 		} catch(NoSuchFieldException | IllegalAccessException ex) {
 			getLogger().printStackTrace(ex);

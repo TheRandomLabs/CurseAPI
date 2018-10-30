@@ -61,6 +61,10 @@ public final class ProjectInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof ProjectInfo && ((ProjectInfo) object).id == id;
 	}
 

@@ -18,8 +18,9 @@ import com.therandomlabs.utils.misc.StringUtils;
 public final class ProjectType {
 	public static final class Bukkit {
 		@SerializedName("Bukkit Plugins")
-		public static final ProjectType PLUGINS =
-				get("Bukkit Plugins", "projects", "minecraft/bukkit-plugins");
+		public static final ProjectType PLUGINS = get(
+				"Bukkit Plugins", "projects", "minecraft/bukkit-plugins"
+		);
 
 		private Bukkit() {}
 
@@ -38,20 +39,34 @@ public final class ProjectType {
 
 	public static final class Minecraft {
 		@SerializedName("Modpacks")
-		public static final ProjectType MODPACKS =
-				get("Modpacks", "modpacks", "minecraft/modpacks");
+		public static final ProjectType MODPACKS = get(
+				"Modpacks", "modpacks", "minecraft/modpacks"
+		);
+
 		@SerializedName("Customization")
-		public static final ProjectType CUSTOMIZATION =
-				get("Customization", "customization", "minecraft/customization");
+		public static final ProjectType CUSTOMIZATION = get(
+				"Customization", "customization", "minecraft/customization"
+		);
+
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "mc-addons", "minecraft/mc-addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "mc-addons", "minecraft/mc-addons"
+		);
+
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "mc-mods", "minecraft/mc-mods");
+		public static final ProjectType MODS = get(
+				"Mods", "mc-mods", "minecraft/mc-mods"
+		);
+
 		@SerializedName("Texture Packs")
-		public static final ProjectType TEXTURE_PACKS =
-				get("Texture Packs", "texture-packs", "minecraft/texture-packs");
+		public static final ProjectType TEXTURE_PACKS = get(
+				"Texture Packs", "texture-packs", "minecraft/texture-packs"
+		);
+
 		@SerializedName("Worlds")
-		public static final ProjectType WORLDS = get("Worlds", "worlds", "minecraft/worlds");
+		public static final ProjectType WORLDS = get(
+				"Worlds", "worlds", "minecraft/worlds"
+		);
 
 		private Minecraft() {}
 
@@ -70,8 +85,9 @@ public final class ProjectType {
 
 	public static final class FeedTheBeast {
 		@SerializedName("Modpacks")
-		public static final ProjectType MODPACKS =
-				get("Modpacks", "modpacks", "minecraft/modpacks");
+		public static final ProjectType MODPACKS = get(
+				"Modpacks", "modpacks", "minecraft/modpacks"
+		);
 
 		private FeedTheBeast() {}
 
@@ -90,7 +106,9 @@ public final class ProjectType {
 
 	public static final class WowAce {
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "addons", "wow/addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "addons", "wow/addons"
+		);
 
 		private WowAce() {}
 
@@ -109,7 +127,9 @@ public final class ProjectType {
 
 	public static final class WorldOfWarcraft {
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "addons", "wow/addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "addons", "wow/addons"
+		);
 
 		private WorldOfWarcraft() {}
 
@@ -129,9 +149,14 @@ public final class ProjectType {
 
 	public static final class SCIIMapster {
 		@SerializedName("Assets")
-		public static final ProjectType ASSETS = get("Assets", "assets", "sc2/assets");
+		public static final ProjectType ASSETS = get(
+				"Assets", "assets", "sc2/assets"
+		);
+
 		@SerializedName("Maps")
-		public static final ProjectType MAPS = get("Maps", "maps", "sc2/maps");
+		public static final ProjectType MAPS = get(
+				"Maps", "maps", "sc2/maps"
+		);
 
 		private SCIIMapster() {}
 
@@ -150,12 +175,19 @@ public final class ProjectType {
 
 	public static final class KerbalSpaceProgram {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "ksp-mods", "kerbal/ksp-mods");
+		public static final ProjectType MODS = get(
+				"Mods", "ksp-mods", "kerbal/ksp-mods"
+		);
+
 		@SerializedName("Shareables")
-		public static final ProjectType SHAREABLES =
-				get("Shareables", "shareables", "kerbal/shareables");
+		public static final ProjectType SHAREABLES = get(
+				"Shareables", "shareables", "kerbal/shareables"
+		);
+
 		@SerializedName("Missions")
-		public static final ProjectType MISSIONS = get("Missions", "missions", "kerbal/missions");
+		public static final ProjectType MISSIONS = get(
+				"Missions", "missions", "kerbal/missions"
+		);
 
 		private KerbalSpaceProgram() {}
 
@@ -175,7 +207,9 @@ public final class ProjectType {
 
 	public static final class WildStar {
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "ws-addons", "wildstar/ws-addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "ws-addons", "wildstar/ws-addons"
+		);
 
 		private WildStar() {}
 
@@ -192,31 +226,11 @@ public final class ProjectType {
 		}
 	}
 
-	public static final class WorldOfTanks {
-		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "wot-mods", "worldoftanks/wot-mods");
-		@SerializedName("Skins")
-		public static final ProjectType SKINS = get("Skins", "wot-skins", "worldoftanks/wot" +
-				"-skins");
-
-		private WorldOfTanks() {}
-
-		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values(), name);
-		}
-
-		public static ProjectType[] values() {
-			return ProjectType.values(CurseForgeSite.WORLD_OF_TANKS);
-		}
-
-		private static ProjectType get(String name, String path, String mainCurseForgePath) {
-			return new ProjectType(name, CurseForgeSite.WORLD_OF_TANKS, path, mainCurseForgePath);
-		}
-	}
-
 	public static final class Terraria {
 		@SerializedName("Maps")
-		public static final ProjectType MAPS = get("Maps", "maps", "terraria/maps");
+		public static final ProjectType MAPS = get(
+				"Maps", "maps", "terraria/maps"
+		);
 
 		private Terraria() {}
 
@@ -233,9 +247,37 @@ public final class ProjectType {
 		}
 	}
 
+	public static final class WorldOfTanks {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get(
+				"Mods", "wot-mods", "worldoftanks/wot-mods"
+		);
+
+		@SerializedName("Skins")
+		public static final ProjectType SKINS = get(
+				"Skins", "wot-skins", "worldoftanks/wot-skins"
+		);
+
+		private WorldOfTanks() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.WORLD_OF_TANKS);
+		}
+
+		private static ProjectType get(String name, String path, String mainCurseForgePath) {
+			return new ProjectType(name, CurseForgeSite.WORLD_OF_TANKS, path, mainCurseForgePath);
+		}
+	}
+
 	public static final class Rift {
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "addons", "rift/addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "addons", "rift/addons"
+		);
 
 		private Rift() {}
 
@@ -254,7 +296,9 @@ public final class ProjectType {
 
 	public static final class RunesOfMagic {
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "addons", "rom/addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "addons", "rom/addons"
+		);
 
 		private RunesOfMagic() {}
 
@@ -273,7 +317,9 @@ public final class ProjectType {
 
 	public static final class Skyrim {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "mods", "skyrim/mods");
+		public static final ProjectType MODS = get(
+				"Mods", "mods", "skyrim/mods"
+		);
 
 		private Skyrim() {}
 
@@ -292,7 +338,9 @@ public final class ProjectType {
 
 	public static final class TheSecretWorld {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "tsw-mods", "tsw/tsw-mods");
+		public static final ProjectType MODS = get(
+				"Mods", "tsw-mods", "tsw/tsw-mods"
+		);
 
 		private TheSecretWorld() {}
 
@@ -312,7 +360,9 @@ public final class ProjectType {
 
 	public static final class TheElderScrollsOnline {
 		@SerializedName("Addons")
-		public static final ProjectType ADDONS = get("Addons", "teso-addons", "teso/teso-addons");
+		public static final ProjectType ADDONS = get(
+				"Addons", "teso-addons", "teso/teso-addons"
+		);
 
 		private TheElderScrollsOnline() {}
 
@@ -332,7 +382,9 @@ public final class ProjectType {
 
 	public static final class SecretWorldLegends {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "tswl-mods", "swlegends/tswl-mods");
+		public static final ProjectType MODS = get(
+				"Mods", "tswl-mods", "swlegends/tswl-mods"
+		);
 
 		private SecretWorldLegends() {}
 
@@ -350,9 +402,32 @@ public final class ProjectType {
 		}
 	}
 
+	public static final class StardewValley {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get(
+				"Mods", "mods", "stardewvalley/mods"
+		);
+
+		private StardewValley() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.STARDEW_VALLEY);
+		}
+
+		private static ProjectType get(String name, String path, String mainCurseForgePath) {
+			return new ProjectType(name, CurseForgeSite.STARDEW_VALLEY, path, mainCurseForgePath);
+		}
+	}
+
 	public static final class SurvivingMars {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "mods", "surviving-mars/mods");
+		public static final ProjectType MODS = get(
+				"Mods", "mods", "surviving-mars/mods"
+		);
 
 		private SurvivingMars() {}
 
@@ -371,7 +446,9 @@ public final class ProjectType {
 
 	public static final class DarkestDungeon {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "dd-mods", "darkestdungeon/dd-mods");
+		public static final ProjectType MODS = get(
+				"Mods", "dd-mods", "darkestdungeon/dd-mods"
+		);
 
 		private DarkestDungeon() {}
 
@@ -390,9 +467,14 @@ public final class ProjectType {
 
 	public static final class GrandTheftAutoV {
 		@SerializedName("GTA V Mods")
-		public static final ProjectType MODS = get("GTA V Mods", "gta-v-mods", "gta5/gta-v-mods");
+		public static final ProjectType MODS = get(
+				"GTA V Mods", "gta-v-mods", "gta5/gta-v-mods"
+		);
+
 		@SerializedName("Tools")
-		public static final ProjectType TOOLS = get("Tools", "gta-v-tools", "gta5/gta-v-tools");
+		public static final ProjectType TOOLS = get(
+				"Tools", "gta-v-tools", "gta5/gta-v-tools"
+		);
 
 		private GrandTheftAutoV() {}
 
@@ -410,28 +492,11 @@ public final class ProjectType {
 		}
 	}
 
-	public static final class StardewValley {
-		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "mods", "stardewvalley/mods");
-
-		private StardewValley() {}
-
-		public static ProjectType valueOf(String name) {
-			return ProjectType.valueOf(values(), name);
-		}
-
-		public static ProjectType[] values() {
-			return ProjectType.values(CurseForgeSite.STARDEW_VALLEY);
-		}
-
-		private static ProjectType get(String name, String path, String mainCurseForgePath) {
-			return new ProjectType(name, CurseForgeSite.STARDEW_VALLEY, path, mainCurseForgePath);
-		}
-	}
-
 	public static final class Staxel {
 		@SerializedName("Mods")
-		public static final ProjectType MODS = get("Mods", "staxel-mods", "staxel/staxel-mods");
+		public static final ProjectType MODS = get(
+				"Mods", "staxel-mods", "staxel/staxel-mods"
+		);
 
 		private Staxel() {}
 
@@ -450,8 +515,9 @@ public final class ProjectType {
 
 	private static final List<ProjectType> values = new TRLList<>();
 
-	public static final ProjectType UNKNOWN =
-			new ProjectType("Unknown", CurseForgeSite.UNKNOWN, "unknown", "unknown");
+	public static final ProjectType UNKNOWN = new ProjectType(
+			"Unknown", CurseForgeSite.UNKNOWN, "unknown", "unknown"
+	);
 
 	public static final Pattern MAIN_CURSEFORGE_PATH_PATTERN;
 	public static final String MAIN_CURSEFORGE_PATH_PATTERN_STRING;

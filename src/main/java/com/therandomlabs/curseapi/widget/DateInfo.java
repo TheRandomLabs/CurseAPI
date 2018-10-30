@@ -13,6 +13,10 @@ public final class DateInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof DateInfo && object.hashCode() == hashCode();
 	}
 
@@ -27,7 +31,7 @@ public final class DateInfo implements Cloneable {
 
 	@Override
 	public String toString() {
-		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" +
-				timezone + "\"]";
+		return "[date=\"" + date + "\",timezone_type=" + timezone_type + ",timezone=\"" + timezone +
+				"\"]";
 	}
 }

@@ -60,6 +60,10 @@ public final class Relation {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof Relation && ((Relation) object).urlString.equals(urlString);
 	}
 

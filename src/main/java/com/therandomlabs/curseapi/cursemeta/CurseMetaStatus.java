@@ -18,8 +18,7 @@ public class CurseMetaStatus implements Cloneable {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[status=" + status + ",message=" + message + ",apis" +
-				"=" +
-				Arrays.toString(apis) + "]";
+		return getClass().getSimpleName() + "[status=\"" + status + "\",message=\"" + message +
+				"\",apis=" + Arrays.toString(apis) + "]";
 	}
 }

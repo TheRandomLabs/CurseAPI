@@ -11,6 +11,10 @@ public final class DownloadsInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof DownloadsInfo && object.hashCode() == hashCode();
 	}
 

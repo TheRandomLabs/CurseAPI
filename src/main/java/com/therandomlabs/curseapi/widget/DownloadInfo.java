@@ -23,6 +23,10 @@ public final class DownloadInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof DownloadInfo && ((DownloadInfo) object).id == id;
 	}
 
@@ -57,8 +61,8 @@ public final class DownloadInfo implements Cloneable {
 		info.versions = fileInfo.versions.clone();
 
 		info.uploaded_at = new DateInfo();
-		info.uploaded_at.date = Utils.parseTime(fileInfo.uploaded_at).
-				format(DateTimeFormatter.ISO_INSTANT);
+		info.uploaded_at.date =
+				Utils.parseTime(fileInfo.uploaded_at).format(DateTimeFormatter.ISO_INSTANT);
 		info.uploaded_at.timezone_type = 1;
 		info.uploaded_at.timezone = "+00:00";
 

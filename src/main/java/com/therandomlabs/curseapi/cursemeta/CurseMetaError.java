@@ -8,13 +8,7 @@ public class CurseMetaError implements Cloneable {
 	@Override
 	public CurseMetaError clone() {
 		try {
-			final CurseMetaError cmError = (CurseMetaError) super.clone();
-
-			cmError.description = description;
-			cmError.error = error;
-			cmError.status = status;
-
-			return cmError;
+			return (CurseMetaError) super.clone();
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;

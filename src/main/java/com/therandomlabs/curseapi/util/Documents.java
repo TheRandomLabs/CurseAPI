@@ -136,6 +136,7 @@ public final class Documents {
 	public interface DocumentToList<E> {
 		void documentToList(Element document, List<E> list) throws CurseException;
 	}
+
 	private static final Map<Object, Map<String, WeakReference<Document>>> cache =
 			new ConcurrentHashMap<>();
 
@@ -210,9 +211,7 @@ public final class Documents {
 				htmlWrapper.set(read(url));
 			} catch(IOException ex) {
 				throw CurseException.fromThrowable(
-						"An error occurred while reading: " + url,
-						ex,
-						url
+						"An error occurred while reading: " + url, ex, url
 				);
 			}
 		});
@@ -299,8 +298,7 @@ public final class Documents {
 			case "redirectAbsUrl":
 			case "absUrl":
 				final String absUrl = element.absUrl(split[1]);
-				value = split[0].equals("absUrl") ? absUrl : URLs.redirect(absUrl)
-						.toString();
+				value = split[0].equals("absUrl") ? absUrl : URLs.redirect(absUrl).toString();
 				break;
 			case "class":
 				final int index = split.length < 2 ? 0 : Integer.parseInt(split[1]);

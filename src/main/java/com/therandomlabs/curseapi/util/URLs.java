@@ -31,8 +31,9 @@ public final class URLs {
 		try {
 			CurseEventHandling.forEach(eventHandler -> eventHandler.preRedirect(url));
 
-			final URL redirected = stripCookieTestString(
-					NetUtils.getRedirectedURL(url, NetUtils.DEFAULT_REDIRECTIONS, false));
+			final URL redirected = stripCookieTestString(NetUtils.getRedirectedURL(
+					url, NetUtils.DEFAULT_REDIRECTIONS, false
+			));
 
 			CurseEventHandling.forEach(eventHandler -> eventHandler.postRedirect(url, redirected));
 

@@ -44,8 +44,10 @@ public final class WidgetAPI {
 			final ProjectInfo info = new Gson().fromJson(json, ProjectInfo.class);
 
 			if(info.error != null) {
-				throw new CurseException("The error \"" + info.error + "\" has occurred while " +
-						"using the widget API. Error message: " + info.message);
+				throw new CurseException(
+						"The error \"" + info.error + "\" has occurred while " +
+						"using the widget API. Error message: " + info.message
+				);
 			}
 
 			info.json = json;

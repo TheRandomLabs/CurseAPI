@@ -13,6 +13,10 @@ public final class MemberInfo implements Cloneable {
 
 	@Override
 	public boolean equals(Object object) {
+		if(this == object) {
+			return true;
+		}
+
 		return object instanceof MemberInfo && object.hashCode() == hashCode();
 	}
 
