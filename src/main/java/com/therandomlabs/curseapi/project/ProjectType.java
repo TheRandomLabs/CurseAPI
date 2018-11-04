@@ -513,6 +513,48 @@ public final class ProjectType {
 		}
 	}
 
+	public static final class SpaceEngineers {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get(
+				"Mods", "mods", null
+		);
+
+		private SpaceEngineers() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.SPACE_ENGINEERS);
+		}
+
+		private static ProjectType get(String name, String path, String mainCurseForgePath) {
+			return new ProjectType(name, CurseForgeSite.SPACE_ENGINEERS, path, mainCurseForgePath);
+		}
+	}
+
+	public static final class Subnautica {
+		@SerializedName("Mods")
+		public static final ProjectType MODS = get(
+				"Mods", "mods", null
+		);
+
+		private Subnautica() {}
+
+		public static ProjectType valueOf(String name) {
+			return ProjectType.valueOf(values(), name);
+		}
+
+		public static ProjectType[] values() {
+			return ProjectType.values(CurseForgeSite.SUBNAUTICA);
+		}
+
+		private static ProjectType get(String name, String path, String mainCurseForgePath) {
+			return new ProjectType(name, CurseForgeSite.SUBNAUTICA, path, mainCurseForgePath);
+		}
+	}
+
 	private static final List<ProjectType> values = new TRLList<>();
 
 	public static final ProjectType UNKNOWN = new ProjectType(
@@ -554,13 +596,17 @@ public final class ProjectType {
 		GrandTheftAutoV.values();
 		StardewValley.values();
 		Staxel.values();
+		SpaceEngineers.values();
+		Subnautica.values();
 
 		//Main CurseForge path pattern
 
 		final StringBuilder pattern = new StringBuilder();
 
 		for(ProjectType type : values()) {
-			pattern.append(type.mainCurseForgePattern).append("|");
+			if(type.mainCurseForgePattern != null) {
+				pattern.append(type.mainCurseForgePattern).append("|");
+			}
 		}
 
 		//Remove last '|'
@@ -579,20 +625,26 @@ public final class ProjectType {
 		this.site = site;
 		this.sitePath = sitePath;
 
-		this.mainCurseForgeSitePath = mainCurseForgeSitePath + '/';
-		mainCurseForgePatternString = "^/" + this.mainCurseForgeSitePath + ".+";
-		mainCurseForgePattern = Pattern.compile(mainCurseForgePatternString);
-		mainCurseForgeURLString = CurseForge.URL + this.mainCurseForgeSitePath;
+		if(mainCurseForgeSitePath == null) {
+			this.mainCurseForgeSitePath = null;
+			mainCurseForgePatternString = null;
+			mainCurseForgePattern = null;
+			mainCurseForgeURLString = null;
+			mainCurseForgeURL = null;
+		} else {
+			this.mainCurseForgeSitePath = mainCurseForgeSitePath + '/';
+			mainCurseForgePatternString = "^/" + this.mainCurseForgeSitePath + ".+";
+			mainCurseForgePattern = Pattern.compile(mainCurseForgePatternString);
+			mainCurseForgeURLString = CurseForge.URL + this.mainCurseForgeSitePath;
 
-		URL url = null;
+			URL url = null;
 
-		try {
-			url = new URL(mainCurseForgeURLString);
-		} catch(MalformedURLException ignored) {
-			//This will never happen
+			try {
+				url = new URL(mainCurseForgeURLString);
+			} catch(MalformedURLException ignored) {}
+
+			mainCurseForgeURL = url;
 		}
-
-		mainCurseForgeURL = url;
 
 		values.add(this);
 	}

@@ -39,6 +39,10 @@ public enum Game {
 	GRAND_THEFT_AUTO_V("Grand Theft Auto V", 496),
 	@SerializedName("Staxel")
 	STAXEL("Staxel", 18237),
+	@SerializedName("Space Engineers")
+	SPACE_ENGINEERS("Space Engineers", -1),
+	@SerializedName("Subnautica")
+	SUBNAUTICA("Subnautica", -1),
 	@SerializedName("Unknown")
 	UNKNOWN("Unknown", 0);
 

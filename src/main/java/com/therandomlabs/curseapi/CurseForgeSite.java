@@ -30,6 +30,8 @@ public enum CurseForgeSite {
 	DARKEST_DUNGEON("darkestdungeon", Game.DARKEST_DUNGEON),
 	GRAND_THEFT_AUTO_V("gta", Game.GRAND_THEFT_AUTO_V),
 	STAXEL("staxel", Game.STAXEL),
+	SPACE_ENGINEERS("spaceengineers", Game.SPACE_ENGINEERS),
+	SUBNAUTICA("subnautica", Game.SUBNAUTICA),
 	UNKNOWN("unknown", Game.UNKNOWN);
 
 	public static final Pattern HOST_PATTERN;
