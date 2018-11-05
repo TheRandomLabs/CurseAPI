@@ -179,7 +179,7 @@ public final class CurseForge {
 	}
 
 	public static URL toMainCurseForgeProject(URL url) throws CurseException {
-		return toMainCurseForgeProject(InvalidMainCurseForgeProjectException.validate(url));
+		return toMainCurseForgeProject(InvalidCurseForgeProjectException.validate(url));
 	}
 
 	public static URL toMainCurseForgeProject(Element document) throws CurseException {

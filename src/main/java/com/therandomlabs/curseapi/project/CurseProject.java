@@ -662,6 +662,10 @@ public final class CurseProject {
 
 		site = CurseForgeSite.fromURL(url);
 
+		if(document == null) {
+			document = CurseForge.fromID(id).getValue();
+		}
+
 		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
 			id = CurseForge.getID(document);
 
