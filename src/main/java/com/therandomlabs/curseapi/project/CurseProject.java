@@ -512,7 +512,7 @@ public final class CurseProject {
 		dependents.put(relationType, getRelations("dependents", relationType, onDependentAdd));
 	}
 
-	public void reloadURL() throws CurseException {
+	public void reloadURLs() throws CurseException {
 		final Map.Entry<URL, Document> project = CurseForge.fromID(id);
 
 		url = project.getKey();
@@ -521,8 +521,8 @@ public final class CurseProject {
 		reloadURL(CurseForge.toMainCurseForgeProject(url));
 	}
 
-	public void reload() throws CurseException {
-		reload(false);
+	public boolean reload() throws CurseException {
+		return reload(false);
 	}
 
 	public void reloadFiles() throws CurseException {
@@ -651,20 +651,30 @@ public final class CurseProject {
 		mainCurseForgeURLString = mainCurseForgeURL == null ? null : mainCurseForgeURL.toString();
 	}
 
-	private void reload(boolean useWidgetAPI) throws CurseException {
+	private boolean reload(boolean useWidgetAPI) throws CurseException {
 		if(isNull()) {
-			return;
+			return true;
 		}
 
 		if(curseMeta) {
 			reloadCurseMeta();
 		}
 
-		site = CurseForgeSite.fromURL(url);
-
 		if(document == null) {
-			document = CurseForge.fromID(id).getValue();
+			try {
+				final Map.Entry<URL, Document> project = CurseForge.fromID(id);
+
+				url = project.getKey();
+				document = project.getValue();
+
+				reloadURL(CurseForge.toMainCurseForgeProject(url));
+			} catch(InvalidProjectIDException ex) {
+				ThrowableHandling.handleWithoutExit(ex);
+				return false;
+			}
 		}
+
+		site = CurseForgeSite.fromURL(url);
 
 		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
 			id = CurseForge.getID(document);
@@ -728,8 +738,7 @@ public final class CurseProject {
 				info = WidgetAPI.get(mainCurseForgeURL.getPath());
 			} catch(CurseException ex) {
 				ThrowableHandling.handleWithoutExit(ex);
-				reload(false);
-				return;
+				return reload(false);
 			}
 
 			id = info.id;
@@ -769,6 +778,8 @@ public final class CurseProject {
 
 		//So it can be garbage collected
 		document = null;
+
+		return true;
 	}
 
 	private void reloadCurseMeta() throws CurseException {
@@ -777,8 +788,6 @@ public final class CurseProject {
 		id = addon.Id;
 		title = addon.Name;
 		game = Game.fromID(addon.GameId);
-		url = URLs.redirect(CurseForge.URL + "projects/" + id);
-		site = CurseForgeSite.UNKNOWN;
 		mainCurseForgeURL = addon.WebSiteURL;
 		avatarURL = addon.AvatarUrl == null ? CurseAPI.PLACEHOLDER_THUMBNAIL_URL : addon.AvatarUrl;
 		avatarURLString = avatarURL.toString();
