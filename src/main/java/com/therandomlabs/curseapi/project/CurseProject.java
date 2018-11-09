@@ -900,9 +900,7 @@ public final class CurseProject {
 			}
 		}
 
-		project = nullProject(id);
-		projects.put(id, project);
-		return project;
+		return nullProject(id);
 	}
 
 	public static CurseProject fromSlug(String site, String slug) throws CurseException {
