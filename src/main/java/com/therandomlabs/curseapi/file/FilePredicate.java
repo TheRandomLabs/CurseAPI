@@ -12,7 +12,6 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.Assertions;
 
 public class FilePredicate implements Predicate<CurseFile> {
-	private final HashSet<GameVersionGroup> gameVersionGroups = new HashSet<>(2);
 	private final HashSet<GameVersion> gameVersions = new HashSet<>(2);
 	private final HashSet<String> gameVersionStrings = new HashSet<>(2);
 
@@ -70,11 +69,6 @@ public class FilePredicate implements Predicate<CurseFile> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<GameVersionGroup> gameVersionGroups() {
-		return (Set<GameVersionGroup>) gameVersionGroups.clone();
-	}
-
-	@SuppressWarnings("unchecked")
 	public Set<String> gameVersionStrings() {
 		return (Set<String>) gameVersionStrings.clone();
 	}
@@ -111,7 +105,7 @@ public class FilePredicate implements Predicate<CurseFile> {
 
 	public FilePredicate withGameVersionGroups(Collection<GameVersionGroup> groups) {
 		groups.forEach(group -> Assertions.nonNull(group, "group"));
-		gameVersionGroups.addAll(groups);
+		groups.stream().map(GameVersionGroup::getVersions).forEach(gameVersions::addAll);
 		return this;
 	}
 
