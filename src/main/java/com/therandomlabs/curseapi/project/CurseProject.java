@@ -52,6 +52,10 @@ public final class CurseProject {
 
 	private static final Map<Integer, CurseProject> projects = new ConcurrentHashMap<>();
 
+	//Some slugs redirect to other slugs, e.g. just-enough-items-jei -> jei
+	private static final Map<Map.Entry<CurseForgeSite, String>, String> slugMappings =
+			new ConcurrentHashMap<>();
+
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
 	private final Map<RelationType, TRLList<Relation>> dependents = new ConcurrentHashMap<>();
 	private final boolean isNull;
@@ -919,13 +923,23 @@ public final class CurseProject {
 
 	public static CurseProject fromSlug(CurseForgeSite site, String slug,
 			boolean followRedirections) throws CurseException {
+		final Map.Entry<CurseForgeSite, String> slugKey = new AbstractMap.SimpleEntry<>(site, slug);
+		final String slugMapping = slugMappings.get(slugKey);
+		final String toFind = slugMapping == null ? slug : slugMapping;
+
 		for(CurseProject project : projects.values()) {
-			if(project.site == site && slug.equals(project.slug())) {
+			if(project.site == site && toFind.equals(project.slug)) {
 				return project;
 			}
 		}
 
-		return fromURL(site.url() + "projects/" + slug, followRedirections);
+		final CurseProject project = fromURL(site.url() + "projects/" + slug, followRedirections);
+
+		if(!slug.equals(project.slug)) {
+			slugMappings.put(slugKey, project.slug);
+		}
+
+		return project;
 	}
 
 	public static CurseProject fromURL(String url) throws CurseException {
@@ -972,6 +986,7 @@ public final class CurseProject {
 
 	public static void clearProjectCache() {
 		projects.clear();
+		slugMappings.clear();
 	}
 
 	public static boolean isCached(int id) {
