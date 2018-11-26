@@ -12,9 +12,7 @@ import com.therandomlabs.utils.collection.TRLList;
 import com.therandomlabs.utils.misc.Assertions;
 
 public class FilePredicate implements Predicate<CurseFile> {
-	private final HashSet<GameVersion> gameVersions = new HashSet<>(2);
-	private final HashSet<String> gameVersionStrings = new HashSet<>(2);
-
+	private final HashSet<String> gameVersions = new HashSet<>(2);
 	private final HashSet<IntPredicate> idConditions = new HashSet<>(1);
 	private final HashSet<Predicate<CurseFile>> conditions = new HashSet<>(1);
 
@@ -22,7 +20,7 @@ public class FilePredicate implements Predicate<CurseFile> {
 
 	@Override
 	public boolean test(CurseFile file) {
-		if(!file.gameVersions().containsAny(gameVersions)) {
+		if(!gameVersions.isEmpty() && !file.gameVersionStrings().containsAny(gameVersions)) {
 			return false;
 		}
 
@@ -64,13 +62,8 @@ public class FilePredicate implements Predicate<CurseFile> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<GameVersion> gameVersions() {
-		return (Set<GameVersion>) gameVersions.clone();
-	}
-
-	@SuppressWarnings("unchecked")
-	public Set<String> gameVersionStrings() {
-		return (Set<String>) gameVersionStrings.clone();
+	public Set<String> gameVersions() {
+		return (Set<String>) gameVersions.clone();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,8 +86,11 @@ public class FilePredicate implements Predicate<CurseFile> {
 	}
 
 	public FilePredicate withGameVersions(Collection<GameVersion> versions) {
-		versions.forEach(version -> Assertions.nonNull(version, "version"));
-		gameVersions.addAll(versions);
+		for(GameVersion version : versions) {
+			Assertions.nonNull(version, "version");
+			gameVersions.add(version.toString());
+		}
+
 		return this;
 	}
 
@@ -105,7 +101,7 @@ public class FilePredicate implements Predicate<CurseFile> {
 
 	public FilePredicate withGameVersionGroups(Collection<GameVersionGroup> groups) {
 		groups.forEach(group -> Assertions.nonNull(group, "group"));
-		groups.stream().map(GameVersionGroup::getVersions).forEach(gameVersions::addAll);
+		groups.stream().map(GameVersionGroup::getVersions).forEach(this::withGameVersions);
 		return this;
 	}
 
@@ -115,8 +111,11 @@ public class FilePredicate implements Predicate<CurseFile> {
 	}
 
 	public FilePredicate withGameVersionStrings(Collection<String> versions) {
-		versions.forEach(version -> Assertions.nonNull(version, "version"));
-		gameVersionStrings.addAll(versions);
+		for(String version : versions) {
+			Assertions.nonNull(version, "version");
+			gameVersions.add(version);
+		}
+
 		return this;
 	}
 

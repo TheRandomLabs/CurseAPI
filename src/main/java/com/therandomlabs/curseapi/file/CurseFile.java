@@ -577,7 +577,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			return CurseProject.fromID(projectID).latestFile(predicate);
 		}
 
-		final Set<String> gameVersions = predicate.gameVersionStrings();
+		final Set<String> gameVersions = predicate.gameVersions();
 
 		final CurseFileList fileList = getFiles(projectID, game);
 		final CurseFile fallback = fileList.latestWithGameVersionString(gameVersions);
