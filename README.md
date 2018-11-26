@@ -13,7 +13,7 @@ Example Gradle buildscript:
 	}
 
 	dependencies {
-		compile "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
+		compile "com.github.TheRandomLabs:CurseAPI:-SNAPSHOT"
 	}
 
 	task sourcesJar(type: Jar, dependsOn: classes) {
@@ -36,6 +36,9 @@ Example Gradle buildscript:
 			}
 		}
 	}
+
+Because CurseAPI is still WIP, things will change a lot, so don't actually use `-SNAPSHOT`.
+Instead, choose a specific version at [Jitpack](https://jitpack.io/#TheRandomLabs/CurseAPI).
 
 The CurseForge class is for basic methods, mainly to do with URLs.
 Use CurseProject instead wherever possible.
