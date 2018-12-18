@@ -618,7 +618,7 @@ public final class ProjectType {
 
 	ProjectType(String name, CurseForgeSite site, String sitePath, String mainCurseForgeSitePath) {
 		this.name = name;
-		singularName = StringUtils.removeLastChar(name);
+		singularName = this == UNKNOWN ? name : StringUtils.removeLastChar(name);
 		game = site.game();
 		fullName = game + " " + name;
 		fullSingularName = game + " " + singularName;

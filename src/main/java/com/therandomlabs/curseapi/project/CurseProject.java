@@ -689,10 +689,10 @@ public final class CurseProject {
 
 			game = site.game();
 
-			type = ProjectType.get(site, Documents.getValue(
+			type = ProjectType.get(site, ArrayUtils.last(Documents.getValue(
 					document,
 					"tag=title;text"
-			).split(" - ")[2]);
+			).split(" - ")));
 
 			try {
 				thumbnailURLString = Documents.getValue(
