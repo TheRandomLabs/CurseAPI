@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.file;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Path;
@@ -51,11 +52,9 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private static final String NO_CHANGELOG_PROVIDED_STRING = "No changelog provided";
 	private static final Element NO_CHANGELOG_PROVIDED = Jsoup.parse(NO_CHANGELOG_PROVIDED_STRING);
 
-	private static final String ID_1 = "::ID_1::";
-	private static final String ID_2 = "::ID_2::";
-	private static final String FILE_NAME = "::FILE_NAME::";
-	private static final String FILE_DOWNLOAD_URL =
-			"https://media.forgecdn.net/files/" + ID_1 + "/" + ID_2 + "/" + FILE_NAME;
+	private static final String FORGECDN_HOST = "media.forgecdn.net";
+	private static final String FORGECDN = "https://" + FORGECDN_HOST + "/";
+	private static final String FILE_DOWNLOAD_URL = FORGECDN + "files/%1$s/%2$s/%3$s";
 
 	private final int projectID;
 	private final Game game;
@@ -591,19 +590,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private String getDownloadURLString() throws CurseException {
 		try {
-			final String idString = Integer.toString(id);
-
-			//First three digits/other digits
-			final String id1 = StringUtils.removeLastChars(idString, 3);
-
-			//Remove leading zeros
-			final String id2 = idString.substring(id1.length()).replaceAll("^0+", "");
-
+			final String[] idParts = getIDParts(id);
 			final String fileName =
 					URLEncoder.encode(nameOnDisk(), "UTF-8").replaceAll("%20", "+");
 
-			return FILE_DOWNLOAD_URL.replace(ID_1, id1).replace(ID_2, id2).
-					replace(FILE_NAME, fileName);
+			return String.format(FILE_DOWNLOAD_URL, idParts[0], idParts[1], fileName);
 		} catch(UnsupportedEncodingException ignored) {}
 
 		return null;
@@ -740,10 +731,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public static CurseFile getClosestFile(int projectID, int fileID, boolean preferOlder)
 			throws CurseException {
-		return getClosestFile(projectID, Game.UNKNOWN, fileID, preferOlder);
+		return getClosestFile(Game.UNKNOWN, projectID, fileID, preferOlder);
 	}
 
-	public static CurseFile getClosestFile(int projectID, Game game, int fileID,
+	public static CurseFile getClosestFile(Game game, int projectID, int fileID,
 			boolean preferOlder) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
 			return CurseProject.fromID(projectID).fileClosestToID(fileID, preferOlder);
@@ -754,6 +745,29 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public static CurseFile nullFile(int projectID, int fileID) {
 		return new CurseFile(projectID, fileID);
+	}
+
+	public static boolean quickValidateFileDownloadURL(int fileID, String url) {
+		try {
+			return quickValidateFileDownloadURL(fileID, new URL(url));
+		} catch(MalformedURLException ignored) {}
+
+		return false;
+	}
+
+	public static boolean quickValidateFileDownloadURL(int fileID, URL url) {
+		if(!FORGECDN_HOST.equals(url.getHost())) {
+			return false;
+		}
+
+		final String[] urlParts = StringUtils.split(url.getPath(), '/');
+
+		if(urlParts.length != 5) {
+			return false;
+		}
+
+		final String[] idParts = getIDParts(fileID);
+		return idParts[0].equals(urlParts[2]) && idParts[1].equals(urlParts[3]);
 	}
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
@@ -777,5 +791,20 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 
 		return ids;
+	}
+
+	private static String[] getIDParts(int id) {
+		final String idString = Integer.toString(id);
+
+		//First three digits/other digits
+		final String id1 = StringUtils.removeLastChars(idString, 3);
+
+		//Remove leading zeros
+		final String id2 = idString.substring(id1.length()).replaceAll("^0+", "");
+
+		return new String[] {
+				id1,
+				id2
+		};
 	}
 }
