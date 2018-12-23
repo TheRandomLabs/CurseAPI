@@ -159,8 +159,8 @@ public final class Documents {
 		return string.startsWith("\n") ? string.substring(1) : string;
 	}
 
-	public static String read(String url) throws CurseException, IOException {
-		return read(URLs.of(url));
+	public static String read(String url) throws IOException {
+		return read(new URL(url));
 	}
 
 	public static String read(URL url) throws IOException {
