@@ -64,4 +64,12 @@ public final class URLs {
 	public static void clearRedirectionCache() {
 		redirectionCache.clear();
 	}
+
+	public static String clearRedirectionCache(String url) {
+		return redirectionCache.remove(url);
+	}
+
+	public static String clearRedirectionCache(URL url) {
+		return clearRedirectionCache(url.toString());
+	}
 }

@@ -231,6 +231,7 @@ public final class CurseForge {
 			final URL url = URLs.redirect(URL + "projects/" + projectID);
 
 			if(!isValidProjectURL(url)) {
+				URLs.clearRedirectionCache(url);
 				throw new InvalidProjectIDException(projectID);
 			}
 

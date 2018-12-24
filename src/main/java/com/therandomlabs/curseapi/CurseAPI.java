@@ -25,10 +25,10 @@ public final class CurseAPI {
 
 	private static BufferedImage placeholderThumbnail;
 
-	private static int threads = Runtime.getRuntime().availableProcessors() * 2;
+	private static int threads = Runtime.getRuntime().availableProcessors();
 
-	private static int maxRetries = 3;
-	private static int retryTime = 10;
+	private static int maxRetries = 5;
+	private static int retryTime = 4;
 
 	private static boolean widgetAPI;
 	private static boolean curseMeta;
