@@ -1,12 +1,10 @@
 package com.therandomlabs.curseapi.file;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -39,8 +37,7 @@ import com.therandomlabs.curseapi.widget.FileInfo;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
-import com.therandomlabs.utils.io.IOUtils;
-import com.therandomlabs.utils.io.NetUtils;
+import com.therandomlabs.utils.io.DownloadInfo;
 import com.therandomlabs.utils.misc.StringUtils;
 import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
@@ -519,16 +516,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return project.title();
 	}
 
-	public InputStream download() throws CurseException, IOException {
-		return NetUtils.getInputStream(downloadURL());
-	}
-
-	public Path download(Path location) throws CurseException, IOException {
-		return IOUtils.download(downloadURL(), location);
-	}
-
-	public Path downloadToDirectory(Path directory) throws CurseException, IOException {
-		return IOUtils.downloadToDirectory(downloadURL(), directory);
+	public DownloadInfo downloadInfo() throws CurseException {
+		try {
+			return new DownloadInfo(downloadURL());
+		} catch(IOException ex) {
+			throw CurseException.fromThrowable(ex);
+		}
 	}
 
 	public boolean matchesMinimumStability(ReleaseType stability) {
