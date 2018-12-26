@@ -189,20 +189,23 @@ public final class Documents {
 		final String urlString = url.toString();
 		Map<String, WeakReference<Document>> cacheMap = null;
 
-		for(Map.Entry<Object, Map<String, WeakReference<Document>>> cacheEntry : cache.entrySet()) {
-			final Map<String, WeakReference<Document>> map = cacheEntry.getValue();
+		if(cacheKey != null) {
+			for(Map.Entry<Object, Map<String, WeakReference<Document>>> cacheEntry :
+					cache.entrySet()) {
+				final Map<String, WeakReference<Document>> map = cacheEntry.getValue();
 
-			if(cacheKey.equals(cacheEntry.getKey())) {
-				cacheMap = map;
-			}
+				if(cacheKey.equals(cacheEntry.getKey())) {
+					cacheMap = map;
+				}
 
-			final WeakReference<Document> reference = map.get(urlString);
+				final WeakReference<Document> reference = map.get(urlString);
 
-			if(reference != null) {
-				final Document document = reference.get();
+				if(reference != null) {
+					final Document document = reference.get();
 
-				if(document != null) {
-					return document;
+					if(document != null) {
+						return document;
+					}
 				}
 			}
 		}
