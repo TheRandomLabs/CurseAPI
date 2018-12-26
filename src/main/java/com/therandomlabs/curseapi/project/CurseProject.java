@@ -58,41 +58,65 @@ public final class CurseProject {
 
 	private final Map<RelationType, TRLList<Relation>> dependencies = new ConcurrentHashMap<>();
 	private final Map<RelationType, TRLList<Relation>> dependents = new ConcurrentHashMap<>();
+
 	private final boolean isNull;
 	private final boolean curseMeta;
+
 	private final Map<String, WeakReference<Document>> documentCache = new ConcurrentHashMap<>();
+
 	//Incomplete list of files used as a cache
 	private final CurseFileList incompleteFiles = new CurseFileList();
-	private BufferedImage avatar;
+
 	private URL url;
 	private String urlString;
+
 	private String slug;
+
 	private URL mainCurseForgeURL;
 	private String mainCurseForgeURLString;
+
 	private CurseForgeSite site;
+
 	private Element document;
+
 	private int id;
+
 	private String title;
+
 	private String shortDescription;
 	private Element descriptionHTML;
 	private String description;
+
 	private Game game;
+
 	private ProjectType type;
+
 	private TRLList<Category> categories;
+
 	private URL avatarURL;
 	private String avatarURLString;
+	private BufferedImage avatar;
+
 	private URL thumbnailURL;
 	private String thumbnailURLString;
+
 	private TRLList<Member> members = new TRLList<>();
+
 	private int downloads;
+
 	private ZonedDateTime creationTime;
+
 	private String licenseName;
 	private Element licenseHTML;
 	private String license;
+
 	private URL donateURL;
 	private String donateURLString;
+
 	private Map<String, FileInfo[]> widgetInfoFiles;
+
 	private CurseFileList files;
+
 	private boolean forceMultithreadedFileSearches;
 
 	private CurseProject() {

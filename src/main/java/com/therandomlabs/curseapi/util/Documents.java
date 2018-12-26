@@ -186,20 +186,23 @@ public final class Documents {
 	}
 
 	public static Document getWithCache(URL url, Object cacheKey) throws CurseException {
+		final String urlString = url.toString();
 		Map<String, WeakReference<Document>> cacheMap = null;
 
-		if(cacheKey != null) {
-			cacheMap = cache.get(cacheKey);
+		for(Map.Entry<Object, Map<String, WeakReference<Document>>> cacheEntry : cache.entrySet()) {
+			final Map<String, WeakReference<Document>> map = cacheEntry.getValue();
 
-			if(cacheMap != null) {
-				final WeakReference<Document> reference = cacheMap.get(url.toString());
+			if(cacheKey.equals(cacheEntry.getKey())) {
+				cacheMap = map;
+			}
 
-				if(reference != null) {
-					final Document document = reference.get();
+			final WeakReference<Document> reference = map.get(urlString);
 
-					if(document != null) {
-						return document;
-					}
+			if(reference != null) {
+				final Document document = reference.get();
+
+				if(document != null) {
+					return document;
 				}
 			}
 		}
@@ -223,10 +226,10 @@ public final class Documents {
 		}
 
 		final Document document = Jsoup.parse(html);
-		document.setBaseUri(url.toString());
+		document.setBaseUri(urlString);
 
 		if(cacheMap != null) {
-			cacheMap.put(url.toString(), new WeakReference<>(document));
+			cacheMap.put(urlString, new WeakReference<>(document));
 		}
 
 		return document;
