@@ -557,9 +557,7 @@ public final class ProjectType {
 
 	private static final List<ProjectType> values = new TRLList<>();
 
-	public static final ProjectType UNKNOWN = new ProjectType(
-			"Unknown", CurseForgeSite.UNKNOWN, "unknown", "unknown"
-	);
+	public static final ProjectType UNKNOWN;
 
 	public static final Pattern MAIN_CURSEFORGE_PATH_PATTERN;
 	public static final String MAIN_CURSEFORGE_PATH_PATTERN_STRING;
@@ -614,11 +612,14 @@ public final class ProjectType {
 
 		MAIN_CURSEFORGE_PATH_PATTERN_STRING = pattern.toString();
 		MAIN_CURSEFORGE_PATH_PATTERN = Pattern.compile(MAIN_CURSEFORGE_PATH_PATTERN_STRING);
+
+		//Make FindBugs happy by initializing this last
+		UNKNOWN = new ProjectType("Unknown", CurseForgeSite.UNKNOWN, "unknown", "unknown");
 	}
 
 	ProjectType(String name, CurseForgeSite site, String sitePath, String mainCurseForgeSitePath) {
 		this.name = name;
-		singularName = this == UNKNOWN ? name : StringUtils.removeLastChar(name);
+		singularName = name.equals("Unknown") ? name : StringUtils.removeLastChar(name);
 		game = site.game();
 		fullName = game + " " + name;
 		fullSingularName = game + " " + singularName;

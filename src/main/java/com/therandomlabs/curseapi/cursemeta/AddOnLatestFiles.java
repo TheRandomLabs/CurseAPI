@@ -2,7 +2,7 @@ package com.therandomlabs.curseapi.cursemeta;
 
 import com.therandomlabs.curseapi.file.ReleaseType;
 
-public class AddOnLatestFiles {
+public class AddOnLatestFiles implements Cloneable {
 	public String FileType;
 	public String GameVesion; //Spelt wrong in CurseMeta
 	public int ProjectFileID;

@@ -19,7 +19,7 @@ public final class GameVersions {
 
 		@Override
 		public int compareTo(Object version) {
-			return -1;
+			return this == version ? 0 : -1;
 		}
 	};
 

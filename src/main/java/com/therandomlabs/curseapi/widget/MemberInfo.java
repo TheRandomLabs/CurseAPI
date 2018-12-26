@@ -8,7 +8,7 @@ public final class MemberInfo implements Cloneable {
 
 	@Override
 	public int hashCode() {
-		return title.hashCode() + username.hashCode();
+		return title.hashCode() * username.hashCode();
 	}
 
 	@Override
