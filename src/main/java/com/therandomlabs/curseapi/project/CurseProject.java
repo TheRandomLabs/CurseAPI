@@ -3,7 +3,6 @@ package com.therandomlabs.curseapi.project;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.AbstractMap;
@@ -62,7 +61,7 @@ public final class CurseProject {
 	private final boolean isNull;
 	private final boolean curseMeta;
 
-	private final Map<String, WeakReference<Document>> documentCache = new ConcurrentHashMap<>();
+	private final Map<String, Document> documentCache = new ConcurrentHashMap<>();
 
 	//Incomplete list of files used as a cache
 	private final CurseFileList incompleteFiles = new CurseFileList();

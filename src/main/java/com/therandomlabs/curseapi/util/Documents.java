@@ -1,7 +1,6 @@
 package com.therandomlabs.curseapi.util;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -137,8 +136,7 @@ public final class Documents {
 		void documentToList(Element document, List<E> list) throws CurseException;
 	}
 
-	private static final Map<Object, Map<String, WeakReference<Document>>> cache =
-			new ConcurrentHashMap<>();
+	private static final Map<Object, Map<String, Document>> cache = new ConcurrentHashMap<>();
 
 	static {
 		NetUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
@@ -187,24 +185,20 @@ public final class Documents {
 
 	public static Document getWithCache(URL url, Object cacheKey) throws CurseException {
 		final String urlString = url.toString();
-		Map<String, WeakReference<Document>> cacheMap = null;
+		Map<String, Document> cacheMap = null;
 
-		for(Map.Entry<Object, Map<String, WeakReference<Document>>> cacheEntry :
+		for(Map.Entry<Object, Map<String, Document>> cacheEntry :
 				cache.entrySet()) {
-			final Map<String, WeakReference<Document>> map = cacheEntry.getValue();
+			final Map<String, Document> map = cacheEntry.getValue();
 
 			if(cacheKey != null && cacheKey.equals(cacheEntry.getKey())) {
 				cacheMap = map;
 			}
 
-			final WeakReference<Document> reference = map.get(urlString);
+			final Document document = map.get(urlString);
 
-			if(reference != null) {
-				final Document document = reference.get();
-
-				if(document != null) {
-					return document;
-				}
+			if(document != null) {
+				return document;
 			}
 		}
 
@@ -230,7 +224,7 @@ public final class Documents {
 		document.setBaseUri(urlString);
 
 		if(cacheMap != null) {
-			cacheMap.put(urlString, new WeakReference<>(document));
+			cacheMap.put(urlString, document);
 		}
 
 		return document;
@@ -419,7 +413,7 @@ public final class Documents {
 		}
 	}
 
-	public static void putTemporaryCache(Object key, Map<String, WeakReference<Document>> cache) {
+	public static void putTemporaryCache(Object key, Map<String, Document> cache) {
 		Documents.cache.put(key, cache);
 	}
 
