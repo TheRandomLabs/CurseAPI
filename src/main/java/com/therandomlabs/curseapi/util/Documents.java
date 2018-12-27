@@ -222,7 +222,7 @@ public final class Documents {
 
 		final Document document = Jsoup.parse(html);
 
-		if(document.getElementsByTag("head").isEmpty()) {
+		if(document.getElementsByTag("head").get(0).getAllElements().isEmpty()) {
 			throw new CurseException("Failed to read: " + url);
 		}
 
@@ -387,8 +387,9 @@ public final class Documents {
 			);
 		} else {
 			for(int page = 0; page < pages; page++) {
-				iteratePage(cacheKey, documentToList, onElementAdd, stoppedPage, url, allData,
-						page);
+				iteratePage(
+						cacheKey, documentToList, onElementAdd, stoppedPage, url, allData, page
+				);
 			}
 		}
 
