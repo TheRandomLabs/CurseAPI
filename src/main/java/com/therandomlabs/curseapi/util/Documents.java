@@ -221,6 +221,11 @@ public final class Documents {
 		}
 
 		final Document document = Jsoup.parse(html);
+
+		if(document.getElementsByTag("head").isEmpty()) {
+			throw new CurseException("Failed to read: " + url);
+		}
+
 		document.setBaseUri(urlString);
 
 		if(cacheMap != null) {
