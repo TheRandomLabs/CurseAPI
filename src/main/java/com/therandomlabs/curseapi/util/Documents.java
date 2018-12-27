@@ -275,7 +275,7 @@ public final class Documents {
 			}
 			return element;
 		} catch(NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
-			throw CurseException.fromThrowable(ex);
+			throw new DocumentParseException(document, ex);
 		}
 	}
 
@@ -317,7 +317,7 @@ public final class Documents {
 
 			return value;
 		} catch(NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
-			throw CurseException.fromThrowable(ex);
+			throw new DocumentParseException(document, ex);
 		}
 	}
 
@@ -331,7 +331,7 @@ public final class Documents {
 
 	public static boolean isAvailable(URL url) throws CurseException {
 		try {
-			final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			final HttpURLConnection connection = NetUtils.connect(url);
 			connection.connect();
 			connection.disconnect();
 		} catch(IOException ex) {
@@ -409,7 +409,7 @@ public final class Documents {
 
 			return Integer.parseInt(CollectionUtils.fromLast(paginationItems, 1).text());
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
-			throw CurseException.fromThrowable(ex);
+			throw new DocumentParseException(document, ex);
 		}
 	}
 
