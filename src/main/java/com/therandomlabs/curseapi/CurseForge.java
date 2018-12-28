@@ -211,17 +211,22 @@ public final class CurseForge {
 		CurseAPI.validateProjectID(projectID);
 
 		final URL url = fromIDNoValidation(projectID);
+		final Wrapper<Map.Entry<URL, Document>> result = new Wrapper<>();
 
-		try {
-			final Document document = Documents.get(url);
-			return new AbstractMap.SimpleEntry<>(url, document);
-		} catch(CurseException ex) {
-			if(ex.getCause() instanceof FileNotFoundException) {
-				throw new InvalidProjectIDException(projectID);
+		CurseAPI.doWithRetries(() -> {
+			try {
+				final Document document = Documents.get(url);
+				result.set(new AbstractMap.SimpleEntry<>(url, document));
+			} catch(CurseException ex) {
+				if(ex.getCause() instanceof FileNotFoundException) {
+					throw new InvalidProjectIDException(projectID);
+				}
+
+				throw new InvalidProjectIDException(projectID, ex);
 			}
+		});
 
-			throw new InvalidProjectIDException(projectID, ex);
-		}
+		return result.get();
 	}
 
 	public static URL fromIDNoValidation(int projectID) throws CurseException {
