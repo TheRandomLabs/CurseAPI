@@ -222,7 +222,12 @@ public final class Documents {
 
 		final Document document = Jsoup.parse(html);
 
-		if(document.getElementsByTag("head").get(0).getAllElements().isEmpty()) {
+		//If the HTML is empty:
+		//<html>
+		//	<head></head>
+		//	<body></body>
+		//</html>
+		if(document.getElementsByTag("head").get(0).getAllElements().size() == 1) {
 			throw new CurseException("Failed to read: " + url);
 		}
 
