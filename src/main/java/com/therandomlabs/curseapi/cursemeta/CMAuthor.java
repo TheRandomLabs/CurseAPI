@@ -2,14 +2,14 @@ package com.therandomlabs.curseapi.cursemeta;
 
 import java.net.URL;
 
-public class AddOnAuthor implements Cloneable {
-	public String Name;
-	public URL Url;
+public final class CMAuthor implements Cloneable {
+	public String name;
+	public URL url;
 
 	@Override
-	public AddOnAuthor clone() {
+	public CMAuthor clone() {
 		try {
-			return (AddOnAuthor) super.clone();
+			return (CMAuthor) super.clone();
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;

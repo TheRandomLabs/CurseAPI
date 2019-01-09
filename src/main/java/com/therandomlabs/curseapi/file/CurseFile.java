@@ -20,8 +20,8 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.RelationType;
-import com.therandomlabs.curseapi.cursemeta.AddOnFile;
-import com.therandomlabs.curseapi.cursemeta.AddOnFileDependency;
+import com.therandomlabs.curseapi.cursemeta.CMDependency;
+import com.therandomlabs.curseapi.cursemeta.CMFile;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.cursemeta.CurseMetaException;
 import com.therandomlabs.curseapi.game.Game;
@@ -142,11 +142,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 		));
 	}
 
-	public CurseFile(int projectID, Game game, AddOnFile info) throws CurseException {
+	public CurseFile(int projectID, Game game, CMFile file) throws CurseException {
 		this(
-				projectID, game, null, info.FileStatus, info.Id, info.FileName, info.FileNameOnDisk,
-				info.releaseType(), info.FileDate, null, -1, getDependencyIDs(info.Dependencies),
-				info.GameVersion
+				projectID, game, null, file.fileStatus(), file.id, file.fileName,
+				file.fileNameOnDisk, file.releaseType(), file.fileDate, null, -1,
+				getDependencyIDs(file.dependencies), file.gameVersion
 		);
 	}
 
@@ -266,7 +266,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		if(url == null && !hasNoProject &&
 				(status == FileStatus.NORMAL || status == FileStatus.SEMI_NORMAL)) {
 			try {
-				urlString = CurseForge.fromIDNoValidation(projectID) + "/files" + id;
+				urlString = CurseForge.fromIDNoValidation(projectID) + "/files/" + id;
 				url = URLs.of(urlString);
 			} catch(InvalidProjectIDException ex) {
 				hasNoProject = true;
@@ -611,6 +611,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
 
+		//TODO replace linkouts
 		changelogHTML = document.getElementsByClass("logbox").get(0);
 
 		getChangelogString();
@@ -683,10 +684,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 			return CurseProject.fromID(projectID).files();
 		}
 
-		final TRLList<AddOnFile> files = CurseMeta.getFiles(projectID);
+		final TRLList<CMFile> files = CurseMeta.getFiles(projectID);
 		final CurseFileList curseFiles = new CurseFileList(files.size());
 
-		for(AddOnFile file : files) {
+		for(CMFile file : files) {
 			curseFiles.add(new CurseFile(projectID, game, file));
 		}
 
@@ -764,19 +765,21 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	private static Map<RelationType, TRLList<Integer>> getDependencyIDs(
-			List<AddOnFileDependency> dependencies) {
-		if(dependencies == null || dependencies.isEmpty()) {
+			CMDependency[] dependencies) {
+		if(dependencies == null || dependencies.length == 0) {
 			return Collections.emptyMap();
 		}
 
 		final Map<RelationType, TRLList<Integer>> ids = new EnumMap<>(RelationType.class);
-		final TRLList<Integer> all = new TRLList<>(dependencies.size());
+		final TRLList<Integer> all = new TRLList<>(dependencies.length);
 		ids.put(RelationType.ALL_TYPES, all);
 
-		for(AddOnFileDependency dependency : dependencies) {
-			ids.computeIfAbsent(dependency.Type, type -> new TRLList<>());
-			ids.get(dependency.Type).add(dependency.AddOnId);
-			all.add(dependency.AddOnId);
+		for(CMDependency dependency : dependencies) {
+			final RelationType type = dependency.type();
+
+			ids.computeIfAbsent(type, key -> new TRLList<>());
+			ids.get(type).add(dependency.addonId);
+			all.add(dependency.addonId);
 		}
 
 		for(Map.Entry<RelationType, TRLList<Integer>> entry : ids.entrySet()) {

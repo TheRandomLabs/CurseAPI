@@ -3,10 +3,10 @@ package com.therandomlabs.curseapi.project;
 import com.google.gson.annotations.SerializedName;
 
 public enum ProjectStage {
-	@SerializedName("Alpha")
-	NORMAL("Alpha"),
-	@SerializedName("Beta")
-	HIDDEN("Beta"),
+	@SerializedName("Normal")
+	NORMAL("Normal"),
+	@SerializedName("Hidden")
+	HIDDEN("Hidden"),
 	@SerializedName("Deleted")
 	DELETED("Deleted"),
 	@SerializedName("Inactive")
@@ -18,7 +18,9 @@ public enum ProjectStage {
 	@SerializedName("Release")
 	RELEASE("Release"),
 	@SerializedName("Abandoned")
-	ABANDONED("Abandoned");
+	ABANDONED("Abandoned"),
+	@SerializedName("Unknown")
+	UNKNOWN("Unknown");
 
 	private final String name;
 
@@ -37,6 +39,6 @@ public enum ProjectStage {
 			}
 		}
 
-		return null;
+		return UNKNOWN;
 	}
 }

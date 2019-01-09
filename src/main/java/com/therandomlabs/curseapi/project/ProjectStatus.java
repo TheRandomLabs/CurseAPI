@@ -8,7 +8,9 @@ public enum ProjectStatus {
 	@SerializedName("Hidden")
 	HIDDEN("Hidden"),
 	@SerializedName("Deleted")
-	DELETED("Deleted");
+	DELETED("Deleted"),
+	@SerializedName("Unknown")
+	UNKNOWN("Unknown");
 
 	private final String name;
 
@@ -27,6 +29,6 @@ public enum ProjectStatus {
 			}
 		}
 
-		return null;
+		return UNKNOWN;
 	}
 }

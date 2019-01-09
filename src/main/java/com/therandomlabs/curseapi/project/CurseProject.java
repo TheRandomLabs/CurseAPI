@@ -17,7 +17,6 @@ import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
 import com.therandomlabs.curseapi.InvalidCurseForgeProjectException;
 import com.therandomlabs.curseapi.RelationType;
-import com.therandomlabs.curseapi.cursemeta.AddOn;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
@@ -59,7 +58,6 @@ public final class CurseProject {
 	private final Map<RelationType, TRLList<Relation>> dependents = new ConcurrentHashMap<>();
 
 	private final boolean isNull;
-	private final boolean curseMeta;
 
 	private final Map<String, Document> documentCache = new ConcurrentHashMap<>();
 
@@ -109,8 +107,8 @@ public final class CurseProject {
 	private Element licenseHTML;
 	private String license;
 
-	private URL donateURL;
-	private String donateURLString;
+	private URL donationURL;
+	private String donationURLString;
 
 	private Map<String, FileInfo[]> widgetInfoFiles;
 
@@ -120,7 +118,6 @@ public final class CurseProject {
 
 	private CurseProject() {
 		isNull = true;
-		curseMeta = false;
 		site = CurseForgeSite.UNKNOWN;
 		title = CurseProject.UNKNOWN_TITLE;
 		shortDescription = "Null project";
@@ -151,7 +148,6 @@ public final class CurseProject {
 		reloadURL(CurseForge.toMainCurseForgeProject(document));
 
 		isNull = false;
-		curseMeta = false;
 
 		reload(false);
 
@@ -293,12 +289,12 @@ public final class CurseProject {
 		return latestFile().uploadTime();
 	}
 
-	public URL donateURL() {
-		return donateURL;
+	public URL donationURL() {
+		return donationURL;
 	}
 
-	public String donateURLString() {
-		return donateURLString;
+	public String donationURLString() {
+		return donationURLString;
 	}
 
 	public String licenseName() {
@@ -557,23 +553,12 @@ public final class CurseProject {
 			return;
 		}
 
-		if(!CurseAPI.isCurseMetaEnabled()) {
-			if(shouldAvoidWidgetAPI()) {
-				Documents.putTemporaryCache(this, documentCache);
+		if(CurseAPI.isCurseMetaEnabled()) {
+			files = CurseFile.getFiles(id);
+			return;
+		}
 
-				this.files = new CurseFileList(Documents.iteratePages(
-						this,
-						url + "/files?",
-						this::getFiles,
-						null,
-						true
-				));
-
-				Documents.removeTemporaryCache(this);
-
-				return;
-			}
-
+		if(!shouldAvoidWidgetAPI()) {
 			final TRLList<CurseFile> files = new TRLList<>(widgetInfoFiles.size() * 10);
 
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfoFiles.entrySet()) {
@@ -583,10 +568,19 @@ public final class CurseProject {
 			}
 
 			this.files = new CurseFileList(files);
-			return;
 		}
 
-		files = CurseFile.getFiles(id);
+		Documents.putTemporaryCache(this, documentCache);
+
+		this.files = new CurseFileList(Documents.iteratePages(
+				this,
+				url + "/files?",
+				this::getFiles,
+				null,
+				true
+		));
+
+		Documents.removeTemporaryCache(this);
 	}
 
 	public void clearCache() {
@@ -683,9 +677,9 @@ public final class CurseProject {
 			return true;
 		}
 
-		if(curseMeta) {
+		/*if(CurseAPI.isCurseMetaEnabled()) {
 			reloadCurseMeta();
-		}
+		}*/
 
 		if(document == null) {
 			try {
@@ -749,13 +743,13 @@ public final class CurseProject {
 			));
 
 			try {
-				donateURLString = Documents.getValue(
+				donationURLString = Documents.getValue(
 						document,
 						"class=icon-donate;attr=href;absUrl=href"
 				);
 			} catch(CurseException ignored) {}
 
-			donateURL = donateURLString == null ? null : URLs.of(donateURLString);
+			donationURL = donationURLString == null ? null : URLs.of(donationURLString);
 
 			licenseName = Documents.getValue(document, "class=info-data=4;tag=a;text");
 		} else {
@@ -784,12 +778,13 @@ public final class CurseProject {
 
 			downloads = info.downloads.total;
 			creationTime = Utils.parseTime(info.created_at);
-			donateURL = info.donate;
-			donateURLString = donateURL == null ? null : donateURLString;
+			donationURL = info.donate;
+			donationURLString = donationURL == null ? null : donationURLString;
 			licenseName = info.license;
 			widgetInfoFiles = info.versions;
 		}
 
+		//TODO replace linkouts
 		descriptionHTML = Documents.get(document, "class=project-description");
 
 		description = Documents.getPlainText(descriptionHTML);
@@ -809,27 +804,28 @@ public final class CurseProject {
 		return true;
 	}
 
-	private void reloadCurseMeta() throws CurseException {
-		final AddOn addon = CurseMeta.getAddOn(id);
+	/*private void reloadCurseMeta() throws CurseException {
+		final CMAddon addon = CurseMeta.getAddon(id);
 
-		id = addon.Id;
-		title = addon.Name;
-		game = Game.fromID(addon.GameId);
-		mainCurseForgeURL = addon.WebSiteURL;
-		avatarURL = addon.AvatarUrl == null ? CurseAPI.PLACEHOLDER_THUMBNAIL_URL : addon.AvatarUrl;
+		id = addon.id;
+		title = addon.name;
+		game = Game.fromID(addon.gameId);
+		mainCurseForgeURL = addon.websiteUrl;
+		avatarURL = addon.avatarUrl == null ? CurseAPI.PLACEHOLDER_THUMBNAIL_URL : addon.avatarUrl;
 		avatarURLString = avatarURL.toString();
 		thumbnailURL = avatarURL;
 		thumbnailURLString = avatarURLString;
-		members = new TRLList<>(Member.fromAuthors(addon.Authors));
-		downloads = (int) addon.DownloadCount;
+		members = new TRLList<>(Member.fromAuthors(addon.authors));
+		downloads = addon.downloadCount;
 		creationTime = null;
-		donateURL = addon.DonationUrl;
-		donateURLString = donateURL == null ? null : donateURL.toString();
-		shortDescription = addon.Summary;
-		categories = new TRLList<>(Category.fromAddOnCategories(addon.Categories));
+		//donation URL seems to always be null
+		//donationURL = addon.donationUrl;
+		//donationURLString = donationURL == null ? null : donationURL.toString();
+		shortDescription = addon.summary;
+		categories = new TRLList<>(Category.fromAddOnCategories(addon.categories));
 
 		reloadURL(mainCurseForgeURL);
-	}
+	}*/
 
 	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
 		try {

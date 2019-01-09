@@ -227,7 +227,8 @@ public final class Documents {
 		//	<head></head>
 		//	<body></body>
 		//</html>
-		if(document.getElementsByTag("head").get(0).getAllElements().size() == 1) {
+		if(document.getElementsByTag("head").get(0).getAllElements().size() == 1 &&
+				document.getElementsByTag("body").get(0).getAllElements().size() == 1) {
 			throw new CurseException("Failed to read: " + url);
 		}
 

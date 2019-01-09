@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.cursemeta.AddOnFile;
+import com.therandomlabs.curseapi.cursemeta.CMFile;
 import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.game.GameVersion;
 import com.therandomlabs.curseapi.game.GameVersionGroup;
@@ -27,19 +27,19 @@ public class CurseFileList extends TRLList<CurseFile> {
 		super(initialCapacity);
 	}
 
-	public CurseFileList(int projectID, Collection<AddOnFile> files, Game game)
+	public CurseFileList(int projectID, Collection<CMFile> files, Game game)
 			throws CurseException {
 		this(Collections.singletonMap(projectID, files), game, true);
 	}
 
-	public CurseFileList(Map<Integer, Collection<AddOnFile>> files, Game game)
+	public CurseFileList(Map<Integer, Collection<CMFile>> files, Game game)
 			throws CurseException {
 		this(files, game, true);
 	}
 
-	public CurseFileList(Map<Integer, Collection<AddOnFile>> files, Game game, boolean sortByNewest)
+	public CurseFileList(Map<Integer, Collection<CMFile>> files, Game game, boolean sortByNewest)
 			throws CurseException {
-		this(AddOnFile.toCurseFiles(files, game), sortByNewest);
+		this(CMFile.toCurseFiles(files, game), sortByNewest);
 	}
 
 	public CurseFileList(CurseFile... files) {

@@ -4,7 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import com.therandomlabs.curseapi.CurseForge;
 import com.therandomlabs.curseapi.CurseForgeSite;
-import com.therandomlabs.curseapi.cursemeta.AddOnAuthor;
+import com.therandomlabs.curseapi.cursemeta.CMAuthor;
 
 //TODO avatar and projects
 public final class Member {
@@ -58,11 +58,11 @@ public final class Member {
 		return site.urlString() + "members/" + username;
 	}
 
-	static Member[] fromAuthors(AddOnAuthor[] authors) {
+	static Member[] fromAuthors(CMAuthor[] authors) {
 		final Member[] members = new Member[authors.length];
 
 		for(int i = 0; i < authors.length; i++) {
-			members[i] = new Member(null, authors[i].Name);
+			members[i] = new Member(null, authors[i].name);
 		}
 
 		return members;

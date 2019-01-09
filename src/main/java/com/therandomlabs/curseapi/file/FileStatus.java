@@ -28,7 +28,9 @@ public enum FileStatus {
 	@SerializedName("WaitingOnProject")
 	WAITING_ON_PROJECT("WaitingOnProject"),
 	@SerializedName("ClientOnly")
-	CLIENT_ONLY("ClientOnly");
+	CLIENT_ONLY("ClientOnly"),
+	@SerializedName("Unknown")
+	UNKNOWN("Unknown");
 
 	private final String name;
 
@@ -48,6 +50,6 @@ public enum FileStatus {
 			}
 		}
 
-		return null;
+		return UNKNOWN;
 	}
 }

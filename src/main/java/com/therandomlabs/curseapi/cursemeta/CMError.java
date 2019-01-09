@@ -1,14 +1,14 @@
 package com.therandomlabs.curseapi.cursemeta;
 
-public class CurseMetaError implements Cloneable {
+public final class CMError implements Cloneable {
 	public String description;
 	public boolean error;
 	public int status;
 
 	@Override
-	public CurseMetaError clone() {
+	public CMError clone() {
 		try {
-			return (CurseMetaError) super.clone();
+			return (CMError) super.clone();
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;

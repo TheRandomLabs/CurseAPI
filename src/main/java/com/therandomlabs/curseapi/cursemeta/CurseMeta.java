@@ -18,84 +18,63 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
 public final class CurseMeta {
-	public static final String URL = "https://cursemeta.dries007.net/";
-	public static final String API_STATUS = URL + "api";
-	public static final String BASE_URL = URL + "api/v2/direct/";
+	public static final String CURSEMETA_URL = "https://staging-cursemeta.dries007.net/";
+	public static final URL FEEDS;
+	public static final String BASE_URL = CURSEMETA_URL + "api/v3/direct/";
 
-	public static final String GET_ADDON = "GetAddOn/";
-	public static final String GET_ALL_FILES_FOR_ADDON = "GetAllFilesForAddOn/";
-	public static final String GET_ADDON_FILE = "GetAddOnFile/";
-	public static final String GET_ADDON_DESCRIPTION = "v2GetAddOnDescription/";
-	public static final String GET_CHANGELOG = "v2GetChangeLog/";
+	public static final String ADDON = "addon/%s";
+	public static final String DESCRIPTION = ADDON + "/description";
+	public static final String FILES = ADDON + "/files";
 
-	private static final Map<Integer, TRLList<AddOnFile>> cache = new ConcurrentHashMap<>(50);
+	public static final String FILE = ADDON + "/file/%s";
+	public static final String CHANGELOG = FILE + "/changelog";
+
+	private static final Map<Integer, TRLList<CMFile>> fileCache = new ConcurrentHashMap<>(50);
+
+	static {
+		URL feeds = null;
+
+		try {
+			feeds = new URL(CURSEMETA_URL + "api/v3/history/feeds");
+		} catch(MalformedURLException ignored) {}
+
+		FEEDS = feeds;
+	}
 
 	private CurseMeta() {}
 
 	public static boolean isAvailable() {
 		try {
-			final CurseMetaStatus status = get(API_STATUS, CurseMetaStatus.class, true);
+			final CMFeeds feeds = get(FEEDS, CMFeeds.class, true);
 
-			if(status == null) {
+			if(feeds == null) {
 				return false;
 			}
 
-			return status.status.equals("OK") && status.apis.length > 1;
+			return feeds.timestamp != 0 && feeds.game_ids.length != 0 && !feeds.intervals.isEmpty();
 		} catch(CurseMetaException ignored) {}
 
 		return false;
 	}
 
-	public static AddOn getAddOn(int projectID) throws CurseMetaException {
-		return get(GET_ADDON + projectID, AddOn.class, false);
+	public static String getAddonURLString(int projectID) {
+		return BASE_URL + String.format(ADDON, projectID);
 	}
 
-	public static String getAddOnURLString(int projectID) {
-		return BASE_URL + GET_ADDON + projectID;
+	public static URL getAddonURL(int projectID) {
+		try {
+			return new URL(getAddonURLString(projectID));
+		} catch(MalformedURLException ignored) {}
+
+		return null;
 	}
 
-	public static URL getAddOnURL(int projectID) throws CurseException {
-		return URLs.of(getAddOnURLString(projectID));
-	}
-
-	public static TRLList<AddOnFile> getFiles(int projectID) throws CurseMetaException {
-		TRLList<AddOnFile> list = cache.get(projectID);
-
-		if(list != null) {
-			return list;
-		}
-
-		list = new TRLList<>(get(GET_ALL_FILES_FOR_ADDON + projectID, AddOnFile[].class, false));
-		cache.put(projectID, list);
-		return list;
-	}
-
-	public static String getFilesURLString(int projectID) {
-		return BASE_URL + GET_ALL_FILES_FOR_ADDON + projectID;
-	}
-
-	public static URL getFilesURL(int projectID) throws CurseException {
-		return URLs.of(getFilesURLString(projectID));
-	}
-
-	public static AddOnFile getFile(int projectID, int fileID) throws CurseMetaException {
-		return get(GET_ADDON_FILE + projectID + "/" + fileID, AddOnFile.class, false);
-	}
-
-	public static String getFileURLString(int projectID, int fileID) {
-		return BASE_URL + GET_ADDON_FILE + projectID + "/" + fileID;
-	}
-
-	public static URL getFileURL(int projectID, int fileID) throws CurseException {
-		return URLs.of(getFileURLString(projectID, fileID));
-	}
-
-	public static Element getDescription(int projectID) throws CurseMetaException {
-		return Jsoup.parse(get(GET_ADDON_DESCRIPTION + projectID, String.class, false));
+	public static CMAddon getAddon(int projectID) throws CurseMetaException {
+		return get(getAddonURL(projectID), CMAddon.class, false);
 	}
 
 	public static String getDescriptionURLString(int projectID) {
-		return BASE_URL + GET_ADDON_DESCRIPTION + projectID;
+		return BASE_URL + String.format(DESCRIPTION, projectID);
 	}
 
 	public static URL getDescriptionURL(int projectID) {
@@ -106,8 +85,64 @@ public final class CurseMeta {
 		return null;
 	}
 
+	public static Element getDescription(int projectID) throws CurseMetaException {
+		return Jsoup.parse(get(getDescriptionURL(projectID), String.class, false));
+	}
+
+	public static String getFilesURLString(int projectID) {
+		return BASE_URL + String.format(FILES, projectID);
+	}
+
+	public static URL getFilesURL(int projectID) {
+		try {
+			return new URL(getFilesURLString(projectID));
+		} catch(MalformedURLException ignored) {}
+
+		return null;
+	}
+
+	public static TRLList<CMFile> getFiles(int projectID) throws CurseMetaException {
+		TRLList<CMFile> list = fileCache.get(projectID);
+
+		if(list != null) {
+			return list;
+		}
+
+		list = new TRLList<>(get(getFilesURL(projectID), CMFile[].class, false));
+		fileCache.put(projectID, list);
+		return list;
+	}
+
+	public static String getFileURLString(int projectID, int fileID) {
+		return BASE_URL + String.format(FILE, projectID, fileID);
+	}
+
+	public static URL getFileURL(int projectID, int fileID) {
+		try {
+			return new URL(getFileURLString(projectID, fileID));
+		} catch(MalformedURLException ignored) {}
+
+		return null;
+	}
+
+	public static CMFile getFile(int projectID, int fileID) throws CurseMetaException {
+		return get(getFileURL(projectID, fileID), CMFile.class, false);
+	}
+
+	public static String getChangelogURLString(int projectID, int fileID) {
+		return BASE_URL + String.format(CHANGELOG, projectID, fileID);
+	}
+
+	public static URL getChangelogURL(int projectID, int fileID) {
+		try {
+			return new URL(getChangelogURLString(projectID, fileID));
+		} catch(MalformedURLException ignored) {}
+
+		return null;
+	}
+
 	public static Element getChangelog(int projectID, int fileID) throws CurseMetaException {
-		final String data = get(GET_CHANGELOG + projectID + "/" + fileID, String.class, true);
+		final String data = get(getChangelogURL(projectID, fileID), String.class, true);
 
 		if(data == null) {
 			return Jsoup.parse("No changelog provided");
@@ -116,32 +151,20 @@ public final class CurseMeta {
 		return Jsoup.parse(data);
 	}
 
-	public static String getChangelogURLString(int projectID, int fileID) {
-		return BASE_URL + GET_CHANGELOG + projectID + "/" + fileID;
+	public static void clearFileCache() {
+		fileCache.clear();
 	}
 
-	public static URL getChangelogURL(int projectID, int fileID) {
-		try {
-			return URLs.of(getChangelogURLString(projectID, fileID));
-		} catch(CurseException ignored) {}
-
-		return null;
+	public static void clearFileCache(int projectID) {
+		fileCache.remove(projectID);
 	}
 
-	public static void clearCache() {
-		cache.clear();
-	}
-
-	public static void clearCache(int projectID) {
-		cache.remove(projectID);
-	}
-
-	private static <T> T get(String path, Class<T> clazz, boolean ignoreNull)
+	private static <T> T get(URL url, Class<T> clazz, boolean ignoreNull)
 			throws CurseMetaException {
 		final Wrapper<T> data = new Wrapper<>();
 
 		try {
-			CurseAPI.doWithRetries(() -> data.set(getWithoutRetries(path, clazz, ignoreNull)));
+			CurseAPI.doWithRetries(() -> data.set(getWithoutRetries(url, clazz, ignoreNull)));
 		} catch(CurseException ex) {
 			throw (CurseMetaException) ex;
 		}
@@ -149,18 +172,8 @@ public final class CurseMeta {
 		return data.get();
 	}
 
-	private static <T> T getWithoutRetries(String path, Class<T> clazz, boolean ignoreNull)
+	private static <T> T getWithoutRetries(URL url, Class<T> clazz, boolean ignoreNull)
 			throws CurseMetaException {
-		URL tempURL = null;
-
-		try {
-			tempURL = new URL(BASE_URL + path);
-		} catch(MalformedURLException ignored) {
-			//This will never happen
-		}
-
-		final URL url = tempURL;
-
 		CurseEventHandling.forEach(eventHandler -> eventHandler.preDownloadDocument(url));
 
 		final String json;
@@ -177,21 +190,21 @@ public final class CurseMeta {
 
 		CurseEventHandling.forEach(eventHandler -> eventHandler.postDownloadDocument(url));
 
-		CurseMetaError error = null;
+		CMError error = null;
 
 		try {
-			error = new Gson().fromJson(json, CurseMetaError.class);
+			error = new Gson().fromJson(json, CMError.class);
 		} catch(JsonSyntaxException ignored) {}
 
 		if(error == null) {
-			if(ignoreNull) {
-				return null;
+			if(!clazz.isArray()) {
+				if(ignoreNull) {
+					return null;
+				}
+
+				throw new NullCurseMetaException(url);
 			}
-
-			throw new NullCurseMetaException(url);
-		}
-
-		if(error.error) {
+		} else if(error.error) {
 			throw new CurseMetaException(error.description, error.status, url);
 		}
 

@@ -2,7 +2,7 @@ package com.therandomlabs.curseapi.project;
 
 import java.net.URL;
 import com.therandomlabs.curseapi.CurseAPI;
-import com.therandomlabs.curseapi.cursemeta.AddOnCategory;
+import com.therandomlabs.curseapi.cursemeta.CMCategory;
 
 public final class Category {
 	public static final Category UNKNOWN = new Category("Unknown", null, null);
@@ -61,14 +61,13 @@ public final class Category {
 		return thumbnailURLString;
 	}
 
-	public static Category[] fromAddOnCategories(AddOnCategory[] addOnCategories) {
+	public static Category[] fromAddOnCategories(CMCategory[] addOnCategories) {
 		final Category[] categories = new Category[addOnCategories.length];
 
 		for(int i = 0; i < addOnCategories.length; i++) {
-			final AddOnCategory category = addOnCategories[i];
-			categories[i] = new Category(category.Name,
-					category.URL,
-					CurseAPI.PLACEHOLDER_THUMBNAIL_URL
+			final CMCategory category = addOnCategories[i];
+			categories[i] = new Category(
+					category.name, category.url, CurseAPI.PLACEHOLDER_THUMBNAIL_URL
 			);
 		}
 

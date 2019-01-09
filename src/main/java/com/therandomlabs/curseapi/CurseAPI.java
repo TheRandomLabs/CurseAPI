@@ -146,7 +146,7 @@ public final class CurseAPI {
 	public static void clearAllCache() {
 		placeholderThumbnail = null;
 
-		CurseMeta.clearCache();
+		CurseMeta.clearFileCache();
 		CurseProject.clearProjectCache();
 		URLs.clearRedirectionCache();
 	}

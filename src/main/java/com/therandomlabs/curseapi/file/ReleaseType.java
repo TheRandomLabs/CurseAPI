@@ -10,7 +10,9 @@ public enum ReleaseType {
 	@SerializedName("beta")
 	BETA,
 	@SerializedName("alpha")
-	ALPHA;
+	ALPHA,
+	@SerializedName("unknown")
+	UNKNOWN;
 
 	private final String lowerCase;
 	private final String friendlyName;
@@ -40,6 +42,6 @@ public enum ReleaseType {
 			}
 		}
 
-		return null;
+		return UNKNOWN;
 	}
 }

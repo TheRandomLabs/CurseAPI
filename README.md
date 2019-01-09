@@ -89,7 +89,7 @@ Project information example:
 	getLogger().info("Downloads: " + project.downloads());
 	getLogger().info("Creation time: " + project.creationTime());
 	getLogger().info("Last update time: " + project.lastUpdateTime());
-	getLogger().info("Donate URL: " + project.donateURL());
+	getLogger().info("Donate URL: " + project.donationURL());
 	getLogger().info("License name: " + project.licenseName());
 	getLogger().info("License text: " + project.licenseText());
 	getLogger().info("Short description: " + project.shortDescription());

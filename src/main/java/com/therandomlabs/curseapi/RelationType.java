@@ -16,7 +16,9 @@ public enum RelationType {
 	@SerializedName("Incompatible")
 	INCOMPATIBLE("Incompatible"),
 	@SerializedName("Include")
-	INCLUDE("Include");
+	INCLUDE("Include"),
+	@SerializedName("Unknown")
+	UNKNOWN("Unknown");
 
 	private final String name;
 
@@ -36,6 +38,6 @@ public enum RelationType {
 			}
 		}
 
-		return null;
+		return UNKNOWN;
 	}
 }
