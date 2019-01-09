@@ -8,7 +8,7 @@ public final class URLInfo implements Cloneable {
 
 	@Override
 	public int hashCode() {
-		return project.hashCode() * curseforge.hashCode();
+		return project.toString().hashCode() * curseforge.toString().hashCode();
 	}
 
 	@Override

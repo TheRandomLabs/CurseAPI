@@ -1,7 +1,6 @@
 package com.therandomlabs.curseapi.cursemeta;
 
 import java.net.URL;
-import com.therandomlabs.curseapi.file.FileStatus;
 import com.therandomlabs.curseapi.project.ProjectStatus;
 import com.therandomlabs.curseapi.util.Utils;
 

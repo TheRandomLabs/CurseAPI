@@ -14,6 +14,7 @@ public final class CMFeeds implements Cloneable {
 			final CMFeeds feeds = (CMFeeds) super.clone();
 			feeds.game_ids = game_ids.clone();
 			feeds.intervals = Utils.tryClone(intervals);
+			return feeds;
 		} catch(CloneNotSupportedException ignored) {}
 
 		return null;

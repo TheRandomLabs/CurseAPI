@@ -43,7 +43,7 @@ public final class CMFile implements Cloneable {
 		return null;
 	}
 
-	public ReleaseType releaseType(){
+	public ReleaseType releaseType() {
 		switch(releaseType) {
 		case 1:
 			return ReleaseType.RELEASE;
