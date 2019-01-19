@@ -134,8 +134,8 @@ public final class CurseAPI {
 		}
 	}
 
-	public static void doWithRetries(RunnableWithThrowable<CurseException> runnable)
-			throws CurseException {
+	public static <T extends Throwable> void doWithRetries(
+			RunnableWithThrowable<T> runnable) throws T {
 		try {
 			actuallyDoWithRetries(runnable);
 		} catch(InterruptedException ex) {
@@ -151,18 +151,19 @@ public final class CurseAPI {
 		URLs.clearRedirectionCache();
 	}
 
-	private static void actuallyDoWithRetries(RunnableWithThrowable<CurseException> runnable)
-			throws CurseException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	private static <T extends Throwable> void actuallyDoWithRetries(
+			RunnableWithThrowable<T> runnable) throws T, InterruptedException {
 		for(int i = 0; i < maxRetries; i++) {
 			try {
 				runnable.run();
 				break;
-			} catch(CurseException ex) {
+			} catch(Throwable throwable) {
 				if(i == maxRetries - 1) {
-					throw ex;
+					throw (T) throwable;
 				}
 
-				ThrowableHandling.handleWithoutExit(ex);
+				ThrowableHandling.handleWithoutExit(throwable);
 				Thread.sleep(retryTime * 1000L);
 			}
 		}

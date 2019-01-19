@@ -31,6 +31,16 @@ import org.jsoup.select.NodeTraversor;
 import org.jsoup.select.NodeVisitor;
 
 public final class Documents {
+	public static final class DocumentCache {
+		private final String string;
+		private final Document document;
+
+		private DocumentCache(String string, Document document) {
+			this.string = string;
+			this.document = document;
+		}
+	}
+
 	//Taken and adapted from
 	//https://github.com/jhy/jsoup/blob/master/src/main/java/org/jsoup/examples/HtmlToPlainText
 	// .java
@@ -136,7 +146,7 @@ public final class Documents {
 		void documentToList(Element document, List<E> list) throws CurseException;
 	}
 
-	private static final Map<Object, Map<String, Document>> cache = new ConcurrentHashMap<>();
+	private static final Map<Object, Map<String, DocumentCache>> cache = new ConcurrentHashMap<>();
 
 	static {
 		NetUtils.setUserAgent("Mozilla (https://github.com/TheRandomLabs/CurseAPI)");
@@ -171,7 +181,19 @@ public final class Documents {
 		return string;
 	}
 
+	public static String readWithCache(String url, Object objectKey) throws IOException {
+		return readWithCache(new URL(url), objectKey);
+	}
+
+	public static String readWithCache(URL url, Object objectKey) throws IOException {
+		return getCached(url, objectKey).string;
+	}
+
 	public static Document get(String url) throws CurseException {
+		return getWithCache(url, null);
+	}
+
+	public static Document get(URL url) throws CurseException {
 		return getWithCache(url, null);
 	}
 
@@ -179,66 +201,30 @@ public final class Documents {
 		return getWithCache(URLs.of(url), cacheKey);
 	}
 
-	public static Document get(URL url) throws CurseException {
-		return getWithCache(url, null);
-	}
-
 	public static Document getWithCache(URL url, Object cacheKey) throws CurseException {
-		final String urlString = url.toString();
-		Map<String, Document> cacheMap = null;
+		try {
+			final Document document = getCached(url, cacheKey).document;
 
-		for(Map.Entry<Object, Map<String, Document>> cacheEntry :
-				cache.entrySet()) {
-			final Map<String, Document> map = cacheEntry.getValue();
-
-			if(cacheKey != null && cacheKey.equals(cacheEntry.getKey())) {
-				cacheMap = map;
+			if(document == null) {
+				throw new CurseUnavailableException(url);
 			}
 
-			final Document document = map.get(urlString);
-
-			if(document != null) {
-				return document;
+			//If the HTML is empty:
+			//<html>
+			//	<head></head>
+			//	<body></body>
+			//</html>
+			if(document.getElementsByTag("head").get(0).getAllElements().size() == 1 &&
+					document.getElementsByTag("body").get(0).getAllElements().size() == 1) {
+				throw new CurseException("Failed to read: " + url);
 			}
+
+			return document;
+		} catch(IOException ex) {
+			throw CurseException.fromThrowable(
+					"An error occurred while reading: " + url, ex, url
+			);
 		}
-
-		final Wrapper<String> htmlWrapper = new Wrapper<>();
-
-		CurseAPI.doWithRetries(() -> {
-			try {
-				htmlWrapper.set(read(url));
-			} catch(IOException ex) {
-				throw CurseException.fromThrowable(
-						"An error occurred while reading: " + url, ex, url
-				);
-			}
-		});
-
-		final String html = htmlWrapper.get();
-
-		if(html == null) {
-			throw new CurseUnavailableException(url);
-		}
-
-		final Document document = Jsoup.parse(html);
-
-		//If the HTML is empty:
-		//<html>
-		//	<head></head>
-		//	<body></body>
-		//</html>
-		if(document.getElementsByTag("head").get(0).getAllElements().size() == 1 &&
-				document.getElementsByTag("body").get(0).getAllElements().size() == 1) {
-			throw new CurseException("Failed to read: " + url);
-		}
-
-		document.setBaseUri(urlString);
-
-		if(cacheMap != null) {
-			cacheMap.put(urlString, document);
-		}
-
-		return document;
 	}
 
 	public static Element get(URL url, String data) throws CurseException {
@@ -425,12 +411,52 @@ public final class Documents {
 		}
 	}
 
-	public static void putTemporaryCache(Object key, Map<String, Document> cache) {
+	public static void putTemporaryCache(Object key, Map<String, DocumentCache> cache) {
 		Documents.cache.put(key, cache);
 	}
 
 	public static void removeTemporaryCache(Object key) {
 		cache.remove(key);
+	}
+
+	private static DocumentCache getCached(URL url, Object cacheKey) throws IOException {
+		final String urlString = url.toString();
+		Map<String, DocumentCache> cacheMap = null;
+
+		for(Map.Entry<Object, Map<String, DocumentCache>> cacheEntry : cache.entrySet()) {
+			final Map<String, DocumentCache> map = cacheEntry.getValue();
+
+			if(cacheKey != null && cacheKey.equals(cacheEntry.getKey())) {
+				cacheMap = map;
+			}
+
+			final DocumentCache cache = map.get(urlString);
+
+			if(cache != null) {
+				return cache;
+			}
+		}
+
+		final Wrapper<String> htmlWrapper = new Wrapper<>();
+
+		CurseAPI.doWithRetries(() -> htmlWrapper.set(read(url)));
+
+		final String html = htmlWrapper.get();
+
+		if(html == null) {
+			return new DocumentCache(null, null);
+		}
+
+		final Document document = Jsoup.parse(html);
+		document.setBaseUri(urlString);
+
+		final DocumentCache cache = new DocumentCache(html, document);
+
+		if(cacheMap != null) {
+			cacheMap.put(urlString, cache);
+		}
+
+		return cache;
 	}
 
 	private static <E> void iteratePage(Object cacheKey, DocumentToList<E> documentToList,
