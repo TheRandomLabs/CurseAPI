@@ -59,7 +59,7 @@ public final class CurseProject {
 
 	private final boolean isNull;
 
-	private final Map<String, Document> documentCache = new ConcurrentHashMap<>();
+	private final Map<String, Documents.DocumentCache> documentCache = new ConcurrentHashMap<>();
 
 	//Incomplete list of files used as a cache
 	private final CurseFileList incompleteFiles = new CurseFileList();
