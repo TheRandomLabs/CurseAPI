@@ -658,7 +658,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 					dependencyIDs.put(type, ids);
 				}
 
-				dependencyIDs.put(RelationType.ALL_TYPES, allIDs);d
+				dependencyIDs.put(RelationType.ALL_TYPES, allIDs);
 			} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 				dependencyIDs = null;
 
