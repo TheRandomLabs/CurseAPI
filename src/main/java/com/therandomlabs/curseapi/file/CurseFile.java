@@ -43,6 +43,7 @@ import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import static com.therandomlabs.utils.logging.Logging.getLogger;
 
 //TODO Additional Files
 public final class CurseFile implements Comparable<CurseFile> {
@@ -314,7 +315,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 
 		final TRLList<Integer> ids = dependencyIDs.get(relationType);
-		return ids == null ? ImmutableList.empty() : ids;
+		return ids == null ? new TRLList<>() : ids;
 	}
 
 	public TRLList<CurseProject> dependencies() throws CurseException {
@@ -326,7 +327,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			final TRLList<Integer> ids = dependencyIDs(relationType);
 
 			if(ids.isEmpty()) {
-				return ImmutableList.empty();
+				return new TRLList<>();
 			}
 
 			final TRLList<CurseProject> dependencyList = new TRLList<>(ids.size());
@@ -629,10 +630,12 @@ public final class CurseFile implements Comparable<CurseFile> {
 					return;
 				}
 
-				final Elements elements = relatedProjects.get(0).getAllElements();
+				final Elements elements = relatedProjects.get(0).children();
 
 				RelationType type = null;
 				dependencyIDs = new EnumMap<>(RelationType.class);
+
+				final TRLList<Integer> allIDs = new TRLList<>();
 
 				for(Element element : elements) {
 					if("h5".equals(element.tagName())) {
@@ -651,8 +654,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 						ids.add(Integer.parseInt(element2.attr("href").split("/")[2]));
 					}
 
+					allIDs.addAll(ids);
 					dependencyIDs.put(type, ids);
 				}
+
+				dependencyIDs.put(RelationType.ALL_TYPES, allIDs);d
 			} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 				dependencyIDs = null;
 

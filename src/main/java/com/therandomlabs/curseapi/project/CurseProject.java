@@ -725,7 +725,8 @@ public final class CurseProject {
 
 			members.clear();
 
-			for(Element member : document.getElementsByClass("project-members")) {
+			for(Element member :
+					document.getElementsByClass("project-members").get(0).children()) {
 				members.add(new Member(
 						MemberType.fromName(Documents.getValue(member, "class=title;text")),
 						Documents.getValue(member, "tag=span;text")
