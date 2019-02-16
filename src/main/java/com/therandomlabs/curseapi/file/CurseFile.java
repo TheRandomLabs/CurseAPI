@@ -806,7 +806,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		return new String[] {
 				id1,
-				id2
+				id2.isEmpty() ? "0" : id2
 		};
 	}
 }
