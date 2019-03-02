@@ -31,9 +31,11 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.InvalidProjectIDException;
 import com.therandomlabs.curseapi.project.Member;
 import com.therandomlabs.curseapi.util.Documents;
+import com.therandomlabs.curseapi.util.FileListParser;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.curseapi.widget.FileInfo;
+import com.therandomlabs.utils.collection.ArrayUtils;
 import com.therandomlabs.utils.collection.CollectionUtils;
 import com.therandomlabs.utils.collection.ImmutableList;
 import com.therandomlabs.utils.collection.TRLList;
@@ -43,9 +45,7 @@ import com.therandomlabs.utils.misc.ThreadUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import static com.therandomlabs.utils.logging.Logging.getLogger;
 
-//TODO Additional Files
 public final class CurseFile implements Comparable<CurseFile> {
 	private static final String NO_CHANGELOG_PROVIDED_STRING = "No changelog provided";
 	private static final Element NO_CHANGELOG_PROVIDED = Jsoup.parse(NO_CHANGELOG_PROVIDED_STRING);
@@ -58,19 +58,22 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final Game game;
 
 	private final int id;
-	private final String name;
-
 	private final ReleaseType releaseType;
 	private final ZonedDateTime uploadTime;
 	private final int downloads;
-
 	private final TRLList<String> gameVersionStrings;
 	private final String gameVersionString;
-
+	private String name;
 	private TRLList<GameVersion> gameVersions;
 	private GameVersion gameVersion;
 
 	private CurseProject project;
+
+	private CurseFile parentFile;
+	private int parentFileID;
+	private String parentFileName;
+
+	private CurseFileList additionalFiles = new CurseFileList();
 
 	private FileStatus status = FileStatus.NORMAL;
 
@@ -98,20 +101,23 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private boolean hasNoProject;
 
-	@SuppressWarnings("unchecked")
 	public CurseFile(CurseProject project, int id, URL url, Element document)
 			throws CurseException {
-		projectID = project.id();
-		game = project.game();
-
+		this(project.id(), project.game(), id, url, document);
 		this.project = project;
+	}
+
+	@SuppressWarnings("unchecked")
+	public CurseFile(int projectID, Game game, int id, URL url, Element document)
+			throws CurseException {
+		this.projectID = projectID;
+		this.game = game;
+
 		this.id = id;
 		this.url = url;
 		urlString = url.toString();
 
 		ensureHTMLDataRetrieved(document);
-
-		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
 
 		downloadURLString = getDownloadURLString();
 		downloadURL = URLs.of(downloadURLString);
@@ -152,8 +158,15 @@ public final class CurseFile implements Comparable<CurseFile> {
 	}
 
 	public CurseFile(CurseProject project, FileInfo info) throws CurseException {
+		this(project.id(), project.game(), info);
+		this.project = project;
+		urlString = project.urlString() + "/files/" + id;
+		url = URLs.of(urlString);
+	}
+
+	public CurseFile(int projectID, Game game, FileInfo info) throws CurseException {
 		this(
-				project.id(), project.game(), project, FileStatus.NORMAL, info.id, info.name, null,
+				projectID, game, null, FileStatus.NORMAL, info.id, info.name, null,
 				info.type, info.uploaded_at, info.filesize, info.downloads, null, info.versions
 		);
 	}
@@ -252,6 +265,70 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public int id() {
 		return id;
+	}
+
+	public int projectID() {
+		return projectID;
+	}
+
+	public CurseProject project() throws CurseException {
+		if(project == null && !hasNoProject) {
+			try {
+				project = CurseProject.fromID(projectID);
+			} catch(InvalidProjectIDException ex) {
+				hasNoProject = true;
+			}
+		}
+
+		return project;
+	}
+
+	public String projectTitle() {
+		return project.title();
+	}
+
+	public Game game() {
+		return game;
+	}
+
+	public boolean hasParentFile() {
+		return parentFileID != 0;
+	}
+
+	public CurseFile parentFile() throws CurseException {
+		if(parentFile != null) {
+			return parentFile;
+		}
+
+		if(parentFileID() == 0) {
+			return null;
+		}
+
+		parentFile = getFile(projectID, parentFileID);
+		return parentFile;
+	}
+
+	public int parentFileID() throws CurseException {
+		if(parentFileID != 0) {
+			return parentFileID;
+		}
+
+		ensureHTMLDataRetrieved();
+		return parentFileID;
+	}
+
+	public String parentFileName() throws CurseException {
+		if(parentFileName != null) {
+			return parentFileName;
+		}
+
+		ensureHTMLDataRetrieved();
+		return parentFileName;
+	}
+
+	public CurseFileList additionalFiles() throws CurseException {
+		ensureHTMLDataRetrieved();
+		return additionalFiles.clone();
 	}
 
 	public String name() {
@@ -497,26 +574,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return uploaderUsername;
 	}
 
-	public int projectID() {
-		return projectID;
-	}
-
-	public CurseProject project() throws CurseException {
-		if(project == null && !hasNoProject) {
-			try {
-				project = CurseProject.fromID(projectID);
-			} catch(InvalidProjectIDException ex) {
-				hasNoProject = true;
-			}
-		}
-
-		return project;
-	}
-
-	public String projectTitle() {
-		return project.title();
-	}
-
 	public DownloadInfo downloadInfo() throws CurseException {
 		try {
 			return new DownloadInfo(downloadURL());
@@ -605,6 +662,31 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		if(document == null) {
 			document = Documents.get(url);
+		}
+
+		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
+
+		final Elements parentFileLinkList = document.getElementsByClass("parent-file-link");
+
+		if(parentFileLinkList.isEmpty()) {
+			if(project() == null) {
+				FileListParser.getFiles(projectID, game, document, additionalFiles);
+			} else {
+				FileListParser.getFiles(project, document, additionalFiles);
+			}
+
+			for(CurseFile file : additionalFiles) {
+				file.parentFile = this;
+				file.parentFileID = id;
+				file.parentFileName = name;
+			}
+		} else {
+			final Element parentFileLink = parentFileLinkList.get(0);
+
+			final String parentURL = Documents.getValue(parentFileLink, "tag=a;attr=href");
+			parentFileID = Integer.parseInt(ArrayUtils.last(StringUtils.split(parentURL, '/')));
+
+			parentFileName = Documents.getValue(parentFileLink, "class=overflow-tip;tag=a;text");
 		}
 
 		nameOnDisk = Documents.get(document, "class=details-info;class=info-data").

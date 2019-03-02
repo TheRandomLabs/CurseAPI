@@ -113,7 +113,7 @@ public final class Relation {
 	}
 
 	public Category[] categories() {
-		return categories;
+		return categories.clone();
 	}
 
 	public CurseProject asProject() throws CurseException {

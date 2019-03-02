@@ -20,9 +20,9 @@ import com.therandomlabs.curseapi.RelationType;
 import com.therandomlabs.curseapi.cursemeta.CurseMeta;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileList;
-import com.therandomlabs.curseapi.file.ReleaseType;
 import com.therandomlabs.curseapi.game.Game;
 import com.therandomlabs.curseapi.util.Documents;
+import com.therandomlabs.curseapi.util.FileListParser;
 import com.therandomlabs.curseapi.util.URLs;
 import com.therandomlabs.curseapi.util.Utils;
 import com.therandomlabs.curseapi.widget.FileInfo;
@@ -829,67 +829,7 @@ public final class CurseProject {
 	}*/
 
 	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
-		try {
-			actuallyGetFiles(document, files);
-		} catch(NullPointerException | NumberFormatException ex) {
-			throw CurseException.fromThrowable(ex);
-		}
-	}
-
-	private void actuallyGetFiles(Element document, List<CurseFile> files) throws CurseException {
-		for(Element file : document.getElementsByClass("project-file-list-item")) {
-			final int id = Integer.parseInt(ArrayUtils.last(Documents.getValue(
-					file,
-					"class=twitch-link;attr=href"
-			).split("/")));
-
-			final URL url = URLs.of(Documents.getValue(
-					file,
-					"class=twitch-link;attr=href;absUrl=href"
-			));
-
-			final String name = Documents.getValue(file, "class=twitch-link;text");
-
-			//<div class="alpha-phase tip">
-			final ReleaseType type = ReleaseType.fromName(Documents.getValue(
-					file,
-					"class=project-file-release-type;class=tip;attr=title"
-			));
-
-			final String[] versions;
-
-			if(file.getElementsByClass("additional-versions").isEmpty()) {
-				final String version = Documents.getValue(file, "class=version-label;text");
-
-				if(version.equals("-")) {
-					versions = new String[0];
-				} else {
-					versions = new String[] {
-							version
-					};
-				}
-			} else {
-				String value = Documents.getValue(file, "class=additional-versions;attr=title");
-
-				value = value.substring(5, value.length() - 6);
-
-				versions = value.split("</div><div>");
-			}
-
-			final String fileSize = Documents.getValue(file, "class=project-file-size;text");
-
-			final int downloads = Integer.parseInt(Documents.getValue(
-					file,
-					"class=project-file-downloads;text"
-			).replaceAll(",", ""));
-
-			final String uploadedAt =
-					Documents.getValue(file, "class=standard-date;attr=data-epoch");
-
-			files.add(new CurseFile(CurseProject.this, new FileInfo(
-					id, url, name, type, versions, fileSize, downloads, uploadedAt
-			)));
-		}
+		FileListParser.getFiles(this, document, files);
 	}
 
 	private boolean shouldAvoidWidgetAPI() {
