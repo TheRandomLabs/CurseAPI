@@ -137,6 +137,7 @@ File information example (the Minecraft versions depend on CurseAPI-Minecraft):
 	getLogger().info("URL: " + file.urlString());
 	getLogger().info("Name: " + file.name());
 	getLogger().info("Name on disk: " + file.nameOnDisk());
+	getLogger().info("Maven dependency: deobfCompile \"" + file.mavenDependency() + "\"");
 	getLogger().info("Download URL: " + file.downloadURLString());
 	getLogger().info("Release type: " + file.releaseType());
 	getLogger().info("Upload time: " + file.uploadTime());
@@ -151,19 +152,19 @@ File information example (the Minecraft versions depend on CurseAPI-Minecraft):
 The above code at the time of writing prints:
 
 	[INFO] Project ID: 258205
-	[INFO] File ID: 2622074
+	[INFO] File ID: 2715934
 	[INFO] Status: Normal
-	[INFO] URL: https://minecraft.curseforge.com/projects/randomtweaks/files/2622074
-	[INFO] Name: RandomTweaks 1.12.2-2.1.6.0
-	[INFO] Name on disk: randomtweaks-1.12.2-2.1.6.0.jar
-	[INFO] Download URL: https://media.forgecdn.net/files/2622/74/randomtweaks-1.12.2-2.1.6.0.jar
-	[INFO] Release type: beta
-	[INFO] Upload time: 2018-09-29T09:04:08Z
-	[INFO] File size: 155.75 KB
-	[INFO] Downloads: 155
-	[INFO] MD5: 867b5f8d7a49e671a10ed2ffd577365e
+	[INFO] URL: https://minecraft.curseforge.com/projects/randomtweaks/files/2715934
+	[INFO] Name: RandomTweaks 1.12.2-2.5.0.6
+	[INFO] Name on disk: randomtweaks-1.12.2-2.5.0.6.jar
+	[INFO] Maven dependency: deobfCompile "randomtweaks:randomtweaks:1.12.2:2.5.0.6"
+	[INFO] Download URL: https://media.forgecdn.net/files/2715/934/randomtweaks-1.12.2-2.5.0.6.jar
+	[INFO] Release type: release
+	[INFO] Upload time: 2019-05-26T07:10:18Z
+	[INFO] File size: 252.30 KB
+	[INFO] Downloads: 9947
+	[INFO] MD5: 8c7fea8b779256a681ead355baa11be9
 	[INFO] Uploader: Member[type="Owner",username="TheRandomLabs"]
 	[INFO] Dependencies: []
-	[INFO] Minecraft versions: [1.12.2]
-	[INFO] Changelog: Cleaned up the code.
-	Added better button names, which are disabled by default.
+	[INFO] Minecraft versions: [1.12.2, 1.12.1, 1.12]
+	[INFO] Changelog: Fixed spawn points for the Void and Void Islands world types.

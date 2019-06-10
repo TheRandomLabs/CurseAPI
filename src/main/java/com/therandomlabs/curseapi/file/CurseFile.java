@@ -58,14 +58,22 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private final Game game;
 
 	private final int id;
+
 	private final ReleaseType releaseType;
+
 	private final ZonedDateTime uploadTime;
+
 	private final int downloads;
+
 	private final TRLList<String> gameVersionStrings;
 	private final String gameVersionString;
-	private String name;
+
 	private TRLList<GameVersion> gameVersions;
 	private GameVersion gameVersion;
+
+	private String name;
+	private String nameOnDisk;
+	private String mavenDependency;
 
 	private CurseProject project;
 
@@ -79,8 +87,6 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private URL url;
 	private String urlString;
-
-	private String nameOnDisk;
 
 	private String downloadURLString;
 	private URL downloadURL;
@@ -179,6 +185,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		status = FileStatus.DELETED;
 		name = "Null File";
 		nameOnDisk = "null-file";
+		mavenDependency = "";
 		downloadURLString = null;
 		downloadURL = null;
 		releaseType = ReleaseType.ALPHA;
@@ -218,6 +225,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.id = id;
 		this.name = name;
 		this.nameOnDisk = nameOnDisk;
+		getMavenDependency();
 		this.releaseType = releaseType;
 		this.uploadTime = Utils.parseTime(uploadTime);
 		this.fileSize = fileSize;
@@ -338,6 +346,11 @@ public final class CurseFile implements Comparable<CurseFile> {
 	public String nameOnDisk() throws CurseException {
 		ensureHTMLDataRetrieved();
 		return nameOnDisk;
+	}
+
+	public String mavenDependency() throws CurseException {
+		ensureHTMLDataRetrieved();
+		return mavenDependency;
 	}
 
 	public URL url() throws CurseException {
@@ -691,6 +704,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		nameOnDisk = Documents.get(document, "class=details-info;class=info-data").
 				textNodes().get(0).getWholeText();
+		getMavenDependency();
 
 		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
 
@@ -753,6 +767,15 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private boolean htmlDataRetrieved() {
 		return nameOnDisk != null;
+	}
+
+	private void getMavenDependency() {
+		if(project == null) {
+			mavenDependency = "";
+		} else {
+			mavenDependency = project.slug() + ':' +
+					StringUtils.replaceAll(nameOnDisk, '-', ':').replaceAll("\\.[^/.]+$", "");
+		}
 	}
 
 	private void getChangelogString() {
