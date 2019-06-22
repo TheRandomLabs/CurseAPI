@@ -774,7 +774,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			mavenDependency = "";
 		} else {
 			mavenDependency = project.slug() + ':' +
-					StringUtils.replaceAll(nameOnDisk, '-', ':').replaceAll("\\.[^/.]+$", "");
+					nameOnDisk.replace('-', ':').replaceAll("\\.[^/.]+$", "");
 		}
 	}
 
@@ -893,9 +893,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 			all.add(dependency.addonId);
 		}
 
-		for(Map.Entry<RelationType, TRLList<Integer>> entry : ids.entrySet()) {
-			ids.put(entry.getKey(), entry.getValue().toImmutableList());
-		}
+		ids.replaceAll((type, typeIDs) -> typeIDs.toImmutableList());
 
 		return ids;
 	}

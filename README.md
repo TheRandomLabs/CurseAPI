@@ -13,7 +13,7 @@ Example Gradle buildscript:
 	}
 
 	dependencies {
-		compile "com.github.TheRandomLabs:CurseAPI:-SNAPSHOT"
+		compile "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
 	}
 
 	task sourcesJar(type: Jar, dependsOn: classes) {
