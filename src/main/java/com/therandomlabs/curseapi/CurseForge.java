@@ -22,12 +22,12 @@ public final class CurseForge {
 	public static final String URL = "https://" + HOST + "/";
 	//TODO base this on ProjectType.MAIN_CURSEFORGE_PATH_PATTERN
 	public static final Pattern PROJECT_PATH_PATTERN =
-			Pattern.compile("^/[a-zA-Z-]+/[a-zA-Z-]+/[a-zA-Z|0-9]+");
+			Pattern.compile("^/[a-zA-Z-]+/[a-zA-Z-]+/[a-zA-Z|0-9-]+");
 	public static final Pattern UNREDIRECTED_PROJECT_PATH_PATTERN =
 			Pattern.compile("^/projects/[0-9]+$");
 	//TODO base this on ProjectType.MAIN_CURSEFORGE_PATH_PATTERN
 	public static final Pattern FILE_PATH_PATTERN =
-			Pattern.compile("^/[a-zA-Z-]+/[a-zA-Z-]+/[a-zA-Z|0-9]+/files/[0-9]+");
+			Pattern.compile("^/[a-zA-Z-]+/[a-zA-Z-]+/[a-zA-Z|0-9-]+/files/[0-9]+");
 
 	private CurseForge() {}
 
@@ -224,7 +224,7 @@ public final class CurseForge {
 
 	public static int getID(Element document) throws CurseException {
 		return Integer.parseInt(
-				Documents.getValue(document, "class=j-comment;attr=data-parent-id")
+				Documents.getValue(document, "class=pb-4;tag=span=1;text")
 		);
 	}
 }
