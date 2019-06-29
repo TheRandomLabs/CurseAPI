@@ -34,28 +34,34 @@ public final class FileListParser {
 
 	private static void actuallyGetFiles(CurseProject project, int projectID, Game game,
 			Element document, List<CurseFile> files) throws CurseException {
-		for(Element file : document.getElementsByClass("project-file-list-item")) {
+		boolean first = true;
+
+		for(Element file : document.getElementsByTag("tr")) {
+			if(first) {
+				first = false;
+				continue;
+			}
+
 			final int id = Integer.parseInt(ArrayUtils.last(Documents.getValue(
-					file,
-					"class=twitch-link;attr=href"
+					file, "tag=a;attr=href"
 			).split("/")));
 
 			final URL url = URLs.of(Documents.getValue(
 					file,
-					"class=twitch-link;attr=href;absUrl=href"
+					"tag=a;attr=href;absUrl=href"
 			));
 
-			final String name = Documents.getValue(file, "class=twitch-link;text");
+			final String name = Documents.getValue(file, "tag=a;text");
 
 			//<div class="alpha-phase tip">
-			final ReleaseType type = ReleaseType.fromName(Documents.getValue(
-					file,
-					"class=project-file-release-type;class=tip;attr=title"
-			));
+			final ReleaseType type =
+					ReleaseType.fromName(Documents.getValue(file, "tag=span;text"));
 
-			final String[] versions;
+			final String[] versions = new String[] {
+					Documents.getValue(file, "class=mr-2;text")
+			};
 
-			if(file.getElementsByClass("additional-versions").isEmpty()) {
+			/*if(file.getElementsByClass("additional-versions").isEmpty()) {
 				final String version = Documents.getValue(file, "class=version-label;text");
 
 				if(version.equals("-")) {
@@ -71,17 +77,16 @@ public final class FileListParser {
 				value = value.substring(5, value.length() - 6);
 
 				versions = value.split("</div><div>");
-			}
+			}*/
 
-			final String fileSize = Documents.getValue(file, "class=project-file-size;text");
+			final String fileSize = Documents.getValue(file, "tag=td=2;text");
 
 			final int downloads = Integer.parseInt(Documents.getValue(
-					file,
-					"class=project-file-downloads;text"
+					file, "tag=td=5;text"
 			).replaceAll(",", ""));
 
 			final String uploadedAt =
-					Documents.getValue(file, "class=standard-date;attr=data-epoch");
+					Documents.getValue(file, "tag=abbr;attr=data-epoch");
 
 			final FileInfo fileInfo = new FileInfo(
 					id, url, name, type, versions, fileSize, downloads, uploadedAt

@@ -69,9 +69,6 @@ public final class CurseProject {
 
 	private String slug;
 
-	private URL mainCurseForgeURL;
-	private String mainCurseForgeURLString;
-
 	private CurseForgeSite site;
 
 	private Element document;
@@ -145,7 +142,7 @@ public final class CurseProject {
 	private CurseProject(Map.Entry<URL, Document> project) throws CurseException {
 		url = project.getKey();
 		document = project.getValue();
-		reloadURL(CurseForge.toMainCurseForgeProject(document));
+		reloadURL();
 
 		isNull = false;
 
@@ -195,18 +192,6 @@ public final class CurseProject {
 
 	public String urlString() {
 		return urlString;
-	}
-
-	public URL mainCurseForgeURL() {
-		return mainCurseForgeURL;
-	}
-
-	public String mainCurseForgeURLString() {
-		return mainCurseForgeURLString;
-	}
-
-	public boolean hasMainCurseForgePage() {
-		return mainCurseForgeURL != null;
 	}
 
 	public String slug() {
@@ -308,7 +293,7 @@ public final class CurseProject {
 
 	public Element licenseHTML() throws CurseException {
 		if(licenseHTML == null) {
-			licenseHTML = Documents.get(url + "/license");
+			licenseHTML = Documents.get(CurseForge.URL + "project/" + id + "/license");
 			license = Documents.getPlainText(licenseHTML);
 
 			if(license.endsWith("\n")) {
@@ -354,17 +339,17 @@ public final class CurseProject {
 			return incompleteFiles.latest();
 		}
 
-		if(!shouldAvoidWidgetAPI() || CurseAPI.isCurseMetaEnabled()) {
+		if(CurseAPI.isWidgetAPIEnabled() || CurseAPI.isCurseMetaEnabled()) {
 			return filesDirect().latest();
 		}
 
 		final List<CurseFile> files = new TRLList<>();
 
-		getFiles(Documents.get(url + "/files?page=1"), files);
+		getFiles(Documents.get(url + "/files/all?page=1"), files);
 		//Add to cache
 		incompleteFiles.addAll(files);
 
-		return files.get(0);
+		return files.isEmpty() ? null : files.get(0);
 	}
 
 	public CurseFile latestFile(Predicate<CurseFile> predicate) throws CurseException {
@@ -375,14 +360,14 @@ public final class CurseProject {
 			}
 		}
 
-		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
+		if(!CurseAPI.isWidgetAPIEnabled() && !CurseAPI.isCurseMetaEnabled()) {
 			final Wrapper<CurseFile> latestFile = new Wrapper<>();
 
 			Documents.putTemporaryCache(this, documentCache);
 
 			final List<CurseFile> files = Documents.iteratePages(
 					this,
-					url + "/files?",
+					url + "/files/all?",
 					this::getFiles,
 					file -> {
 						if(predicate.test(file) && !latestFile.hasValue()) {
@@ -417,12 +402,12 @@ public final class CurseProject {
 			return files;
 		}
 
-		if(shouldAvoidWidgetAPI() && !CurseAPI.isCurseMetaEnabled()) {
+		if(!CurseAPI.isWidgetAPIEnabled() && !CurseAPI.isCurseMetaEnabled()) {
 			Documents.putTemporaryCache(this, documentCache);
 
 			final List<CurseFile> files = Documents.iteratePages(
 					this,
-					url + "/files?",
+					url + "/files/all?",
 					this::getFiles,
 					file -> file.id() >= oldID, //Continue as long as oldID has not been found
 					forceMultithreadedFileSearches
@@ -470,7 +455,7 @@ public final class CurseProject {
 
 	public CurseFile fileClosestToID(int id, boolean preferOlder) throws CurseException {
 		if(!CurseAPI.isCurseMetaEnabled()) {
-			if(shouldAvoidWidgetAPI()) {
+			if(!CurseAPI.isWidgetAPIEnabled()) {
 				Documents.putTemporaryCache(this, documentCache);
 
 				incompleteFiles.addAll(Documents.iteratePages(
@@ -541,7 +526,7 @@ public final class CurseProject {
 		url = project.getKey();
 		document = project.getValue();
 
-		reloadURL(CurseForge.toMainCurseForgeProject(url));
+		reloadURL();
 	}
 
 	public boolean reload() throws CurseException {
@@ -558,7 +543,7 @@ public final class CurseProject {
 			return;
 		}
 
-		if(!shouldAvoidWidgetAPI()) {
+		if(CurseAPI.isWidgetAPIEnabled()) {
 			final TRLList<CurseFile> files = new TRLList<>(widgetInfoFiles.size() * 10);
 
 			for(Map.Entry<String, FileInfo[]> entry : widgetInfoFiles.entrySet()) {
@@ -568,6 +553,7 @@ public final class CurseProject {
 			}
 
 			this.files = new CurseFileList(files);
+			return;
 		}
 
 		Documents.putTemporaryCache(this, documentCache);
@@ -626,9 +612,8 @@ public final class CurseProject {
 
 	private void documentToRelations(Element document, List<Relation> relations,
 			RelationType relationType) throws CurseException {
-		for(Element relation : document.getElementsByClass("project-list-item")) {
-			final String projectURL =
-					Documents.getValue(relation, "class=name-wrapper;tag=a;absUrl=href");
+		for(Element relation : document.getElementsByClass("project-listing-row")) {
+			final String projectURL = Documents.getValue(relation, "tag=a;absUrl=href");
 
 			//Some elements are empty for some reason
 			if(!projectURL.isEmpty()) {
@@ -639,23 +624,23 @@ public final class CurseProject {
 
 	private Relation getRelationInfo(Element element, URL url, RelationType relationType)
 			throws CurseException {
-		final String title = Documents.getValue(element, "class=name-wrapper;tag=a;text");
+		final String title = Documents.getValue(element, "tag=h3;text");
 
-		final String author = Documents.getValue(element, "tag=span;tag=a;text");
+		final String author = Documents.getValue(element, "class=font-bold=1;text");
 
-		final int downloads = Integer.parseInt(Documents.getValue(
+		final int downloads = 0;/*Integer.parseInt(Documents.getValue(
 				element,
-				"class=e-download-count;text"
-		).replaceAll(",", ""));
+				"class=text-xs;text"
+		).replaceAll(",", ""));*/
 
 		final long lastUpdateTime = Long.parseLong(Documents.getValue(
-				element, "class=standard-date;attr=data-epoch"
+				element, "class=standard-datetime;attr=data-epoch"
 		));
 
-		final String shortDescription = Documents.getValue(element, "class=description;tag=p;text");
+		final String shortDescription = Documents.getValue(element, "class=text-sm;text");
 
 		final Category[] categories = getCategories(
-				element.getElementsByClass("category-icons")
+				element.getElementsByClass("-mx-1")
 		).toArray(new Category[0]);
 
 		return new Relation(
@@ -664,12 +649,9 @@ public final class CurseProject {
 		);
 	}
 
-	private void reloadURL(URL mainCurseForgeURL) {
+	private void reloadURL() {
 		urlString = url.toString();
 		slug = ArrayUtils.last(url.getPath().split("/"));
-
-		this.mainCurseForgeURL = mainCurseForgeURL;
-		mainCurseForgeURLString = mainCurseForgeURL == null ? null : mainCurseForgeURL.toString();
 	}
 
 	private boolean reload(boolean useWidgetAPI) throws CurseException {
@@ -688,7 +670,7 @@ public final class CurseProject {
 				url = project.getKey();
 				document = project.getValue();
 
-				reloadURL(CurseForge.toMainCurseForgeProject(url));
+				reloadURL();
 			} catch(InvalidProjectIDException ex) {
 				ThrowableHandling.handleWithoutExit(ex);
 				return false;
@@ -697,10 +679,10 @@ public final class CurseProject {
 
 		site = CurseForgeSite.fromURL(url);
 
-		if(shouldAvoidWidgetAPI() || !useWidgetAPI || mainCurseForgeURL == null) {
+		if(!CurseAPI.isWidgetAPIEnabled() || !useWidgetAPI) {
 			id = CurseForge.getID(document);
 
-			title = Documents.getValue(document, "class=project-title;class=overflow-tip;text");
+			title = Documents.getValue(document, "tag=meta=5;attr=content");
 
 			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
 
@@ -712,10 +694,7 @@ public final class CurseProject {
 			).split(" - "), 2));
 
 			try {
-				thumbnailURLString = Documents.getValue(
-						document,
-						"class=e-avatar64;tag=img;absUrl=src"
-				);
+				thumbnailURLString = Documents.getValue(document, "tag=meta=8;attr=content");
 
 				thumbnailURL = URLs.of(thumbnailURLString);
 			} catch(CurseException ex) {
@@ -726,38 +705,38 @@ public final class CurseProject {
 			members.clear();
 
 			for(Element member :
-					document.getElementsByClass("project-members").get(0).children()) {
+					document.getElementsByClass("pb-4").get(2).getElementsByClass("mb-2")) {
 				members.add(new Member(
-						MemberType.fromName(Documents.getValue(member, "class=title;text")),
+						MemberType.fromName(Documents.getValue(member, "class=text-xs;text")),
 						Documents.getValue(member, "tag=span;text")
 				));
 			}
 
-			downloads = Integer.parseInt(Documents.getValue(
+			downloads = Integer.parseInt(StringUtils.removeLastChars(Documents.getValue(
 					document,
-					"class=info-data=3;text"
-			).replaceAll(",", ""));
+					"class=mr-2=2;text"
+			).replaceAll(",", ""), 10));
 
 			creationTime = Utils.parseTime(Documents.getValue(
 					document,
-					"class=project-details;class=standard-date;attr=data-epoch"
+					"class=standard-datetime=-0;attr=data-epoch"
 			));
 
 			try {
 				donationURLString = Documents.getValue(
 						document,
-						"class=icon-donate;attr=href;absUrl=href"
+						"class=w-15;attr=href;absUrl=href"
 				);
 			} catch(CurseException ignored) {}
 
 			donationURL = donationURLString == null ? null : URLs.of(donationURLString);
 
-			licenseName = Documents.getValue(document, "class=info-data=4;tag=a;text");
+			licenseName = Documents.getValue(document, "class=mb-3=1;tag=a;text");
 		} else {
 			ProjectInfo info;
 
 			try {
-				info = WidgetAPI.get(mainCurseForgeURL.getPath());
+				info = WidgetAPI.get(url.getPath());
 			} catch(CurseException ex) {
 				ThrowableHandling.handleWithoutExit(ex);
 				return reload(false);
@@ -786,15 +765,15 @@ public final class CurseProject {
 		}
 
 		//TODO replace linkouts
-		descriptionHTML = Documents.get(document, "class=project-description");
+		descriptionHTML = Documents.get(document, "class=project-detail__content");
 
 		description = Documents.getPlainText(descriptionHTML);
 
 		categories = getCategories(
-				document.getElementsByClass("project-categories").get(0).getElementsByTag("li")
+				document.getElementsByClass("mt-3").get(0).getElementsByTag("a")
 		).toImmutableList();
 
-		avatarURLString = Documents.getValue(document, "class=e-avatar64;absUrl=href");
+		avatarURLString = Documents.getValue(document, "class=bg-white;absUrl=data-featherlight");
 
 		avatarURL = avatarURLString.isEmpty() ?
 				CurseAPI.PLACEHOLDER_THUMBNAIL_URL : URLs.of(avatarURLString);
@@ -830,10 +809,6 @@ public final class CurseProject {
 
 	private void getFiles(Element document, List<CurseFile> files) throws CurseException {
 		FileListParser.getFiles(this, document, files);
-	}
-
-	private boolean shouldAvoidWidgetAPI() {
-		return !CurseAPI.isWidgetAPIEnabled() || mainCurseForgeURL == null;
 	}
 
 	public static CurseProject fromID(String id) throws CurseException {
@@ -958,7 +933,7 @@ public final class CurseProject {
 		final TRLList<Category> categories = new TRLList<>();
 
 		for(Element category : categoryElements) {
-			final String name = Documents.getValue(category, "tag=a;attr=title");
+			final String name = Documents.getValue(category, "tag=figure;attr=title");
 
 			final URL url = URLs.of(Documents.getValue(category, "tag=a;absUrl=href"));
 

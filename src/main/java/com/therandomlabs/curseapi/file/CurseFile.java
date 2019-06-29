@@ -65,8 +65,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	private final int downloads;
 
-	private final TRLList<String> gameVersionStrings;
-	private final String gameVersionString;
+	private TRLList<String> gameVersionStrings;
+	private String gameVersionString;
 
 	private TRLList<GameVersion> gameVersions;
 	private GameVersion gameVersion;
@@ -97,7 +97,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 	private Member uploader;
 	private String uploaderUsername;
 
-	private Map<RelationType, TRLList<Integer>> dependencyIDs;
+	private Map<RelationType, TRLList<String>> dependencyURLs;
 	private Map<RelationType, TRLList<CurseProject>> dependencies =
 			new EnumMap<>(RelationType.class);
 
@@ -195,7 +195,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		md5 = "ffffffffffffffffffffffffffffffff";
 		uploader = Member.UNKNOWN;
 		uploaderUsername = "Unknown";
-		dependencyIDs = new EnumMap<>(RelationType.class);
+		dependencyURLs = new EnumMap<>(RelationType.class);
 		dependencies = new EnumMap<>(RelationType.class);
 		gameVersionStrings = new ImmutableList<>("Unknown");
 		gameVersionString = "Unknown";
@@ -230,7 +230,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		this.uploadTime = Utils.parseTime(uploadTime);
 		this.fileSize = fileSize;
 		this.downloads = downloads;
-		this.dependencyIDs = dependencyIDs;
+		//this.dependencyIDs = dependencyIDs;
 
 		gameVersionStrings = new ImmutableList<>(gameVersions);
 		gameVersionString = gameVersionStrings.get(0);
@@ -391,21 +391,21 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return releaseType;
 	}
 
-	public TRLList<Integer> dependencyIDs() throws CurseException {
-		return dependencyIDs(RelationType.ALL_TYPES);
+	public TRLList<String> dependencyURLs() throws CurseException {
+		return dependencyURLs(RelationType.ALL_TYPES);
 	}
 
-	public TRLList<Integer> dependencyIDs(RelationType relationType) throws CurseException {
-		if(dependencyIDs == null) {
+	public TRLList<String> dependencyURLs(RelationType relationType) throws CurseException {
+		if(dependencyURLs == null) {
 			ensureHTMLDataRetrieved();
 
-			if(dependencyIDs == null) {
+			if(dependencyURLs == null) {
 				return new TRLList<>();
 			}
 		}
 
-		final TRLList<Integer> ids = dependencyIDs.get(relationType);
-		return ids == null ? new TRLList<>() : ids;
+		final TRLList<String> urls = dependencyURLs.get(relationType);
+		return urls == null ? new TRLList<>() : urls;
 	}
 
 	public TRLList<CurseProject> dependencies() throws CurseException {
@@ -414,18 +414,18 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 	public TRLList<CurseProject> dependencies(RelationType relationType) throws CurseException {
 		if(dependencies.get(relationType) == null) {
-			final TRLList<Integer> ids = dependencyIDs(relationType);
+			final TRLList<String> urls = dependencyURLs(relationType);
 
-			if(ids.isEmpty()) {
+			if(urls.isEmpty()) {
 				return new TRLList<>();
 			}
 
-			final TRLList<CurseProject> dependencyList = new TRLList<>(ids.size());
+			final TRLList<CurseProject> dependencyList = new TRLList<>(urls.size());
 
 			ThreadUtils.splitWorkload(
 					CurseAPI.getMaximumThreads(),
-					ids.size(),
-					index -> dependencyList.add(CurseProject.fromID(ids.get(index)))
+					urls.size(),
+					index -> dependencyList.add(CurseProject.fromURL(urls.get(index)))
 			);
 
 			dependencies.put(relationType, dependencyList.toImmutableList());
@@ -442,13 +442,13 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return dependenciesRecursive(new ConcurrentHashMap<>(), predicate);
 	}
 
-	public TRLList<CurseFile> dependenciesRecursive(Map<Integer, Integer> files,
+	public TRLList<CurseFile> dependenciesRecursive(Map<String, Integer> files,
 			FilePredicate predicate) throws CurseException {
 		final Set<CurseFile> dependencies = new HashSet<>();
 		final List<CurseFile> firstIterationDependencies = new TRLList<>();
 
-		for(int id : dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
-			final CurseFile file = getFile(files, id, predicate);
+		for(String url : dependencyURLs(RelationType.REQUIRED_LIBRARY)) {
+			final CurseFile file = getFile(files, url, predicate);
 			firstIterationDependencies.add(file);
 			dependencies.add(file);
 		}
@@ -599,7 +599,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		return releaseType.matchesMinimumStability(stability);
 	}
 
-	private void retrieveDependencies(Map<Integer, Integer> files, FilePredicate predicate,
+	private void retrieveDependencies(Map<String, Integer> files, FilePredicate predicate,
 			Set<CurseFile> dependencies, List<CurseFile> firstIterationDependencies, int index)
 			throws CurseException {
 		final Queue<CurseFile> toCheck = new PriorityBlockingQueue<>();
@@ -616,8 +616,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 				continue;
 			}
 
-			for(int id : file.dependencyIDs(RelationType.REQUIRED_LIBRARY)) {
-				toCheck.add(getFile(files, id, predicate));
+			for(String url : file.dependencyURLs(RelationType.REQUIRED_LIBRARY)) {
+				toCheck.add(getFile(files, url, predicate));
 			}
 
 			if(file != this) {
@@ -626,23 +626,23 @@ public final class CurseFile implements Comparable<CurseFile> {
 		}
 	}
 
-	private CurseFile getFile(Map<Integer, Integer> files, int projectID, FilePredicate predicate)
+	private CurseFile getFile(Map<String, Integer> files, String url, FilePredicate predicate)
 			throws CurseException {
-		if(files.containsKey(projectID)) {
-			final int fileID = files.get(projectID);
+		if(files.containsKey(url)) {
+			final int fileID = files.get(url);
 
 			if(CurseAPI.isValidFileID(fileID)) {
-				return getFile(projectID, game, files.get(projectID));
+				return CurseProject.fromURL(url).fileWithID(files.get(url));
 			}
 		}
 
 		if(!CurseAPI.isCurseMetaEnabled()) {
-			return CurseProject.fromID(projectID).latestFile(predicate);
+			return CurseProject.fromID(url).latestFile(predicate);
 		}
 
 		final Set<String> gameVersions = predicate.gameVersions();
 
-		final CurseFileList fileList = getFiles(projectID, game);
+		final CurseFileList fileList = CurseProject.fromURL(url).files();
 		final CurseFile fallback = fileList.latestWithGameVersionString(gameVersions);
 
 		fileList.filterMinimumStability(predicate.minimumStability());
@@ -668,6 +668,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		ensureHTMLDataRetrieved(null);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void ensureHTMLDataRetrieved(Element document) throws CurseException {
 		if(htmlDataRetrieved() || url() == null) {
 			return;
@@ -677,9 +678,10 @@ public final class CurseFile implements Comparable<CurseFile> {
 			document = Documents.get(url);
 		}
 
-		name = Documents.getValue(document, "class=details-header;class=overflow-tip;text");
+		name = Documents.getValue(document, "class=text-lg=1;text");
 
-		final Elements parentFileLinkList = document.getElementsByClass("parent-file-link");
+		final Elements parentFileLinkList =
+				new Elements(); //document.getElementsByClass("parent-file-link");
 
 		if(parentFileLinkList.isEmpty()) {
 			if(project() == null) {
@@ -702,25 +704,39 @@ public final class CurseFile implements Comparable<CurseFile> {
 			parentFileName = Documents.getValue(parentFileLink, "class=overflow-tip;tag=a;text");
 		}
 
-		nameOnDisk = Documents.get(document, "class=details-info;class=info-data").
-				textNodes().get(0).getWholeText();
+		nameOnDisk = Documents.getValue(document, "class=text-sm=2;text");
 		getMavenDependency();
 
-		fileSize = Documents.getValue(document, "class=details-info;class=info-data=3;text");
+		fileSize = Documents.getValue(document, "class=text-sm=8;text");
 
 		//TODO replace linkouts
-		changelogHTML = document.getElementsByClass("logbox").get(0);
+		changelogHTML = document.getElementsByClass("user-content").get(0);
 
 		getChangelogString();
 
-		md5 = Documents.getValue(document, "class=md5;text");
+		md5 = Documents.getValue(document, "class=text-sm=12;text");
 
-		uploaderUsername = Documents.getValue(document, "class=user-tag;tag=a=1;text");
+		uploaderUsername = Documents.getValue(document, "class=text-sm=4;text");
 
-		if(dependencyIDs == null) {
+		gameVersionStrings = new TRLList<>();
+
+		for(Element gameVersion :
+				Documents.get(document, "tag=section=3").getElementsByClass("tag")) {
+			gameVersionStrings.add(gameVersion.text());
+		}
+
+		gameVersionString = gameVersionStrings.get(0);
+
+		if(game != null) {
+			this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
+			gameVersion =
+					this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
+		}
+
+		if(dependencyURLs == null) {
 			try {
 				final Elements relatedProjects =
-						document.getElementsByClass("details-related-projects");
+						Documents.get(document, "tag=section=6").children();
 
 				if(relatedProjects.isEmpty()) {
 					return;
@@ -729,34 +745,34 @@ public final class CurseFile implements Comparable<CurseFile> {
 				final Elements elements = relatedProjects.get(0).children();
 
 				RelationType type = null;
-				dependencyIDs = new EnumMap<>(RelationType.class);
+				dependencyURLs = new EnumMap<>(RelationType.class);
 
-				final TRLList<Integer> allIDs = new TRLList<>();
+				final TRLList<String> allURLs = new TRLList<>();
 
 				for(Element element : elements) {
-					if("h5".equals(element.tagName())) {
+					if("h4".equals(element.tagName())) {
 						type = RelationType.fromName(element.text());
 						continue;
 					}
 
-					if(!"ul".equals(element.tagName())) {
+					if(!element.classNames().contains("w-5/6")) {
 						continue;
 					}
 
-					final Elements related = element.getElementsByAttribute("href");
-					final TRLList<Integer> ids = new TRLList<>();
+					final Elements related = element.getElementsByClass("truncate");
+					final TRLList<String> urls = new TRLList<>();
 
 					for(Element element2 : related) {
-						ids.add(Integer.parseInt(element2.attr("href").split("/")[2]));
+						urls.add(Documents.getValue(element2, "tag=a;absUrl=href"));
 					}
 
-					allIDs.addAll(ids);
-					dependencyIDs.put(type, ids);
+					allURLs.addAll(urls);
+					dependencyURLs.put(type, urls);
 				}
 
-				dependencyIDs.put(RelationType.ALL_TYPES, allIDs);
+				dependencyURLs.put(RelationType.ALL_TYPES, allURLs);
 			} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
-				dependencyIDs = null;
+				dependencyURLs = null;
 
 				throw CurseException.fromThrowable(
 						"Error while retrieving dependency IDs for file with ID: " + id, ex

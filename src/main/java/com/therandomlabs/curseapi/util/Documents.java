@@ -242,26 +242,55 @@ public final class Documents {
 
 			for(String part : parts) {
 				final String[] split = part.split("=");
-				final int index = split.length < 3 ? 0 : Integer.parseInt(split[2]);
+
+				final int index;
+				final boolean fromLast;
+
+				if(split.length < 3) {
+					index = 0;
+					fromLast = false;
+				} else {
+					if(split[2].charAt(0) == '-') {
+						split[2] = split[2].substring(1);
+						fromLast = true;
+					} else {
+						fromLast = false;
+					}
+
+					index = Integer.parseInt(split[2]);
+				}
 
 				switch(split[0]) {
 				case "attr":
-					element = element.getElementsByAttribute(split[1]).get(index);
+					element = get(element.getElementsByAttribute(split[1]), index, fromLast);
 					break;
 				case "class":
-					element = element.getElementsByClass(split[1]).get(index);
+					element = get(element.getElementsByClass(split[1]), index, fromLast);
 					break;
 				case "tag":
-					element = element.getElementsByTag(split[1]).get(index);
+					element = get(element.getElementsByTag(split[1]), index, fromLast);
 					break;
 				case "name":
 					final Elements elements = element.getElementsByAttribute("name");
 					int currentIndex = 0;
 
-					for(Element childElement : elements) {
-						if(split[1].equals(childElement.attr("name")) && currentIndex++ == index) {
-							element = childElement;
-							break;
+					if(fromLast) {
+						for(int i = elements.size(); i >= 0; i--) {
+							final Element childElement = elements.get(i);
+
+							if(split[1].equals(childElement.attr("name")) &&
+									currentIndex++ == index) {
+								element = childElement;
+								break;
+							}
+						}
+					} else {
+						for(Element childElement : elements) {
+							if(split[1].equals(childElement.attr("name")) &&
+									currentIndex++ == index) {
+								element = childElement;
+								break;
+							}
 						}
 					}
 
@@ -274,6 +303,10 @@ public final class Documents {
 		} catch(NumberFormatException | IndexOutOfBoundsException | NullPointerException ex) {
 			throw new DocumentParseException(document, ex);
 		}
+	}
+
+	private static Element get(Elements elements, int index, boolean fromLast) {
+		return fromLast ? elements.get(elements.size() - index - 1) : elements.get(index);
 	}
 
 	public static String getValue(String url, String data) throws CurseException {

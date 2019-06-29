@@ -36,6 +36,18 @@ public enum ReleaseType {
 	}
 
 	public static ReleaseType fromName(String name) {
+		if(name.length() == 0) {
+			final char initial = Character.toLowerCase(name.charAt(0));
+
+			for(ReleaseType type : values()) {
+				if(type.toString().charAt(0) == initial) {
+					return type;
+				}
+			}
+
+			return UNKNOWN;
+		}
+
 		for(ReleaseType type : values()) {
 			if(type.toString().equalsIgnoreCase(name)) {
 				return type;
