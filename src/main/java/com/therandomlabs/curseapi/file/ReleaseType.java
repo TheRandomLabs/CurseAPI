@@ -32,11 +32,11 @@ public enum ReleaseType {
 	}
 
 	public boolean matchesMinimumStability(ReleaseType releaseType) {
-		return ordinal() <= releaseType.ordinal();
+		return this == UNKNOWN || ordinal() <= releaseType.ordinal();
 	}
 
 	public static ReleaseType fromName(String name) {
-		if(name.length() == 0) {
+		if(name.length() == 1) {
 			final char initial = Character.toLowerCase(name.charAt(0));
 
 			for(ReleaseType type : values()) {
