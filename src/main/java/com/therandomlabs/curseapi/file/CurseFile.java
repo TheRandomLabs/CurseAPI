@@ -710,7 +710,8 @@ public final class CurseFile implements Comparable<CurseFile> {
 		fileSize = Documents.getValue(document, "class=text-sm=8;text");
 
 		//TODO replace linkouts
-		changelogHTML = document.getElementsByClass("user-content").get(0);
+		final Elements userContent = document.getElementsByClass("user-content");
+		changelogHTML = userContent.isEmpty() ? NO_CHANGELOG_PROVIDED : userContent.get(0);
 
 		getChangelogString();
 
