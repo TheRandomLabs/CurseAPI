@@ -81,7 +81,7 @@ public final class CurseProject {
 	private Element descriptionHTML;
 	private String description;
 
-	private Game game;
+	private Game game = Game.MINECRAFT;
 
 	private ProjectType type;
 
@@ -686,7 +686,7 @@ public final class CurseProject {
 
 			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
 
-			game = site.game();
+			game = Game.MINECRAFT;//site.game();
 
 			type = ProjectType.get(site, ArrayUtils.fromLast(Documents.getValue(
 					document,
