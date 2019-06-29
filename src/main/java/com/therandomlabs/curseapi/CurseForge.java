@@ -224,7 +224,7 @@ public final class CurseForge {
 
 	public static int getID(Element document) throws CurseException {
 		return Integer.parseInt(
-				Documents.getValue(document, "class=pb-4;tag=span=1;text")
+				Documents.getValue(document, "class=pb-4;tag=span=2;text")
 		);
 	}
 }
