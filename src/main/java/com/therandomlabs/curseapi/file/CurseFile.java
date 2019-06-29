@@ -129,29 +129,16 @@ public final class CurseFile implements Comparable<CurseFile> {
 		downloadURL = URLs.of(downloadURLString);
 
 		releaseType = ReleaseType.fromName(Documents.getValue(
-				document,
-				"class=project-file-release-type;class=tip;attr=title"
+				document, "class=text-white=2;attr=title"
 		));
 
-		final Elements versions =
-				document.getElementsByClass("details-versions").get(0).getElementsByTag("li");
-
-		final TRLList<String> gameVersions = CollectionUtils.map(versions, Element::text);
-
-		gameVersionStrings = gameVersions.toImmutableList();
-		gameVersionString = gameVersions.get(0);
-
-		this.gameVersions = game.versionHandler().get(gameVersionStrings).toImmutableList();
-		gameVersion = this.gameVersions.isEmpty() ? GameVersions.UNKNOWN : this.gameVersions.get(0);
-
-		downloads = Integer.parseInt(Documents.getValue(
-				document,
-				"class=details-info;class=info-data=4;text"
-		).replaceAll(",", ""));
+		downloads = Integer.parseInt(StringUtils.removeLastChars(Documents.getValue(
+				document, "class=text-gray-500;text"
+		).replaceAll(",", ""), 10));
 
 		uploadTime = Utils.parseTime(Documents.getValue(
 				document,
-				"class=details-info;attr=data-epoch;attr=data-epoch"
+				"class=standard-datetime=1;attr=data-epoch"
 		));
 	}
 
