@@ -81,7 +81,7 @@ public final class CurseProject {
 	private Element descriptionHTML;
 	private String description;
 
-	private Game game = Game.MINECRAFT;
+	private Game game;
 
 	private ProjectType type;
 
@@ -677,7 +677,7 @@ public final class CurseProject {
 			}
 		}
 
-		site = CurseForgeSite.fromURL(url);
+		site = CurseForgeSite.MINECRAFT;//CurseForgeSite.fromURL(url);
 
 		if(!CurseAPI.isWidgetAPIEnabled() || !useWidgetAPI) {
 			id = CurseForge.getID(document);
@@ -686,7 +686,7 @@ public final class CurseProject {
 
 			shortDescription = Documents.getValue(document, "name=description=1;attr=content");
 
-			game = Game.MINECRAFT;//site.game();
+			game = site.game();
 
 			type = ProjectType.get(site, ArrayUtils.fromLast(Documents.getValue(
 					document,
