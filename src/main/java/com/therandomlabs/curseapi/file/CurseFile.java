@@ -694,7 +694,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 		nameOnDisk = Documents.getValue(document, "class=text-sm=2;text");
 		getMavenDependency();
 
-		fileSize = Documents.getValue(document, "class=text-sm=8;text");
+		fileSize = Documents.getValue(document, "class=text-sm=10;text");
 
 		//TODO replace linkouts
 		final Elements userContent = document.getElementsByClass("user-content");
@@ -702,7 +702,7 @@ public final class CurseFile implements Comparable<CurseFile> {
 
 		getChangelogString();
 
-		md5 = Documents.getValue(document, "class=text-sm=12;text");
+		md5 = Documents.getValue(document, "class=text-sm=14;text");
 
 		uploaderUsername = Documents.getValue(document, "class=text-sm=4;text");
 
