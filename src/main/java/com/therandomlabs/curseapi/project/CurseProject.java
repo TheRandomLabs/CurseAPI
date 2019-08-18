@@ -645,7 +645,7 @@ public final class CurseProject {
 
 		return new Relation(
 				url, title, author, downloads, lastUpdateTime, shortDescription, categories, this,
-				relationType
+				relationType == RelationType.ALL_TYPES ? RelationType.UNKNOWN : relationType
 		);
 	}
 
