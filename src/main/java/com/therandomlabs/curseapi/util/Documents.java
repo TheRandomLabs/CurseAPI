@@ -429,15 +429,13 @@ public final class Documents {
 
 	public static int getNumberOfPages(Document document) throws CurseException {
 		try {
-			final Elements paginations = document.getElementsByClass("b-pagination");
+			final Elements paginations = document.getElementsByClass("pagination");
 
 			if(paginations.isEmpty()) {
 				return 1;
 			}
 
-			final Elements paginationItems =
-					paginations.get(1).getElementsByClass("b-pagination-item");
-
+			final Elements paginationItems = paginations.get(0).getElementsByTag("a");
 			return Integer.parseInt(CollectionUtils.fromLast(paginationItems, 1).text());
 		} catch(IndexOutOfBoundsException | NullPointerException | NumberFormatException ex) {
 			throw new DocumentParseException(document, ex);

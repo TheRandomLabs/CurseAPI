@@ -20,7 +20,7 @@ public final class CMDependency implements Cloneable {
 		case 1:
 			return RelationType.REQUIRED_LIBRARY;
 		case 2:
-			return RelationType.OPTIONAL_LIBRARY;
+			return RelationType.OPTIONAL_DEPENDENCY;
 		default:
 			return RelationType.UNKNOWN;
 		}
