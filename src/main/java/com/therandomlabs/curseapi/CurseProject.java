@@ -82,6 +82,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	public abstract CurseFiles latestFiles();
 
+	public abstract CurseFiles files() throws CurseException;
+
 	public abstract Set<? extends CurseCategory> categories();
 
 	public abstract CurseCategory primaryCategory();

@@ -33,6 +33,11 @@ public final class CurseAPI {
 		return get(provider -> provider.project(id));
 	}
 
+	public static Optional<CurseFiles> files(int projectID) throws CurseException {
+		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
+		return get(provider -> provider.files(projectID));
+	}
+
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
 		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
 		Preconditions.checkArgument(fileID >= 10, "fileID should not be smaller than 10");

@@ -32,6 +32,11 @@ public class CurseFiles extends TreeSet<CurseFile> {
 		addAll(files);
 	}
 
+	@Override
+	public CurseFiles clone() {
+		return (CurseFiles) super.clone();
+	}
+
 	public Optional<CurseFile> fileWithID(Collection<? extends CurseFile> files, int id) {
 		Preconditions.checkNotNull(files, "files should not be null");
 		Preconditions.checkArgument(id >= 10, "id should not be smaller than 10");

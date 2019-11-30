@@ -64,4 +64,9 @@ final class ForgeSVCFile extends CurseFile {
 	public Element changelog() throws CurseException {
 		return RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getChangelog(projectId, id));
 	}
+
+	//This is used by ForgeSVCProvider so that projectId is not 0.
+	void setProjectID(int id) {
+		projectId = id;
+	}
 }

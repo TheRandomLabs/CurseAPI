@@ -100,6 +100,11 @@ final class ForgeSVCProject extends CurseProject {
 	}
 
 	@Override
+	public CurseFiles files() throws CurseException {
+		return new CurseFiles(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
+	}
+
+	@Override
 	public Set<? extends CurseCategory> categories() {
 		return new LinkedHashSet<>(categories);
 	}

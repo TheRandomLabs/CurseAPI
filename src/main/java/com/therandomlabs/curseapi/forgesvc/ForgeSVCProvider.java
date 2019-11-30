@@ -1,8 +1,11 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.Set;
+
 import com.therandomlabs.curseapi.CurseAPIProvider;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFile;
+import com.therandomlabs.curseapi.CurseFiles;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 
@@ -33,7 +36,23 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public CurseFile file(int projectID, int fileID) {
-		return null;
+	public CurseFiles files(int projectID) throws CurseException {
+		final Set<ForgeSVCFile> files = RetrofitUtils.execute(FORGESVC.getFiles(projectID));
+
+		for (ForgeSVCFile file : files) {
+			file.setProjectID(projectID);
+		}
+
+		return new CurseFiles(files);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CurseFile file(int projectID, int fileID) throws CurseException {
+		final ForgeSVCFile file = RetrofitUtils.execute(FORGESVC.getFile(projectID, fileID));
+		file.setProjectID(projectID);
+		return file;
 	}
 }

@@ -46,4 +46,27 @@ public class CurseAPITest {
 		assertThat(project.lastUpdateTime()).isNotNull();
 		assertThat(project.lastModificationTime()).isNotNull();
 	}
+
+	@Test
+	public void filesShouldNotBeEmpty() throws CurseException {
+		final Optional<CurseFiles> optional = CurseAPI.files(285612);
+		assertThat(optional).isPresent();
+		assertThat(optional.get()).isNotEmpty();
+	}
+
+	@Test
+	public void fileDetailsShouldBeValid() throws CurseException {
+		final Optional<CurseFile> optional = CurseAPI.file(285612, 2662898);
+		assertThat(optional).isPresent();
+
+		final CurseFile file = optional.get();
+		assertThat(file.projectID()).isEqualTo(285612);
+		assertThat(file.id()).isGreaterThanOrEqualTo(10);
+		assertThat(file.displayName()).isNotEmpty();
+		assertThat(file.fileName()).isNotEmpty();
+		assertThat(file.uploadTime()).isNotNull();
+		assertThat(file.fileSize()).isGreaterThan(0);
+		assertThat(file.downloadURL()).isNotNull();
+		assertThat(JsoupUtils.getPlainText(file.changelog())).isNotEmpty();
+	}
 }
