@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.member.CurseMember;
 import okhttp3.HttpUrl;
 
-public final class ForgeSVCMember implements CurseMember {
+final class ForgeSVCMember implements CurseMember {
 	private int userId;
 	private String name;
 	private HttpUrl url;

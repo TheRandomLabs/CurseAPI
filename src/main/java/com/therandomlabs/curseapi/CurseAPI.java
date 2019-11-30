@@ -27,10 +27,13 @@ public final class CurseAPI {
 	private CurseAPI() {}
 
 	public static Optional<CurseProject> project(int id) throws CurseException {
+		Preconditions.checkArgument(id >= 10, "id should be larger than 10");
 		return get(provider -> provider.project(id));
 	}
 
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
+		Preconditions.checkArgument(projectID >= 10, "projectID should be larger than 10");
+		Preconditions.checkArgument(fileID >= 10, "fileID should be larger than 10");
 		return get(provider -> provider.file(projectID, fileID));
 	}
 

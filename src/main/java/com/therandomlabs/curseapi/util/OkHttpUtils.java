@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -16,6 +17,8 @@ public final class OkHttpUtils {
 	private OkHttpUtils() {}
 
 	public static BufferedImage readImage(HttpUrl url) throws CurseException {
+		Preconditions.checkNotNull(url, "url should not be null");
+
 		try {
 			final Request request = new Request.Builder().url(url).build();
 			return ImageIO.read(client.newCall(request).execute().body().byteStream());

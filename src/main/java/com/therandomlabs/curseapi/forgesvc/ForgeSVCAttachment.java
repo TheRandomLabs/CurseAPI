@@ -2,7 +2,7 @@ package com.therandomlabs.curseapi.forgesvc;
 
 import okhttp3.HttpUrl;
 
-public final class ForgeSVCAttachment {
+final class ForgeSVCAttachment {
 	private int id;
 	private String title;
 	private String description;

@@ -21,5 +21,9 @@ public class CurseAPITest {
 				CurseAPI.PLACEHOLDER_PROJECT_THUMBNAIL
 		);
 		assertThat(project.avatarThumbnail()).isNotNull();
+		assertThat(project.url()).isNotNull();
+		assertThat(project.gameID()).isEqualTo(432);
+		assertThat(project.summary()).isNotEmpty();
+		assertThat(project.descriptionPlainText()).isNotEmpty();
 	}
 }
