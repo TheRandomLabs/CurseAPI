@@ -1,20 +1,17 @@
 package com.therandomlabs.curseapi.forgesvc;
 
-import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.file.CurseFile;
-import com.therandomlabs.curseapi.member.CurseMember;
-import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.CurseFiles;
+import com.therandomlabs.curseapi.CurseMember;
+import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
-final class ForgeSVCProject implements CurseProject {
+final class ForgeSVCProject extends CurseProject {
 	private int id;
 	private String name;
 	private Set<ForgeSVCMember> authors;
@@ -23,16 +20,7 @@ final class ForgeSVCProject implements CurseProject {
 	private int gameId;
 	private String summary;
 	private int downloadCount;
-	private List<ForgeSVCFile> latestFiles;
-
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this).
-				add("id", id).
-				add("name", name).
-				add("url", websiteUrl).
-				toString();
-	}
+	private Set<ForgeSVCFile> latestFiles;
 
 	@Override
 	public int id() {
@@ -88,7 +76,7 @@ final class ForgeSVCProject implements CurseProject {
 
 	@Override
 	public Element description() throws CurseException {
-		return Jsoup.parse(RetrofitUtils.getString(ForgeSVCProvider.forgeSVC.getDescription(id)));
+		return RetrofitUtils.getElement(ForgeSVCProvider.forgeSVC.getDescription(id));
 	}
 
 	@Override
@@ -97,7 +85,7 @@ final class ForgeSVCProject implements CurseProject {
 	}
 
 	@Override
-	public List<? extends CurseFile> latestFiles() {
-		return latestFiles;
+	public CurseFiles latestFiles() {
+		return new CurseFiles(latestFiles);
 	}
 }

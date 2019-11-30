@@ -1,31 +1,13 @@
 package com.therandomlabs.curseapi.forgesvc;
 
 import com.google.common.base.MoreObjects;
-import com.therandomlabs.curseapi.member.CurseMember;
+import com.therandomlabs.curseapi.CurseMember;
 import okhttp3.HttpUrl;
 
-final class ForgeSVCMember implements CurseMember {
+final class ForgeSVCMember extends CurseMember {
 	private int userId;
 	private String name;
 	private HttpUrl url;
-
-	@Override
-	public int hashCode() {
-		return userId;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-
-		if (object == null || object.getClass() != getClass()) {
-			return false;
-		}
-
-		return ((ForgeSVCMember) object).userId == userId;
-	}
 
 	@Override
 	public String toString() {

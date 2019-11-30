@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.squareup.moshi.Moshi;
 import com.therandomlabs.curseapi.CurseException;
 import okhttp3.ResponseBody;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -56,5 +58,9 @@ public final class RetrofitUtils {
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}
+	}
+
+	public static Element getElement(Call<ResponseBody> call) throws CurseException {
+		return Jsoup.parse(getString(call));
 	}
 }

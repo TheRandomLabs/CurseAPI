@@ -6,12 +6,14 @@ import java.util.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
-import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.CheckedFunction;
 import okhttp3.HttpUrl;
 
+/**
+ * Contains methods for retrieving {@link CurseProject} and {@link CurseFile} instances as well
+ * as for managing {@link CurseAPIProvider}s.
+ */
 public final class CurseAPI {
 	public static final HttpUrl PLACEHOLDER_PROJECT_AVATAR = HttpUrl.get(
 			"https://www.curseforge.com/Content/2-0-7263-28137/Skins/Elerium/images/icons/" +
@@ -27,13 +29,13 @@ public final class CurseAPI {
 	private CurseAPI() {}
 
 	public static Optional<CurseProject> project(int id) throws CurseException {
-		Preconditions.checkArgument(id >= 10, "id should be larger than 10");
+		Preconditions.checkArgument(id >= 10, "id should not be smaller than 10");
 		return get(provider -> provider.project(id));
 	}
 
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
-		Preconditions.checkArgument(projectID >= 10, "projectID should be larger than 10");
-		Preconditions.checkArgument(fileID >= 10, "fileID should be larger than 10");
+		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
+		Preconditions.checkArgument(fileID >= 10, "fileID should not be smaller than 10");
 		return get(provider -> provider.file(projectID, fileID));
 	}
 

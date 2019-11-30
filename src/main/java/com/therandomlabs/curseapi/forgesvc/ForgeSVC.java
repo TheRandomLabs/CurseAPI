@@ -11,4 +11,7 @@ interface ForgeSVC {
 
 	@GET("api/v2/addon/{id}/description")
 	Call<ResponseBody> getDescription(@Path("id") int id);
+
+	@GET("api/v2/addon/{projectID}/file/{fileID}/changelog")
+	Call<ResponseBody> getChangelog(@Path("projectID") int projectID, @Path("fileID") int fileID);
 }

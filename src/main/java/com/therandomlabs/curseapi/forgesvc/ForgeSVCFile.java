@@ -1,12 +1,16 @@
 package com.therandomlabs.curseapi.forgesvc;
 
 import java.time.ZonedDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CurseFile;
+import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
-final class ForgeSVCFile implements CurseFile {
+final class ForgeSVCFile extends CurseFile {
 	private int projectId;
 	private int id;
 	private String displayName;
@@ -14,7 +18,7 @@ final class ForgeSVCFile implements CurseFile {
 	private ZonedDateTime fileDate;
 	private long fileLength;
 	private HttpUrl downloadUrl;
-	private Element changelog;
+	private Set<String> gameVersions;
 
 	@Override
 	public int projectID() {
@@ -52,7 +56,12 @@ final class ForgeSVCFile implements CurseFile {
 	}
 
 	@Override
-	public Element changelog() {
-		return changelog;
+	public Set<String> gameVersions() {
+		return new LinkedHashSet<>(gameVersions);
+	}
+
+	@Override
+	public Element changelog() throws CurseException {
+		return RetrofitUtils.getElement(ForgeSVCProvider.forgeSVC.getChangelog(projectId, id));
 	}
 }
