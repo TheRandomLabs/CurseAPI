@@ -19,7 +19,7 @@ public final class JsoupUtils {
 		NodeTraversor.traverse(formatter, element);
 
 		//Some people (e.g. Speiger) do this in their changelogs.
-		final String string = formatter.toString().replaceAll("\n\n\n", "\n");
+		final String string = formatter.toString().replace("\n\n\n", "\n");
 		return string.startsWith("\n") ? string.substring(1) : string;
 	}
 }

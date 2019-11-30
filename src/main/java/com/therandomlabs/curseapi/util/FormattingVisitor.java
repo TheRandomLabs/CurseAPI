@@ -7,6 +7,7 @@ import org.jsoup.select.NodeVisitor;
 final class FormattingVisitor implements NodeVisitor {
 	private final int maxLineLength;
 
+	@SuppressWarnings("PMD.AvoidStringBufferField")
 	private final StringBuilder text = new StringBuilder();
 
 	private int currentLineLength = 0;
@@ -25,7 +26,7 @@ final class FormattingVisitor implements NodeVisitor {
 	public void head(Node node, int depth) {
 		final String name = node.nodeName();
 
-		if (name.equals("pre")) {
+		if ("pre".equals(name)) {
 			shouldGetWholeText = true;
 		} else if (node instanceof TextNode) {
 			final TextNode text = (TextNode) node;
@@ -35,11 +36,11 @@ final class FormattingVisitor implements NodeVisitor {
 			} else {
 				append(text.text());
 			}
-		} else if (name.equals("a")) {
+		} else if ("a".equals(name)) {
 			append("[");
-		} else if (name.equals("li")) {
+		} else if ("li".equals(name)) {
 			append("\n * ");
-		} else if (name.equals("dt")) {
+		} else if ("dt".equals(name)) {
 			append("  ");
 		} else if ("p".equals(name) || "h1".equals(name) || "h2".equals(name) ||
 				"h3".equals(name) || "h4".equals(name) || "h5".equals(name) || "tr".equals(name)) {
@@ -55,9 +56,9 @@ final class FormattingVisitor implements NodeVisitor {
 				"h1".equals(name) || "h2".equals(name) || "h3".equals(name) || "h4".equals(name) ||
 				"h5".equals(name)) {
 			append("\n");
-		} else if (name.equals("a")) {
+		} else if ("a".equals(name)) {
 			append(String.format("](%s)", node.absUrl("href")));
-		} else if (name.equals("pre")) {
+		} else if ("pre".equals(name)) {
 			shouldGetWholeText = false;
 		}
 	}

@@ -10,7 +10,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
-public class RetrofitUtils {
+public final class RetrofitUtils {
 	public static final Retrofit RETROFIT = new Retrofit.Builder().
 			baseUrl("https://addons-ecs.forgesvc.net/").
 			addConverterFactory(MoshiConverterFactory.create(
@@ -19,6 +19,8 @@ public class RetrofitUtils {
 							build()
 			)).
 			build();
+
+	private RetrofitUtils() {}
 
 	public static <T> T create(Class<T> service) {
 		return RETROFIT.create(service);
