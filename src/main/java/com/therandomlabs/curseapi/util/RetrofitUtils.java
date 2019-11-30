@@ -15,7 +15,9 @@ public final class RetrofitUtils {
 			baseUrl("https://addons-ecs.forgesvc.net/").
 			addConverterFactory(MoshiConverterFactory.create(
 					new Moshi.Builder().
+							add(ElementAdapter.INSTANCE).
 							add(HttpUrlAdapter.INSTANCE).
+							add(ZonedDateTimeAdapter.INSTANCE).
 							build()
 			)).
 			build();

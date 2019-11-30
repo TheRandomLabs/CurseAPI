@@ -1,10 +1,12 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.member.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
@@ -20,6 +22,8 @@ final class ForgeSVCProject implements CurseProject {
 	private HttpUrl websiteUrl;
 	private int gameId;
 	private String summary;
+	private int downloadCount;
+	private List<ForgeSVCFile> latestFiles;
 
 	@Override
 	public String toString() {
@@ -85,5 +89,15 @@ final class ForgeSVCProject implements CurseProject {
 	@Override
 	public Element description() throws CurseException {
 		return Jsoup.parse(RetrofitUtils.getString(ForgeSVCProvider.forgeSVC.getDescription(id)));
+	}
+
+	@Override
+	public int downloadCount() {
+		return downloadCount;
+	}
+
+	@Override
+	public List<? extends CurseFile> latestFiles() {
+		return latestFiles;
 	}
 }

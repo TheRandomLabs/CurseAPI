@@ -25,5 +25,7 @@ public class CurseAPITest {
 		assertThat(project.gameID()).isEqualTo(432);
 		assertThat(project.summary()).isNotEmpty();
 		assertThat(project.descriptionPlainText()).isNotEmpty();
+		assertThat(project.downloadCount()).isGreaterThan(0);
+		assertThat(project.latestFiles()).isNotEmpty();
 	}
 }

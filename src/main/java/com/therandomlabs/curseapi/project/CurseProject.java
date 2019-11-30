@@ -1,11 +1,13 @@
 package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.member.CurseMember;
 import com.therandomlabs.curseapi.util.JsoupUtils;
@@ -36,7 +38,7 @@ public interface CurseProject {
 
 	int gameID();
 
-	default Optional<CurseGame> game() {
+	default Optional<? extends CurseGame> game() {
 		return Optional.empty();
 	}
 
@@ -52,4 +54,8 @@ public interface CurseProject {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
 		return JsoupUtils.getPlainText(description(), maxLineLength);
 	}
+
+	int downloadCount();
+
+	List<? extends CurseFile> latestFiles();
 }
