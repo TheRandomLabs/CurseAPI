@@ -1,11 +1,10 @@
 package com.therandomlabs.curseapi;
 
 import java.awt.image.BufferedImage;
-import java.util.Optional;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
-import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -75,10 +74,6 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	public abstract int gameID();
 
-	public Optional<? extends CurseGame> game() {
-		return Optional.empty();
-	}
-
 	public abstract String summary();
 
 	public abstract Element description() throws CurseException;
@@ -86,4 +81,20 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract int downloadCount();
 
 	public abstract CurseFiles latestFiles();
+
+	public abstract Set<? extends CurseCategory> categories();
+
+	public abstract CurseCategory primaryCategory();
+
+	//categorySection
+
+	public abstract String slug();
+
+	public abstract ZonedDateTime creationTime();
+
+	public abstract ZonedDateTime lastUpdateTime();
+
+	public abstract ZonedDateTime lastModificationTime();
+
+	public abstract boolean experimental();
 }

@@ -62,6 +62,6 @@ final class ForgeSVCFile extends CurseFile {
 
 	@Override
 	public Element changelog() throws CurseException {
-		return RetrofitUtils.getElement(ForgeSVCProvider.forgeSVC.getChangelog(projectId, id));
+		return RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getChangelog(projectId, id));
 	}
 }

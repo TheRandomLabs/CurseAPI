@@ -13,21 +13,19 @@ import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public final class RetrofitUtils {
-	public static final Retrofit RETROFIT = new Retrofit.Builder().
-			baseUrl("https://addons-ecs.forgesvc.net/").
-			addConverterFactory(MoshiConverterFactory.create(
-					new Moshi.Builder().
-							add(ElementAdapter.INSTANCE).
-							add(HttpUrlAdapter.INSTANCE).
-							add(ZonedDateTimeAdapter.INSTANCE).
-							build()
-			)).
-			build();
-
 	private RetrofitUtils() {}
 
-	public static <T> T create(Class<T> service) {
-		return RETROFIT.create(service);
+	public static Retrofit get(String baseURL) {
+		return new Retrofit.Builder().
+				baseUrl(baseURL).
+				addConverterFactory(MoshiConverterFactory.create(
+						new Moshi.Builder().
+								add(ElementAdapter.INSTANCE).
+								add(HttpUrlAdapter.INSTANCE).
+								add(ZonedDateTimeAdapter.INSTANCE).
+								build()
+				)).
+				build();
 	}
 
 	public static <T> T execute(Call<T> call) throws CurseException {

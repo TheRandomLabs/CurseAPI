@@ -1,8 +1,11 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.time.ZonedDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CurseCategory;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CurseFiles;
 import com.therandomlabs.curseapi.CurseMember;
@@ -21,6 +24,13 @@ final class ForgeSVCProject extends CurseProject {
 	private String summary;
 	private int downloadCount;
 	private Set<ForgeSVCFile> latestFiles;
+	private Set<ForgeSVCCategory> categories;
+	private int primaryCategoryId;
+	private String slug;
+	private ZonedDateTime dateCreated;
+	private ZonedDateTime dateReleased;
+	private ZonedDateTime dateModified;
+	private boolean isExperimental;
 
 	@Override
 	public int id() {
@@ -34,7 +44,7 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public Set<? extends CurseMember> authors() {
-		return authors;
+		return new LinkedHashSet<>(authors);
 	}
 
 	@Override
@@ -76,7 +86,7 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public Element description() throws CurseException {
-		return RetrofitUtils.getElement(ForgeSVCProvider.forgeSVC.getDescription(id));
+		return RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getDescription(id));
 	}
 
 	@Override
@@ -87,5 +97,47 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public CurseFiles latestFiles() {
 		return new CurseFiles(latestFiles);
+	}
+
+	@Override
+	public Set<? extends CurseCategory> categories() {
+		return new LinkedHashSet<>(categories);
+	}
+
+	@Override
+	public CurseCategory primaryCategory() {
+		for (CurseCategory category : categories) {
+			if (category.id() == primaryCategoryId) {
+				return category;
+			}
+		}
+
+		//This should never happen.
+		throw new IllegalStateException("Primary category not found");
+	}
+
+	@Override
+	public String slug() {
+		return slug;
+	}
+
+	@Override
+	public ZonedDateTime creationTime() {
+		return dateCreated;
+	}
+
+	@Override
+	public ZonedDateTime lastUpdateTime() {
+		return dateReleased;
+	}
+
+	@Override
+	public ZonedDateTime lastModificationTime() {
+		return dateModified;
+	}
+
+	@Override
+	public boolean experimental() {
+		return isExperimental;
 	}
 }

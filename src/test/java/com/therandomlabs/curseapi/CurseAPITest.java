@@ -26,8 +26,8 @@ public class CurseAPITest {
 		assertThat(project.summary()).isNotEmpty();
 		assertThat(JsoupUtils.getPlainText(project.description())).isNotEmpty();
 		assertThat(project.downloadCount()).isGreaterThan(0);
-		assertThat(project.latestFiles()).isNotEmpty();
 
+		assertThat(project.latestFiles()).isNotEmpty();
 		final CurseFile latestFile = project.latestFiles().first();
 		assertThat(latestFile.projectID()).isEqualTo(project.id());
 		assertThat(latestFile.id()).isGreaterThanOrEqualTo(10);
@@ -37,5 +37,13 @@ public class CurseAPITest {
 		assertThat(latestFile.fileSize()).isGreaterThan(0);
 		assertThat(latestFile.downloadURL()).isNotNull();
 		assertThat(JsoupUtils.getPlainText(latestFile.changelog())).isNotEmpty();
+
+		assertThat(project.categories()).isNotEmpty();
+		assertThat(project.primaryCategory()).isIn(project.categories());
+		assertThat(project.slug()).isNotEmpty();
+		assertThat(project.experimental()).isFalse();
+		assertThat(project.creationTime()).isNotNull();
+		assertThat(project.lastUpdateTime()).isNotNull();
+		assertThat(project.lastModificationTime()).isNotNull();
 	}
 }
