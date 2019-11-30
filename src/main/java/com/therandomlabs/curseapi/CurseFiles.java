@@ -8,10 +8,10 @@ import java.util.TreeSet;
 import com.google.common.base.Preconditions;
 
 public class CurseFiles extends TreeSet<CurseFile> {
-	private static final long serialVersionUID = -7609834501394579694L;
-
 	public static final Comparator<CurseFile> SORT_BY_NEWEST = CurseFile::compareTo;
 	public static final Comparator<CurseFile> SORT_BY_OLDEST = SORT_BY_NEWEST.reversed();
+
+	private static final long serialVersionUID = -7609834501394579694L;
 
 	/**
 	 * Creates an empty {@link CurseFiles} instance ordered from newest to oldest.
