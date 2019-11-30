@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 public class CurseAPITest {
 	@Test
 	public void projectDetailsShouldBeValid() throws CurseException {
-		final Optional<CurseProject> optional = CurseAPI.project(285612);
-		assertThat(optional).isPresent();
+		final Optional<CurseProject> optionalProject = CurseAPI.project(285612);
+		assertThat(optionalProject).isPresent();
 
-		final CurseProject project = optional.get();
+		final CurseProject project = optionalProject.get();
 		assertThat(project.authors()).isNotEmpty();
 		assertThat(project.avatarURL()).isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_AVATAR);
 		assertThat(project.avatar()).isNotNull();
@@ -27,8 +27,14 @@ public class CurseAPITest {
 		assertThat(JsoupUtils.getPlainText(project.description())).isNotEmpty();
 		assertThat(project.downloadCount()).isGreaterThan(0);
 
-		assertThat(project.latestFiles()).isNotEmpty();
-		final CurseFile latestFile = project.latestFiles().first();
+		final CurseFiles latestFiles = project.latestFiles();
+		assertThat(latestFiles).isNotEmpty();
+
+		final CurseFile latestFile = latestFiles.first();
+		final Optional<CurseFile> optionalLatestFile = latestFiles.fileWithID(latestFile.id());
+		assertThat(optionalLatestFile).isPresent();
+		assertThat(optionalLatestFile.get()).isEqualTo(latestFile);
+
 		assertThat(latestFile.projectID()).isEqualTo(project.id());
 		assertThat(latestFile.id()).isGreaterThanOrEqualTo(10);
 		assertThat(latestFile.displayName()).isNotEmpty();
@@ -37,6 +43,10 @@ public class CurseAPITest {
 		assertThat(latestFile.fileSize()).isGreaterThan(0);
 		assertThat(latestFile.downloadURL()).isNotNull();
 		assertThat(JsoupUtils.getPlainText(latestFile.changelog())).isNotEmpty();
+
+		final Optional<CurseFiles> optionalFiles = CurseAPI.files(project.id());
+		assertThat(optionalFiles).isPresent();
+		assertThat(project.files()).isEqualTo(optionalFiles.get());
 
 		assertThat(project.categories()).isNotEmpty();
 		assertThat(project.primaryCategory()).isIn(project.categories());
@@ -48,18 +58,23 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void filesShouldNotBeEmpty() throws CurseException {
-		final Optional<CurseFiles> optional = CurseAPI.files(285612);
-		assertThat(optional).isPresent();
-		assertThat(optional.get()).isNotEmpty();
+	public void filesShouldBeValid() throws CurseException {
+		final Optional<CurseFiles> optionalFiles = CurseAPI.files(285612);
+		assertThat(optionalFiles).isPresent();
+
+		final CurseFiles files = optionalFiles.get();
+		assertThat(files).isNotEmpty();
+
+		final CurseFiles sortedByOldest = files.withComparator(CurseFiles.SORT_BY_OLDEST);
+		assertThat(sortedByOldest.first().id()).isEqualTo(2522102);
 	}
 
 	@Test
 	public void fileDetailsShouldBeValid() throws CurseException {
-		final Optional<CurseFile> optional = CurseAPI.file(285612, 2662898);
-		assertThat(optional).isPresent();
+		final Optional<CurseFile> optionalFile = CurseAPI.file(285612, 2662898);
+		assertThat(optionalFile).isPresent();
 
-		final CurseFile file = optional.get();
+		final CurseFile file = optionalFile.get();
 		assertThat(file.projectID()).isEqualTo(285612);
 		assertThat(file.id()).isGreaterThanOrEqualTo(10);
 		assertThat(file.displayName()).isNotEmpty();

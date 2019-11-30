@@ -10,6 +10,9 @@ import com.google.common.base.Preconditions;
 public class CurseFiles extends TreeSet<CurseFile> {
 	private static final long serialVersionUID = -7609834501394579694L;
 
+	public static final Comparator<CurseFile> SORT_BY_NEWEST = CurseFile::compareTo;
+	public static final Comparator<CurseFile> SORT_BY_OLDEST = SORT_BY_NEWEST.reversed();
+
 	/**
 	 * Creates an empty {@link CurseFiles} instance ordered from newest to oldest.
 	 */
@@ -37,12 +40,11 @@ public class CurseFiles extends TreeSet<CurseFile> {
 		return (CurseFiles) super.clone();
 	}
 
-	public Optional<CurseFile> fileWithID(Collection<? extends CurseFile> files, int id) {
-		Preconditions.checkNotNull(files, "files should not be null");
+	public Optional<CurseFile> fileWithID(int id) {
 		Preconditions.checkArgument(id >= 10, "id should not be smaller than 10");
 
-		for (CurseFile file : files) {
-			if (id == file.id()) {
+		for (CurseFile file : this) {
+			if (file.id() == file.id()) {
 				return Optional.of(file);
 			}
 		}
