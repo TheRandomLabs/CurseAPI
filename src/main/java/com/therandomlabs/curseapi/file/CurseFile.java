@@ -90,7 +90,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	/**
 	 * Returns this file's upload time.
 	 *
-	 * @return a {@link ZonedDateTime} that represents this file's upload time.
+	 * @return a {@link ZonedDateTime} instance that represents this file's upload time.
 	 */
 	public abstract ZonedDateTime uploadTime();
 

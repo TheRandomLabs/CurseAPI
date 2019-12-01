@@ -28,14 +28,6 @@ public class CurseAPITest {
 		assertThat(project.descriptionPlainText()).isNotEmpty();
 		assertThat(project.downloadCount()).isGreaterThan(0);
 
-		final CurseFiles latestFiles = project.latestFiles();
-		assertThat(latestFiles).isNotEmpty();
-
-		final CurseFile latestFile = latestFiles.first();
-		final Optional<CurseFile> optionalLatestFile = latestFiles.fileWithID(latestFile.id());
-		assertThat(optionalLatestFile).isPresent();
-		assertThat(optionalLatestFile.get()).isEqualTo(latestFile);
-
 		final Optional<CurseFiles> optionalFiles = CurseAPI.files(project.id());
 		assertThat(optionalFiles).isPresent();
 		assertThat(project.files()).isEqualTo(optionalFiles.get());

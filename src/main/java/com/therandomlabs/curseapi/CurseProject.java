@@ -61,62 +61,175 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 		return name().compareTo(project.name());
 	}
 
+	/**
+	 * Returns this project's ID.
+	 *
+	 * @return this project's ID.
+	 */
 	public abstract int id();
 
+	/**
+	 * Returns this project's name.
+	 *
+	 * @return this project's name.
+	 */
 	public abstract String name();
 
+	/**
+	 * Returns this project's main author.
+	 *
+	 * @return this project's main author.
+	 */
 	public abstract CurseMember author();
 
+	/**
+	 * Returns this project's authors.
+	 *
+	 * @return a mutable {@link Set} that contains this project's authors.
+	 */
 	public abstract Set<CurseMember> authors();
 
+	/**
+	 * Returns the URL to this project's avatar.
+	 *
+	 * @return the URL to this project's avatar.
+	 */
 	public abstract HttpUrl avatarURL();
 
+	/**
+	 * Returns the URL to this project's avatar thumbnail.
+	 *
+	 * @return the URL to this project's avatar thumbnail.
+	 */
 	public abstract HttpUrl avatarThumbnailURL();
 
+	/**
+	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarURL()}.
+	 *
+	 * @return this project's avatar as a {@link BufferedImage}.
+	 * @throws CurseException if the request could not be executed correctly.
+	 */
 	public BufferedImage avatar() throws CurseException {
 		return OkHttpUtils.readImage(avatarURL());
 	}
 
+	/**
+	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarThumbnailURL()}.
+	 *
+	 * @return this project's avatar thumbnail as a {@link BufferedImage}.
+	 * @throws CurseException if the request could not be executed correctly.
+	 */
 	public BufferedImage avatarThumbnail() throws CurseException {
 		return OkHttpUtils.readImage(avatarThumbnailURL());
 	}
 
+	/**
+	 * Returns this project's URL.
+	 *
+	 * @return this project's URL.
+	 */
 	public abstract HttpUrl url();
 
+	/**
+	 * Returns the ID of the game that this project belongs in.
+	 *
+	 * @return the ID of the game that this project belongs in.
+	 */
 	public abstract int gameID();
 
+	/**
+	 * Returns this project's summary.
+	 *
+	 * @return this project's summary.
+	 */
 	public abstract String summary();
 
+	/**
+	 * Returns this project's description as an {@link Element}.
+	 *
+	 * @return this project's description as an {@link Element}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public abstract Element description() throws CurseException;
 
+	/**
+	 * Returns this project's description as plain text.
+	 *
+	 * @return this project's description as plain text as returned by
+	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public String descriptionPlainText() throws CurseException {
 		return descriptionPlainText(Integer.MAX_VALUE);
 	}
 
+	/**
+	 * Returns this project's description as plain text.
+	 *
+	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
+	 * @return this project's description as plain text as returned by
+	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public String descriptionPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
 		return JsoupUtils.getPlainText(description(), maxLineLength);
 	}
 
+	/**
+	 * Returns this project's download count.
+	 * @return this project's download count.
+	 */
 	public abstract int downloadCount();
 
-	public abstract CurseFiles latestFiles();
-
+	/**
+	 * Returns a {@link CurseFiles} instance for this project.
+	 * @return a {@link CurseFiles} instance for this project.
+	 */
 	public abstract CurseFiles files() throws CurseException;
 
-	public abstract Set<CurseCategory> categories();
-
+	/**
+	 * Returns this project's primary category.
+	 * @return this project's primary category.
+	 */
 	public abstract CurseCategory primaryCategory();
+
+	/**
+	 * Returns this project's categories.
+	 * @return a mutable {@link Set} that contains this project's categories.
+	 */
+	public abstract Set<CurseCategory> categories();
 
 	//categorySection
 
+	/**
+	 * Returns this project's slug.
+	 * @return this project's slug.
+	 */
 	public abstract String slug();
 
+	/**
+	 * Returns this project's creation time.
+	 * @return a {@link ZonedDateTime} instance that represents this project's creation time.
+	 */
 	public abstract ZonedDateTime creationTime();
 
+	/**
+	 * Returns this project's last update time.
+	 * @return a {@link ZonedDateTime} instance that represents this project's last update time.
+	 */
 	public abstract ZonedDateTime lastUpdateTime();
 
+	/**
+	 * Returns this project's last modification time.
+	 * @return a {@link ZonedDateTime} instance that represents this project's last modification
+	 * time.
+	 */
 	public abstract ZonedDateTime lastModificationTime();
 
+	/**
+	 * Returns whether this project is experimental.
+	 * @return {@code true} if this project is experimental, or otherwise {@code false}.
+	 */
 	public abstract boolean experimental();
 }

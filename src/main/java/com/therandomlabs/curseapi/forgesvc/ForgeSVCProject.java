@@ -8,9 +8,9 @@ import java.util.Set;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseCategory;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.CurseMember;
 import com.therandomlabs.curseapi.CurseProject;
+import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -24,7 +24,6 @@ final class ForgeSVCProject extends CurseProject {
 	private int gameId;
 	private String summary;
 	private int downloadCount;
-	private Set<ForgeSVCFile> latestFiles;
 	private Set<ForgeSVCCategory> categories;
 	private int primaryCategoryId;
 	private String slug;
@@ -101,18 +100,8 @@ final class ForgeSVCProject extends CurseProject {
 	}
 
 	@Override
-	public CurseFiles latestFiles() {
-		return new CurseFiles(latestFiles);
-	}
-
-	@Override
 	public CurseFiles files() throws CurseException {
 		return new CurseFiles(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
-	}
-
-	@Override
-	public Set<CurseCategory> categories() {
-		return new LinkedHashSet<>(categories);
 	}
 
 	@Override
@@ -125,6 +114,11 @@ final class ForgeSVCProject extends CurseProject {
 
 		//This should never happen.
 		throw new IllegalStateException("Primary category not found");
+	}
+
+	@Override
+	public Set<CurseCategory> categories() {
+		return new LinkedHashSet<>(categories);
 	}
 
 	@Override
