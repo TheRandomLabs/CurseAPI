@@ -101,6 +101,7 @@ public final class CurseAPI {
 
 	/**
 	 * Registers a {@link CurseAPIProvider}.
+	 *
 	 * @param provider a {@link CurseAPIProvider} instance.
 	 */
 	public static void addProvider(CurseAPIProvider provider) {
@@ -113,6 +114,7 @@ public final class CurseAPI {
 
 	/**
 	 * Unregisters a {@link CurseAPIProvider}.
+	 *
 	 * @param provider a {@link CurseAPIProvider} instance.
 	 * @return {@code true} if the {@link CurseAPIProvider} was registered,
 	 * or otherwise {@code false}.
@@ -124,6 +126,7 @@ public final class CurseAPI {
 
 	/**
 	 * Returns an immutable {@link List} of all registered {@link CurseAPIProvider}s.
+	 *
 	 * @return an immutable {@link List} of all registered {@link CurseAPIProvider}s.
 	 */
 	public static List<CurseAPIProvider> getProviders() {

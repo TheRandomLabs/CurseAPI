@@ -177,6 +177,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 
 	/**
 	 * Returns whether this file is older than the file with the specified ID.
+	 *
 	 * @param fileID a file ID.
 	 * @return {@code true} if this file is older than the file with the specified ID,
 	 * or otherwise {@code false}.
@@ -200,6 +201,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 
 	/**
 	 * Returns whether this file is newer than the file with the specified ID.
+	 *
 	 * @param fileID a file ID.
 	 * @return {@code true} if this file is newer than the file with the specified ID,
 	 * or otherwise {@code false}.

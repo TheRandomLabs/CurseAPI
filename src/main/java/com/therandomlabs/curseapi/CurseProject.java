@@ -178,24 +178,28 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns this project's download count.
+	 *
 	 * @return this project's download count.
 	 */
 	public abstract int downloadCount();
 
 	/**
 	 * Returns a {@link CurseFiles} instance for this project.
+	 *
 	 * @return a {@link CurseFiles} instance for this project.
 	 */
 	public abstract CurseFiles files() throws CurseException;
 
 	/**
 	 * Returns this project's primary category.
+	 *
 	 * @return this project's primary category.
 	 */
 	public abstract CurseCategory primaryCategory();
 
 	/**
 	 * Returns this project's categories.
+	 *
 	 * @return a mutable {@link Set} that contains this project's categories.
 	 */
 	public abstract Set<CurseCategory> categories();
@@ -204,24 +208,28 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns this project's slug.
+	 *
 	 * @return this project's slug.
 	 */
 	public abstract String slug();
 
 	/**
 	 * Returns this project's creation time.
+	 *
 	 * @return a {@link ZonedDateTime} instance that represents this project's creation time.
 	 */
 	public abstract ZonedDateTime creationTime();
 
 	/**
 	 * Returns this project's last update time.
+	 *
 	 * @return a {@link ZonedDateTime} instance that represents this project's last update time.
 	 */
 	public abstract ZonedDateTime lastUpdateTime();
 
 	/**
 	 * Returns this project's last modification time.
+	 *
 	 * @return a {@link ZonedDateTime} instance that represents this project's last modification
 	 * time.
 	 */
@@ -229,6 +237,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns whether this project is experimental.
+	 *
 	 * @return {@code true} if this project is experimental, or otherwise {@code false}.
 	 */
 	public abstract boolean experimental();

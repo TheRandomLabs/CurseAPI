@@ -34,7 +34,6 @@ public class CurseFileFilter implements Predicate<CurseFile> {
 		return gameVersions(ImmutableSet.copyOf(versions));
 	}
 
-
 	public CurseFileFilter gameVersions(Collection<String> versions) {
 		Preconditions.checkNotNull(versions, "versions should not be null");
 		gameVersions.addAll(versions);
