@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.NodeTraversor;
 
+/**
+ * Contains utility methods for working with jsoup.
+ */
 public final class JsoupUtils {
 	private JsoupUtils() {}
 
