@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
+import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFiles;
 import org.junit.jupiter.api.Test;
 
 public class CurseAPITest {
@@ -33,15 +35,6 @@ public class CurseAPITest {
 		final Optional<CurseFile> optionalLatestFile = latestFiles.fileWithID(latestFile.id());
 		assertThat(optionalLatestFile).isPresent();
 		assertThat(optionalLatestFile.get()).isEqualTo(latestFile);
-
-		assertThat(latestFile.projectID()).isEqualTo(project.id());
-		assertThat(latestFile.id()).isGreaterThanOrEqualTo(10);
-		assertThat(latestFile.displayName()).isNotEmpty();
-		assertThat(latestFile.fileName()).isNotEmpty();
-		assertThat(latestFile.uploadTime()).isNotNull();
-		assertThat(latestFile.fileSize()).isGreaterThan(0);
-		assertThat(latestFile.downloadURL()).isNotNull();
-		assertThat(latestFile.changelogPlainText()).isNotEmpty();
 
 		final Optional<CurseFiles> optionalFiles = CurseAPI.files(project.id());
 		assertThat(optionalFiles).isPresent();
@@ -75,11 +68,13 @@ public class CurseAPITest {
 
 		final CurseFile file = optionalFile.get();
 		assertThat(file.projectID()).isEqualTo(285612);
-		assertThat(file.id()).isGreaterThanOrEqualTo(10);
+		assertThat(file.id()).isEqualTo(2662898);
 		assertThat(file.displayName()).isNotEmpty();
 		assertThat(file.fileName()).isNotEmpty();
 		assertThat(file.uploadTime()).isNotNull();
 		assertThat(file.fileSize()).isGreaterThan(0);
+		assertThat(file.releaseType()).isNotNull();
+		assertThat(file.status()).isNotNull();
 		assertThat(file.downloadURL()).isNotNull();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}

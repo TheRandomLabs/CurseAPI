@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;

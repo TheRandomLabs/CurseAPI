@@ -5,7 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFileStatus;
+import com.therandomlabs.curseapi.file.CurseReleaseType;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -17,6 +19,8 @@ final class ForgeSVCFile extends CurseFile {
 	private String fileName;
 	private ZonedDateTime fileDate;
 	private long fileLength;
+	private int releaseType;
+	private int fileStatus;
 	private HttpUrl downloadUrl;
 	private Set<String> gameVersions;
 
@@ -48,6 +52,16 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public long fileSize() {
 		return fileLength;
+	}
+
+	@Override
+	public CurseReleaseType releaseType() {
+		return CurseReleaseType.fromID(releaseType);
+	}
+
+	@Override
+	public CurseFileStatus status() {
+		return CurseFileStatus.fromID(fileStatus);
 	}
 
 	@Override

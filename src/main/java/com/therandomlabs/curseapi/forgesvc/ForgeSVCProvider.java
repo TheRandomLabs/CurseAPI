@@ -4,8 +4,8 @@ import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPIProvider;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseFile;
-import com.therandomlabs.curseapi.CurseFiles;
+import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;

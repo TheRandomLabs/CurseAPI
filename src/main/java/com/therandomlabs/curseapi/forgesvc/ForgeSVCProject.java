@@ -8,7 +8,7 @@ import java.util.Set;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseCategory;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseFiles;
+import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.CurseMember;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;

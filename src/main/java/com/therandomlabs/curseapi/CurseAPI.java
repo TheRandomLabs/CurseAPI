@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
 import com.therandomlabs.curseapi.util.CheckedFunction;
 import okhttp3.HttpUrl;

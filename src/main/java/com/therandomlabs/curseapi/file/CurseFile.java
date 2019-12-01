@@ -1,10 +1,11 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.file;
 
 import java.time.ZonedDateTime;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -66,6 +67,10 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	public abstract ZonedDateTime uploadTime();
 
 	public abstract long fileSize();
+
+	public abstract CurseReleaseType releaseType();
+
+	public abstract CurseFileStatus status();
 
 	public abstract HttpUrl downloadURL();
 
