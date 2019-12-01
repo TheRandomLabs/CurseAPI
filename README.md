@@ -12,6 +12,8 @@ All code is documented with Javadoc and tested with JUnit.
 The methods found in `CurseAPI` can be used to retrieve information about projects and files.
 * `CurseAPI#project(int)` can be used to retrieve a `CurseProject` instance for a project ID.
 This `CurseProject` instance can then be used to retrieve information about a CurseForge project.
+* `CurseAPI#searchProjects(CurseSearchQuery)` can be used with a `CurseSearchQuery` instance to
+search for CurseForge projects.
 * `CurseAPI#files(int)` and `CurseProject#files` can be used to retrieve a `CurseFiles` instance
 containing all files for a project. `CurseFiles` extends `TreeSet` and contains a few utility
 methods for `CurseFile`s.
