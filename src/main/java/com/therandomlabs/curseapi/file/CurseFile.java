@@ -113,7 +113,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	/**
 	 * Returns this file's status.
 	 *
-	 * @return tihs file's status.
+	 * @return this file's status.
 	 */
 	public abstract CurseFileStatus status();
 
