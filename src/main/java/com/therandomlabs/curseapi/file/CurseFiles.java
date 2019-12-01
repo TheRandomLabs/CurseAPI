@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import com.google.common.base.Preconditions;
 
@@ -38,6 +39,10 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	@Override
 	public CurseFiles clone() {
 		return (CurseFiles) super.clone();
+	}
+
+	public void filter(Predicate<? super CurseFile> filter) {
+		removeIf(filter.negate());
 	}
 
 	public Optional<CurseFile> fileWithID(int id) {
