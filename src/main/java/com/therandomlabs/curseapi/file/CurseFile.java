@@ -12,6 +12,8 @@ import org.jsoup.nodes.Element;
 
 /**
  * Represents a CurseForge file.
+ * <p>
+ * Implementations of this interface should be effectively immutable.
  */
 public abstract class CurseFile implements Comparable<CurseFile> {
 	/**

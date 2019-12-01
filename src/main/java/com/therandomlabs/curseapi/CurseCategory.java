@@ -8,6 +8,8 @@ import okhttp3.HttpUrl;
 
 /**
  * Represents a CurseForge category.
+ * <p>
+ * Implementations of this interface should be effectively immutable.
  */
 public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**

@@ -5,6 +5,8 @@ import okhttp3.HttpUrl;
 
 /**
  * Represents a CurseForge member.
+ * <p>
+ * Implementations of this interface should be effectively immutable.
  */
 public abstract class CurseMember implements Comparable<CurseMember> {
 	/**
