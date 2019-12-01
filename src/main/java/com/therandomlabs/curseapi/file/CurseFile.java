@@ -122,11 +122,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 */
 	public abstract HttpUrl downloadURL();
 
-	//Dependencies
-
-	//Modules
-
-	//Fingerprint
+	//TODO dependencies, modules, fingerprint
 
 	/**
 	 * Returns this file's game versions.
@@ -174,9 +170,9 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 * @return {@code true} if this file is older than the specified file,
 	 * or otherwise {@code false}.
 	 */
-	public final boolean isOlderThan(CurseFile file) {
+	public final boolean olderThan(CurseFile file) {
 		Preconditions.checkNotNull(file, "file should not be null");
-		return isOlderThan(file.id());
+		return olderThan(file.id());
 	}
 
 	/**
@@ -185,7 +181,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 * @return {@code true} if this file is older than the file with the specified ID,
 	 * or otherwise {@code false}.
 	 */
-	public final boolean isOlderThan(int fileID) {
+	public final boolean olderThan(int fileID) {
 		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
 		return id() < fileID;
 	}
@@ -197,9 +193,9 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 * @return {@code true} if this file is newer than the specified file,
 	 * or otherwise {@code false}.
 	 */
-	public final boolean isNewerThan(CurseFile file) {
+	public final boolean newerThan(CurseFile file) {
 		Preconditions.checkNotNull(file, "file should not be null");
-		return isNewerThan(file.id());
+		return newerThan(file.id());
 	}
 
 	/**
@@ -208,7 +204,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 * @return {@code true} if this file is newer than the file with the specified ID,
 	 * or otherwise {@code false}.
 	 */
-	public final boolean isNewerThan(int fileID) {
+	public final boolean newerThan(int fileID) {
 		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
 		return id() > fileID;
 	}

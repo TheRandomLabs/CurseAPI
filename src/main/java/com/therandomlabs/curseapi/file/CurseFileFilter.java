@@ -21,7 +21,7 @@ public class CurseFileFilter implements Predicate<CurseFile> {
 			return false;
 		}
 
-		return file.id() > newerThan && file.id() < olderThan &&
+		return file.newerThan(newerThan) && file.olderThan(olderThan) &&
 				file.releaseType().matchesMinimumStability(minimumStability);
 	}
 
