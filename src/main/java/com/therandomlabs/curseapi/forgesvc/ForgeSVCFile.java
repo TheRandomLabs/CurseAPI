@@ -40,7 +40,7 @@ final class ForgeSVCFile extends CurseFile {
 	}
 
 	@Override
-	public String fileName() {
+	public String nameOnDisk() {
 		return fileName;
 	}
 

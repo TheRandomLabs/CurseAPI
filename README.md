@@ -34,8 +34,8 @@ if (optionalFiles.isPresent()) {
 
 ## Using with Gradle
 
-CurseAPI uses SLF4J to log warnings and errors. Use the following in your buildscript to enable
-SLF4J with Log4j 2:
+CurseAPI uses SLF4J to log warnings, errors and information messages.
+Put the following in your buildscript to enable SLF4J with Log4j 2:
 
 ```groovy
 

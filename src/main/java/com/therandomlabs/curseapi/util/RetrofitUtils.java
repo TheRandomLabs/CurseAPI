@@ -2,7 +2,6 @@ package com.therandomlabs.curseapi.util;
 
 import java.io.IOException;
 
-import com.squareup.moshi.Moshi;
 import com.therandomlabs.curseapi.CurseException;
 import okhttp3.ResponseBody;
 import org.jsoup.Jsoup;
@@ -22,13 +21,7 @@ public final class RetrofitUtils {
 	public static Retrofit get(String baseURL) {
 		return new Retrofit.Builder().
 				baseUrl(baseURL).
-				addConverterFactory(MoshiConverterFactory.create(
-						new Moshi.Builder().
-								add(ElementAdapter.INSTANCE).
-								add(HttpUrlAdapter.INSTANCE).
-								add(ZonedDateTimeAdapter.INSTANCE).
-								build()
-				)).
+				addConverterFactory(MoshiConverterFactory.create(MoshiUtils.MOSHI)).
 				build();
 	}
 

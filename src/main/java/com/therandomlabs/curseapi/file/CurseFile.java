@@ -36,6 +36,9 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 				(object instanceof CurseFile && id() == ((CurseFile) object).id());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).
@@ -56,22 +59,67 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 		return Integer.compare(file.id(), id());
 	}
 
+	/**
+	 * Returns the ID of this file's project.
+	 *
+	 * @return the ID of this file's project.
+	 */
 	public abstract int projectID();
 
+	/**
+	 * Returns this file's ID.
+	 *
+	 * @return this file's ID.
+	 */
 	public abstract int id();
 
+	/**
+	 * Returns this file's display name.
+	 *
+	 * @return this file's display name.
+	 */
 	public abstract String displayName();
 
-	public abstract String fileName();
+	/**
+	 * Returns this file's name on disk.
+	 *
+	 * @return this file's name on disk.
+	 */
+	public abstract String nameOnDisk();
 
+	/**
+	 * Returns this file's upload time.
+	 *
+	 * @return a {@link ZonedDateTime} that represents this file's upload time.
+	 */
 	public abstract ZonedDateTime uploadTime();
 
+	/**
+	 * Returns this file's size in bytes.
+	 *
+	 * @return this file's size in bytes.
+	 */
 	public abstract long fileSize();
 
+	/**
+	 * Returns this file's release type.
+	 *
+	 * @return this file's release type.
+	 */
 	public abstract CurseReleaseType releaseType();
 
+	/**
+	 * Returns this file's status.
+	 *
+	 * @return tihs file's status.
+	 */
 	public abstract CurseFileStatus status();
 
+	/**
+	 * Returns this file's download URL.
+	 *
+	 * @return this file's download URL.
+	 */
 	public abstract HttpUrl downloadURL();
 
 	//Dependencies
@@ -80,24 +128,88 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 
 	//Fingerprint
 
+	/**
+	 * Returns this file's game versions.
+	 *
+	 * @return a mutable {@link Set} containing this file's game versions.
+	 */
 	public abstract Set<String> gameVersions();
 
+	/**
+	 * Returns this file's changelog as an {@link Element}.
+	 *
+	 * @return this file's changelog as an {@link Element}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public abstract Element changelog() throws CurseException;
 
+	/**
+	 * Returns this file's changelog as plain text.
+	 *
+	 * @return this file's changelog as plain text as returned by
+	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public String changelogPlainText() throws CurseException {
 		return changelogPlainText(Integer.MAX_VALUE);
 	}
 
+	/**
+	 * Returns this file's changelog as plain text.
+	 *
+	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
+	 * @return this file's changelog as plain text as returned by
+	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public String changelogPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
 		return JsoupUtils.getPlainText(changelog(), maxLineLength);
 	}
 
+	/**
+	 * Returns whether this file is older than the specified file.
+	 *
+	 * @param file another {@link CurseFile}.
+	 * @return {@code true} if this file is older than the specified file,
+	 * or otherwise {@code false}.
+	 */
 	public final boolean isOlderThan(CurseFile file) {
-		return id() < file.id();
+		Preconditions.checkNotNull(file, "file should not be null");
+		return isOlderThan(file.id());
 	}
 
+	/**
+	 * Returns whether this file is older than the file with the specified ID.
+	 * @param fileID a file ID.
+	 * @return {@code true} if this file is older than the file with the specified ID,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean isOlderThan(int fileID) {
+		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
+		return id() < fileID;
+	}
+
+	/**
+	 * Returns whether this file is newer than the specified file.
+	 *
+	 * @param file another {@link CurseFile}.
+	 * @return {@code true} if this file is newer than the specified file,
+	 * or otherwise {@code false}.
+	 */
 	public final boolean isNewerThan(CurseFile file) {
-		return id() > file.id();
+		Preconditions.checkNotNull(file, "file should not be null");
+		return isNewerThan(file.id());
+	}
+
+	/**
+	 * Returns whether this file is newer than the file with the specified ID.
+	 * @param fileID a file ID.
+	 * @return {@code true} if this file is newer than the file with the specified ID,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean isNewerThan(int fileID) {
+		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
+		return id() > fileID;
 	}
 }
