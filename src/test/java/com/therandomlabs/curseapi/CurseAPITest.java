@@ -42,6 +42,7 @@ public class CurseAPITest {
 
 		assertThat(project.categories()).isNotEmpty();
 		assertThat(project.primaryCategory()).isIn(project.categories());
+		assertThat(project.primaryCategory().avatar()).isNotNull();
 		assertThat(project.slug()).isNotEmpty();
 		assertThat(project.experimental()).isFalse();
 		assertThat(project.creationTime()).isNotNull();

@@ -1,7 +1,7 @@
 # CurseAPI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Build](https://github.com/TheRandomLabs/TRLUtils-Platform/workflows/build/badge.svg)
+![Build](https://github.com/TheRandomLabs/CurseAPI/workflows/build/badge.svg)
 
 A Java library for handling interactions with CurseForge.
 
@@ -12,7 +12,7 @@ All code will soon be documented with Javadoc and tested with JUnit.
 The methods found in `CurseAPI` can be used to retrieve information about projects and files.
 * `CurseAPI#project(int)` can be used to retrieve a `CurseProject` instance for a project ID.
 This `CurseProject` instance can then be used to retrieve information about a CurseForge project.
-* `CurseAPI#files(int)` and `CurseProject#files` can be used to retrieve a `CurseFiles` instance 
+* `CurseAPI#files(int)` and `CurseProject#files` can be used to retrieve a `CurseFiles` instance
 containing all files for a project. `CurseFiles` extends `TreeSet` and contains a few utility
 methods for `CurseFile`s.
 * `CurseAPI#file(int, int)` can be used to retrieve a `CurseFile` instance for a project and
@@ -35,7 +35,7 @@ if (optionalFiles.isPresent()) {
 ## Using with Gradle
 
 CurseAPI uses SLF4J to log warnings and errors. Use the following in your buildscript to enable
-SLF4J with Log4j 2.
+SLF4J with Log4j 2:
 
 ```groovy
 
