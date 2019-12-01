@@ -12,6 +12,7 @@ public final class JsoupUtils {
 
 	/**
 	 * Converts the specified {@link Element} to plain text.
+	 *
 	 * @param element an {@link Element}.
 	 * @return a plain text representation of the specified {@link Element}.
 	 */
@@ -21,6 +22,7 @@ public final class JsoupUtils {
 
 	/**
 	 * Converts the specified {@link Element} to plain text.
+	 *
 	 * @param element an {@link Element}.
 	 * @param maxLineLength a maximum line length used for word wrapping.
 	 * @return a plain text representation of the specified {@link Element}.
