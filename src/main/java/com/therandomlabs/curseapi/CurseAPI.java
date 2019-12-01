@@ -22,6 +22,16 @@ import org.slf4j.LoggerFactory;
  */
 public final class CurseAPI {
 	/**
+	 * The minimum CurseForge project ID.
+	 */
+	public static final int MIN_PROJECT_ID = 10;
+
+	/**
+	 * The minimum CurseForge file ID.
+	 */
+	public static final int MIN_FILE_ID = 60018;
+
+	/**
 	 * The placeholder CurseForge project avatar URL.
 	 */
 	public static final HttpUrl PLACEHOLDER_PROJECT_AVATAR = HttpUrl.get(
@@ -51,7 +61,9 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseProject> project(int id) throws CurseException {
-		Preconditions.checkArgument(id >= 10, "id should not be smaller than 10");
+		Preconditions.checkArgument(
+				id >= MIN_PROJECT_ID, "id should not be smaller than %s", MIN_PROJECT_ID
+		);
 		return get(provider -> provider.project(id));
 	}
 
@@ -64,7 +76,10 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFiles> files(int projectID) throws CurseException {
-		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
+		Preconditions.checkArgument(
+				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
+				MIN_PROJECT_ID
+		);
 		return get(provider -> provider.files(projectID));
 	}
 
@@ -78,8 +93,13 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
-		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
-		Preconditions.checkArgument(fileID >= 10, "fileID should not be smaller than 10");
+		Preconditions.checkArgument(
+				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
+				MIN_PROJECT_ID
+		);
+		Preconditions.checkArgument(
+				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
+		);
 		return get(provider -> provider.file(projectID, fileID));
 	}
 
@@ -94,8 +114,13 @@ public final class CurseAPI {
 	 */
 	public static Optional<HttpUrl> fileDownloadURL(int projectID, int fileID)
 			throws CurseException {
-		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
-		Preconditions.checkArgument(fileID >= 10, "fileID should not be smaller than 10");
+		Preconditions.checkArgument(
+				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
+				MIN_PROJECT_ID
+		);
+		Preconditions.checkArgument(
+				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
+		);
 		return get(provider -> provider.fileDownloadURL(projectID, fileID));
 	}
 

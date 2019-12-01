@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Optional;
 
 import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +68,7 @@ public class CurseAPITest {
 		assertThat(file.uploadTime()).isNotNull();
 		assertThat(file.fileSize()).isGreaterThan(0);
 		assertThat(file.releaseType()).isNotNull();
-		assertThat(file.status()).isNotNull();
+		assertThat(file.status()).isEqualTo(CurseFileStatus.NORMAL);
 		assertThat(file.downloadURL()).isNotNull();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}
