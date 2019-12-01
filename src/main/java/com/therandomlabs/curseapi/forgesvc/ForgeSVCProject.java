@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.forgesvc;
 
 import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPI;
@@ -17,7 +18,7 @@ import org.jsoup.nodes.Element;
 final class ForgeSVCProject extends CurseProject {
 	private int id;
 	private String name;
-	private Set<ForgeSVCMember> authors;
+	private List<ForgeSVCMember> authors;
 	private Set<ForgeSVCAttachment> attachments;
 	private HttpUrl websiteUrl;
 	private int gameId;
@@ -43,7 +44,12 @@ final class ForgeSVCProject extends CurseProject {
 	}
 
 	@Override
-	public Set<? extends CurseMember> authors() {
+	public CurseMember author() {
+		return authors.get(0);
+	}
+
+	@Override
+	public Set<CurseMember> authors() {
 		return new LinkedHashSet<>(authors);
 	}
 
@@ -105,7 +111,7 @@ final class ForgeSVCProject extends CurseProject {
 	}
 
 	@Override
-	public Set<? extends CurseCategory> categories() {
+	public Set<CurseCategory> categories() {
 		return new LinkedHashSet<>(categories);
 	}
 

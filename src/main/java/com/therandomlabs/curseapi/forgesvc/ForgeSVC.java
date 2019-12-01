@@ -1,15 +1,25 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.List;
 import java.util.Set;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 interface ForgeSVC {
 	@GET("api/v2/addon/{id}")
 	Call<ForgeSVCProject> getProject(@Path("id") int id);
+
+	@GET("api/v2/addon/search")
+	Call<List<ForgeSVCProject>> findProjects(
+			@Query("categoryId") int categoryID, @Query("gameId") int gameId,
+			@Query("gameVersion") String gameVersion, @Query("index") int pageIndex,
+			@Query("pageSize") int pageSize, @Query("searchFilter") String searchFilter,
+			@Query("sectionId") int sectionID, @Query("sort") int sort
+	);
 
 	@GET("api/v2/addon/{projectID}/description")
 	Call<ResponseBody> getDescription(@Path("projectID") int projectID);
@@ -22,4 +32,9 @@ interface ForgeSVC {
 
 	@GET("api/v2/addon/{projectID}/file/{fileID}/changelog")
 	Call<ResponseBody> getChangelog(@Path("projectID") int projectID, @Path("fileID") int fileID);
+
+	@GET("api/v2/addon/{projectID}/file/{fileID}/download-url")
+	Call<ResponseBody> getFileDownloadURL(
+			@Path("projectID") int projectID, @Path("fileID") int fileID
+	);
 }

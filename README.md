@@ -1,3 +1,3 @@
 # CurseAPI
 
-A Java API that handles interactions with CurseForge.
+A Java library for handling interactions with CurseForge.

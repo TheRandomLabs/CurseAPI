@@ -9,8 +9,12 @@ import com.google.common.collect.Lists;
 import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
 import com.therandomlabs.curseapi.util.CheckedFunction;
 import okhttp3.HttpUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * The main CurseAPI class.
+ * <p>
  * Contains methods for retrieving {@link CurseProject} and {@link CurseFile} instances as well
  * as for managing {@link CurseAPIProvider}s.
  */
@@ -22,6 +26,8 @@ public final class CurseAPI {
 
 	public static final HttpUrl PLACEHOLDER_PROJECT_THUMBNAIL =
 			HttpUrl.get("https://media.forgecdn.net/avatars/0/93/635227964539626926.png");
+
+	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
 
 	private static final List<CurseAPIProvider> providers =
 			Lists.newArrayList(ForgeSVCProvider.INSTANCE);
@@ -44,6 +50,13 @@ public final class CurseAPI {
 		return get(provider -> provider.file(projectID, fileID));
 	}
 
+	public static Optional<HttpUrl> fileDownloadURL(int projectID, int fileID)
+			throws CurseException {
+		Preconditions.checkArgument(projectID >= 10, "projectID should not be smaller than 10");
+		Preconditions.checkArgument(fileID >= 10, "fileID should not be smaller than 10");
+		return get(provider -> provider.fileDownloadURL(projectID, fileID));
+	}
+
 	public static void addProvider(CurseAPIProvider provider) {
 		Preconditions.checkNotNull(provider, "provider should not be null");
 		Preconditions.checkArgument(
@@ -64,6 +77,11 @@ public final class CurseAPI {
 	private static <T> Optional<T> get(
 			CheckedFunction<CurseAPIProvider, T, CurseException> function
 	) throws CurseException {
+		if (providers.isEmpty()) {
+			logger.warn("No CurseAPIProviders configured");
+			return Optional.empty();
+		}
+
 		for (CurseAPIProvider provider : providers) {
 			final T t = function.apply(provider);
 

@@ -56,7 +56,9 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	public abstract String name();
 
-	public abstract Set<? extends CurseMember> authors();
+	public abstract CurseMember author();
+
+	public abstract Set<CurseMember> authors();
 
 	public abstract HttpUrl avatarURL();
 
@@ -84,7 +86,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	public abstract CurseFiles files() throws CurseException;
 
-	public abstract Set<? extends CurseCategory> categories();
+	public abstract Set<CurseCategory> categories();
 
 	public abstract CurseCategory primaryCategory();
 

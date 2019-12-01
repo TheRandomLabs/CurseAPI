@@ -8,6 +8,7 @@ import com.therandomlabs.curseapi.CurseFile;
 import com.therandomlabs.curseapi.CurseFiles;
 import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
+import okhttp3.HttpUrl;
 
 /**
  * A {@link CurseAPIProvider} that uses the API at {@code https://addons-ecs.forgesvc.net/}
@@ -54,5 +55,13 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 		final ForgeSVCFile file = RetrofitUtils.execute(FORGESVC.getFile(projectID, fileID));
 		file.setProjectID(projectID);
 		return file;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
+		return HttpUrl.get(RetrofitUtils.getString(FORGESVC.getFileDownloadURL(projectID, fileID)));
 	}
 }

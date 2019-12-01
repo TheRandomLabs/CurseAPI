@@ -84,4 +84,9 @@ public class CurseAPITest {
 		assertThat(file.downloadURL()).isNotNull();
 		assertThat(JsoupUtils.getPlainText(file.changelog())).isNotEmpty();
 	}
+
+	@Test
+	public void fileDownloadURLShouldNotBeNull() throws CurseException {
+		assertThat(CurseAPI.fileDownloadURL(285612, 2662898)).isPresent();
+	}
 }
