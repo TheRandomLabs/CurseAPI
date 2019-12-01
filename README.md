@@ -31,3 +31,14 @@ if (optionalFiles.isPresent()) {
 }
 ```
 * In general, `null` values are not returned. Methods in the `CurseAPI` class return `Optional`s.
+
+## Using with Gradle
+
+CurseAPI uses SLF4J to log warnings and errors. Use the following in your buildsdcript to enable
+SLF4J with Log4j 2.
+
+```groovy
+implementation "org.slf4j:slf4j-api:2.0.0-alpha1"
+implementation "org.apache.logging.log4j:log4j-core:2.12.1"
+implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.12.1"
+```
