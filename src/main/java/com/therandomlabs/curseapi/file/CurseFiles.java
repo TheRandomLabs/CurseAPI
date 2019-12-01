@@ -94,7 +94,7 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 *
 	 * @param id a file ID.
 	 * @return the {@link CurseFile} instance in this {@link CurseFiles} with the specified ID
-	 * wrapped in an {@link Optional} if it exists, or otherwise {@link Optional#empty()}}.
+	 * wrapped in an {@link Optional} if it exists, or otherwise {@link Optional#empty()}.
 	 * @see CurseFileFilter
 	 */
 	public Optional<CurseFile> fileWithID(int id) {

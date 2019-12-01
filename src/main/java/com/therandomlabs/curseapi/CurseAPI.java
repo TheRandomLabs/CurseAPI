@@ -47,7 +47,7 @@ public final class CurseAPI {
 	 *
 	 * @param id a project ID.
 	 * @return a {@link CurseProject} instance for the specified project ID wrapped in an
-	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}}.
+	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseProject> project(int id) throws CurseException {
@@ -60,7 +60,7 @@ public final class CurseAPI {
 	 *
 	 * @param projectID a project ID.
 	 * @return a {@link CurseFiles} instance for the specified project ID wrapped in an
-	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}}.
+	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFiles> files(int projectID) throws CurseException {
@@ -74,7 +74,7 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @return a {@link CurseFile} instance for the specified project and file ID wrapped in an
-	 * {@link Optional} if the file exists, or otherwise {@link Optional#empty()}}.
+	 * {@link Optional} if the file exists, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
@@ -89,7 +89,7 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @return the download URL for the specified project and file ID wrapped in an
-	 * {@link Optional} if the file exists, or otherwise {@link Optional#empty()}}.
+	 * {@link Optional} if the file exists, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<HttpUrl> fileDownloadURL(int projectID, int fileID)
