@@ -17,7 +17,7 @@ import com.therandomlabs.curseapi.CurseAPI;
  */
 public class CurseFileFilter implements Predicate<CurseFile> {
 	private final Set<String> gameVersions = new HashSet<>();
-	private int newerThan = 9;
+	private int newerThan = CurseAPI.MIN_FILE_ID - 1;
 	private int olderThan = Integer.MAX_VALUE;
 	private CurseReleaseType minimumStability = CurseReleaseType.ALPHA;
 
@@ -127,7 +127,7 @@ public class CurseFileFilter implements Predicate<CurseFile> {
 	 * @see #newerThan(int)
 	 */
 	public CurseFileFilter clearNewerThan() {
-		newerThan = 9;
+		newerThan = CurseAPI.MIN_FILE_ID - 1;
 		return this;
 	}
 
@@ -172,7 +172,7 @@ public class CurseFileFilter implements Predicate<CurseFile> {
 	 * @see #olderThan(int)
 	 */
 	public CurseFileFilter clearOlderThan() {
-		olderThan = 9;
+		olderThan = Integer.MAX_VALUE;
 		return this;
 	}
 
