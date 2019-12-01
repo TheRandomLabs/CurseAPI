@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.project;
 
 import com.google.common.base.MoreObjects;
 import okhttp3.HttpUrl;

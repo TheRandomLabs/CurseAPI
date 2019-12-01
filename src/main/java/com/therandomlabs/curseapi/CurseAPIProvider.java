@@ -1,7 +1,11 @@
 package com.therandomlabs.curseapi;
 
+import java.util.List;
+
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import okhttp3.HttpUrl;
 
 /**
@@ -19,6 +23,15 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	CurseProject project(int id) throws CurseException;
+
+	/**
+	 * Executes a {@link CurseSearchQuery}.
+	 *
+	 * @param query a {@link CurseSearchQuery}.
+	 * @return a {@link List} of {@link CurseProject}s that match the specified query.
+	 * @throws CurseException if an error occurs.
+	 */
+	List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException;
 
 	/**
 	 * Returns a {@link CurseFiles} instance for the specified project ID.

@@ -1,12 +1,15 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPIProvider;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 
@@ -31,6 +34,18 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	@Override
 	public CurseProject project(int id) throws CurseException {
 		return RetrofitUtils.execute(FORGESVC.getProject(id));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
+		return new ArrayList<>(RetrofitUtils.execute(FORGESVC.searchProjects(
+				query.gameID(), query.categorySectionID(), query.categoryID(),
+				query.gameVersion(), query.pageIndex(), query.pageSize(),
+				query.searchFilter(), query.sortingMethod().id()
+		)));
 	}
 
 	/**

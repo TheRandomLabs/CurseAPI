@@ -2,11 +2,15 @@ package com.therandomlabs.curseapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.project.CurseSearchQuery;
+import com.therandomlabs.curseapi.project.CurseSearchSort;
 import org.junit.jupiter.api.Test;
 
 public class CurseAPITest {
@@ -41,6 +45,17 @@ public class CurseAPITest {
 		assertThat(project.creationTime()).isNotNull();
 		assertThat(project.lastUpdateTime()).isNotNull();
 		assertThat(project.lastModificationTime()).isNotNull();
+	}
+
+	@Test
+	public void searchResultsShouldBeValid() throws CurseException {
+		final CurseSearchQuery query = new CurseSearchQuery().
+				gameID(432).
+				pageSize(67).
+				sortingMethod(CurseSearchSort.LAST_UPDATED);
+		final Optional<List<CurseProject>> results = CurseAPI.searchProjects(query);
+		assertThat(results).isPresent();
+		assertThat(results.get()).hasSize(query.pageSize());
 	}
 
 	@Test

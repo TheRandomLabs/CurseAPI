@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
 import java.time.ZonedDateTime;
@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;

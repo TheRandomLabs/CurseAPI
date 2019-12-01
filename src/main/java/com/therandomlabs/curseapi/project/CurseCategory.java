@@ -1,8 +1,9 @@
-package com.therandomlabs.curseapi;
+package com.therandomlabs.curseapi.project;
 
 import java.awt.image.BufferedImage;
 
 import com.google.common.base.MoreObjects;
+import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 
@@ -64,6 +65,13 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	 * @return the ID of the game which this category belongs in.
 	 */
 	public abstract int gameID();
+
+	/**
+	 * Returns the ID of the section which this category belongs in.
+	 *
+	 * @return the ID of the section which tihs category belongs in.
+	 */
+	public abstract int sectionID();
 
 	/**
 	 * Returns this category's ID.

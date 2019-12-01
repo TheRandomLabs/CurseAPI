@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPI;
-import com.therandomlabs.curseapi.CurseCategory;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.CurseMember;
-import com.therandomlabs.curseapi.CurseProject;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.project.CurseCategory;
+import com.therandomlabs.curseapi.project.CurseMember;
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -30,7 +30,8 @@ final class ForgeSVCProject extends CurseProject {
 	private ZonedDateTime dateCreated;
 	private ZonedDateTime dateReleased;
 	private ZonedDateTime dateModified;
-	private boolean isExperimental;
+	//"isExperimental" is spelled incorrectly in the JSON.
+	private boolean isExperiemental;
 
 	@Override
 	public int id() {
@@ -143,6 +144,6 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public boolean experimental() {
-		return isExperimental;
+		return isExperiemental;
 	}
 }

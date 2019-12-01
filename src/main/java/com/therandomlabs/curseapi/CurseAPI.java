@@ -9,6 +9,8 @@ import com.google.common.collect.Lists;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
+import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
 import okhttp3.HttpUrl;
 import org.slf4j.Logger;
@@ -21,6 +23,21 @@ import org.slf4j.LoggerFactory;
  * as for managing {@link CurseAPIProvider}s.
  */
 public final class CurseAPI {
+	/**
+	 * The minimum CurseForge game ID.
+	 */
+	public static final int MIN_GAME_ID = 1;
+
+	/**
+	 * The minimum CurseForge category section ID.
+	 */
+	public static final int MIN_CATEGORY_SECTION_ID = 1;
+
+	/**
+	 * The minimum CurseForge category ID.
+	 */
+	public static final int MIN_CATEGORY_ID = 1;
+
 	/**
 	 * The minimum CurseForge project ID.
 	 */
@@ -65,6 +82,20 @@ public final class CurseAPI {
 				id >= MIN_PROJECT_ID, "id should not be smaller than %s", MIN_PROJECT_ID
 		);
 		return get(provider -> provider.project(id));
+	}
+
+	/**
+	 * Executes a {@link CurseSearchQuery}.
+	 *
+	 * @param query a {@link CurseSearchQuery}.
+	 * @return a {@link List} of {@link CurseProject}s that match the specified query wrapped in an
+	 * {@link Optional} if the query is successful, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<List<CurseProject>> searchProjects(CurseSearchQuery query)
+			throws CurseException {
+		Preconditions.checkNotNull(query, "query should not be null");
+		return get(provider -> provider.searchProjects(query));
 	}
 
 	/**

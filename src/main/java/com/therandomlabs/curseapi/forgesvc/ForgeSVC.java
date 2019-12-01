@@ -14,11 +14,11 @@ interface ForgeSVC {
 	Call<ForgeSVCProject> getProject(@Path("id") int id);
 
 	@GET("api/v2/addon/search")
-	Call<List<ForgeSVCProject>> findProjects(
-			@Query("categoryId") int categoryID, @Query("gameId") int gameId,
-			@Query("gameVersion") String gameVersion, @Query("index") int pageIndex,
-			@Query("pageSize") int pageSize, @Query("searchFilter") String searchFilter,
-			@Query("sectionId") int sectionID, @Query("sort") int sort
+	Call<List<ForgeSVCProject>> searchProjects(
+			@Query("gameId") int gameID, @Query("sectionId") int categorySectionID,
+			@Query("categoryId") int categoryID, @Query("gameVersion") String gameVersion,
+			@Query("index") int pageIndex, @Query("pageSize") int pageSize,
+			@Query("searchFilter") String searchFilter, @Query("sort") int sortingMethod
 	);
 
 	@GET("api/v2/addon/{projectID}/description")

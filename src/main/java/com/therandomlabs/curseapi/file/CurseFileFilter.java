@@ -15,11 +15,25 @@ import com.therandomlabs.curseapi.CurseAPI;
  *
  * @see CurseFiles#filter(Predicate)
  */
-public class CurseFileFilter implements Predicate<CurseFile> {
-	private final Set<String> gameVersions = new HashSet<>();
+public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
+	private Set<String> gameVersions = new HashSet<>();
 	private int newerThan = CurseAPI.MIN_FILE_ID - 1;
 	private int olderThan = Integer.MAX_VALUE;
 	private CurseReleaseType minimumStability = CurseReleaseType.ALPHA;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CurseFileFilter clone() {
+		try {
+			final CurseFileFilter filter = (CurseFileFilter) super.clone();
+			filter.gameVersions = new HashSet<>(gameVersions);
+			return filter;
+		} catch (CloneNotSupportedException ignored) {}
+
+		return null;
+	}
 
 	/**
 	 * {@inheritDoc}
