@@ -45,6 +45,11 @@ jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			element = "CLASS"
+			//We only test the ForgeSVC package since most other classes are either
+			//abstract classes, interfaces or small utility classes.
+			includes = [
+			        "com.therandomlabs.utils.curseapi.forgesvc.*"
+			]
 
 			limit {
 				counter = "INSTRUCTION"
@@ -55,7 +60,7 @@ jacocoTestCoverageVerification {
 	}
 }
 
-//check.dependsOn jacocoTestCoverageVerification
+check.dependsOn jacocoTestCoverageVerification
 
 pmd {
 	ruleSets = []
