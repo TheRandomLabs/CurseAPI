@@ -19,8 +19,6 @@ public enum CurseReleaseType {
 	 */
 	ALPHA;
 
-	private static final int MAX_ID = values().length;
-
 	private final int id = ordinal() + 1;
 
 	/**
@@ -52,7 +50,7 @@ public enum CurseReleaseType {
 	 */
 	public static CurseReleaseType fromID(int id) {
 		Preconditions.checkArgument(id > 0, "id should be above 0");
-		Preconditions.checkArgument(id <= MAX_ID, "id should not be above %s", MAX_ID);
+		Preconditions.checkArgument(id <= 3, "id should not be above 3");
 		return values()[id - 1];
 	}
 }
