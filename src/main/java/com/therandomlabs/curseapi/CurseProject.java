@@ -189,6 +189,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 * Returns a {@link CurseFiles} instance for this project.
 	 *
 	 * @return a {@link CurseFiles} instance for this project.
+	 * @throws CurseException if an error occurs.
 	 */
 	public abstract CurseFiles files() throws CurseException;
 
