@@ -12,6 +12,9 @@ import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
+/**
+ * Represents a CurseForge project.
+ */
 public abstract class CurseProject implements Comparable<CurseProject> {
 	/**
 	 * {@inheritDoc}
@@ -35,6 +38,9 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 				(object instanceof CurseProject && id() == ((CurseProject) object).id());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).

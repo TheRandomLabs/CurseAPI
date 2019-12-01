@@ -6,6 +6,9 @@ import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 
+/**
+ * Represents a CurseForge category.
+ */
 public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**
 	 * {@inheritDoc}
@@ -29,6 +32,9 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 				(object instanceof CurseCategory && id() == ((CurseCategory) object).id());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).
@@ -50,16 +56,47 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 		return Integer.compare(id(), category.id());
 	}
 
+	/**
+	 * Returns the ID of the game which this category belongs in.
+	 *
+	 * @return the ID of the game which this category belongs in.
+	 */
 	public abstract int gameID();
 
+	/**
+	 * Returns this category's ID.
+	 *
+	 * @return this category's ID.
+	 */
 	public abstract int id();
 
+	/**
+	 * Returns this category's name.
+	 *
+	 * @return this category's name.
+	 */
 	public abstract String name();
 
+	/**
+	 * Returns this category's URL.
+	 *
+	 * @return this category's URL.
+	 */
 	public abstract HttpUrl url();
 
+	/**
+	 * Returns this category's avatar URL.
+	 *
+	 * @return this category's avatar URL.
+	 */
 	public abstract HttpUrl avatarURL();
 
+	/**
+	 * Returns this category's avatar as a {@link BufferedImage}.
+	 *
+	 * @return this category's avatar as a {@link BufferedImage}.
+	 * @throws CurseException if an error occurs.
+	 */
 	public BufferedImage avatar() throws CurseException {
 		return OkHttpUtils.readImage(avatarURL());
 	}

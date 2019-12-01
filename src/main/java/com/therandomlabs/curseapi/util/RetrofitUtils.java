@@ -7,12 +7,16 @@ import com.therandomlabs.curseapi.CurseException;
 import okhttp3.ResponseBody;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public final class RetrofitUtils {
+	private static final Logger logger = LoggerFactory.getLogger(RetrofitUtils.class);
+
 	private RetrofitUtils() {}
 
 	public static Retrofit get(String baseURL) {
@@ -29,6 +33,8 @@ public final class RetrofitUtils {
 	}
 
 	public static <T> T execute(Call<T> call) throws CurseException {
+		logger.info("Executing request: {}", call.request());
+
 		try {
 			final Response<T> response = call.execute();
 

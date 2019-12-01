@@ -3,6 +3,9 @@ package com.therandomlabs.curseapi;
 import com.google.common.base.MoreObjects;
 import okhttp3.HttpUrl;
 
+/**
+ * Represents a CurseForge member.
+ */
 public abstract class CurseMember implements Comparable<CurseMember> {
 	/**
 	 * {@inheritDoc}
@@ -26,6 +29,9 @@ public abstract class CurseMember implements Comparable<CurseMember> {
 				(object instanceof CurseMember && id() == ((CurseMember) object).id());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).
@@ -46,9 +52,24 @@ public abstract class CurseMember implements Comparable<CurseMember> {
 		return name().compareTo(member.name());
 	}
 
+	/**
+	 * Returns this member's ID.
+	 *
+	 * @return this member's ID.
+	 */
 	public abstract int id();
 
+	/**
+	 * Returns this member's name.
+	 *
+	 * @return this member's name.
+	 */
 	public abstract String name();
 
+	/**
+	 * Returns this member's URL.
+	 *
+	 * @return this member's URL.
+	 */
 	public abstract HttpUrl url();
 }
