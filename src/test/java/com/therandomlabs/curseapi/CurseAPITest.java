@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
-import com.therandomlabs.curseapi.util.JsoupUtils;
 import org.junit.jupiter.api.Test;
 
 public class CurseAPITest {
@@ -24,7 +23,7 @@ public class CurseAPITest {
 		assertThat(project.url()).isNotNull();
 		assertThat(project.gameID()).isEqualTo(432);
 		assertThat(project.summary()).isNotEmpty();
-		assertThat(JsoupUtils.getPlainText(project.description())).isNotEmpty();
+		assertThat(project.descriptionPlainText()).isNotEmpty();
 		assertThat(project.downloadCount()).isGreaterThan(0);
 
 		final CurseFiles latestFiles = project.latestFiles();
@@ -42,7 +41,7 @@ public class CurseAPITest {
 		assertThat(latestFile.uploadTime()).isNotNull();
 		assertThat(latestFile.fileSize()).isGreaterThan(0);
 		assertThat(latestFile.downloadURL()).isNotNull();
-		assertThat(JsoupUtils.getPlainText(latestFile.changelog())).isNotEmpty();
+		assertThat(latestFile.changelogPlainText()).isNotEmpty();
 
 		final Optional<CurseFiles> optionalFiles = CurseAPI.files(project.id());
 		assertThat(optionalFiles).isPresent();
@@ -82,7 +81,7 @@ public class CurseAPITest {
 		assertThat(file.uploadTime()).isNotNull();
 		assertThat(file.fileSize()).isGreaterThan(0);
 		assertThat(file.downloadURL()).isNotNull();
-		assertThat(JsoupUtils.getPlainText(file.changelog())).isNotEmpty();
+		assertThat(file.changelogPlainText()).isNotEmpty();
 	}
 
 	@Test

@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+import com.therandomlabs.curseapi.util.JsoupUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
@@ -76,6 +78,15 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	public abstract Set<String> gameVersions();
 
 	public abstract Element changelog() throws CurseException;
+
+	public String changelogPlainText() throws CurseException {
+		return changelogPlainText(Integer.MAX_VALUE);
+	}
+
+	public String changelogPlainText(int maxLineLength) throws CurseException {
+		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
+		return JsoupUtils.getPlainText(changelog(), maxLineLength);
+	}
 
 	public final boolean isOlderThan(CurseFile file) {
 		return id() < file.id();

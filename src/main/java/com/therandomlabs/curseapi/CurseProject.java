@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -79,6 +81,15 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract String summary();
 
 	public abstract Element description() throws CurseException;
+
+	public String descriptionPlainText() throws CurseException {
+		return descriptionPlainText(Integer.MAX_VALUE);
+	}
+
+	public String descriptionPlainText(int maxLineLength) throws CurseException {
+		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
+		return JsoupUtils.getPlainText(description(), maxLineLength);
+	}
 
 	public abstract int downloadCount();
 
