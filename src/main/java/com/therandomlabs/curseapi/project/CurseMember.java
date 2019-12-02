@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import okhttp3.HttpUrl;
 
 /**
- * Represents a CurseForge member.
+ * Represents a CurseForge project member.
  * <p>
  * Implementations of this interface should be effectively immutable.
  */
