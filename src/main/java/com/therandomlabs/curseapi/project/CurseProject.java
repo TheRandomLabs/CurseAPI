@@ -110,7 +110,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarURL()}.
 	 *
 	 * @return this project's avatar as a {@link BufferedImage}.
-	 * @throws CurseException if the request could not be executed correctly.
+	 * @throws CurseException if an error occurs.
 	 */
 	public BufferedImage avatar() throws CurseException {
 		return OkHttpUtils.readImage(avatarURL());
@@ -120,7 +120,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarThumbnailURL()}.
 	 *
 	 * @return this project's avatar thumbnail as a {@link BufferedImage}.
-	 * @throws CurseException if the request could not be executed correctly.
+	 * @throws CurseException if an error occurs.
 	 */
 	public BufferedImage avatarThumbnail() throws CurseException {
 		return OkHttpUtils.readImage(avatarThumbnailURL());
