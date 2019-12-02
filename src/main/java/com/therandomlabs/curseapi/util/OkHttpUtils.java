@@ -10,11 +10,14 @@ import com.therandomlabs.curseapi.CurseException;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains utility methods for working with OkHttp.
  */
 public final class OkHttpUtils {
+	private static final Logger logger = LoggerFactory.getLogger(OkHttpUtils.class);
 	private static final OkHttpClient client = new OkHttpClient();
 
 	private OkHttpUtils() {}
@@ -31,6 +34,7 @@ public final class OkHttpUtils {
 
 		try {
 			final Request request = new Request.Builder().url(url).build();
+			logger.info("Executing request: {}", request);
 			return ImageIO.read(client.newCall(request).execute().body().byteStream());
 		} catch (IOException ex) {
 			throw new CurseException(ex);
