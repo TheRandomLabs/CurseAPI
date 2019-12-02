@@ -49,7 +49,7 @@ public enum CurseReleaseType {
 	 * @return the {@link CurseReleaseType} with the specified ID.
 	 */
 	public static CurseReleaseType fromID(int id) {
-		Preconditions.checkArgument(id > 0, "id should be above 0");
+		Preconditions.checkArgument(id > 0, "id should be positive");
 		Preconditions.checkArgument(id <= 3, "id should not be above 3");
 		return values()[id - 1];
 	}

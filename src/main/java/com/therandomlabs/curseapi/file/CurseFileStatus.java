@@ -57,7 +57,7 @@ public enum CurseFileStatus {
 	 * @return the {@link CurseFileStatus} with the specified ID.
 	 */
 	public static CurseFileStatus fromID(int id) {
-		Preconditions.checkArgument(id > 0, "id should be above 0");
+		Preconditions.checkArgument(id > 0, "id should be positive");
 		Preconditions.checkArgument(id <= 8, "id should not be above 8");
 		return values()[id - 1];
 	}
