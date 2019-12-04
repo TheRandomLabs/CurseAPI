@@ -53,10 +53,7 @@ public class CurseAPITest {
 
 	@Test
 	public void searchResultsShouldBeValid() throws CurseException {
-		final Optional<Set<CurseCategory>> optionalCategories = CurseAPI.categories();
-		assertThat(optionalCategories).isPresent();
-		System.out.println(optionalCategories.get());
-		final Optional<CurseCategory> optionalCategory = optionalCategories.get().stream().
+		final Optional<CurseCategory> optionalCategory = CurseAPI.streamCategories().
 				filter(category -> "Armor, Tools, and Weapons".equals(category.name())).findAny();
 		assertThat(optionalCategory).isPresent();
 
@@ -110,14 +107,8 @@ public class CurseAPITest {
 		assertThat(optionalAllCategories).isPresent();
 		assertThat(optionalAllCategories.get()).isNotEmpty();
 
-		final Optional<Set<CurseGame>> optionalGames = CurseAPI.games();
-		assertThat(optionalGames).isPresent();
-
-		final Set<CurseGame> games = optionalGames.get();
-		assertThat(games).isNotEmpty();
-
 		final Optional<CurseGame> optionalMinecraft =
-				games.stream().filter(game -> "Minecraft".equals(game.name())).findAny();
+				CurseAPI.streamGames().filter(game -> "Minecraft".equals(game.name())).findAny();
 		assertThat(optionalMinecraft).isNotEmpty();
 
 		final CurseGame minecraft = optionalMinecraft.get();

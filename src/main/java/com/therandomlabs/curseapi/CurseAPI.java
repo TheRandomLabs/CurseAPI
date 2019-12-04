@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -171,6 +172,18 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns a {@link Stream} of all games that CurseForge supports.
+	 *
+	 * @return a {@link Stream} of all games that CurseForge supports,
+	 * or {@link Stream#empty()} if they cannot be retrieved.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Stream<CurseGame> streamGames() throws CurseException {
+		final Optional<Set<CurseGame>> optionalGames = games();
+		return optionalGames.map(Set::stream).orElseGet(Stream::empty);
+	}
+
+	/**
 	 * Returns the CurseForge game with the specified ID.
 	 *
 	 * @param id a game ID.
@@ -212,6 +225,18 @@ public final class CurseAPI {
 				MIN_CATEGORY_SECTION_ID
 		);
 		return get(provider -> provider.categories(sectionID));
+	}
+
+	/**
+	 * Returns a {@link Stream} of all CurseForge categories.
+	 *
+	 * @return a {@link Stream} of all CurseForge categories, or {@link Stream#empty()} if they
+	 * cannot be retrieved.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Stream<CurseCategory> streamCategories() throws CurseException {
+		final Optional<Set<CurseCategory>> optionalCategories = categories();
+		return optionalCategories.map(Set::stream).orElseGet(Stream::empty);
 	}
 
 	/**
