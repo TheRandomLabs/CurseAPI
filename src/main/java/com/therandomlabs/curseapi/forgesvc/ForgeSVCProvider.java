@@ -95,6 +95,14 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public CurseGame game(int id) throws CurseException {
+		return RetrofitUtils.execute(FORGESVC.getGame(id));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Set<CurseCategory> categories() throws CurseException {
 		return new HashSet<>(RetrofitUtils.execute(FORGESVC.getCategories()));
 	}
@@ -105,5 +113,13 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	@Override
 	public Set<CurseCategory> categories(int sectionID) throws CurseException {
 		return new HashSet<>(RetrofitUtils.execute(FORGESVC.getCategories(sectionID)));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CurseCategory category(int id) throws CurseException {
+		return RetrofitUtils.execute(FORGESVC.getCategory(id));
 	}
 }

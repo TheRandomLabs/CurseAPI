@@ -85,4 +85,12 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	 * @throws CurseException if an error occurs.
 	 */
 	public abstract Set<CurseCategory> categories() throws CurseException;
+
+	/**
+	 * Returns this {@link CurseCategorySection} as a {@link CurseCategory}.
+	 *
+	 * @return this {@link CurseCategorySection} as a {@link CurseCategory}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public abstract CurseCategory asCategory() throws CurseException;
 }

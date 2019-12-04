@@ -5,8 +5,17 @@ import okhttp3.HttpUrl;
 
 final class ForgeSVCCategory extends CurseCategory {
 	private int gameId;
+
+	//This is the usual name.
 	private Integer rootGameCategoryId;
+	//This is the name in api/v2/addon.
+	private int rootId;
+
+	//This is the usual name.
+	private int id;
+	//This is the name in api/v2/addon.
 	private int categoryId;
+
 	private String name;
 	private HttpUrl url;
 	private HttpUrl avatarUrl;
@@ -18,12 +27,16 @@ final class ForgeSVCCategory extends CurseCategory {
 
 	@Override
 	public int sectionID() {
-		return rootGameCategoryId == null ? 0 : rootGameCategoryId;
+		if (rootId == 0) {
+			return rootGameCategoryId == null ? 0 : rootGameCategoryId;
+		}
+
+		return rootId;
 	}
 
 	@Override
 	public int id() {
-		return categoryId;
+		return id == 0 ? categoryId : id;
 	}
 
 	@Override

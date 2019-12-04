@@ -10,8 +10,8 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 interface ForgeSVC {
-	@GET("api/v2/addon/{id}")
-	Call<ForgeSVCProject> getProject(@Path("id") int id);
+	@GET("api/v2/addon/{projectID}")
+	Call<ForgeSVCProject> getProject(@Path("projectID") int id);
 
 	@GET("api/v2/addon/search")
 	Call<List<ForgeSVCProject>> searchProjects(
@@ -41,9 +41,15 @@ interface ForgeSVC {
 	@GET("api/v2/game")
 	Call<Set<ForgeSVCGame>> getGames(@Query("supportsAddons") boolean requireAddonSupport);
 
+	@GET("api/v2/game/{gameID}")
+	Call<ForgeSVCGame> getGame(@Path("gameID") int id);
+
 	@GET("api/v2/category")
 	Call<Set<ForgeSVCCategory>> getCategories();
 
 	@GET("api/v2/category/section/{sectionID}")
 	Call<Set<ForgeSVCCategory>> getCategories(@Path("sectionID") int sectionID);
+
+	@GET("api/v2/category/{categoryID}")
+	Call<ForgeSVCCategory> getCategory(@Path("categoryID") int id);
 }

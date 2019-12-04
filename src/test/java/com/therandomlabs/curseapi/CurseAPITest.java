@@ -53,8 +53,15 @@ public class CurseAPITest {
 
 	@Test
 	public void searchResultsShouldBeValid() throws CurseException {
+		final Optional<Set<CurseCategory>> optionalCategories = CurseAPI.categories();
+		assertThat(optionalCategories).isPresent();
+		System.out.println(optionalCategories.get());
+		final Optional<CurseCategory> optionalCategory = optionalCategories.get().stream().
+				filter(category -> "Armor, Tools, and Weapons".equals(category.name())).findAny();
+		assertThat(optionalCategory).isPresent();
+
 		final CurseSearchQuery query = new CurseSearchQuery().
-				gameID(432).
+				category(optionalCategory.get()).
 				pageSize(67).
 				sortingMethod(CurseSearchSort.LAST_UPDATED);
 		final Optional<List<CurseProject>> results = CurseAPI.searchProjects(query);
@@ -122,5 +129,10 @@ public class CurseAPITest {
 
 		final CurseCategorySection section = optionalSection.get();
 		assertThat(section.categories()).isNotEmpty();
+	}
+
+	@Test
+	public void categoryShouldBeValid() throws CurseException {
+		assertThat(CurseAPI.category(423)).isPresent();
 	}
 }

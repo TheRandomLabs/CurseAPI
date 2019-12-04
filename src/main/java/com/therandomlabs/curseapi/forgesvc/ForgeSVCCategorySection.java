@@ -34,4 +34,9 @@ final class ForgeSVCCategorySection extends CurseCategorySection {
 				ForgeSVCProvider.FORGESVC.getCategories(gameCategoryId)
 		));
 	}
+
+	@Override
+	public CurseCategory asCategory() throws CurseException {
+		return ForgeSVCProvider.INSTANCE.category(gameCategoryId);
+	}
 }

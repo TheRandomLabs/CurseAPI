@@ -171,6 +171,21 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns the CurseForge game with the specified ID.
+	 *
+	 * @param id a game ID.
+	 * @return a {@link CurseGame} instance that represents the CurseForge game with the specified
+	 * ID wrapped in an {@link Optional} if it exists, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<CurseGame> game(int id) throws CurseException {
+		Preconditions.checkArgument(
+				id >= MIN_GAME_ID, "id should not be smaller than %s", MIN_GAME_ID
+		);
+		return get(provider -> provider.game(id));
+	}
+
+	/**
 	 * Returns all project categories on CurseForge.
 	 *
 	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
@@ -197,6 +212,22 @@ public final class CurseAPI {
 				MIN_CATEGORY_SECTION_ID
 		);
 		return get(provider -> provider.categories(sectionID));
+	}
+
+	/**
+	 * Returns the CurseForge category with the specified ID.
+	 *
+	 * @param id a category ID.
+	 * @return a {@link CurseCategory} instance that represents the CurseForge category with the
+	 * specified ID wrapped in an {@link Optional} if it exists, or otherwise
+	 * {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<CurseCategory> category(int id) throws CurseException {
+		Preconditions.checkArgument(
+				id >= MIN_CATEGORY_ID, "id should not be smaller than %s", MIN_CATEGORY_ID
+		);
+		return get(provider -> provider.category(id));
 	}
 
 	/**

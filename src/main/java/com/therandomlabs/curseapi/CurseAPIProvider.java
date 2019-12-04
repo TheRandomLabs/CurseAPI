@@ -60,7 +60,7 @@ public interface CurseAPIProvider {
 	 *
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
-	 * @return the download URl for the specified project and file ID.
+	 * @return the download URL for the specified project and file ID.
 	 * @throws CurseException if an error occurs.
 	 */
 	HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException;
@@ -73,6 +73,16 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	Set<CurseGame> games() throws CurseException;
+
+	/**
+	 * Returns the CurseForge game with the specified ID.
+	 *
+	 * @param id a game ID.
+	 * @return a {@link CurseGame} instance that represents the CurseForge game with the specified
+	 * ID.
+	 * @throws CurseException if an error occurs.
+	 */
+	CurseGame game(int id) throws CurseException;
 
 	/**
 	 * Returns all project categories on CurseForge.
@@ -92,4 +102,14 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	Set<CurseCategory> categories(int sectionID) throws CurseException;
+
+	/**
+	 * Returns the CurseForge category with the specified ID.
+	 *
+	 * @param id a game ID.
+	 * @return a {@link CurseCategory} instance that represents the CurseForge category with the
+	 * specified ID.
+	 * @throws CurseException if an error occurs.
+	 */
+	CurseCategory category(int id) throws CurseException;
 }
