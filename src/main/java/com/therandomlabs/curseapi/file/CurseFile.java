@@ -1,7 +1,9 @@
 package com.therandomlabs.curseapi.file;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -130,6 +132,18 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 * @return a mutable {@link Set} containing this file's dependencies.
 	 */
 	public abstract Set<CurseDependency> dependencies();
+
+	/**
+	 * Returns this file's dependencies of the specified type.
+	 * @param type a {@link CurseDependencyType}.
+	 * @return a mutable {@link Set} containing this file's dependencies of the specified type.
+	 */
+	public Set<CurseDependency> dependencies(CurseDependencyType type) {
+		Preconditions.checkNotNull(type, "type should not be null");
+		return dependencies().stream().
+				filter(dependency -> dependency.type() == type).
+				collect(Collectors.toCollection(HashSet::new));
+	}
 
 	/**
 	 * Returns this file's game versions.
