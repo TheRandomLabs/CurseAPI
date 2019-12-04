@@ -1,5 +1,7 @@
 package com.therandomlabs.curseapi.game;
 
+import java.util.Objects;
+
 import com.google.common.base.MoreObjects;
 
 /**
@@ -18,7 +20,7 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	 */
 	@Override
 	public final int hashCode() {
-		return id();
+		return Objects.hash(gameID(), versionString());
 	}
 
 	/**
@@ -31,8 +33,16 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	@SuppressWarnings("rawtypes")
 	@Override
 	public final boolean equals(Object object) {
-		return this == object ||
-				(object instanceof CurseGameVersion && id() == ((CurseGameVersion) object).id());
+		if (this == object) {
+			return true;
+		}
+
+		if (!(object instanceof CurseGameVersion)) {
+			return false;
+		}
+
+		final CurseGameVersion version = (CurseGameVersion) object;
+		return gameID() == version.gameID() && versionString().equals(version.versionString());
 	}
 
 	/**
@@ -42,7 +52,6 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	public String toString() {
 		return MoreObjects.toStringHelper(this).
 				add("gameID", gameID()).
-				add("id", id()).
 				add("versionString", versionString()).
 				toString();
 	}
@@ -53,13 +62,6 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	 * @return the ID of the game which this category section belongs in.
 	 */
 	public abstract int gameID();
-
-	/**
-	 * Returns this category section's ID.
-	 *
-	 * @return this category section's ID.
-	 */
-	public abstract int id();
 
 	/**
 	 * Returns this game version's version string.
