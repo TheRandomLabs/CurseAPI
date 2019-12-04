@@ -58,6 +58,26 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	}
 
 	/**
+	 * Returns whether this game version is newer than the specified game version.
+	 * @param version a {@link CurseGameVersion} of type {@link V}.
+	 * @return {@code true} if this game version is newer than the specified game version,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean newerThan(V version) {
+		return compareTo(version) > 0;
+	}
+
+	/**
+	 * Returns whether this game version is older than the specified game version.
+	 * @param version a {@link CurseGameVersion} of type {@link V}.
+	 * @return {@code true} if this game version is older than the specified game version,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean olderThan(V version) {
+		return compareTo(version) < 0;
+	}
+
+	/**
 	 * Returns the ID of the game which this category section belongs in.
 	 *
 	 * @return the ID of the game which this category section belongs in.
