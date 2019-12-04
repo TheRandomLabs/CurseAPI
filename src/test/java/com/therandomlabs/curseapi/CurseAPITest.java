@@ -102,6 +102,11 @@ public class CurseAPITest {
 	}
 
 	@Test
+	public void gameVersionsShouldNotBePresent() throws CurseException {
+		assertThat(CurseAPI.gameVersions(432)).isNotPresent();
+	}
+
+	@Test
 	public void categoriesShouldBeValid() throws CurseException {
 		final Optional<Set<CurseCategory>> optionalAllCategories = CurseAPI.categories();
 		assertThat(optionalAllCategories).isPresent();

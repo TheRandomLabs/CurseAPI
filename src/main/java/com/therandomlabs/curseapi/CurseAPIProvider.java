@@ -2,11 +2,13 @@ package com.therandomlabs.curseapi;
 
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import okhttp3.HttpUrl;
@@ -83,6 +85,17 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	CurseGame game(int id) throws CurseException;
+
+	/**
+	 * Returns all game versions of the game with the specified ID supported by CurseForge.
+	 *
+	 * @param gameID a game ID.
+	 * @param <V> the expected implementation class of {@link CurseGameVersion}.
+	 * @return a {@link SortedSet} containing {@link CurseGameVersion} instances that represent all
+	 * game versions of the game with the specified ID supported by CurseForge.
+	 * @throws CurseException if an error occurs.
+	 */
+	<V extends CurseGameVersion<V>> SortedSet<V> gameVersions(int gameID) throws CurseException;
 
 	/**
 	 * Returns all project categories on CurseForge.

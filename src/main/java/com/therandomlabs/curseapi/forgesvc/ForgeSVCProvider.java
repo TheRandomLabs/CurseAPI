@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import com.therandomlabs.curseapi.CurseAPIProvider;
 import com.therandomlabs.curseapi.CurseException;
@@ -11,6 +12,7 @@ import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
@@ -97,6 +99,14 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	@Override
 	public CurseGame game(int id) throws CurseException {
 		return RetrofitUtils.execute(FORGESVC.getGame(id));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public <V extends CurseGameVersion<V>> SortedSet<V> gameVersions(int gameID) {
+		return null;
 	}
 
 	/**

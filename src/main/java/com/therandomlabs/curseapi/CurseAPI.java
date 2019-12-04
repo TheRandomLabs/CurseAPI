@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
@@ -13,6 +14,7 @@ import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
@@ -199,6 +201,24 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns all game versions of the game with the specified ID supported by CurseForge.
+	 *
+	 * @param gameID a game ID.
+	 * @param <V> the expected implementation class of {@link CurseGameVersion}.
+	 * @return a {@link SortedSet} containing {@link CurseGameVersion} instances that represent all
+	 * game versions of the game with the specified ID supported by CurseForge wrapped in an
+	 * {@link Optional} if it can be retrieved, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static <V extends CurseGameVersion<V>> Optional<SortedSet<V>> gameVersions(int gameID)
+			throws CurseException {
+		Preconditions.checkArgument(
+				gameID >= MIN_GAME_ID, "gameID should not be smaller than %s", MIN_GAME_ID
+		);
+		return get(provider -> provider.gameVersions(gameID));
+	}
+
+	/**
 	 * Returns all project categories on CurseForge.
 	 *
 	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
@@ -259,13 +279,20 @@ public final class CurseAPI {
 	 * Registers a {@link CurseAPIProvider}.
 	 *
 	 * @param provider a {@link CurseAPIProvider} instance.
+	 * @param firstPriority {@code true} if the {@link CurseAPIProvider} should be put before
+	 * all currently registered {@link CurseAPIProvider}s, or otherwise {@code false}.
 	 */
-	public static void addProvider(CurseAPIProvider provider) {
+	public static void addProvider(CurseAPIProvider provider, boolean firstPriority) {
 		Preconditions.checkNotNull(provider, "provider should not be null");
 		Preconditions.checkArgument(
 				!providers.contains(provider), "provider should not already have been added"
 		);
-		providers.add(0, provider);
+
+		if (firstPriority) {
+			providers.add(0, provider);
+		} else {
+			providers.add(provider);
+		}
 	}
 
 	/**
