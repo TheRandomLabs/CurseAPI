@@ -16,7 +16,8 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * Calling this method is equivalent to calling {@link #id()}.
+	 * The value returend by this method is derived from the values returned by
+	 * {@link #gameID()} and {@link #versionString()}.
 	 */
 	@Override
 	public final int hashCode() {
@@ -27,8 +28,8 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	 * {@inheritDoc}
 	 * <p>
 	 * This method returns {@code true} if and only if the other object is also a
-	 * {@link CurseGameVersion} and the value returned by {@link #id()} is the same for both
-	 * {@link CurseGameVersion}s.
+	 * {@link CurseGameVersion} and the values returned by {@link #gameID()} and
+	 * {@link #versionString()} is the same for both {@link CurseGameVersion}s.
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
