@@ -82,12 +82,12 @@ public class CurseAPITest {
 
 	@Test
 	public void fileDetailsShouldBeValid() throws CurseException {
-		final Optional<CurseFile> optionalFile = CurseAPI.file(285612, 2662898);
+		final Optional<CurseFile> optionalFile = CurseAPI.file(308836, 2735727);
 		assertThat(optionalFile).isPresent();
 
 		final CurseFile file = optionalFile.get();
-		assertThat(file.projectID()).isEqualTo(285612);
-		assertThat(file.id()).isEqualTo(2662898);
+		assertThat(file.projectID()).isEqualTo(308836);
+		assertThat(file.id()).isEqualTo(2735727);
 		assertThat(file.displayName()).isNotEmpty();
 		assertThat(file.nameOnDisk()).isNotEmpty();
 		assertThat(file.uploadTime()).isNotNull();
@@ -95,6 +95,8 @@ public class CurseAPITest {
 		assertThat(file.releaseType()).isNotNull();
 		assertThat(file.status()).isEqualTo(CurseFileStatus.NORMAL);
 		assertThat(file.downloadURL()).isNotNull();
+		assertThat(file.dependencies()).isNotEmpty();
+		assertThat(file.dependencies().iterator().next().asProject()).isNotNull();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}
 

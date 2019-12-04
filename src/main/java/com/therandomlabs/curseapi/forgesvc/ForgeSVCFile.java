@@ -1,10 +1,12 @@
 package com.therandomlabs.curseapi.forgesvc;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseDependency;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseReleaseType;
@@ -22,6 +24,7 @@ final class ForgeSVCFile extends CurseFile {
 	private int releaseType;
 	private int fileStatus;
 	private HttpUrl downloadUrl;
+	private Set<ForgeSVCDependency> dependencies;
 	private Set<String> gameVersions;
 
 	@Override
@@ -67,6 +70,11 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public HttpUrl downloadURL() {
 		return downloadUrl;
+	}
+
+	@Override
+	public Set<CurseDependency> dependencies() {
+		return new HashSet<>(dependencies);
 	}
 
 	@Override

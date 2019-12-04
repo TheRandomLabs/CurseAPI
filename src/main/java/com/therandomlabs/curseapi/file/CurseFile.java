@@ -124,7 +124,14 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 */
 	public abstract HttpUrl downloadURL();
 
-	//TODO dependencies, modules, fingerprint
+	/**
+	 * Returns this file's dependencies.
+	 *
+	 * @return a mutable {@link Set} containing this file's dependencies.
+	 */
+	public abstract Set<CurseDependency> dependencies();
+
+	//TODO fingerprint
 
 	/**
 	 * Returns this file's game versions.

@@ -52,12 +52,12 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * {@link Integer#compare(int, int)} is used on the values returned by
-	 * {@link #id()} to determine the value that this method returns.
+	 * {@link String#compareTo(String)} is used on the values returned by
+	 * {@link #name()} to determine the value that this method returns.
 	 */
 	@Override
 	public final int compareTo(CurseCategory category) {
-		return Integer.compare(id(), category.id());
+		return name().compareTo(category.name());
 	}
 
 	/**

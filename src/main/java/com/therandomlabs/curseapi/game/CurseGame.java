@@ -47,12 +47,12 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * {@link Integer#compare(int, int)} is used on the values returned by
-	 * {@link #id()} to determine the value that this method returns.
+	 * {@link String#compareTo(String)} is used on the values returned by
+	 * {@link #name()} to determine the value that this method returns.
 	 */
 	@Override
 	public final int compareTo(CurseGame game) {
-		return Integer.compare(id(), game.id());
+		return name().compareTo(game.name());
 	}
 
 	/**
