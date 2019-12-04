@@ -16,7 +16,7 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * The value returend by this method is derived from the values returned by
+	 * The value returned by this method is derived from the values returned by
 	 * {@link #gameID()} and {@link #versionString()}.
 	 */
 	@Override
