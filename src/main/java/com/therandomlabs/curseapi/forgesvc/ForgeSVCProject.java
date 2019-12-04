@@ -9,6 +9,7 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.project.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
@@ -26,6 +27,7 @@ final class ForgeSVCProject extends CurseProject {
 	private int downloadCount;
 	private Set<ForgeSVCCategory> categories;
 	private int primaryCategoryId;
+	private ForgeSVCCategorySection categorySection;
 	private String slug;
 	private ZonedDateTime dateCreated;
 	private ZonedDateTime dateReleased;
@@ -120,6 +122,11 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public Set<CurseCategory> categories() {
 		return new LinkedHashSet<>(categories);
+	}
+
+	@Override
+	public CurseCategorySection categorySection() {
+		return categorySection;
 	}
 
 	@Override

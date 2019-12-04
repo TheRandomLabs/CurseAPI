@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
@@ -210,7 +211,12 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 */
 	public abstract Set<CurseCategory> categories();
 
-	//categorySection
+	/**
+	 * Returns this project's category section.
+	 *
+	 * @return this project's category section.
+	 */
+	public abstract CurseCategorySection categorySection();
 
 	/**
 	 * Returns this project's slug.
