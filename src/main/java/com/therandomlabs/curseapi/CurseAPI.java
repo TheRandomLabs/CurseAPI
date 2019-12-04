@@ -210,12 +210,13 @@ public final class CurseAPI {
 	 * {@link Optional} if it can be retrieved, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <V extends CurseGameVersion<V>> Optional<SortedSet<V>> gameVersions(int gameID)
 			throws CurseException {
 		Preconditions.checkArgument(
 				gameID >= MIN_GAME_ID, "gameID should not be smaller than %s", MIN_GAME_ID
 		);
-		return get(provider -> provider.gameVersions(gameID));
+		return get(provider -> (SortedSet<V>) provider.gameVersions(gameID));
 	}
 
 	/**

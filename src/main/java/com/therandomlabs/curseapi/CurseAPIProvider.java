@@ -27,7 +27,9 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseProject} instance for the specified project ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	CurseProject project(int id) throws CurseException;
+	default CurseProject project(int id) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Executes a {@link CurseSearchQuery}.
@@ -36,7 +38,9 @@ public interface CurseAPIProvider {
 	 * @return a {@link List} of {@link CurseProject}s that match the specified query.
 	 * @throws CurseException if an error occurs.
 	 */
-	List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException;
+	default List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns a {@link CurseFiles} instance for the specified project ID.
@@ -45,7 +49,9 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseFiles} instance for the specified project ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	CurseFiles files(int projectID) throws CurseException;
+	default CurseFiles files(int projectID) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns a {@link CurseFile} instance for the specified project and file ID.
@@ -55,7 +61,9 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseFile} instance for the specified project and file ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	CurseFile file(int projectID, int fileID) throws CurseException;
+	default CurseFile file(int projectID, int fileID) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns the download URL for the specified project and file ID.
@@ -65,7 +73,9 @@ public interface CurseAPIProvider {
 	 * @return the download URL for the specified project and file ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException;
+	default HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns all games that CurseForge supports.
@@ -74,7 +84,9 @@ public interface CurseAPIProvider {
 	 * all games supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
-	Set<CurseGame> games() throws CurseException;
+	default Set<CurseGame> games() throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns the CurseForge game with the specified ID.
@@ -84,18 +96,22 @@ public interface CurseAPIProvider {
 	 * ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	CurseGame game(int id) throws CurseException;
+	default CurseGame game(int id) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns all game versions of the game with the specified ID supported by CurseForge.
 	 *
 	 * @param gameID a game ID.
-	 * @param <V> the expected implementation class of {@link CurseGameVersion}.
 	 * @return a {@link SortedSet} containing {@link CurseGameVersion} instances that represent all
 	 * game versions of the game with the specified ID supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
-	<V extends CurseGameVersion<V>> SortedSet<V> gameVersions(int gameID) throws CurseException;
+	@SuppressWarnings("rawtypes")
+	default SortedSet<? extends CurseGameVersion> gameVersions(int gameID) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns all project categories on CurseForge.
@@ -104,7 +120,9 @@ public interface CurseAPIProvider {
 	 * all project categories on CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
-	Set<CurseCategory> categories() throws CurseException;
+	default Set<CurseCategory> categories() throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns all categories in a category section.
@@ -114,7 +132,9 @@ public interface CurseAPIProvider {
 	 * all categories in the category section with the specified ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	Set<CurseCategory> categories(int sectionID) throws CurseException;
+	default Set<CurseCategory> categories(int sectionID) throws CurseException {
+		return null;
+	}
 
 	/**
 	 * Returns the CurseForge category with the specified ID.
@@ -124,5 +144,7 @@ public interface CurseAPIProvider {
 	 * specified ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	CurseCategory category(int id) throws CurseException;
+	default CurseCategory category(int id) throws CurseException {
+		return null;
+	}
 }
