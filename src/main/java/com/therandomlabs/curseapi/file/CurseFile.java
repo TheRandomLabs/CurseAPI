@@ -13,7 +13,7 @@ import org.jsoup.nodes.Element;
 /**
  * Represents a CurseForge file.
  * <p>
- * Implementations of this interface should be effectively immutable.
+ * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseFile implements Comparable<CurseFile> {
 	/**
@@ -29,8 +29,8 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * This method returns true if and only if the other object is also a {@link CurseFile} and
-	 * the value returned by {@link #id()} is the same for both {@link CurseFile}s.
+	 * This method returns {@code true} if and only if the other object is also a {@link CurseFile}
+	 * and the value returned by {@link #id()} is the same for both {@link CurseFile}s.
 	 */
 	@Override
 	public final boolean equals(Object object) {

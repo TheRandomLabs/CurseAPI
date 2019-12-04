@@ -2,6 +2,8 @@ package com.therandomlabs.curseapi.project;
 
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 
 /**

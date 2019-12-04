@@ -1,9 +1,12 @@
 package com.therandomlabs.curseapi;
 
 import java.util.List;
+import java.util.Set;
 
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import okhttp3.HttpUrl;
@@ -61,4 +64,23 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException;
+
+	/**
+	 * Returns all games that CurseForge supports.
+	 *
+	 * @return a mutable {@link Set} containing {@link CurseGame} instances that represent
+	 * all games supported by CurseForge.
+	 * @throws CurseException if an error occurs.
+	 */
+	Set<CurseGame> games() throws CurseException;
+
+	/**
+	 * Returns all categories in a category section.
+	 *
+	 * @param sectionID a category section ID.
+	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
+	 * all categories in the category section with the specified ID.
+	 * @throws CurseException if an error occurs.
+	 */
+	Set<CurseCategory> categories(int sectionID) throws CurseException;
 }

@@ -1,16 +1,14 @@
-package com.therandomlabs.curseapi.project;
+package com.therandomlabs.curseapi.game;
 
-import java.awt.image.BufferedImage;
+import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.util.OkHttpUtils;
-import okhttp3.HttpUrl;
 
 /**
  * Represents a CurseForge category section.
  * <p>
- * Implementations of this interface should be effectively immutable.
+ * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseCategorySection implements Comparable<CurseCategorySection> {
 	/**
@@ -26,7 +24,7 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * This method returns true if and only if the other object is also a
+	 * This method returns {@code true} if and only if the other object is also a
 	 * {@link CurseCategorySection} and the value returned by {@link #id()} is the same for both
 	 * {@link CurseCategorySection}s.
 	 */
@@ -45,7 +43,6 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 				add("gameID", gameID()).
 				add("id", id()).
 				add("name", name()).
-				add("slug", slug()).
 				toString();
 	}
 
@@ -56,8 +53,8 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	 * {@link #id()} to determine the value that this method returns.
 	 */
 	@Override
-	public final int compareTo(CurseCategorySection category) {
-		return Integer.compare(id(), category.id());
+	public final int compareTo(CurseCategorySection categorySection) {
+		return Integer.compare(id(), categorySection.id());
 	}
 
 	/**
@@ -82,26 +79,10 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	public abstract String name();
 
 	/**
-	 * Returns this category section's slug.
+	 * Returns this category section's categories.
 	 *
-	 * @return this category section's slug.
-	 */
-	public abstract String slug();
-
-	/**
-	 * Returns this category section's avatar URL.
-	 *
-	 * @return this category section's avatar URL.
-	 */
-	public abstract HttpUrl avatarURL();
-
-	/**
-	 * Returns this category section's avatar as a {@link BufferedImage}.
-	 *
-	 * @return this category section's avatar as a {@link BufferedImage}.
+	 * @return this category section's categories.
 	 * @throws CurseException if an error occurs.
 	 */
-	public BufferedImage avatar() throws CurseException {
-		return OkHttpUtils.readImage(avatarURL());
-	}
+	public abstract Set<CurseCategory> categories() throws CurseException;
 }

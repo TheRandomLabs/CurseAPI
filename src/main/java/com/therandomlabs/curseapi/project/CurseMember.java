@@ -6,7 +6,7 @@ import okhttp3.HttpUrl;
 /**
  * Represents a CurseForge project member.
  * <p>
- * Implementations of this interface should be effectively immutable.
+ * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseMember implements Comparable<CurseMember> {
 	/**
@@ -22,8 +22,9 @@ public abstract class CurseMember implements Comparable<CurseMember> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * This method returns true if and only if the other object is also a {@link CurseMember} and
-	 * the value returned by {@link #id()} is the same for both {@link CurseMember}s.
+	 * This method returns {@code true} if and only if the other object is also a
+	 * {@link CurseMember} and the value returned by {@link #id()} is the same for both
+	 * {@link CurseMember}s.
 	 */
 	@Override
 	public final boolean equals(Object object) {

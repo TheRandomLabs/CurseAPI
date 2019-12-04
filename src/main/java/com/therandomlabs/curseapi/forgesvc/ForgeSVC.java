@@ -37,4 +37,10 @@ interface ForgeSVC {
 	Call<ResponseBody> getFileDownloadURL(
 			@Path("projectID") int projectID, @Path("fileID") int fileID
 	);
+
+	@GET("api/v2/game")
+	Call<Set<ForgeSVCGame>> getGames(@Query("supportsAddons") boolean requireAddonSupport);
+
+	@GET("api/v2/category/section/{sectionID}")
+	Call<Set<ForgeSVCCategory>> getCategories(@Path("sectionID") int sectionID);
 }

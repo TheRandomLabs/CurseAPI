@@ -1,4 +1,4 @@
-package com.therandomlabs.curseapi.project;
+package com.therandomlabs.curseapi.game;
 
 import java.awt.image.BufferedImage;
 
@@ -10,7 +10,7 @@ import okhttp3.HttpUrl;
 /**
  * Represents a CurseForge category.
  * <p>
- * Implementations of this interface should be effectively immutable.
+ * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**
@@ -26,8 +26,9 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * This method returns true if and only if the other object is also a {@link CurseCategory} and
-	 * the value returned by {@link #id()} is the same for both {@link CurseCategory}s.
+	 * This method returns {@code true} if and only if the other object is also a
+	 * {@link CurseCategory} and the value returned by {@link #id()} is the same for both
+	 * {@link CurseCategory}s.
 	 */
 	@Override
 	public final boolean equals(Object object) {

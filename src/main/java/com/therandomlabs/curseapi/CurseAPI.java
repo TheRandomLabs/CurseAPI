@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -9,6 +10,8 @@ import com.google.common.collect.Lists;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
+import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
@@ -153,6 +156,35 @@ public final class CurseAPI {
 				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
 		);
 		return get(provider -> provider.fileDownloadURL(projectID, fileID));
+	}
+
+	/**
+	 * Returns all games that CurseForge supports.
+	 *
+	 * @return a mutable {@link Set} containing {@link CurseGame} instances that represent
+	 * all games supported by CurseForge wrapped in an {@link Optional} if it can be retrieved,
+	 * or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<Set<CurseGame>> games() throws CurseException {
+		return get(CurseAPIProvider::games);
+	}
+
+	/**
+	 * Returns all categories in a category section.
+	 *
+	 * @param sectionID a category section ID.
+	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
+	 * all categories in the category section with the specified ID wrapped in an optional if it
+	 * can be retrieved, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<Set<CurseCategory>> categories(int sectionID) throws CurseException {
+		Preconditions.checkArgument(
+				sectionID >= MIN_CATEGORY_SECTION_ID, "fileID should not be smaller than %s",
+				MIN_CATEGORY_SECTION_ID
+		);
+		return get(provider -> provider.categories(sectionID));
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi.forgesvc;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +9,8 @@ import com.therandomlabs.curseapi.CurseAPIProvider;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
@@ -78,5 +81,21 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	@Override
 	public HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
 		return HttpUrl.get(RetrofitUtils.getString(FORGESVC.getFileDownloadURL(projectID, fileID)));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Set<CurseGame> games() throws CurseException {
+		return new HashSet<>(RetrofitUtils.execute(FORGESVC.getGames(false)));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Set<CurseCategory> categories(int sectionID) throws CurseException {
+		return new HashSet<>(RetrofitUtils.execute(FORGESVC.getCategories(sectionID)));
 	}
 }

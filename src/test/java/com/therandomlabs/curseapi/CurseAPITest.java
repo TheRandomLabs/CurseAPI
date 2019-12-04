@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.game.CurseCategorySection;
+import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.project.CurseSearchSort;
@@ -91,5 +94,25 @@ public class CurseAPITest {
 	@Test
 	public void fileDownloadURLShouldNotBeNull() throws CurseException {
 		assertThat(CurseAPI.fileDownloadURL(285612, 2662898)).isPresent();
+	}
+
+	@Test
+	public void categoriesShouldBeValid() throws CurseException {
+		final Optional<Set<CurseGame>> optionalGames = CurseAPI.games();
+		assertThat(optionalGames).isPresent();
+
+		final Set<CurseGame> games = optionalGames.get();
+		assertThat(games).isNotEmpty();
+
+		final Optional<CurseGame> optionalMinecraft =
+				games.stream().filter(game -> "Minecraft".equals(game.name())).findAny();
+		assertThat(optionalMinecraft).isNotEmpty();
+
+		final Optional<CurseCategorySection> optionalSection = optionalMinecraft.get().
+				categorySections().stream().filter(section -> section.id() == 6).findAny();
+		assertThat(optionalSection).isPresent();
+
+		final CurseCategorySection section = optionalSection.get();
+		assertThat(section.categories()).isNotEmpty();
 	}
 }

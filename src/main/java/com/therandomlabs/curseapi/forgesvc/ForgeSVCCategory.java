@@ -1,6 +1,6 @@
 package com.therandomlabs.curseapi.forgesvc;
 
-import com.therandomlabs.curseapi.project.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseCategory;
 import okhttp3.HttpUrl;
 
 final class ForgeSVCCategory extends CurseCategory {
