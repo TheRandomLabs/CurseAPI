@@ -108,8 +108,8 @@ public interface CurseAPIProvider {
 	 * game versions of the game with the specified ID supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
-	@SuppressWarnings("rawtypes")
-	default SortedSet<? extends CurseGameVersion> gameVersions(int gameID) throws CurseException {
+	default SortedSet<? extends CurseGameVersion<?>> gameVersions(int gameID)
+			throws CurseException {
 		return null;
 	}
 
