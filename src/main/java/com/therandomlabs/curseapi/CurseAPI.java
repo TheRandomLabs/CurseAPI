@@ -277,23 +277,31 @@ public final class CurseAPI {
 	}
 
 	/**
-	 * Registers a {@link CurseAPIProvider}.
+	 * Registers a {@link CurseAPIProvider} if has not already been registered.
 	 *
 	 * @param provider a {@link CurseAPIProvider} instance.
 	 * @param firstPriority {@code true} if the {@link CurseAPIProvider} should be put before
 	 * all currently registered {@link CurseAPIProvider}s, or otherwise {@code false}.
+	 * @return {@code true} if the {@link CurseAPIProvider} was registered,
+	 * or otherwise {@code false}.
 	 */
-	public static void addProvider(CurseAPIProvider provider, boolean firstPriority) {
+	public static boolean addProvider(CurseAPIProvider provider, boolean firstPriority) {
 		Preconditions.checkNotNull(provider, "provider should not be null");
 		Preconditions.checkArgument(
 				!providers.contains(provider), "provider should not already have been added"
 		);
+
+		if (providers.contains(provider)) {
+			return false;
+		}
 
 		if (firstPriority) {
 			providers.add(0, provider);
 		} else {
 			providers.add(provider);
 		}
+
+		return true;
 	}
 
 	/**
