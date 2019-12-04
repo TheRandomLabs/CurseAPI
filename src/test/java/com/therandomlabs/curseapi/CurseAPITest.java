@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.therandomlabs.curseapi.file.CurseDependencyType;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseFiles;
@@ -95,7 +96,7 @@ public class CurseAPITest {
 		assertThat(file.releaseType()).isNotNull();
 		assertThat(file.status()).isEqualTo(CurseFileStatus.NORMAL);
 		assertThat(file.downloadURL()).isNotNull();
-		assertThat(file.dependencies()).isNotEmpty();
+		assertThat(file.dependencies(CurseDependencyType.REQUIRED)).isNotEmpty();
 		assertThat(file.dependencies().iterator().next().asProject()).isNotNull();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}
