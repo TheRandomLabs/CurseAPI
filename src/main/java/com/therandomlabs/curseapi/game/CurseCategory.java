@@ -70,7 +70,8 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**
 	 * Returns the ID of the section which this category belongs in.
 	 *
-	 * @return the ID of the section which tihs category belongs in.
+	 * @return the ID of the section which tihs category belongs in,
+	 * or {@code 0} if it does not belong in any section.
 	 */
 	public abstract int sectionID();
 

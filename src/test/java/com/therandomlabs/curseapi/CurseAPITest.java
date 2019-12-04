@@ -9,6 +9,7 @@ import java.util.Set;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseProject;
@@ -98,6 +99,10 @@ public class CurseAPITest {
 
 	@Test
 	public void categoriesShouldBeValid() throws CurseException {
+		final Optional<Set<CurseCategory>> optionalAllCategories = CurseAPI.categories();
+		assertThat(optionalAllCategories).isPresent();
+		assertThat(optionalAllCategories.get()).isNotEmpty();
+
 		final Optional<Set<CurseGame>> optionalGames = CurseAPI.games();
 		assertThat(optionalGames).isPresent();
 
@@ -108,8 +113,11 @@ public class CurseAPITest {
 				games.stream().filter(game -> "Minecraft".equals(game.name())).findAny();
 		assertThat(optionalMinecraft).isNotEmpty();
 
-		final Optional<CurseCategorySection> optionalSection = optionalMinecraft.get().
-				categorySections().stream().filter(section -> section.id() == 6).findAny();
+		final CurseGame minecraft = optionalMinecraft.get();
+		assertThat(minecraft.categories()).isNotEmpty();
+
+		final Optional<CurseCategorySection> optionalSection = minecraft.categorySections().
+				stream().filter(section -> section.id() == 6).findAny();
 		assertThat(optionalSection).isPresent();
 
 		final CurseCategorySection section = optionalSection.get();

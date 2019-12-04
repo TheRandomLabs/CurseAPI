@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.game;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
+import com.therandomlabs.curseapi.CurseException;
 
 /**
  * Represents a game supported by CurseForge.
@@ -82,4 +83,13 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	 * as {@link CurseCategorySection}s.
 	 */
 	public abstract Set<CurseCategorySection> categorySections();
+
+	/**
+	 * Returns this {@link CurseGame}'s categories.
+	 *
+	 * @return a mutable {@link Set} that contains this {@link CurseGame}'s categories
+	 * as {@link CurseCategory}s.
+	 * @throws CurseException if an error occurs.
+	 */
+	public abstract Set<CurseCategory> categories() throws CurseException;
 }

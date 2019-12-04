@@ -34,6 +34,7 @@ public class CurseSearchQuery implements Cloneable {
 
 	/**
 	 * Returns this {@link CurseSearchQuery}'s game ID.
+	 *
 	 * @return this {@link CurseSearchQuery}'s game ID.
 	 */
 	public int gameID() {
@@ -172,6 +173,7 @@ public class CurseSearchQuery implements Cloneable {
 
 	/**
 	 * Returns this {@link CurseSearchQuery}'s game version.
+	 *
 	 * @return this {@link CurseSearchQuery}'s game version.
 	 */
 	public String gameVersion() {

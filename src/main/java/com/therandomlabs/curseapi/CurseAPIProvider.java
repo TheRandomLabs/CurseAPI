@@ -75,6 +75,15 @@ public interface CurseAPIProvider {
 	Set<CurseGame> games() throws CurseException;
 
 	/**
+	 * Returns all project categories on CurseForge.
+	 *
+	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
+	 * all project categories on CurseForge.
+	 * @throws CurseException if an error occurs.
+	 */
+	Set<CurseCategory> categories() throws CurseException;
+
+	/**
 	 * Returns all categories in a category section.
 	 *
 	 * @param sectionID a category section ID.

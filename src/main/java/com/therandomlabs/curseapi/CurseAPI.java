@@ -171,6 +171,18 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns all project categories on CurseForge.
+	 *
+	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
+	 * all project categories on CurseForge wrapped in an {@link Optional} if it can be retrieved,
+	 * or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<Set<CurseCategory>> categories() throws CurseException {
+		return get(CurseAPIProvider::categories);
+	}
+
+	/**
 	 * Returns all categories in a category section.
 	 *
 	 * @param sectionID a category section ID.

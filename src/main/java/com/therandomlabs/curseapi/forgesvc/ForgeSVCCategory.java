@@ -5,7 +5,7 @@ import okhttp3.HttpUrl;
 
 final class ForgeSVCCategory extends CurseCategory {
 	private int gameId;
-	private int rootGameCategoryId;
+	private Integer rootGameCategoryId;
 	private int categoryId;
 	private String name;
 	private HttpUrl url;
@@ -18,7 +18,7 @@ final class ForgeSVCCategory extends CurseCategory {
 
 	@Override
 	public int sectionID() {
-		return rootGameCategoryId;
+		return rootGameCategoryId == null ? 0 : rootGameCategoryId;
 	}
 
 	@Override

@@ -41,6 +41,9 @@ interface ForgeSVC {
 	@GET("api/v2/game")
 	Call<Set<ForgeSVCGame>> getGames(@Query("supportsAddons") boolean requireAddonSupport);
 
+	@GET("api/v2/category")
+	Call<Set<ForgeSVCCategory>> getCategories();
+
 	@GET("api/v2/category/section/{sectionID}")
 	Call<Set<ForgeSVCCategory>> getCategories(@Path("sectionID") int sectionID);
 }

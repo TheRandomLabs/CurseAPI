@@ -95,6 +95,14 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public Set<CurseCategory> categories() throws CurseException {
+		return new HashSet<>(RetrofitUtils.execute(FORGESVC.getCategories()));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Set<CurseCategory> categories(int sectionID) throws CurseException {
 		return new HashSet<>(RetrofitUtils.execute(FORGESVC.getCategories(sectionID)));
 	}
