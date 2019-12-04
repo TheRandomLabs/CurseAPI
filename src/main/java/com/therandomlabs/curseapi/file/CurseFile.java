@@ -131,8 +131,6 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 */
 	public abstract Set<CurseDependency> dependencies();
 
-	//TODO fingerprint
-
 	/**
 	 * Returns this file's game versions.
 	 *
