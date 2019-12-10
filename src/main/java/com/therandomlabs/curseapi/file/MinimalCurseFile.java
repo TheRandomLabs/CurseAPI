@@ -1,7 +1,10 @@
 package com.therandomlabs.curseapi.file;
 
+import java.util.Optional;
+
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CurseException;
 
 /**
  * Represents a CurseForge file but only contains information about its project ID and file ID.
@@ -66,4 +69,16 @@ public interface MinimalCurseFile {
 	 * @return this file's ID.
 	 */
 	int fileID();
+
+	/**
+	 * Returns this {@link MinimalCurseFile} as a {@link CurseFile}.
+	 *
+	 * @return a {@link CurseFile} that represents the same CurseForge file as this
+	 * {@link MinimalCurseFile} wrapped in an {@link Optional} if it exists, or otherwise
+	 * {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	default Optional<CurseFile> get() throws CurseException {
+		return CurseAPI.file(projectID(), fileID());
+	}
 }
