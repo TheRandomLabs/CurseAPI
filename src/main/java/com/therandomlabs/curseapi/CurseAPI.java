@@ -261,6 +261,18 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns a {@link Stream} of all CurseForge categories in a category section.
+	 *
+	 * @return a {@link Stream} of all CurseForge categories in a category section,
+	 * or {@link Stream#empty()} if they cannot be retrieved.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Stream<CurseCategory> streamCategories(int sectionID) throws CurseException {
+		final Optional<Set<CurseCategory>> optionalCategories = categories(sectionID);
+		return optionalCategories.map(Set::stream).orElseGet(Stream::empty);
+	}
+
+	/**
 	 * Returns the CurseForge category with the specified ID.
 	 *
 	 * @param id a category ID.

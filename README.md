@@ -32,6 +32,19 @@ if (optionalFiles.isPresent()) {
 	logger.info("Latest 1.12.2 file: {}", files.first());
 }
 ```
+* `CurseAPI#games()` can be used to retrieve a `Set` containing `CurseGame` instances that
+represent all supported games on CurseForge. `CurseAPI#streamGames()` can be used to stream these
+games.
+* `CurseAPI#game(int)` can be used to retrieve a `CurseGame` instance that represents the CurseForge
+game with a specific ID.
+* If an extension like [CurseAPI-Minecraft](https://github.com/TheRandomLabs/CurseAPI-Minecraft) is
+installed, `CurseAPI#gameVersions(int)` can be used to retrieve `CurseGameVersion` instances
+representing versions of the specified game supported by CurseForge.
+* `CurseAPI#categories()` and `CurseAPI#categories(int)` can be used to retrieve a `Set` of
+`CurseCategory` instances representing CurseForge project categories. `CurseAPI#streamCategories()`
+and `CurseAPI#streamCategories(int)` can be used to retrieve a `Stream` for these `Set`s.
+* `CurseAPI#category(int)` can be used to retrieve a `CurseCategory` instance representing the
+CurseForge project category with the specified ID. 
 * In general, `null` values are not returned. Methods in the `CurseAPI` class return `Optional`s.
 
 ## Using with Gradle
