@@ -14,6 +14,7 @@ import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.project.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.project.CurseSearchSort;
@@ -27,6 +28,12 @@ public class CurseAPITest {
 		assertThat(optionalProject).isPresent();
 
 		final CurseProject project = optionalProject.get();
+
+		final CurseMember author = project.author();
+		assertThat(author).isNotNull();
+		assertThat(author.name()).isNotEmpty();
+		assertThat(author.url()).isNotNull();
+
 		assertThat(project.authors()).isNotEmpty();
 		assertThat(project.avatarURL()).isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_AVATAR);
 		assertThat(project.avatar()).isNotNull();
@@ -46,6 +53,7 @@ public class CurseAPITest {
 
 		assertThat(project.categories()).isNotEmpty();
 		assertThat(project.primaryCategory()).isIn(project.categories());
+		assertThat(project.url()).isNotNull();
 		assertThat(project.primaryCategory().avatar()).isNotNull();
 		assertThat(project.categorySection()).isNotNull();
 		assertThat(project.primaryCategory().sectionID()).isEqualTo(project.categorySection().id());
@@ -131,6 +139,7 @@ public class CurseAPITest {
 		assertThat(optionalMinecraft).isNotEmpty();
 
 		final CurseGame minecraft = optionalMinecraft.get();
+		assertThat(minecraft.slug()).isNotEmpty();
 		assertThat(minecraft.categories()).isNotEmpty();
 
 		final Optional<CurseCategorySection> optionalSection = minecraft.categorySections().
