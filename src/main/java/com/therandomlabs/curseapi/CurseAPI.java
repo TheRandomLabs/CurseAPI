@@ -117,7 +117,7 @@ public final class CurseAPI {
 	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public static Optional<CurseFiles> files(int projectID) throws CurseException {
+	public static Optional<CurseFiles<CurseFile>> files(int projectID) throws CurseException {
 		Preconditions.checkArgument(
 				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
 				MIN_PROJECT_ID

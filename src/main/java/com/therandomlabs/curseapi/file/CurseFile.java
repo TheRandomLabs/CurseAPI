@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.file;
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,29 +20,7 @@ import org.jsoup.nodes.Element;
  * <p>
  * Implementations of this class should be effectively immutable.
  */
-public abstract class CurseFile implements Comparable<CurseFile> {
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Calling this method is equivalent to calling {@link #id()}.
-	 */
-	@Override
-	public final int hashCode() {
-		return id();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * This method returns {@code true} if and only if the other object is also a {@link CurseFile}
-	 * and the value returned by {@link #id()} is the same for both {@link CurseFile}s.
-	 */
-	@Override
-	public final boolean equals(Object object) {
-		return this == object ||
-				(object instanceof CurseFile && id() == ((CurseFile) object).id());
-	}
-
+public abstract class CurseFile extends BasicCurseFile<CurseFile> {
 	/**
 	 * {@inheritDoc}
 	 */
@@ -57,27 +36,11 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 
 	/**
 	 * {@inheritDoc}
-	 * <p>
-	 * Newer {@link CurseFile}s are represented as being greater than older {@link CurseFile}s.
 	 */
 	@Override
-	public final int compareTo(CurseFile file) {
-		return Integer.compare(file.id(), id());
+	public Optional<CurseFile> toCurseFile() {
+		return Optional.of(this);
 	}
-
-	/**
-	 * Returns the ID of this file's project.
-	 *
-	 * @return the ID of this file's project.
-	 */
-	public abstract int projectID();
-
-	/**
-	 * Returns this file's ID.
-	 *
-	 * @return this file's ID.
-	 */
-	public abstract int id();
 
 	/**
 	 * Returns this file's display name.

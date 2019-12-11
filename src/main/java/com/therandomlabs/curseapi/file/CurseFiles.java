@@ -13,14 +13,15 @@ import com.therandomlabs.curseapi.CurseAPI;
  * An implementation of {@link TreeSet} with additional utility methods for working with
  * {@link CurseFile}s.
  */
-public class CurseFiles extends TreeSet<CurseFile> {
+public class CurseFiles<F extends BasicCurseFile<F>> extends TreeSet<F> {
 	/**
 	 * When used as a {@link Comparator} for a collection of {@link CurseFile}s,
 	 * the {@link CurseFile}s are ordered from newest to oldest.
 	 *
 	 * @see #withComparator(Comparator)
 	 */
-	public static final Comparator<CurseFile> SORT_BY_NEWEST = CurseFile::compareTo;
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public static final Comparator<BasicCurseFile> SORT_BY_NEWEST = BasicCurseFile::compareTo;
 
 	/**
 	 * When used as a {@link Comparator} for a collection of {@link CurseFile}s,
@@ -28,7 +29,8 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 *
 	 * @see #withComparator(Comparator)
 	 */
-	public static final Comparator<CurseFile> SORT_BY_OLDEST = SORT_BY_NEWEST.reversed();
+	@SuppressWarnings("rawtypes")
+	public static final Comparator<BasicCurseFile> SORT_BY_OLDEST = SORT_BY_NEWEST.reversed();
 
 	private static final long serialVersionUID = -7609834501394579694L;
 
@@ -44,7 +46,7 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 *
 	 * @param comparator a {@link Comparator}.
 	 */
-	public CurseFiles(Comparator<? super CurseFile> comparator) {
+	public CurseFiles(Comparator<? super F> comparator) {
 		super(comparator);
 	}
 
@@ -54,7 +56,7 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 *
 	 * @param files a collection of {@link CurseFile}s.
 	 */
-	public CurseFiles(Collection<? extends CurseFile> files) {
+	public CurseFiles(Collection<? extends F> files) {
 		super(files);
 	}
 
@@ -66,7 +68,7 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 * @param comparator a {@link Comparator}.
 	 */
 	public CurseFiles(
-			Collection<? extends CurseFile> files, Comparator<? super CurseFile> comparator
+			Collection<? extends F> files, Comparator<? super F> comparator
 	) {
 		super(comparator);
 		addAll(files);
@@ -75,9 +77,10 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public CurseFiles clone() {
-		return (CurseFiles) super.clone();
+	public CurseFiles<F> clone() {
+		return (CurseFiles<F>) super.clone();
 	}
 
 	/**
@@ -86,7 +89,7 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 *
 	 * @param filter a {@link Predicate} filter.
 	 */
-	public void filter(Predicate<? super CurseFile> filter) {
+	public void filter(Predicate<? super F> filter) {
 		removeIf(filter.negate());
 	}
 
@@ -98,13 +101,13 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 * wrapped in an {@link Optional} if it exists, or otherwise {@link Optional#empty()}.
 	 * @see CurseFileFilter
 	 */
-	public Optional<CurseFile> fileWithID(int id) {
+	public Optional<F> fileWithID(int id) {
 		Preconditions.checkArgument(
 				id >= CurseAPI.MIN_FILE_ID, "id should not be smaller than %s",
 				CurseAPI.MIN_FILE_ID
 		);
 
-		for (CurseFile file : this) {
+		for (F file : this) {
 			if (file.id() == file.id()) {
 				return Optional.of(file);
 			}
@@ -119,7 +122,7 @@ public class CurseFiles extends TreeSet<CurseFile> {
 	 * @param comparator a {@link Comparator}.
 	 * @return a copy of this {@link CurseFiles} instance with the specified {@link Comparator}.
 	 */
-	public CurseFiles withComparator(Comparator<? super CurseFile> comparator) {
-		return new CurseFiles(this, comparator);
+	public CurseFiles<F> withComparator(Comparator<? super F> comparator) {
+		return new CurseFiles<>(this, comparator);
 	}
 }

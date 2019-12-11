@@ -49,7 +49,7 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseFiles} instance for the specified project ID.
 	 * @throws CurseException if an error occurs.
 	 */
-	default CurseFiles files(int projectID) throws CurseException {
+	default CurseFiles<CurseFile> files(int projectID) throws CurseException {
 		return null;
 	}
 

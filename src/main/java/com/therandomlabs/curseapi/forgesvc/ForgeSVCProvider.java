@@ -55,14 +55,14 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public CurseFiles files(int projectID) throws CurseException {
+	public CurseFiles<CurseFile> files(int projectID) throws CurseException {
 		final Set<ForgeSVCFile> files = RetrofitUtils.execute(FORGESVC.getFiles(projectID));
 
 		for (ForgeSVCFile file : files) {
 			file.setProjectID(projectID);
 		}
 
-		return new CurseFiles(files);
+		return new CurseFiles<>(files);
 	}
 
 	/**

@@ -30,7 +30,7 @@ available, `CurseFile#download(Path)` and `CurseFile#downloadToDirectory(Path)` 
 final Optional<CurseFiles> optionalFiles = CurseAPI.files(285612);
 
 if (optionalFiles.isPresent()) {
-	final CurseFiles files = optionalFiles.get();
+	final CurseFiles<CurseFile> files = optionalFiles.get();
 	files.filter(new CurseFileFilter().gameVersions("1.12.2"));
 	logger.info("Latest 1.12.2 file: {}", files.first());
 }

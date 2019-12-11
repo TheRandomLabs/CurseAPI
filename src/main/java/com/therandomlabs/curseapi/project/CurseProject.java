@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
@@ -195,7 +196,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 * @return a {@link CurseFiles} instance for this project.
 	 * @throws CurseException if an error occurs.
 	 */
-	public abstract CurseFiles files() throws CurseException;
+	public abstract CurseFiles<CurseFile> files() throws CurseException;
 
 	/**
 	 * Returns this project's primary category.

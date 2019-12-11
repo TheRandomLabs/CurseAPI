@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
@@ -103,8 +104,8 @@ final class ForgeSVCProject extends CurseProject {
 	}
 
 	@Override
-	public CurseFiles files() throws CurseException {
-		return new CurseFiles(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
+	public CurseFiles<CurseFile> files() throws CurseException {
+		return new CurseFiles<>(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
 	}
 
 	@Override

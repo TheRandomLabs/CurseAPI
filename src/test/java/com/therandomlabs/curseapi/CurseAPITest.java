@@ -40,7 +40,7 @@ public class CurseAPITest {
 		assertThat(project.descriptionPlainText()).isNotEmpty();
 		assertThat(project.downloadCount()).isGreaterThan(0);
 
-		final Optional<CurseFiles> optionalFiles = CurseAPI.files(project.id());
+		final Optional<CurseFiles<CurseFile>> optionalFiles = CurseAPI.files(project.id());
 		assertThat(optionalFiles).isPresent();
 		assertThat(project.files()).isEqualTo(optionalFiles.get());
 
@@ -73,13 +73,14 @@ public class CurseAPITest {
 
 	@Test
 	public void filesShouldBeValid() throws CurseException {
-		final Optional<CurseFiles> optionalFiles = CurseAPI.files(285612);
+		final Optional<CurseFiles<CurseFile>> optionalFiles = CurseAPI.files(285612);
 		assertThat(optionalFiles).isPresent();
 
-		final CurseFiles files = optionalFiles.get();
+		final CurseFiles<CurseFile> files = optionalFiles.get();
 		assertThat(files).isNotEmpty();
 
-		final CurseFiles sortedByOldest = files.withComparator(CurseFiles.SORT_BY_OLDEST);
+		final CurseFiles<CurseFile> sortedByOldest =
+				files.withComparator(CurseFiles.SORT_BY_OLDEST);
 		assertThat(sortedByOldest.first().id()).isEqualTo(2522102);
 	}
 
