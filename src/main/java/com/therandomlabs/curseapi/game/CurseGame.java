@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.CurseException;
+import okhttp3.HttpUrl;
 
 /**
  * Represents a game supported by CurseForge.
@@ -75,6 +76,15 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	 * @return the slug of this {@link CurseGame}.
 	 */
 	public abstract String slug();
+
+	/**
+	 * Returns the URL of this {@link CurseGame}.
+	 *
+	 * @return the URL of this {@link CurseGame}.
+	 */
+	public HttpUrl url() {
+		return HttpUrl.get("https://www.curseforge.com/" + slug());
+	}
 
 	/**
 	 * Returns this {@link CurseGame}'s category sections.

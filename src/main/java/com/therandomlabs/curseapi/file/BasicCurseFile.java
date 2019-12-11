@@ -11,12 +11,12 @@ import com.therandomlabs.curseapi.CurseException;
  * A basic representation of a CurseForge file.
  * Implementations of this interface are not necessarily immutable.
  */
-public abstract class BasicCurseFile<F extends BasicCurseFile<F>> implements Comparable<F> {
+public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	/**
 	 * An immutable implementation of {@link BasicCurseFile} that represents a CurseForge file
 	 * that may or may not exist.
 	 */
-	public static class Immutable extends BasicCurseFile<Immutable> {
+	public static class Immutable extends BasicCurseFile {
 		//These field names should be kept the same for Moshi.
 		private final int projectID;
 		private final int fileID;
@@ -75,7 +75,6 @@ public abstract class BasicCurseFile<F extends BasicCurseFile<F>> implements Com
 	 * {@link BasicCurseFile} and the value returned by {@link #id()} is the same for both
 	 * {@link BasicCurseFile}s.
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
 	public final boolean equals(Object object) {
 		return this == object ||
@@ -99,7 +98,7 @@ public abstract class BasicCurseFile<F extends BasicCurseFile<F>> implements Com
 	 * Newer files are represented as being greater than older files.
 	 */
 	@Override
-	public final int compareTo(F file) {
+	public final int compareTo(BasicCurseFile file) {
 		return Integer.compare(file.id(), id());
 	}
 
@@ -124,7 +123,7 @@ public abstract class BasicCurseFile<F extends BasicCurseFile<F>> implements Com
 	 * @return {@code true} if this file is older than the specified file,
 	 * or otherwise {@code false}.
 	 */
-	public final boolean olderThan(CurseFile file) {
+	public final boolean olderThan(BasicCurseFile file) {
 		Preconditions.checkNotNull(file, "file should not be null");
 		return olderThan(file.id());
 	}
@@ -148,7 +147,7 @@ public abstract class BasicCurseFile<F extends BasicCurseFile<F>> implements Com
 	 * @return {@code true} if this file is newer than the specified file,
 	 * or otherwise {@code false}.
 	 */
-	public final boolean newerThan(CurseFile file) {
+	public final boolean newerThan(BasicCurseFile file) {
 		Preconditions.checkNotNull(file, "file should not be null");
 		return newerThan(file.id());
 	}

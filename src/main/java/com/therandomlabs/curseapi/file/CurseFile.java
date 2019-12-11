@@ -20,7 +20,7 @@ import org.jsoup.nodes.Element;
  * <p>
  * Implementations of this class should be effectively immutable.
  */
-public abstract class CurseFile extends BasicCurseFile<CurseFile> {
+public abstract class CurseFile extends BasicCurseFile {
 	/**
 	 * {@inheritDoc}
 	 */

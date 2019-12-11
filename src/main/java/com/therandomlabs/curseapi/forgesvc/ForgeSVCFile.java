@@ -25,7 +25,7 @@ final class ForgeSVCFile extends CurseFile {
 	private int fileStatus;
 	private HttpUrl downloadUrl;
 	private Set<ForgeSVCDependency> dependencies;
-	private Set<String> gameVersions;
+	private Set<String> gameVersion;
 
 	@Override
 	public int projectID() {
@@ -79,7 +79,7 @@ final class ForgeSVCFile extends CurseFile {
 
 	@Override
 	public Set<String> gameVersions() {
-		return new LinkedHashSet<>(gameVersions);
+		return new LinkedHashSet<>(gameVersion);
 	}
 
 	@Override

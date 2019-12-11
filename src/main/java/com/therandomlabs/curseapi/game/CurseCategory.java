@@ -45,7 +45,7 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 				add("gameID", gameID()).
 				add("id", id()).
 				add("name", name()).
-				add("url", url()).
+				add("slug", slug()).
 				toString();
 	}
 
@@ -90,11 +90,19 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	public abstract String name();
 
 	/**
+	 * Returns this category's slug.
+	 *
+	 * @return this category's slug.
+	 */
+	public abstract String slug();
+
+	/**
 	 * Returns this category's URL.
 	 *
 	 * @return this category's URL.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract HttpUrl url();
+	public abstract HttpUrl url() throws CurseException;
 
 	/**
 	 * Returns this category's avatar URL.

@@ -1,6 +1,12 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.List;
+import java.util.Optional;
+
+import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseGame;
 import okhttp3.HttpUrl;
 
 final class ForgeSVCCategory extends CurseCategory {
@@ -17,6 +23,7 @@ final class ForgeSVCCategory extends CurseCategory {
 	private int categoryId;
 
 	private String name;
+	private String slug;
 	private HttpUrl url;
 	private HttpUrl avatarUrl;
 
@@ -45,7 +52,41 @@ final class ForgeSVCCategory extends CurseCategory {
 	}
 
 	@Override
-	public HttpUrl url() {
+	public String slug() {
+		if (slug == null) {
+			final List<String> pathSegments = url.encodedPathSegments();
+			slug = pathSegments.get(pathSegments.size() - 1);
+		}
+
+		return slug;
+	}
+
+	@Override
+	public HttpUrl url() throws CurseException {
+		if (url != null) {
+			return url;
+		}
+
+		final int sectionID = sectionID();
+
+		if (sectionID == 0) {
+			final Optional<CurseGame> optionalGame = CurseAPI.game(gameId);
+
+			if (!optionalGame.isPresent()) {
+				throw new CurseException("Failed to retrieve URL for category: " + this);
+			}
+
+			url = HttpUrl.get(optionalGame.get().url() + "/" + slug);
+			return url;
+		}
+
+		final Optional<CurseCategory> optionalCategory = CurseAPI.category(sectionID);
+
+		if (!optionalCategory.isPresent()) {
+			throw new CurseException("Failed to retrieve URL for category: " + this);
+		}
+
+		url = HttpUrl.get(optionalCategory.get().url() + "/" + slug);
 		return url;
 	}
 

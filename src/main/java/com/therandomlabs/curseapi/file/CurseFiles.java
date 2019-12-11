@@ -13,14 +13,13 @@ import com.therandomlabs.curseapi.CurseAPI;
  * An implementation of {@link TreeSet} with additional utility methods for working with
  * {@link CurseFile}s.
  */
-public class CurseFiles<F extends BasicCurseFile<F>> extends TreeSet<F> {
+public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	/**
 	 * When used as a {@link Comparator} for a collection of {@link CurseFile}s,
 	 * the {@link CurseFile}s are ordered from newest to oldest.
 	 *
 	 * @see #withComparator(Comparator)
 	 */
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static final Comparator<BasicCurseFile> SORT_BY_NEWEST = BasicCurseFile::compareTo;
 
 	/**
@@ -29,7 +28,6 @@ public class CurseFiles<F extends BasicCurseFile<F>> extends TreeSet<F> {
 	 *
 	 * @see #withComparator(Comparator)
 	 */
-	@SuppressWarnings("rawtypes")
 	public static final Comparator<BasicCurseFile> SORT_BY_OLDEST = SORT_BY_NEWEST.reversed();
 
 	private static final long serialVersionUID = -7609834501394579694L;

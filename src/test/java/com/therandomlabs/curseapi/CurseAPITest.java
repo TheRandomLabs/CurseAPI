@@ -28,6 +28,7 @@ public class CurseAPITest {
 		assertThat(optionalProject).isPresent();
 
 		final CurseProject project = optionalProject.get();
+		assertThat(project.name()).isNotEmpty();
 
 		final CurseMember author = project.author();
 		assertThat(author).isNotNull();
@@ -44,7 +45,7 @@ public class CurseAPITest {
 		assertThat(project.url()).isNotNull();
 		assertThat(project.gameID()).isEqualTo(432);
 		assertThat(project.summary()).isNotEmpty();
-		assertThat(project.descriptionPlainText()).isNotEmpty();
+		assertThat(project.descriptionPlainText(100)).isNotEmpty();
 		assertThat(project.downloadCount()).isGreaterThan(0);
 
 		final Optional<CurseFiles<CurseFile>> optionalFiles = CurseAPI.files(project.id());
@@ -54,9 +55,10 @@ public class CurseAPITest {
 		assertThat(project.categories()).isNotEmpty();
 		assertThat(project.primaryCategory()).isIn(project.categories());
 		assertThat(project.url()).isNotNull();
-		assertThat(project.primaryCategory().avatar()).isNotNull();
 		assertThat(project.categorySection()).isNotNull();
 		assertThat(project.primaryCategory().sectionID()).isEqualTo(project.categorySection().id());
+		assertThat(project.primaryCategory().slug()).isNotEmpty();
+		assertThat(project.primaryCategory().url()).isNotNull();
 		assertThat(project.slug()).isNotEmpty();
 		assertThat(project.experimental()).isFalse();
 		assertThat(project.creationTime()).isNotNull();
@@ -109,6 +111,7 @@ public class CurseAPITest {
 		assertThat(file.downloadURL()).isNotNull();
 		assertThat(file.dependencies(CurseDependencyType.REQUIRED)).isNotEmpty();
 		assertThat(file.dependencies().iterator().next().asProject()).isNotNull();
+		assertThat(file.gameVersions()).isNotEmpty();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}
 
@@ -121,6 +124,18 @@ public class CurseAPITest {
 	public void fileDownloadShouldBeValid(@TempDir Path tempDirectory) throws CurseException {
 		CurseAPI.downloadFileToDirectory(316059, 2839369, tempDirectory);
 		assertThat(tempDirectory.resolve("All the Mods 4-0.2.5.zip")).isRegularFile();
+	}
+
+	@Test
+	public void gameDetailsShouldBeValid() throws CurseException {
+		final Optional<CurseGame> optionalGame = CurseAPI.game(432);
+		assertThat(optionalGame).isPresent();
+
+		final CurseGame game = optionalGame.get();
+		assertThat(game.name()).isNotEmpty();
+		assertThat(game.slug()).isNotEmpty();
+		assertThat(game.categories()).isNotEmpty();
+		assertThat(game.categorySections()).isNotEmpty();
 	}
 
 	@Test
@@ -139,7 +154,6 @@ public class CurseAPITest {
 		assertThat(optionalMinecraft).isNotEmpty();
 
 		final CurseGame minecraft = optionalMinecraft.get();
-		assertThat(minecraft.slug()).isNotEmpty();
 		assertThat(minecraft.categories()).isNotEmpty();
 
 		final Optional<CurseCategorySection> optionalSection = minecraft.categorySections().
@@ -152,6 +166,13 @@ public class CurseAPITest {
 
 	@Test
 	public void categoryShouldBeValid() throws CurseException {
-		assertThat(CurseAPI.category(423)).isPresent();
+		final Optional<CurseCategory> optionalCategory = CurseAPI.category(423);
+		assertThat(optionalCategory).isPresent();
+
+		final CurseCategory category = optionalCategory.get();
+		assertThat(category.name()).isNotEmpty();
+		assertThat(category.slug()).isNotEmpty();
+		assertThat(category.url()).isNotNull();
+		assertThat(category.avatar()).isNotNull();
 	}
 }
