@@ -22,6 +22,9 @@ file ID. `CurseFiles#fileWithID(int)` can be used instead if a `CurseFiles` inst
 available.
 * `CurseAPI#fileDownloadURL(int, int)` can be used to retrieve a download URL for a project and
 file ID. If a `CurseFile` is already available, `CurseFile#downloadURL()` can be used instead.
+* `CurseAPI#downloadFile(int, int, Path)` and `CurseAPI#downloadFileToDirectory(int, int, Path)` can
+be used to download a file with a specific project and file ID. If a `CurseFile` is already
+available, `CurseFile#download(Path)` and `CurseFile#downloadToDirectory(Path)` can be used instead.
 * `CurseFiles` instances can be filtered using `CurseFileFilter`s:
 ```java
 final Optional<CurseFiles> optionalFiles = CurseAPI.files(285612);
