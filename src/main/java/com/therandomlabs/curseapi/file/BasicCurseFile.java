@@ -118,6 +118,54 @@ public abstract class BasicCurseFile<F extends BasicCurseFile<F>> implements Com
 	public abstract int id();
 
 	/**
+	 * Returns whether this file is older than the specified file.
+	 *
+	 * @param file another {@link CurseFile}.
+	 * @return {@code true} if this file is older than the specified file,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean olderThan(CurseFile file) {
+		Preconditions.checkNotNull(file, "file should not be null");
+		return olderThan(file.id());
+	}
+
+	/**
+	 * Returns whether this file is older than the file with the specified ID.
+	 *
+	 * @param fileID a file ID.
+	 * @return {@code true} if this file is older than the file with the specified ID,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean olderThan(int fileID) {
+		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
+		return id() < fileID;
+	}
+
+	/**
+	 * Returns whether this file is newer than the specified file.
+	 *
+	 * @param file another {@link CurseFile}.
+	 * @return {@code true} if this file is newer than the specified file,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean newerThan(CurseFile file) {
+		Preconditions.checkNotNull(file, "file should not be null");
+		return newerThan(file.id());
+	}
+
+	/**
+	 * Returns whether this file is newer than the file with the specified ID.
+	 *
+	 * @param fileID a file ID.
+	 * @return {@code true} if this file is newer than the file with the specified ID,
+	 * or otherwise {@code false}.
+	 */
+	public final boolean newerThan(int fileID) {
+		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
+		return id() > fileID;
+	}
+
+	/**
 	 * Returns this {@link BasicCurseFile} as a {@link CurseFile}.
 	 *
 	 * @return a {@link CurseFile} that represents the same CurseForge file as this
