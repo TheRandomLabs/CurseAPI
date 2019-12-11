@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import com.squareup.moshi.Moshi;
 import com.therandomlabs.curseapi.CurseException;
+import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 
@@ -57,5 +58,33 @@ public final class MoshiUtils {
 			throw new CurseException(ex);
 		}
 	}
-}
 
+	/**
+	 * Converts the specified value to a JSON string.
+	 *
+	 * @param value a value.
+	 * @param type the {@link Class} of the type.
+	 * @param <T> the type.
+	 * @return a JSON string.
+	 */
+	public static <T> String toJSON(T value, Class<T> type) {
+		return MOSHI.adapter(type).toJson(value);
+	}
+
+	/**
+	 * Converts the specified value to a JSON string and writes it to the specified {@link Path}.
+	 *
+	 * @param value a value.
+	 * @param type the {@link Class} of the type.
+	 * @param path a {@link Path}.
+	 * @param <T> the type.
+	 * @throws CurseException if an I/O error occurs.
+	 */
+	public static <T> void toJSON(T value, Class<T> type, Path path) throws CurseException {
+		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
+			MOSHI.adapter(type).toJson(sink, value);
+		} catch (IOException ex) {
+			throw new CurseException(ex);
+		}
+	}
+}
