@@ -224,7 +224,7 @@ public final class CurseAPI {
 		final HttpUrl url = optionalURL.get();
 		final List<String> pathSegments = url.encodedPathSegments();
 		//TODO does CurseForge still put tabs in their file names?
-		final String path = pathSegments.get(pathSegments.size() - 1).replace("\t", " ");
+		final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
 
 		try {
 			OkHttpUtils.downloadToDirectory(
