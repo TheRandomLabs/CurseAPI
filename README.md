@@ -27,7 +27,7 @@ be used to download a file with a specific project and file ID. If a `CurseFile`
 available, `CurseFile#download(Path)` and `CurseFile#downloadToDirectory(Path)` can be used instead.
 * `CurseFiles` instances can be filtered using `CurseFileFilter`s:
 ```java
-final Optional<CurseFiles> optionalFiles = CurseAPI.files(285612);
+final Optional<CurseFiles<CurseFile>> optionalFiles = CurseAPI.files(285612);
 
 if (optionalFiles.isPresent()) {
 	final CurseFiles<CurseFile> files = optionalFiles.get();
