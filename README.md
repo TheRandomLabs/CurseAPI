@@ -1,7 +1,7 @@
 # CurseAPI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Build](https://github.com/TheRandomLabs/CurseAPI/workflows/build/badge.svg)
+[![Build](https://jitci.com/gh/TheRandomLabs/CurseAPI/svg)](https://jitci.com/gh/TheRandomLabs/CurseAPI)
 
 A Java library for handling interactions with CurseForge.
 
