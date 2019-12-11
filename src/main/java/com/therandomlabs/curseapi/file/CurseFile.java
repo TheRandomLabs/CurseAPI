@@ -142,10 +142,11 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	 * Downloads this file to the specified directory.
 	 *
 	 * @param directory a {@link Path} to a directory.
+	 * @return a {@link Path} to the downloaded file.
 	 * @throws CurseException if an error occurs.
 	 */
-	public void downloadToDirectory(Path directory) throws CurseException {
-		OkHttpUtils.downloadToDirectory(downloadURL(), directory, nameOnDisk());
+	public Path downloadToDirectory(Path directory) throws CurseException {
+		return OkHttpUtils.downloadToDirectory(downloadURL(), directory, nameOnDisk());
 	}
 
 	/**

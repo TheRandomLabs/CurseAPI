@@ -75,9 +75,10 @@ public final class OkHttpUtils {
 	 * @param directory a {@link Path} to a directory. If the directory does not exist,
 	 * it is created.
 	 * @param fileName a file name.
+	 * @return a {@link Path} to the downloaded file.
 	 * @throws CurseException if the request cannot be executed correctly or if an I/O error occurs.
 	 */
-	public static void downloadToDirectory(HttpUrl url, Path directory, String fileName)
+	public static Path downloadToDirectory(HttpUrl url, Path directory, String fileName)
 			throws CurseException {
 		Preconditions.checkNotNull(url, "url should not be null");
 		Preconditions.checkNotNull(directory, "directory should not be null");
@@ -88,7 +89,9 @@ public final class OkHttpUtils {
 
 		try {
 			Files.createDirectories(directory);
-			download(url, directory.resolve(fileName));
+			final Path path = directory.resolve(fileName);
+			download(url, path);
+			return path;
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}

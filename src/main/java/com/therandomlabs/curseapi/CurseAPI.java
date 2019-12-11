@@ -201,10 +201,11 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @param directory a {@link Path} to a directory.
-	 * @return {@code true} if the file downloads successfully, or otherwise {@code false}.
+	 * @return a {@link Path} to the downloaded file wrapped in an {@link Optional} if the
+	 * download is successful, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public static boolean downloadFileToDirectory(int projectID, int fileID, Path directory)
+	public static Optional<Path> downloadFileToDirectory(int projectID, int fileID, Path directory)
 			throws CurseException {
 		Preconditions.checkArgument(
 				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
@@ -218,7 +219,7 @@ public final class CurseAPI {
 		final Optional<HttpUrl> optionalURL = fileDownloadURL(projectID, fileID);
 
 		if (!optionalURL.isPresent()) {
-			return false;
+			return Optional.empty();
 		}
 
 		final HttpUrl url = optionalURL.get();
@@ -227,14 +228,12 @@ public final class CurseAPI {
 		final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
 
 		try {
-			OkHttpUtils.downloadToDirectory(
+			return Optional.of(OkHttpUtils.downloadToDirectory(
 					url, directory, URLDecoder.decode(path, StandardCharsets.UTF_8.name())
-			);
+			));
 		} catch (UnsupportedEncodingException ex) {
 			throw new CurseException(ex);
 		}
-
-		return true;
 	}
 
 	/**
