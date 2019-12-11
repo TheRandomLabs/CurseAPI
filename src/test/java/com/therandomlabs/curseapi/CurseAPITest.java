@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +18,7 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.project.CurseSearchSort;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class CurseAPITest {
 	@Test
@@ -104,6 +106,12 @@ public class CurseAPITest {
 	@Test
 	public void fileDownloadURLShouldNotBeNull() throws CurseException {
 		assertThat(CurseAPI.fileDownloadURL(285612, 2662898)).isPresent();
+	}
+
+	@Test
+	public void fileDownloadShouldBeValid(@TempDir Path tempDirectory) throws CurseException {
+		CurseAPI.downloadFileToDirectory(316059, 2839369, tempDirectory);
+		assertThat(tempDirectory.resolve("All the Mods 4-0.2.5.zip")).isRegularFile();
 	}
 
 	@Test

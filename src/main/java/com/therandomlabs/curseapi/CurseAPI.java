@@ -1,5 +1,9 @@
 package com.therandomlabs.curseapi;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +22,7 @@ import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
+import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,6 +164,77 @@ public final class CurseAPI {
 				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
 		);
 		return get(provider -> provider.fileDownloadURL(projectID, fileID));
+	}
+
+	/**
+	 * Downloads the file with the specified project and file ID to the specified {@link Path}.
+	 *
+	 * @param projectID a project ID.
+	 * @param fileID a file ID.
+	 * @param path a {@link Path}.
+	 * @return {@code true} if the file downloads successfully, or otherwise {@code false}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static boolean downloadFile(int projectID, int fileID, Path path) throws CurseException {
+		Preconditions.checkArgument(
+				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
+				MIN_PROJECT_ID
+		);
+		Preconditions.checkArgument(
+				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
+		);
+		Preconditions.checkNotNull(path, "path should not be null");
+
+		final Optional<HttpUrl> optionalURL = fileDownloadURL(projectID, fileID);
+
+		if (!optionalURL.isPresent()) {
+			return false;
+		}
+
+		OkHttpUtils.download(optionalURL.get(), path);
+		return true;
+	}
+
+	/**
+	 * Downloads the file with the specified project and file ID to the specified directory.
+	 *
+	 * @param projectID a project ID.
+	 * @param fileID a file ID.
+	 * @param directory a {@link Path} to a directory.
+	 * @return {@code true} if the file downloads successfully, or otherwise {@code false}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static boolean downloadFileToDirectory(int projectID, int fileID, Path directory)
+			throws CurseException {
+		Preconditions.checkArgument(
+				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
+				MIN_PROJECT_ID
+		);
+		Preconditions.checkArgument(
+				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
+		);
+		Preconditions.checkNotNull(directory, "directory should not be null");
+
+		final Optional<HttpUrl> optionalURL = fileDownloadURL(projectID, fileID);
+
+		if (!optionalURL.isPresent()) {
+			return false;
+		}
+
+		final HttpUrl url = optionalURL.get();
+		final List<String> pathSegments = url.encodedPathSegments();
+		//TODO does CurseForge still put tabs in their file names?
+		final String path = pathSegments.get(pathSegments.size() - 1).replace("\t", " ");
+
+		try {
+			OkHttpUtils.downloadToDirectory(
+					url, directory, URLDecoder.decode(path, StandardCharsets.UTF_8.name())
+			);
+		} catch (UnsupportedEncodingException ex) {
+			throw new CurseException(ex);
+		}
+
+		return true;
 	}
 
 	/**
