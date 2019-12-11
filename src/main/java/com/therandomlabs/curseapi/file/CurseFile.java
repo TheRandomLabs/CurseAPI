@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.file;
 
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +10,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.util.JsoupUtils;
+import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
@@ -127,6 +129,26 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 	public abstract HttpUrl downloadURL();
 
 	/**
+	 * Downloads this file to the specified {@link Path}.
+	 *
+	 * @param path a {@link Path}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public void download(Path path) throws CurseException {
+		OkHttpUtils.download(downloadURL(), path);
+	}
+
+	/**
+	 * Downloads this file to the specified directory.
+	 *
+	 * @param directory a {@link Path} to a directory.
+	 * @throws CurseException if an error occurs.
+	 */
+	public void downloadToDirectory(Path directory) throws CurseException {
+		OkHttpUtils.downloadToDirectory(downloadURL(), directory, nameOnDisk());
+	}
+
+	/**
 	 * Returns this file's dependencies.
 	 *
 	 * @return a mutable {@link Set} containing this file's dependencies.
@@ -135,6 +157,7 @@ public abstract class CurseFile implements Comparable<CurseFile> {
 
 	/**
 	 * Returns this file's dependencies of the specified type.
+	 *
 	 * @param type a {@link CurseDependencyType}.
 	 * @return a mutable {@link Set} containing this file's dependencies of the specified type.
 	 */

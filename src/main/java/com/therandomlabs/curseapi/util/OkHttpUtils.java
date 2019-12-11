@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.util;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
@@ -48,9 +49,9 @@ public final class OkHttpUtils {
 	/**
 	 * Downloads a file from the specified {@link HttpUrl} to the specified {@link Path}.
 	 *
-	 * @param url a {@link HttpUrl}.
+	 * @param url an {@link HttpUrl}.
 	 * @param path a {@link Path}.
-	 * @throws CurseException if the request cannot be executed correctly.
+	 * @throws CurseException if the request cannot be executed correctly or if an I/O error occurs.
 	 */
 	public static void download(HttpUrl url, Path path) throws CurseException {
 		Preconditions.checkNotNull(url, "url should not be null");
@@ -61,6 +62,33 @@ public final class OkHttpUtils {
 
 		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
 			sink.writeAll(client.newCall(request).execute().body().source());
+		} catch (IOException ex) {
+			throw new CurseException(ex);
+		}
+	}
+
+	/**
+	 * Downloads a file from the specified {@link HttpUrl} to the specified directory with
+	 * the specified file name.
+	 *
+	 * @param url an {@link HttpUrl}.
+	 * @param directory a {@link Path} to a directory. If the directory does not exist,
+	 * it is created.
+	 * @param fileName a file name.
+	 * @throws CurseException if the request cannot be executed correctly or if an I/O error occurs.
+	 */
+	public static void downloadToDirectory(HttpUrl url, Path directory, String fileName)
+			throws CurseException {
+		Preconditions.checkNotNull(url, "url should not be null");
+		Preconditions.checkNotNull(directory, "directory should not be null");
+		Preconditions.checkArgument(
+				!Files.isRegularFile(directory), "directory should not be a regular file"
+		);
+		Preconditions.checkNotNull(fileName, "fileName should not be null");
+
+		try {
+			Files.createDirectories(directory);
+			download(url, directory.resolve(fileName));
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}

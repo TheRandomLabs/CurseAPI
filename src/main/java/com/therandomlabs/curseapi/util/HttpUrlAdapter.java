@@ -18,7 +18,7 @@ public final class HttpUrlAdapter {
 	/**
 	 * Converts the specified {@link HttpUrl} to a JSON string.
 	 *
-	 * @param url a {@link HttpUrl}.
+	 * @param url an {@link HttpUrl}.
 	 * @return a JSON string representation of the specified {@link HttpUrl}.
 	 */
 	@ToJson
