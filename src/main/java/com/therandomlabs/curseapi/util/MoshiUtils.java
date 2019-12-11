@@ -68,7 +68,8 @@ public final class MoshiUtils {
 	 * @return a JSON string.
 	 */
 	public static <T> String toJSON(T value, Class<T> type) {
-		return MOSHI.adapter(type).toJson(value);
+		//CurseForge prefers double space indents
+		return MOSHI.adapter(type).indent("  ").toJson(value);
 	}
 
 	/**
