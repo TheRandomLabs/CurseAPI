@@ -263,6 +263,7 @@ public final class CurseAPI {
 	/**
 	 * Returns a {@link Stream} of all CurseForge categories in a category section.
 	 *
+	 * @param sectionID a category section ID.
 	 * @return a {@link Stream} of all CurseForge categories in a category section,
 	 * or {@link Stream#empty()} if they cannot be retrieved.
 	 * @throws CurseException if an error occurs.
