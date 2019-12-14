@@ -107,6 +107,8 @@ public final class OkHttpUtils {
 	 * @return the file name embedded within the path of the specified URL.
 	 */
 	public static String getFileNameFromURLPath(HttpUrl url) {
+		Preconditions.checkNotNull(url, "url should not be null");
+
 		final List<String> pathSegments = url.encodedPathSegments();
 		//TODO does CurseForge still put tabs in their file names?
 		final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
