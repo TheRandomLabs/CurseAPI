@@ -8,6 +8,10 @@
 	</Match>
 
 	<Match>
+		<Bug pattern="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS"/>
+	</Match>
+
+	<Match>
 		<Class name="~.*Test"/>
 
 		<Not>

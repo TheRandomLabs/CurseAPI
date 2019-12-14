@@ -116,7 +116,7 @@ public final class OkHttpUtils {
 		try {
 			return URLDecoder.decode(path, StandardCharsets.UTF_8.name());
 		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(
+			throw new IllegalStateException(
 					"UTF-8 encoding is not supported; this should never happen", ex
 			);
 		}
