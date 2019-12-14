@@ -1,8 +1,5 @@
 package com.therandomlabs.curseapi;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -223,17 +220,9 @@ public final class CurseAPI {
 		}
 
 		final HttpUrl url = optionalURL.get();
-		final List<String> pathSegments = url.encodedPathSegments();
-		//TODO does CurseForge still put tabs in their file names?
-		final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
-
-		try {
-			return Optional.of(OkHttpUtils.downloadToDirectory(
-					url, directory, URLDecoder.decode(path, StandardCharsets.UTF_8.name())
-			));
-		} catch (UnsupportedEncodingException ex) {
-			throw new CurseException(ex);
-		}
+		return Optional.of(OkHttpUtils.downloadToDirectory(
+				url, directory, OkHttpUtils.getFileNameFromURLPath(url)
+		));
 	}
 
 	/**

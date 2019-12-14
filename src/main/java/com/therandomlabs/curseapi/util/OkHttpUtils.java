@@ -2,8 +2,12 @@ package com.therandomlabs.curseapi.util;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -94,6 +98,25 @@ public final class OkHttpUtils {
 			return path;
 		} catch (IOException ex) {
 			throw new CurseException(ex);
+		}
+	}
+
+	/**
+	 * Gets the file name embedded within the path of the specified URL.
+	 * @param url a URL.
+	 * @return the file name embedded within the path of the specified URL.
+	 */
+	public static String getFileNameFromURLPath(HttpUrl url) {
+		final List<String> pathSegments = url.encodedPathSegments();
+		//TODO does CurseForge still put tabs in their file names?
+		final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
+
+		try {
+			return URLDecoder.decode(path, StandardCharsets.UTF_8.name());
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(
+					"UTF-8 encoding is not supported; this should never happen", ex
+			);
 		}
 	}
 }
