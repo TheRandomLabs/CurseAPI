@@ -17,7 +17,7 @@ public final class MoshiUtils {
 	 * A {@link Moshi} instance with adapters for {@link org.jsoup.nodes.Element}s,
 	 * {@link okhttp3.HttpUrl}s and {@link java.time.ZonedDateTime}s.
 	 */
-	public static final Moshi MOSHI = new Moshi.Builder().
+	public static final Moshi moshi = new Moshi.Builder().
 			add(ElementAdapter.INSTANCE).
 			add(HttpUrlAdapter.INSTANCE).
 			add(ZonedDateTimeAdapter.INSTANCE).
@@ -36,7 +36,7 @@ public final class MoshiUtils {
 	 */
 	public static <T> T fromJSON(String json, Class<T> type) throws CurseException {
 		try {
-			return MOSHI.adapter(type).fromJson(json);
+			return moshi.adapter(type).fromJson(json);
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}
@@ -69,7 +69,7 @@ public final class MoshiUtils {
 	 */
 	public static <T> String toJSON(T value, Class<T> type) {
 		//CurseForge prefers double space indents
-		return MOSHI.adapter(type).indent("  ").toJson(value);
+		return moshi.adapter(type).indent("  ").toJson(value);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public final class MoshiUtils {
 	 */
 	public static <T> void toJSON(T value, Class<T> type, Path path) throws CurseException {
 		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
-			MOSHI.adapter(type).toJson(sink, value);
+			moshi.adapter(type).toJson(sink, value);
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}

@@ -23,7 +23,7 @@ public final class RetrofitUtils {
 
 	/**
 	 * Returns a {@link Retrofit} instance for the specified base URL that uses
-	 * {@link MoshiUtils#MOSHI}.
+	 * {@link MoshiUtils#moshi}.
 	 *
 	 * @param baseURL a URL.
 	 * @return a {@link Retrofit} instance.
@@ -31,7 +31,7 @@ public final class RetrofitUtils {
 	public static Retrofit get(String baseURL) {
 		return new Retrofit.Builder().
 				baseUrl(baseURL).
-				addConverterFactory(MoshiConverterFactory.create(MoshiUtils.MOSHI)).
+				addConverterFactory(MoshiConverterFactory.create(MoshiUtils.moshi)).
 				build();
 	}
 
