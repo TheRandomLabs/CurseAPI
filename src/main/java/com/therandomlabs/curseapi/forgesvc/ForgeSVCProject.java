@@ -119,7 +119,14 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public CurseFiles<CurseFile> files() throws CurseException {
 		if (files == null) {
-			files = new CurseFiles<>(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
+			final Set<ForgeSVCFile> forgeSVCFiles =
+					RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id));
+
+			for (ForgeSVCFile file : forgeSVCFiles) {
+				file.setProject(this);
+			}
+
+			files = new CurseFiles<>(forgeSVCFiles);
 		}
 
 		return files;

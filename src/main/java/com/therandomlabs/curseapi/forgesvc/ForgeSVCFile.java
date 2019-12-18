@@ -118,8 +118,13 @@ final class ForgeSVCFile extends CurseFile {
 		changelog = null;
 	}
 
-	//This is used by ForgeSVCProvider so that projectId is not 0.
+	//This is called by ForgeSVCProvider so that projectId is not 0.
 	void setProjectID(int id) {
 		projectId = id;
+	}
+
+	//This is called by ForgeSVCProject#files().
+	void setProject(CurseProject project) {
+		this.project = project;
 	}
 }

@@ -63,6 +63,21 @@ public abstract class CurseDependency implements Comparable<CurseDependency> {
 	public abstract int projectID();
 
 	/**
+	 * Returns this {@link CurseDependency} as a {@link CurseProject}. This value may be cached.
+	 *
+	 * @return this {@link CurseDependency} as a {@link CurseProject}.
+	 * @throws CurseException if an error occurs.
+	 * @see #clearProjectCache()
+	 */
+	public abstract CurseProject project() throws CurseException;
+
+	/**
+	 * If this {@link CurseDependency} implementation caches the value returned by
+	 * {@link #project()}, this method clears this cached value.
+	 */
+	public abstract void clearProjectCache();
+
+	/**
 	 * Returns the type of this {@link CurseDependency}.
 	 *
 	 * @return the type of this {@link CurseDependency}.
@@ -75,5 +90,5 @@ public abstract class CurseDependency implements Comparable<CurseDependency> {
 	 * @return this {@link CurseDependency} as a {@link CurseProject}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public abstract CurseProject asProject() throws CurseException;
+	public abstract CurseProject toCurseProject() throws CurseException;
 }
