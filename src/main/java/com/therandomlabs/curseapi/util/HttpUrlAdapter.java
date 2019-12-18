@@ -22,7 +22,7 @@ public final class HttpUrlAdapter {
 	 * @return a JSON string representation of the specified {@link HttpUrl}.
 	 */
 	@ToJson
-	public String toJson(HttpUrl url) {
+	public String toJSON(HttpUrl url) {
 		return url.toString();
 	}
 
@@ -33,7 +33,7 @@ public final class HttpUrlAdapter {
 	 * @return an {@link HttpUrl}.
 	 */
 	@FromJson
-	public HttpUrl fromJson(String url) {
+	public HttpUrl fromJSON(String url) {
 		return HttpUrl.get(url);
 	}
 }

@@ -23,7 +23,7 @@ public final class ElementAdapter {
 	 * @return a JSON string representation of the specified {@link Element}.
 	 */
 	@ToJson
-	public String toJson(Element element) {
+	public String toJSON(Element element) {
 		return element.outerHtml();
 	}
 
@@ -34,7 +34,7 @@ public final class ElementAdapter {
 	 * @return an {@link Element}.
 	 */
 	@FromJson
-	public Element fromJson(String element) {
+	public Element fromJSON(String element) {
 		return Jsoup.parse(element);
 	}
 }

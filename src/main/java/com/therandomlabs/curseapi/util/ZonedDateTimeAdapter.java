@@ -24,7 +24,7 @@ public final class ZonedDateTimeAdapter {
 	 * @return a JSON string representation of the specified {@link ZonedDateTime}.
 	 */
 	@ToJson
-	public String toJson(ZonedDateTime time) {
+	public String toJSON(ZonedDateTime time) {
 		return time.format(DateTimeFormatter.ISO_INSTANT);
 	}
 
@@ -35,7 +35,7 @@ public final class ZonedDateTimeAdapter {
 	 * @return a {@link ZonedDateTime}.
 	 */
 	@FromJson
-	public ZonedDateTime fromJson(String time) {
+	public ZonedDateTime fromJSON(String time) {
 		return ZonedDateTime.parse(time);
 	}
 }
