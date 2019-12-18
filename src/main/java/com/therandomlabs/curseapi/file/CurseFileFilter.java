@@ -9,6 +9,8 @@ import java.util.function.Predicate;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
+import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
 
 /**
  * An implementation of {@link Predicate} with several utility methods for {@link CurseFile}s.
@@ -16,7 +18,7 @@ import com.therandomlabs.curseapi.CurseAPI;
  * @see CurseFiles#filter(Predicate)
  */
 public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
-	private Set<String> gameVersions = new HashSet<>();
+	private Set<String> gameVersionStrings = new HashSet<>();
 	private int newerThan = CurseAPI.MIN_FILE_ID - 1;
 	private int olderThan = Integer.MAX_VALUE;
 	private CurseReleaseType minimumStability = CurseReleaseType.ALPHA;
@@ -28,7 +30,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	public CurseFileFilter clone() {
 		try {
 			final CurseFileFilter filter = (CurseFileFilter) super.clone();
-			filter.gameVersions = new HashSet<>(gameVersions);
+			filter.gameVersionStrings = new HashSet<>(gameVersionStrings);
 			return filter;
 		} catch (CloneNotSupportedException ignored) {}
 
@@ -40,7 +42,8 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 */
 	@Override
 	public boolean test(CurseFile file) {
-		if (!gameVersions.isEmpty() && Collections.disjoint(gameVersions, file.gameVersions())) {
+		if (!gameVersionStrings.isEmpty() &&
+				Collections.disjoint(gameVersionStrings, file.gameVersionStrings())) {
 			return false;
 		}
 
@@ -49,34 +52,88 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	}
 
 	/**
-	 * Returns this {@link CurseFileFilter}'s game versions.
+	 * Returns this {@link CurseFileFilter}'s game version strings.
 	 *
-	 * @return a mutable {@link Set} containing this {@link CurseFileFilter}'s game versions.
+	 * @return a mutable {@link Set} containing this {@link CurseFileFilter}'s game version strings.
 	 */
-	public Set<String> gameVersions() {
-		return new HashSet<>(gameVersions);
+	public Set<String> gameVersionStrings() {
+		return new HashSet<>(gameVersionStrings);
 	}
 
 	/**
-	 * Sets this {@link CurseFileFilter}'s game versions.
+	 * Adds the specified game version stringsto this {@link CurseFileFilter},
+	 *
+	 * @param versions an array of game version strings.
+	 * @return this {@link CurseFileFilter}.
+	 */
+	public CurseFileFilter gameVersionStrings(String... versions) {
+		Preconditions.checkNotNull(versions, "versions should not be null");
+		return gameVersionStrings(ImmutableSet.copyOf(versions));
+	}
+
+	/**
+	 * Adds the specified game version strings to this {@link CurseFileFilter}.
+	 *
+	 * @param versions a collection of game version strings.
+	 * @return this {@link CurseFileFilter}.
+	 */
+	public CurseFileFilter gameVersionStrings(Collection<String> versions) {
+		Preconditions.checkNotNull(versions, "versions should not be null");
+		gameVersionStrings.addAll(versions);
+		return this;
+	}
+
+	/**
+	 * Adds the specified game versions to this {@link CurseFileFilter}.
 	 *
 	 * @param versions an array of game versions.
 	 * @return this {@link CurseFileFilter}.
 	 */
-	public CurseFileFilter gameVersions(String... versions) {
+	public CurseFileFilter gameVersions(CurseGameVersion<?>... versions) {
 		Preconditions.checkNotNull(versions, "versions should not be null");
 		return gameVersions(ImmutableSet.copyOf(versions));
 	}
 
 	/**
-	 * Sets this {@link CurseFileFilter}'s game versions.
+	 * Adds the specified game versions to this {@link CurseFileFilter}.
 	 *
 	 * @param versions a collection of game versions.
 	 * @return this {@link CurseFileFilter}.
 	 */
-	public CurseFileFilter gameVersions(Collection<String> versions) {
+	public CurseFileFilter gameVersions(Collection<CurseGameVersion<?>> versions) {
 		Preconditions.checkNotNull(versions, "versions should not be null");
-		gameVersions.addAll(versions);
+
+		for (CurseGameVersion<?> version : versions) {
+			gameVersionStrings.add(version.versionString());
+		}
+
+		return this;
+	}
+
+	/**
+	 * Adds the specified game version groups to this {@link CurseFileFilter}.
+	 *
+	 * @param versionGroups an array of game version groups.
+	 * @return this {@link CurseFileFilter}.
+	 */
+	public CurseFileFilter gameVersionGroups(CurseGameVersionGroup<?>... versionGroups) {
+		Preconditions.checkNotNull(versionGroups, "versionGroups should not be null");
+		return gameVersionGroups(ImmutableSet.copyOf(versionGroups));
+	}
+
+	/**
+	 * Adds the specified game version groups to this {@link CurseFileFilter}.
+	 *
+	 * @param versionGroups a collection of game version groups.
+	 * @return this {@link CurseFileFilter}.
+	 */
+	public CurseFileFilter gameVersionGroups(Collection<CurseGameVersionGroup<?>> versionGroups) {
+		Preconditions.checkNotNull(versionGroups, "versionGroups should not be null");
+
+		for (CurseGameVersionGroup<?> versionGroup : versionGroups) {
+			gameVersionStrings.addAll(versionGroup.versionStrings());
+		}
+
 		return this;
 	}
 
@@ -86,7 +143,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * @return this {@link CurseFileFilter}.
 	 */
 	public CurseFileFilter clearGameVersions() {
-		gameVersions.clear();
+		gameVersionStrings.clear();
 		return this;
 	}
 

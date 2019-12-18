@@ -111,7 +111,7 @@ public class CurseAPITest {
 		assertThat(file.downloadURL()).isNotNull();
 		assertThat(file.dependencies(CurseDependencyType.REQUIRED)).isNotEmpty();
 		assertThat(file.dependencies().iterator().next().asProject()).isNotNull();
-		assertThat(file.gameVersions()).isNotEmpty();
+		assertThat(file.gameVersionStrings()).isNotEmpty();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}
 

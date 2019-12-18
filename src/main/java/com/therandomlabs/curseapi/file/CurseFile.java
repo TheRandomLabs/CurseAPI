@@ -133,11 +133,11 @@ public abstract class CurseFile extends BasicCurseFile {
 	}
 
 	/**
-	 * Returns this file's game versions.
+	 * Returns this file's game version strings.
 	 *
-	 * @return a mutable {@link Set} containing this file's game versions.
+	 * @return a mutable {@link Set} containing this file's game version strings.
 	 */
-	public abstract Set<String> gameVersions();
+	public abstract Set<String> gameVersionStrings();
 
 	/**
 	 * Returns this file's changelog as an {@link Element}. This value may be cached.

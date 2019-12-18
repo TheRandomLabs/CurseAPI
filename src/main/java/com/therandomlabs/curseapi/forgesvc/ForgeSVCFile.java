@@ -98,7 +98,7 @@ final class ForgeSVCFile extends CurseFile {
 	}
 
 	@Override
-	public Set<String> gameVersions() {
+	public Set<String> gameVersionStrings() {
 		return new LinkedHashSet<>(gameVersion);
 	}
 
