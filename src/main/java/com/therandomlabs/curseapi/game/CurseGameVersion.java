@@ -2,17 +2,16 @@ package com.therandomlabs.curseapi.game;
 
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-
 /**
  * Represents a CurseForge game version.
  * <p>
  * Implementations of this class should be effectively immutable.
  *
- * @param <V> the implementation of this class, which is used as the type parameter for
- * {@link Comparable}.
+ * @param <V> the type of {@link CurseGameVersion} that can be compared with instances of this
+ * implementation. This is used as the type parameter for {@link Comparable}.
+ * Generally, this is the implementation class.
  */
-public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements Comparable<V> {
+public abstract class CurseGameVersion<V extends CurseGameVersion<?>> implements Comparable<V> {
 	/**
 	 * {@inheritDoc}
 	 * <p>
@@ -29,7 +28,7 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	 * <p>
 	 * This method returns {@code true} if and only if the other object is also a
 	 * {@link CurseGameVersion} and the values returned by {@link #gameID()} and
-	 * {@link #versionString()} is the same for both {@link CurseGameVersion}s.
+	 * {@link #versionString()} are the same for both {@link CurseGameVersion}s.
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -47,14 +46,23 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Returns the value returned by {@link #versionString()}.
+	 *
+	 * @return the value returned by {@link #versionString()}}.
 	 */
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(this).
-				add("gameID", gameID()).
-				add("versionString", versionString()).
-				toString();
+		return versionString();
+	}
+
+	/**
+	 * Returns this game version's version group.
+	 *
+	 * @return this game version's version group, or {@link CurseGameVersionGroup#none(int)}
+	 * if there is none.
+	 */
+	public CurseGameVersionGroup<V> versionGroup() {
+		return CurseGameVersionGroup.none(gameID());
 	}
 
 	/**
@@ -80,9 +88,9 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<V>> implements
 	}
 
 	/**
-	 * Returns the ID of the game which this category section belongs in.
+	 * Returns the ID of this game version's game.
 	 *
-	 * @return the ID of the game which this category section belongs in.
+	 * @return the ID of this game version's game.
 	 */
 	public abstract int gameID();
 
