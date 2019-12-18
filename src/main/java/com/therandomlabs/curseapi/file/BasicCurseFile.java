@@ -6,6 +6,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.project.CurseProject;
 
 /**
  * A basic representation of a CurseForge file.
@@ -20,6 +21,9 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		//These field names should be kept the same for Moshi.
 		private final int projectID;
 		private final int fileID;
+
+		//Cache.
+		private transient CurseProject project;
 
 		/**
 		 * Constructs an immutable {@link BasicCurseFile} with the specified project and file ID.
@@ -47,6 +51,26 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		@Override
 		public int projectID() {
 			return projectID;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public CurseProject project() throws CurseException {
+			if (project == null) {
+				project = CurseAPI.project(projectID).orElse(null);
+			}
+
+			return project;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void clearProjectCache() {
+			project = null;
 		}
 
 		/**
@@ -108,6 +132,33 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * @return the ID of this file's project.
 	 */
 	public abstract int projectID();
+
+	/**
+	 * Returns this file's project as a {@link CurseProject}. This value may be cached.
+	 *
+	 * @return this file's project as a {@link CurseProject}.
+	 * @throws CurseException if an error occurs.
+	 * @see #clearProjectCache()
+	 */
+	public abstract CurseProject project() throws CurseException;
+
+	/**
+	 * Returns whether the specified file belongs to the same project as this file.
+	 *
+	 * @param file a {@link BasicCurseFile}.
+	 * @return {@code true} if the value returned by {@link #projectID()} is the same for both
+	 * this {@link BasicCurseFile} and the specified {@link BasicCurseFile},
+	 * or otherwise {@code false}.
+	 */
+	public boolean sameProject(BasicCurseFile file) {
+		return projectID() == file.projectID();
+	}
+
+	/**
+	 * If this {@link BasicCurseFile} implementation caches the value returned by
+	 * {@link #project()}, this method clears this cached value.
+	 */
+	public abstract void clearProjectCache();
 
 	/**
 	 * Returns this file's ID.

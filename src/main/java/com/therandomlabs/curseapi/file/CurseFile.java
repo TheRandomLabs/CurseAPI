@@ -140,34 +140,43 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract Set<String> gameVersions();
 
 	/**
-	 * Returns this file's changelog as an {@link Element}.
+	 * Returns this file's changelog as an {@link Element}. This value may be cached.
 	 *
 	 * @return this file's changelog as an {@link Element}.
 	 * @throws CurseException if an error occurs.
+	 * @see #clearChangelogCache()
 	 */
 	public abstract Element changelog() throws CurseException;
 
 	/**
-	 * Returns this file's changelog as plain text.
+	 * Returns this file's changelog as plain text. This value may be cached.
 	 *
 	 * @return this file's changelog as plain text as returned by
 	 * {@link JsoupUtils#getPlainText(Element, int)}.
 	 * @throws CurseException if an error occurs.
+	 * @see #clearChangelogCache()
 	 */
 	public String changelogPlainText() throws CurseException {
 		return changelogPlainText(Integer.MAX_VALUE);
 	}
 
 	/**
-	 * Returns this file's changelog as plain text.
+	 * Returns this file's changelog as plain text. This value may be cached.
 	 *
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
 	 * @return this file's changelog as plain text as returned by
 	 * {@link JsoupUtils#getPlainText(Element, int)}.
 	 * @throws CurseException if an error occurs.
+	 * @see #clearChangelogCache()
 	 */
 	public String changelogPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
 		return JsoupUtils.getPlainText(changelog(), maxLineLength);
 	}
+
+	/**
+	 * If this {@link CurseFile} implementation caches the value returned by {@link #changelog()},
+	 * this method clears this cached value.
+	 */
+	public abstract void clearChangelogCache();
 }

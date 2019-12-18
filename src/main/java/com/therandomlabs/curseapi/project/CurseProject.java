@@ -184,6 +184,12 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	}
 
 	/**
+	 * If this {@link CurseProject} implementation caches the value returned by
+	 * {@link #description()}, this method clears this cached value.
+	 */
+	public abstract void clearDescriptionCache();
+
+	/**
 	 * Returns this project's download count.
 	 *
 	 * @return this project's download count.
@@ -197,6 +203,12 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public abstract CurseFiles<CurseFile> files() throws CurseException;
+
+	/**
+	 * If this {@link CurseProject} implementation caches the value returned by
+	 * {@link #files()}, this method clears this cached value.
+	 */
+	public abstract void clearFilesCache();
 
 	/**
 	 * Returns this project's primary category.

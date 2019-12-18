@@ -36,6 +36,10 @@ final class ForgeSVCProject extends CurseProject {
 	//"isExperimental" is spelled incorrectly in the JSON.
 	private boolean isExperiemental;
 
+	//Cache.
+	private transient Element description;
+	private transient CurseFiles<CurseFile> files;
+
 	@Override
 	public int id() {
 		return id;
@@ -95,7 +99,16 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public Element description() throws CurseException {
-		return RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getDescription(id));
+		if (description == null) {
+			description = RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getDescription(id));
+		}
+
+		return description;
+	}
+
+	@Override
+	public void clearDescriptionCache() {
+		description = null;
 	}
 
 	@Override
@@ -105,7 +118,16 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public CurseFiles<CurseFile> files() throws CurseException {
-		return new CurseFiles<>(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
+		if (files == null) {
+			files = new CurseFiles<>(RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id)));
+		}
+
+		return files;
+	}
+
+	@Override
+	public void clearFilesCache() {
+		files = null;
 	}
 
 	@Override

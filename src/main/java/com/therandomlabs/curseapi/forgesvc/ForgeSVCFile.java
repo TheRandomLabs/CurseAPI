@@ -5,11 +5,13 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseDependency;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseReleaseType;
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -27,9 +29,27 @@ final class ForgeSVCFile extends CurseFile {
 	private Set<ForgeSVCDependency> dependencies;
 	private Set<String> gameVersion;
 
+	//Cache.
+	private transient CurseProject project;
+	private transient Element changelog;
+
 	@Override
 	public int projectID() {
 		return projectId;
+	}
+
+	@Override
+	public CurseProject project() throws CurseException {
+		if (project == null) {
+			project = CurseAPI.project(projectId).orElse(null);
+		}
+
+		return project;
+	}
+
+	@Override
+	public void clearProjectCache() {
+		project = null;
 	}
 
 	@Override
@@ -84,7 +104,18 @@ final class ForgeSVCFile extends CurseFile {
 
 	@Override
 	public Element changelog() throws CurseException {
-		return RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getChangelog(projectId, id));
+		if (changelog == null) {
+			changelog = RetrofitUtils.getElement(
+					ForgeSVCProvider.FORGESVC.getChangelog(projectId, id)
+			);
+		}
+
+		return changelog;
+	}
+
+	@Override
+	public void clearChangelogCache() {
+		changelog = null;
 	}
 
 	//This is used by ForgeSVCProvider so that projectId is not 0.

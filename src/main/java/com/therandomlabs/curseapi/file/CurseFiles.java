@@ -12,6 +12,8 @@ import com.therandomlabs.curseapi.CurseAPI;
 /**
  * An implementation of {@link TreeSet} with additional utility methods for working with
  * {@link CurseFile}s.
+ *
+ * @param <F> the type of {@link BasicCurseFile}.
  */
 public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	/**
