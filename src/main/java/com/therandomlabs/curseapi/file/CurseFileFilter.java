@@ -19,7 +19,7 @@ import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
  * @see CurseFiles#filter(Predicate)
  */
 public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
-	private Set<String> gameVersionStrings = new HashSet<>();
+	private HashSet<String> gameVersionStrings = new HashSet<>();
 	private int newerThan = CurseAPI.MIN_FILE_ID - 1;
 	private int olderThan = Integer.MAX_VALUE;
 	private CurseReleaseType minimumStability = CurseReleaseType.ALPHA;
@@ -57,8 +57,9 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 *
 	 * @return a mutable {@link Set} containing this {@link CurseFileFilter}'s game version strings.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<String> gameVersionStrings() {
-		return new HashSet<>(gameVersionStrings);
+		return (Set<String>) gameVersionStrings.clone();
 	}
 
 	/**

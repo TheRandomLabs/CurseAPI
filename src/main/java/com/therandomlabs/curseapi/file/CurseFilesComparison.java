@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Represents a comparison between two sets of {@link BasicCurseFile}s.
@@ -14,11 +13,11 @@ import com.google.common.collect.ImmutableSet;
  * @param <F> the type of {@link BasicCurseFile}.
  */
 public class CurseFilesComparison<F extends BasicCurseFile> {
-	private final Set<F> unchanged;
-	private final Set<CurseFileChange<F>> updated;
-	private final Set<CurseFileChange<F>> downgraded;
-	private final Set<F> removed;
-	private final Set<F> added;
+	private final HashSet<F> unchanged;
+	private final HashSet<CurseFileChange<F>> updated;
+	private final HashSet<CurseFileChange<F>> downgraded;
+	private final HashSet<F> removed;
+	private final HashSet<F> added;
 
 	/**
 	 * Constructs a {@link CurseFilesComparison}.
@@ -38,56 +37,61 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 		Preconditions.checkNotNull(downgraded, "downgraded should not be null");
 		Preconditions.checkNotNull(removed, "removed should not be null");
 		Preconditions.checkNotNull(added, "added should not be null");
-		this.unchanged = ImmutableSet.copyOf(unchanged);
-		this.updated = ImmutableSet.copyOf(updated);
-		this.downgraded = ImmutableSet.copyOf(downgraded);
-		this.removed = ImmutableSet.copyOf(removed);
-		this.added = ImmutableSet.copyOf(added);
+		this.unchanged = new HashSet<>(unchanged);
+		this.updated = new HashSet<>(updated);
+		this.downgraded = new HashSet<>(downgraded);
+		this.removed = new HashSet<>(removed);
+		this.added = new HashSet<>(added);
 	}
 
 	/**
-	 * Returns an immutable {@link Set} containing all unchanged files.
+	 * Returns a mutable {@link Set} containing all unchanged files.
 	 *
-	 * @return an immutable {@link Set} containing all unchanged files.
+	 * @return a mutable {@link Set} containing all unchanged files.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<F> unchanged() {
-		return unchanged;
+		return (Set<F>) unchanged.clone();
 	}
 
 	/**
-	 * Returns an immutable {@link Set} containing all updated files.
+	 * Returns a mutable {@link Set} containing all updated files.
 	 *
-	 * @return an immutable {@link Set} containing all updated files.
+	 * @return a mutable {@link Set} containing all updated files.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<CurseFileChange<F>> updated() {
-		return updated;
+		return (Set<CurseFileChange<F>>) updated.clone();
 	}
 
 	/**
-	 * Returns an immutable {@link Set} containing all downgraded files.
+	 * Returns a mutable {@link Set} containing all downgraded files.
 	 *
-	 * @return an immutable {@link Set} containing all downgraded files.
+	 * @return a mutable {@link Set} containing all downgraded files.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<CurseFileChange<F>> downgraded() {
-		return downgraded;
+		return (Set<CurseFileChange<F>>) downgraded.clone();
 	}
 
 	/**
-	 * Returns an immutable {@link Set} containing all removed files.
+	 * Returns a mutable {@link Set} containing all removed files.
 	 *
-	 * @return an immutable {@link Set} containing all removed files.
+	 * @return a mutable {@link Set} containing all removed files.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<F> removed() {
-		return removed;
+		return (Set<F>) removed.clone();
 	}
 
 	/**
-	 * Returns an immutable {@link Set} containing all added files.
+	 * Returns a mutable {@link Set} containing all added files.
 	 *
-	 * @return an immutable {@link Set} containing all added files.
+	 * @return a mutable {@link Set} containing all added files.
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<F> added() {
-		return added;
+		return (Set<F>) added.clone();
 	}
 
 	/**
