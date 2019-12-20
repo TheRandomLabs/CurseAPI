@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -11,6 +13,7 @@ import com.therandomlabs.curseapi.file.CurseDependency;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseReleaseType;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
@@ -33,6 +36,7 @@ final class ForgeSVCFile extends CurseFile {
 
 	//Cache.
 	private transient CurseProject project;
+	private transient SortedSet<CurseGameVersion<?>> gameVersions;
 	private transient Element changelog;
 
 	@Override
@@ -110,6 +114,27 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public Set<String> gameVersionStrings() {
 		return new LinkedHashSet<>(gameVersion);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V extends CurseGameVersion<?>> SortedSet<V> gameVersions() throws CurseException {
+		if (gameVersions == null) {
+			final Set<String> versionStrings = gameVersionStrings();
+			gameVersions = new TreeSet<>();
+			final int gameID = project().gameID();
+
+			for (String versionString : versionStrings) {
+				CurseAPI.<V>gameVersion(gameID, versionString).ifPresent(gameVersions::add);
+			}
+		}
+
+		return (SortedSet<V>) gameVersions;
+	}
+
+	@Override
+	public void clearGameVersionsCache() {
+		gameVersions = null;
 	}
 
 	@Override

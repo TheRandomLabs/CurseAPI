@@ -2,12 +2,15 @@ package com.therandomlabs.curseapi.forgesvc;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 
 final class ForgeSVCGame extends CurseGame {
 	private int id;
@@ -17,6 +20,7 @@ final class ForgeSVCGame extends CurseGame {
 
 	//Cache.
 	private transient Set<CurseCategory> categories;
+	private transient SortedSet<CurseGameVersion<?>> versions;
 
 	@Override
 	public int id() {
@@ -56,5 +60,20 @@ final class ForgeSVCGame extends CurseGame {
 	@Override
 	public void clearCategoriesCache() {
 		categories = null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V extends CurseGameVersion<?>> SortedSet<V> versions() throws CurseException {
+		if (versions == null) {
+			versions = CurseAPI.gameVersions(id()).orElseGet(TreeSet::new);
+		}
+
+		return (SortedSet<V>) versions;
+	}
+
+	@Override
+	public void clearVersionsCache() {
+		versions = null;
 	}
 }
