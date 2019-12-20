@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi.game;
 
 import java.awt.image.BufferedImage;
+import java.util.Optional;
 
 import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.CurseException;
@@ -61,19 +62,49 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	}
 
 	/**
-	 * Returns the ID of the game which this category belongs in.
+	 * Returns the ID of this category's game.
 	 *
-	 * @return the ID of the game which this category belongs in.
+	 * @return the ID of this category's game.
 	 */
 	public abstract int gameID();
 
 	/**
-	 * Returns the ID of the section which this category belongs in.
+	 * Returns this category's game. This value may be cached.
 	 *
-	 * @return the ID of the section which tihs category belongs in,
-	 * or {@code 0} if it does not belong in any section.
+	 * @return a {@link CurseGame} instance that represents this category's game.
+	 * @throws CurseException if an error occurs.
+	 */
+	public abstract CurseGame game() throws CurseException;
+
+	/**
+	 * If this {@link CurseCategory} implementation caches the value returned by
+	 * {@link #game()}, this method clears this cached value.
+	 */
+	public abstract void clearGameCache();
+
+	/**
+	 * Returns the ID of this category's section.
+	 *
+	 * @return the ID of this category's section, or {@code 0} if it does not belong in any section.
 	 */
 	public abstract int sectionID();
+
+	/**
+	 * Returns this category's section. This method uses the value returned by {@link #game()}
+	 * to retrieve the category section, so this value may be cached.
+	 *
+	 * @return a {@link CurseCategorySection} instance that represents this category's section.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseCategorySection section() throws CurseException {
+		final Optional<CurseCategorySection> optionalSection = game().categorySection(sectionID());
+
+		if (optionalSection.isPresent()) {
+			return optionalSection.get();
+		}
+
+		throw new CurseException("Could not retrieve section for category: " + this);
+	}
 
 	/**
 	 * Returns this category's ID.

@@ -5,11 +5,15 @@ import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
@@ -138,6 +142,30 @@ public abstract class CurseFile extends BasicCurseFile {
 	 * @return a mutable {@link Set} containing this file's game version strings.
 	 */
 	public abstract Set<String> gameVersionStrings();
+
+	/**
+	 * Returns this file's game versions.
+	 *
+	 * @param <V> the implementation of {@link CurseGameVersion}.
+	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances as retrieved by
+	 * calling {@link CurseAPI#gameVersion(int, String)} on the version strings returned
+	 * by {@link #gameVersionStrings()}.
+	 * If there is no registered {@link com.therandomlabs.curseapi.CurseAPIProvider} implementation
+	 * that provides {@link CurseGameVersion}s for this file's game, an empty {@link SortedSet} is
+	 * returned.
+	 * @throws CurseException if an error occurs.
+	 */
+	public <V extends CurseGameVersion<?>> SortedSet<V> gameVersions() throws CurseException {
+		final Set<String> versionStrings = gameVersionStrings();
+		final SortedSet<V> versions = new TreeSet<>();
+		final int gameID = project().gameID();
+
+		for (String versionString : versionStrings) {
+			CurseAPI.<V>gameVersion(gameID, versionString).ifPresent(versions::add);
+		}
+
+		return versions;
+	}
 
 	/**
 	 * Returns this file's changelog as an {@link Element}. This value may be cached.

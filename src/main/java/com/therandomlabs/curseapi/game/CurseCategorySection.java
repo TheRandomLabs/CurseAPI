@@ -58,11 +58,25 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	}
 
 	/**
-	 * Returns the ID of the game which this category section belongs in.
+	 * Returns the ID of this category section's game.
 	 *
-	 * @return the ID of the game which this category section belongs in.
+	 * @return the ID of this category section's game.
 	 */
 	public abstract int gameID();
+
+	/**
+	 * Returns this category section's game. This value may be cached.
+	 *
+	 * @return a {@link CurseGame} instance that represents this category section's game.
+	 * @throws CurseException if an error occurs.
+	 */
+	public abstract CurseGame game() throws CurseException;
+
+	/**
+	 * If this {@link CurseCategorySection} implementation caches the value returned by
+	 * {@link #game()}, this method clears this cached value.
+	 */
+	public abstract void clearGameCache();
 
 	/**
 	 * Returns this category section's ID.

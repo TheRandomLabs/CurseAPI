@@ -1,11 +1,13 @@
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.Optional;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
+import com.therandomlabs.curseapi.game.CurseGame;
 
 final class ForgeSVCCategorySection extends CurseCategorySection {
 	private int gameId;
@@ -13,8 +15,29 @@ final class ForgeSVCCategorySection extends CurseCategorySection {
 	private String name;
 
 	//Cache.
+	private transient CurseGame game;
 	private transient Set<CurseCategory> categories;
 	private transient CurseCategory category;
+
+	@Override
+	public CurseGame game() throws CurseException {
+		if (game == null) {
+			final Optional<CurseGame> optionalGame = CurseAPI.game(gameId);
+
+			if (!optionalGame.isPresent()) {
+				throw new CurseException("Could not retrieve game for category section: " + this);
+			}
+
+			game = optionalGame.get();
+		}
+
+		return game;
+	}
+
+	@Override
+	public void clearGameCache() {
+		game = null;
+	}
 
 	@Override
 	public int gameID() {

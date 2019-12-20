@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.forgesvc;
 import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.therandomlabs.curseapi.CurseAPI;
@@ -12,6 +13,7 @@ import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
+import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
@@ -38,6 +40,7 @@ final class ForgeSVCProject extends CurseProject {
 	private boolean isExperiemental;
 
 	//Cache.
+	private transient CurseGame game;
 	private transient Element description;
 	private transient CurseFiles<CurseFile> files;
 
@@ -91,6 +94,26 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public int gameID() {
 		return gameId;
+	}
+
+	@Override
+	public CurseGame game() throws CurseException {
+		if (game == null) {
+			final Optional<CurseGame> optionalGame = CurseAPI.game(gameId);
+
+			if (!optionalGame.isPresent()) {
+				throw new CurseException("Could not retrieve game for project: " + this);
+			}
+
+			game = optionalGame.get();
+		}
+
+		return game;
+	}
+
+	@Override
+	public void clearGameCache() {
+		game = null;
 	}
 
 	@Override

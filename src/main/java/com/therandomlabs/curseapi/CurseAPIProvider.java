@@ -35,7 +35,7 @@ public interface CurseAPIProvider {
 	 * Executes a {@link CurseSearchQuery}.
 	 *
 	 * @param query a {@link CurseSearchQuery}.
-	 * @return a {@link List} of {@link CurseProject}s that match the specified query.
+	 * @return a mutable {@link List} of {@link CurseProject}s that match the specified query.
 	 * @throws CurseException if an error occurs.
 	 */
 	default List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
@@ -104,8 +104,8 @@ public interface CurseAPIProvider {
 	 * Returns all game versions of the game with the specified ID supported by CurseForge.
 	 *
 	 * @param gameID a game ID.
-	 * @return a {@link SortedSet} containing {@link CurseGameVersion} instances that represent all
-	 * game versions of the game with the specified ID supported by CurseForge.
+	 * @return a mutable {@link SortedSet} containing {@link CurseGameVersion} instances that
+	 * represent all game versions of the game with the specified ID supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
 	default SortedSet<? extends CurseGameVersion<?>> gameVersions(int gameID)

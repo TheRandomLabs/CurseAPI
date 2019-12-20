@@ -11,6 +11,7 @@ import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
+import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
@@ -138,11 +139,25 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract HttpUrl url();
 
 	/**
-	 * Returns the ID of the game that this project belongs in.
+	 * Returns the ID of this project's game.
 	 *
-	 * @return the ID of the game that this project belongs in.
+	 * @return the ID of this project's game.
 	 */
 	public abstract int gameID();
+
+	/**
+	 * Returns this project's game. This value may be cached.
+	 *
+	 * @return a {@link CurseGame} instance that represents this project's game.
+	 * @throws CurseException if an error occurs.
+	 */
+	public abstract CurseGame game() throws CurseException;
+
+	/**
+	 * If this {@link CurseProject} implementation caches the value returned by
+	 * {@link #game()}, this method clears this cached value.
+	 */
+	public abstract void clearGameCache();
 
 	/**
 	 * Returns this project's summary.
@@ -197,7 +212,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract int downloadCount();
 
 	/**
-	 * Returns a {@link CurseFiles} instance for this project.
+	 * Returns a {@link CurseFiles} instance for this project. This value may be cached.
 	 *
 	 * @return a {@link CurseFiles} instance for this project.
 	 * @throws CurseException if an error occurs.

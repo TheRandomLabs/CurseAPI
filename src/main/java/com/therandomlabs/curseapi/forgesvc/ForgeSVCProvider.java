@@ -55,7 +55,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	public List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
 		return new ArrayList<>(RetrofitUtils.execute(FORGESVC.searchProjects(
 				query.gameID(), query.categorySectionID(), query.categoryID(),
-				query.gameVersion(), query.pageIndex(), query.pageSize(),
+				query.gameVersionString(), query.pageIndex(), query.pageSize(),
 				query.searchFilter(), query.sortingMethod().id()
 		)));
 	}

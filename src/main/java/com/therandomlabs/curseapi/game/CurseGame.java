@@ -1,9 +1,14 @@
 package com.therandomlabs.curseapi.game;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.common.base.MoreObjects;
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CursePreconditions;
 import okhttp3.HttpUrl;
 
 /**
@@ -95,6 +100,18 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	public abstract Set<CurseCategorySection> categorySections();
 
 	/**
+	 * Returns this {@link CurseGame}'s category section with the specified ID.
+	 *
+	 * @param id a category section ID.
+	 * @return this {@link CurseGame}'s category section with the specified ID wrapped in an
+	 * {@link Optional} if it exists, or otherwise {@link Optional#empty()}}.
+	 */
+	public Optional<CurseCategorySection> categorySection(int id) {
+		CursePreconditions.checkCategorySectionID(id, "id");
+		return categorySections().stream().filter(section -> section.id() == id).findAny();
+	}
+
+	/**
 	 * Returns this {@link CurseGame}'s categories. This value may be cached.
 	 *
 	 * @return a mutable {@link Set} that contains this {@link CurseGame}'s categories
@@ -108,4 +125,19 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	 * this method clears this cached value.
 	 */
 	public abstract void clearCategoriesCache();
+
+	/**
+	 * Returns all known versions of this {@link CurseGame}.
+	 *
+	 * @param <V> the implementation of {@link CurseGameVersion}.
+	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances as retrieved by
+	 * calling {@link CurseAPI#gameVersions(int)}.
+	 * If there is no registered {@link com.therandomlabs.curseapi.CurseAPIProvider} implementation
+	 * that provides {@link CurseGameVersion}s for this game, an empty {@link SortedSet} is
+	 * returned.
+	 * @throws CurseException if an error occurs.
+	 */
+	public <V extends CurseGameVersion<?>> SortedSet<V> versions() throws CurseException {
+		return CurseAPI.<V>gameVersions(id()).orElseGet(TreeSet::new);
+	}
 }

@@ -5,6 +5,7 @@ import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.game.CurseGameVersion;
 
 /**
  * Represents a CurseForge project search query.
@@ -164,12 +165,25 @@ public class CurseSearchQuery implements Cloneable {
 	}
 
 	/**
-	 * Returns this {@link CurseSearchQuery}'s game version.
+	 * Returns this {@link CurseSearchQuery}'s game version string.
 	 *
-	 * @return this {@link CurseSearchQuery}'s game version.
+	 * @return this {@link CurseSearchQuery}'s game version string.
 	 */
-	public String gameVersion() {
+	public String gameVersionString() {
 		return gameVersion;
+	}
+
+	/**
+	 * Sets this {@link CurseSearchQuery}'s game version string.
+	 *
+	 * @param version a game version string.
+	 * @return this {@link CurseSearchQuery}.
+	 */
+	public CurseSearchQuery gameVersionString(String version) {
+		Preconditions.checkNotNull(version, "version should not be null");
+		Preconditions.checkArgument(!version.isEmpty(), "version should not be empty");
+		gameVersion = version;
+		return this;
 	}
 
 	/**
@@ -178,19 +192,25 @@ public class CurseSearchQuery implements Cloneable {
 	 * @param version a game version.
 	 * @return this {@link CurseSearchQuery}.
 	 */
-	public CurseSearchQuery gameVersion(String version) {
+	public CurseSearchQuery gameVersion(CurseGameVersion<?> version) {
 		Preconditions.checkNotNull(version, "version should not be null");
-		Preconditions.checkArgument(!version.isEmpty(), "version should not be empty");
-		gameVersion = version;
+
+		if (gameID != 0) {
+			Preconditions.checkArgument(
+					version.gameID() == gameID, "Game version should match game ID"
+			);
+		}
+
+		gameVersion = version.versionString();
 		return this;
 	}
 
 	/**
-	 * Clears this {@link CurseSearchQuery}'s game version.
+	 * Clears this {@link CurseSearchQuery}'s game version string.
 	 *
 	 * @return this {@link CurseSearchQuery}.
 	 */
-	public CurseSearchQuery clearGameVersion() {
+	public CurseSearchQuery clearGameVersionString() {
 		gameVersion = "";
 		return this;
 	}

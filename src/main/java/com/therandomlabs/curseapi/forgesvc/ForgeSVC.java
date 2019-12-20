@@ -16,7 +16,7 @@ interface ForgeSVC {
 	@GET("api/v2/addon/search")
 	Call<List<ForgeSVCProject>> searchProjects(
 			@Query("gameId") int gameID, @Query("sectionId") int categorySectionID,
-			@Query("categoryId") int categoryID, @Query("gameVersion") String gameVersion,
+			@Query("categoryId") int categoryID, @Query("gameVersion") String gameVersionString,
 			@Query("index") int pageIndex, @Query("pageSize") int pageSize,
 			@Query("searchFilter") String searchFilter, @Query("sort") int sortingMethod
 	);

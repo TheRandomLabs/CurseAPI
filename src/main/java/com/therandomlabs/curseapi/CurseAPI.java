@@ -94,8 +94,9 @@ public final class CurseAPI {
 	 * Executes a {@link CurseSearchQuery}.
 	 *
 	 * @param query a {@link CurseSearchQuery}.
-	 * @return a {@link List} of {@link CurseProject}s that match the specified query wrapped in an
-	 * {@link Optional} if the query is successful, or otherwise {@link Optional#empty()}.
+	 * @return a mutable {@link List} of {@link CurseProject}s that match the specified query
+	 * wrapped in an {@link Optional} if the query is successful, or otherwise
+	 * {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<List<CurseProject>> searchProjects(CurseSearchQuery query)
@@ -242,9 +243,9 @@ public final class CurseAPI {
 	 *
 	 * @param gameID a game ID.
 	 * @param <V> the implementation of {@link CurseGameVersion}.
-	 * @return a {@link SortedSet} containing {@link CurseGameVersion} instances that represent all
-	 * game versions of the game with the specified ID supported by CurseForge wrapped in an
-	 * {@link Optional} if it can be retrieved, or otherwise {@link Optional#empty()}.
+	 * @return a mutable {@link SortedSet} containing {@link CurseGameVersion} instances that
+	 * represent all game versions of the game with the specified ID supported by CurseForge wrapped
+	 * in an {@link Optional} if it can be retrieved, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	@SuppressWarnings("unchecked")

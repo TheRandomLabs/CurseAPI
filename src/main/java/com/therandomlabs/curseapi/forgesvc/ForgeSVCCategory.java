@@ -27,9 +27,32 @@ final class ForgeSVCCategory extends CurseCategory {
 	private HttpUrl url;
 	private HttpUrl avatarUrl;
 
+	//Cache.
+	private transient CurseGame game;
+
 	@Override
 	public int gameID() {
 		return gameId;
+	}
+
+	@Override
+	public CurseGame game() throws CurseException {
+		if (game == null) {
+			final Optional<CurseGame> optionalGame = CurseAPI.game(gameId);
+
+			if (!optionalGame.isPresent()) {
+				throw new CurseException("Could not retrieve game for category: " + this);
+			}
+
+			game = optionalGame.get();
+		}
+
+		return game;
+	}
+
+	@Override
+	public void clearGameCache() {
+		game = null;
 	}
 
 	@Override
