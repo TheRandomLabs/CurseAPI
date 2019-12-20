@@ -125,7 +125,8 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	 * @return {@code true} if this game version group contains any of the specified game versions,
 	 * or otherwise {@code false}.
 	 */
-	public boolean containsAny(V... versions) {
+	@SafeVarargs
+	public final boolean containsAny(V... versions) {
 		return containsAny(Arrays.asList(versions));
 	}
 

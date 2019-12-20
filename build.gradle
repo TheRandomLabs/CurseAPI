@@ -78,6 +78,11 @@ tasks.withType(SpotBugsTask) {
 	}
 }
 
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
 	archiveClassifier.set("sources")
 	from sourceSets.main.allSource

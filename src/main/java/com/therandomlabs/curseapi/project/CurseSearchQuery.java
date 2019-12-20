@@ -1,7 +1,7 @@
 package com.therandomlabs.curseapi.project;
 
 import com.google.common.base.Preconditions;
-import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
@@ -48,9 +48,7 @@ public class CurseSearchQuery implements Cloneable {
 	 * @return this {@link CurseSearchQuery}.
 	 */
 	public CurseSearchQuery gameID(int id) {
-		Preconditions.checkArgument(
-				id >= CurseAPI.MIN_GAME_ID, "id should not be smaller than %s", CurseAPI.MIN_GAME_ID
-		);
+		CursePreconditions.checkGameID(id, "id");
 		gameID = id;
 		return this;
 	}
@@ -92,10 +90,7 @@ public class CurseSearchQuery implements Cloneable {
 	 * @return this {@link CurseSearchQuery}.
 	 */
 	public CurseSearchQuery categorySectionID(int id) {
-		Preconditions.checkArgument(
-				id >= CurseAPI.MIN_CATEGORY_SECTION_ID, "id should not be smaller than %s",
-				CurseAPI.MIN_CATEGORY_SECTION_ID
-		);
+		CursePreconditions.checkCategorySectionID(id, "id");
 		categorySectionID = id;
 		return this;
 	}
@@ -139,10 +134,7 @@ public class CurseSearchQuery implements Cloneable {
 	 * @return this {@link CurseSearchQuery}.
 	 */
 	public CurseSearchQuery categoryID(int id) {
-		Preconditions.checkArgument(
-				id >= CurseAPI.MIN_CATEGORY_ID, "id should not be smaller than %s",
-				CurseAPI.MIN_CATEGORY_ID
-		);
+		CursePreconditions.checkCategoryID(id, "id");
 		categoryID = id;
 		return this;
 	}

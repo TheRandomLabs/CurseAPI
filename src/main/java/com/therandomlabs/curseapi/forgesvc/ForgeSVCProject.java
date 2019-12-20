@@ -5,9 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
@@ -144,10 +144,7 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public HttpUrl fileURL(int fileID) {
-		Preconditions.checkArgument(
-				fileID >= CurseAPI.MIN_FILE_ID, "fileID should not be smaller than %s",
-				CurseAPI.MIN_FILE_ID
-		);
+		CursePreconditions.checkFileID(fileID, "fileID");
 		return HttpUrl.get(websiteUrl + "/files/" + fileID);
 	}
 

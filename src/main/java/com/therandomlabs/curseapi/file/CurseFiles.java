@@ -6,8 +6,7 @@ import java.util.Optional;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-import com.google.common.base.Preconditions;
-import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CursePreconditions;
 
 /**
  * An implementation of {@link TreeSet} with additional utility methods for working with
@@ -102,10 +101,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * @see CurseFileFilter
 	 */
 	public Optional<F> fileWithID(int id) {
-		Preconditions.checkArgument(
-				id >= CurseAPI.MIN_FILE_ID, "id should not be smaller than %s",
-				CurseAPI.MIN_FILE_ID
-		);
+		CursePreconditions.checkFileID(id, "id");
 
 		for (F file : this) {
 			if (file.id() == file.id()) {

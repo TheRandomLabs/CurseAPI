@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
 
@@ -180,10 +181,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * @return this {@link CurseFileFilter}.
 	 */
 	public CurseFileFilter newerThan(int fileID) {
-		Preconditions.checkArgument(
-				fileID >= CurseAPI.MIN_FILE_ID, "fileID should not be lower than %s",
-				CurseAPI.MIN_FILE_ID
-		);
+		CursePreconditions.checkFileID(fileID, "fileID");
 		Preconditions.checkArgument(
 				fileID < olderThan, "fileID should be older than the \"older than\" file"
 		);
@@ -225,10 +223,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * @return this {@link CurseFileFilter}.
 	 */
 	public CurseFileFilter olderThan(int fileID) {
-		Preconditions.checkArgument(
-				fileID >= CurseAPI.MIN_FILE_ID, "fileID should not be lower than %s",
-				CurseAPI.MIN_FILE_ID
-		);
+		CursePreconditions.checkFileID(fileID, "fileID");
 		Preconditions.checkArgument(
 				fileID > newerThan, "fileID should be newer than the \"newer than\" file"
 		);
@@ -274,14 +269,8 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * @see #olderThan(int)
 	 */
 	public CurseFileFilter between(int olderFileID, int newerFileID) {
-		Preconditions.checkArgument(
-				olderFileID >= CurseAPI.MIN_FILE_ID, "olderFileID should not be lower than %s",
-				CurseAPI.MIN_FILE_ID
-		);
-		Preconditions.checkArgument(
-				newerFileID >= CurseAPI.MIN_FILE_ID, "newerFileID should not be lower than %s",
-				CurseAPI.MIN_FILE_ID
-		);
+		CursePreconditions.checkFileID(olderFileID, "olderFileID");
+		CursePreconditions.checkFileID(newerFileID, "newerFileID");
 		Preconditions.checkArgument(
 				newerFileID > olderFileID, "newerFileID should be newer than olderFileID"
 		);

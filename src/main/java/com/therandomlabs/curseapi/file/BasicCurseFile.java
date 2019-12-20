@@ -6,6 +6,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
 
@@ -35,14 +36,8 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		 * @param fileID a file ID.
 		 */
 		public Immutable(int projectID, int fileID) {
-			Preconditions.checkArgument(
-					projectID >= CurseAPI.MIN_PROJECT_ID, "projectID should not be smaller than %s",
-					CurseAPI.MIN_PROJECT_ID
-			);
-			Preconditions.checkArgument(
-					fileID >= CurseAPI.MIN_FILE_ID, "fileID should not be smaller than %s",
-					CurseAPI.MIN_FILE_ID
-			);
+			CursePreconditions.checkProjectID(projectID, "projectID");
+			CursePreconditions.checkFileID(fileID, "fileID");
 			this.projectID = projectID;
 			this.fileID = fileID;
 		}

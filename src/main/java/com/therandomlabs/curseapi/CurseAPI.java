@@ -86,9 +86,7 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseProject> project(int id) throws CurseException {
-		Preconditions.checkArgument(
-				id >= MIN_PROJECT_ID, "id should not be smaller than %s", MIN_PROJECT_ID
-		);
+		CursePreconditions.checkProjectID(id, "id");
 		return get(provider -> provider.project(id));
 	}
 
@@ -115,10 +113,7 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFiles<CurseFile>> files(int projectID) throws CurseException {
-		Preconditions.checkArgument(
-				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
-				MIN_PROJECT_ID
-		);
+		CursePreconditions.checkProjectID(projectID, "projectID");
 		return get(provider -> provider.files(projectID));
 	}
 
@@ -132,13 +127,8 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
-		Preconditions.checkArgument(
-				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
-				MIN_PROJECT_ID
-		);
-		Preconditions.checkArgument(
-				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
-		);
+		CursePreconditions.checkProjectID(projectID, "projectID");
+		CursePreconditions.checkFileID(fileID, "fileID");
 		return get(provider -> provider.file(projectID, fileID));
 	}
 
@@ -153,13 +143,8 @@ public final class CurseAPI {
 	 */
 	public static Optional<HttpUrl> fileDownloadURL(int projectID, int fileID)
 			throws CurseException {
-		Preconditions.checkArgument(
-				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
-				MIN_PROJECT_ID
-		);
-		Preconditions.checkArgument(
-				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
-		);
+		CursePreconditions.checkProjectID(projectID, "projectID");
+		CursePreconditions.checkFileID(fileID, "fileID");
 		return get(provider -> provider.fileDownloadURL(projectID, fileID));
 	}
 
@@ -173,13 +158,8 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static boolean downloadFile(int projectID, int fileID, Path path) throws CurseException {
-		Preconditions.checkArgument(
-				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
-				MIN_PROJECT_ID
-		);
-		Preconditions.checkArgument(
-				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
-		);
+		CursePreconditions.checkProjectID(projectID, "projectID");
+		CursePreconditions.checkFileID(fileID, "fileID");
 		Preconditions.checkNotNull(path, "path should not be null");
 
 		final Optional<HttpUrl> optionalURL = fileDownloadURL(projectID, fileID);
@@ -204,13 +184,8 @@ public final class CurseAPI {
 	 */
 	public static Optional<Path> downloadFileToDirectory(int projectID, int fileID, Path directory)
 			throws CurseException {
-		Preconditions.checkArgument(
-				projectID >= MIN_PROJECT_ID, "projectID should not be smaller than %s",
-				MIN_PROJECT_ID
-		);
-		Preconditions.checkArgument(
-				fileID >= MIN_FILE_ID, "fileID should not be smaller than %s", MIN_FILE_ID
-		);
+		CursePreconditions.checkProjectID(projectID, "projectID");
+		CursePreconditions.checkFileID(fileID, "fileID");
 		Preconditions.checkNotNull(directory, "directory should not be null");
 
 		final Optional<HttpUrl> optionalURL = fileDownloadURL(projectID, fileID);
@@ -258,9 +233,7 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseGame> game(int id) throws CurseException {
-		Preconditions.checkArgument(
-				id >= MIN_GAME_ID, "id should not be smaller than %s", MIN_GAME_ID
-		);
+		CursePreconditions.checkGameID(id, "id");
 		return get(provider -> provider.game(id));
 	}
 
@@ -277,9 +250,7 @@ public final class CurseAPI {
 	@SuppressWarnings("unchecked")
 	public static <V extends CurseGameVersion<?>> Optional<SortedSet<V>> gameVersions(int gameID)
 			throws CurseException {
-		Preconditions.checkArgument(
-				gameID >= MIN_GAME_ID, "gameID should not be smaller than %s", MIN_GAME_ID
-		);
+		CursePreconditions.checkGameID(gameID, "gameID");
 		return get(provider -> (SortedSet<V>) provider.gameVersions(gameID));
 	}
 
@@ -299,9 +270,7 @@ public final class CurseAPI {
 	public static <V extends CurseGameVersion<?>> Optional<V> gameVersion(
 			int gameID, String versionString
 	) throws CurseException {
-		Preconditions.checkArgument(
-				gameID >= MIN_GAME_ID, "gameID should not be smaller than %s", MIN_GAME_ID
-		);
+		CursePreconditions.checkGameID(gameID, "gameID");
 		Preconditions.checkNotNull(versionString, "versionString should not be null");
 		return get(provider -> (V) provider.gameVersion(gameID, versionString));
 	}
@@ -328,10 +297,7 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<Set<CurseCategory>> categories(int sectionID) throws CurseException {
-		Preconditions.checkArgument(
-				sectionID >= MIN_CATEGORY_SECTION_ID, "fileID should not be smaller than %s",
-				MIN_CATEGORY_SECTION_ID
-		);
+		CursePreconditions.checkCategorySectionID(sectionID, "sectionID");
 		return get(provider -> provider.categories(sectionID));
 	}
 
@@ -370,9 +336,7 @@ public final class CurseAPI {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseCategory> category(int id) throws CurseException {
-		Preconditions.checkArgument(
-				id >= MIN_CATEGORY_ID, "id should not be smaller than %s", MIN_CATEGORY_ID
-		);
+		CursePreconditions.checkCategoryID(id, "id");
 		return get(provider -> provider.category(id));
 	}
 
@@ -387,9 +351,6 @@ public final class CurseAPI {
 	 */
 	public static boolean addProvider(CurseAPIProvider provider, boolean firstPriority) {
 		Preconditions.checkNotNull(provider, "provider should not be null");
-		Preconditions.checkArgument(
-				!providers.contains(provider), "provider should not already have been added"
-		);
 
 		if (providers.contains(provider)) {
 			return false;
