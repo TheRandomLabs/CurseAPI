@@ -111,8 +111,8 @@ public final class OkHttpUtils {
 		Preconditions.checkNotNull(url, "url should not be null");
 
 		final List<String> pathSegments = url.encodedPathSegments();
-		//TODO does CurseForge still put tabs in their file names?
-		final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
+		//I don't know if CurseForge still put tabs in their file names.
+		//final String path = pathSegments.get(pathSegments.size() - 1).replace('\t', ' ');
 
 		try {
 			return URLDecoder.decode(path, StandardCharsets.UTF_8.name());
