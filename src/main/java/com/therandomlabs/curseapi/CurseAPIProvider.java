@@ -114,6 +114,21 @@ public interface CurseAPIProvider {
 	}
 
 	/**
+	 * Returns the game version of the game with the specified ID with the specified version string.
+	 *
+	 * @param gameID a game ID.
+	 * @param versionString a version string. The version string may be empty but should never
+	 * be {@code null}.
+	 * @return a {@link CurseGameVersion} instance that represents the game version of the game
+	 * with the specified ID with the specified version string.
+	 * @throws CurseException if an error occurs.
+	 */
+	default CurseGameVersion<?> gameVersion(int gameID, String versionString)
+			throws CurseException {
+		return null;
+	}
+
+	/**
 	 * Returns all project categories on CurseForge.
 	 *
 	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent

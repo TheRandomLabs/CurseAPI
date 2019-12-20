@@ -268,19 +268,42 @@ public final class CurseAPI {
 	 * Returns all game versions of the game with the specified ID supported by CurseForge.
 	 *
 	 * @param gameID a game ID.
-	 * @param <V> the expected implementation class of {@link CurseGameVersion}.
+	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return a {@link SortedSet} containing {@link CurseGameVersion} instances that represent all
 	 * game versions of the game with the specified ID supported by CurseForge wrapped in an
 	 * {@link Optional} if it can be retrieved, or otherwise {@link Optional#empty()}.
 	 * @throws CurseException if an error occurs.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <V extends CurseGameVersion<V>> Optional<SortedSet<V>> gameVersions(int gameID)
+	public static <V extends CurseGameVersion<?>> Optional<SortedSet<V>> gameVersions(int gameID)
 			throws CurseException {
 		Preconditions.checkArgument(
 				gameID >= MIN_GAME_ID, "gameID should not be smaller than %s", MIN_GAME_ID
 		);
 		return get(provider -> (SortedSet<V>) provider.gameVersions(gameID));
+	}
+
+	/**
+	 * Returns the game version of the game with the specified ID with the specified version string.
+	 *
+	 * @param gameID a game ID.
+	 * @param versionString a version string. The version string may be empty but should never
+	 * be {@code null}.
+	 * @param <V> the implementation of {@link CurseGameVersion}.
+	 * @return a {@link CurseGameVersion} instance that represents the game version of the game
+	 * with the specified ID with the specified version string wrapped in an {@link Optional}
+	 * if it exists, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V extends CurseGameVersion<?>> Optional<V> gameVersion(
+			int gameID, String versionString
+	) throws CurseException {
+		Preconditions.checkArgument(
+				gameID >= MIN_GAME_ID, "gameID should not be smaller than %s", MIN_GAME_ID
+		);
+		Preconditions.checkNotNull(versionString, "versionString should not be null");
+		return get(provider -> (V) provider.gameVersion(gameID, versionString));
 	}
 
 	/**
