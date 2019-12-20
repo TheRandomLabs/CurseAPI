@@ -211,6 +211,15 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract void clearFilesCache();
 
 	/**
+	 * Returns the URL of the file in this project with the specified ID.
+	 * The existence and availability of the file are not verified.
+	 *
+	 * @param fileID a file ID.
+	 * @return the URL of the file in this project with the specified ID.
+	 */
+	public abstract HttpUrl fileURL(int fileID);
+
+	/**
 	 * Returns this project's primary category.
 	 *
 	 * @return this project's primary category.

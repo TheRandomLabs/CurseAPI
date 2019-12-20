@@ -170,15 +170,15 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	public abstract int id();
 
 	/**
-	 * Returns this file's URL. This method depends on the {@link CurseProject} value
-	 * returned by {@link #project()}, so this value may be cached. The existence and availability
-	 * of this file are not verified.
+	 * Returns this file's URL. This method uses the {@link CurseProject} value returned by
+	 * {@link #project()} to retrieve the URL, so this value may be cached.
+	 * The existence and availability of this file are not verified.
 	 *
 	 * @return this file's URL.
 	 * @throws CurseException if an error occurs.
 	 */
 	public HttpUrl url() throws CurseException {
-		return HttpUrl.get(project().url() + "/files/" + id());
+		return project().fileURL(id());
 	}
 
 	/**

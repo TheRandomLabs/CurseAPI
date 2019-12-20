@@ -142,6 +142,11 @@ final class ForgeSVCProject extends CurseProject {
 	}
 
 	@Override
+	public HttpUrl fileURL(int fileID) {
+		return HttpUrl.get(websiteUrl + "/files/" + fileID);
+	}
+
+	@Override
 	public CurseCategory primaryCategory() {
 		for (CurseCategory category : categories) {
 			if (category.id() == primaryCategoryId) {
