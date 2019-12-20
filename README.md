@@ -31,7 +31,7 @@ final Optional<CurseFiles<CurseFile>> optionalFiles = CurseAPI.files(285612);
 
 if (optionalFiles.isPresent()) {
 	final CurseFiles<CurseFile> files = optionalFiles.get();
-	files.filter(new CurseFileFilter().gameVersions("1.12.2"));
+	files.filter(new CurseFileFilter().gameVersionStrings("1.12.2"));
 	logger.info("Latest 1.12.2 file: {}", files.first());
 }
 ```
