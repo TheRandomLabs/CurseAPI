@@ -18,7 +18,11 @@ import okhttp3.HttpUrl;
 
 /**
  * A {@link CurseAPIProvider} that uses the API at {@code https://addons-ecs.forgesvc.net/}
- * used by the Twitch launcher.
+ * used by the Twitch launcher. This provider falls back on the methods declared in
+ * {@link com.therandomlabs.curseapi.CurseAPI} wherever possible so that default behaviors
+ * may be overridden. For example, {@link CurseProject#files()} is implemented by
+ * calling {@link com.therandomlabs.curseapi.CurseAPI#files(int)} rather than directly
+ * calling {@link #files(int)}.
  */
 public final class ForgeSVCProvider implements CurseAPIProvider {
 	/**

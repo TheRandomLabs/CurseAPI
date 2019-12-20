@@ -78,17 +78,15 @@ public abstract class CurseDependency implements Comparable<CurseDependency> {
 	public abstract void clearProjectCache();
 
 	/**
+	 * Returns the {@link CurseFile} from which this {@link CurseDependency} has been retrieved.
+	 * @return the {@link CurseFile} from which this {@link CurseDependency} has been retrieved.
+	 */
+	public abstract CurseFile dependent();
+
+	/**
 	 * Returns the type of this {@link CurseDependency}.
 	 *
 	 * @return the type of this {@link CurseDependency}.
 	 */
 	public abstract CurseDependencyType type();
-
-	/**
-	 * Returns this {@link CurseDependency} as a {@link CurseProject}.
-	 *
-	 * @return this {@link CurseDependency} as a {@link CurseProject}.
-	 * @throws CurseException if an error occurs.
-	 */
-	public abstract CurseProject toCurseProject() throws CurseException;
 }

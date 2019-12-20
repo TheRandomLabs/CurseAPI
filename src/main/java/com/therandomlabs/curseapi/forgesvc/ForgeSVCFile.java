@@ -29,6 +29,8 @@ final class ForgeSVCFile extends CurseFile {
 	private Set<ForgeSVCDependency> dependencies;
 	private Set<String> gameVersion;
 
+	private transient boolean dependenciesInitialized;
+
 	//Cache.
 	private transient CurseProject project;
 	private transient Element changelog;
@@ -94,6 +96,14 @@ final class ForgeSVCFile extends CurseFile {
 
 	@Override
 	public Set<CurseDependency> dependencies() {
+		if (!dependenciesInitialized) {
+			for (ForgeSVCDependency dependency : dependencies) {
+				dependency.setDependent(this);
+			}
+
+			dependenciesInitialized = true;
+		}
+
 		return new HashSet<>(dependencies);
 	}
 

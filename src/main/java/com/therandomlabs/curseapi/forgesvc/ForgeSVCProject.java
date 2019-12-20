@@ -119,14 +119,18 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public CurseFiles<CurseFile> files() throws CurseException {
 		if (files == null) {
-			final Set<ForgeSVCFile> forgeSVCFiles =
-					RetrofitUtils.execute(ForgeSVCProvider.FORGESVC.getFiles(id));
+			files = CurseAPI.files(id).orElse(null);
 
-			for (ForgeSVCFile file : forgeSVCFiles) {
-				file.setProject(this);
+			if (files == null) {
+				throw new CurseException("Failed to retrieve project files: " + this);
 			}
 
-			files = new CurseFiles<>(forgeSVCFiles);
+			//Set the project cache if the files are ForgeSVCFiles.
+			for (CurseFile file : files) {
+				if (file instanceof ForgeSVCFile) {
+					((ForgeSVCFile) file).setProject(this);
+				}
+			}
 		}
 
 		return files;

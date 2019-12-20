@@ -79,7 +79,7 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	public abstract String name();
 
 	/**
-	 * Returns this category section's categories.
+	 * Returns this category section's categories. This value may be cached.
 	 *
 	 * @return this category section's categories.
 	 * @throws CurseException if an error occurs.
@@ -87,10 +87,23 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	public abstract Set<CurseCategory> categories() throws CurseException;
 
 	/**
+	 * If this {@link CurseCategorySection} implementation caches the value returned by
+	 * {@link #categories()}, this method clears this cached value.
+	 */
+	public abstract void clearCategoriesCache();
+
+	/**
 	 * Returns this {@link CurseCategorySection} as a {@link CurseCategory}.
+	 * This value may be cached.
 	 *
 	 * @return this {@link CurseCategorySection} as a {@link CurseCategory}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public abstract CurseCategory asCategory() throws CurseException;
+	public abstract CurseCategory category() throws CurseException;
+
+	/**
+	 * If this {@link CurseCategorySection} implementation caches the value returned by
+	 * {@link #category()}, this method clears this cached value.
+	 */
+	public abstract void clearCategoryCache();
 }

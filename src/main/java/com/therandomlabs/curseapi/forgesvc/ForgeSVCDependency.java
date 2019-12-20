@@ -4,11 +4,14 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseDependency;
 import com.therandomlabs.curseapi.file.CurseDependencyType;
+import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.project.CurseProject;
 
 final class ForgeSVCDependency extends CurseDependency {
 	private int addonId;
 	private int type;
+
+	private transient CurseFile dependent;
 
 	//Cache.
 	private transient CurseProject project;
@@ -33,12 +36,17 @@ final class ForgeSVCDependency extends CurseDependency {
 	}
 
 	@Override
+	public CurseFile dependent() {
+		return dependent;
+	}
+
+	@Override
 	public CurseDependencyType type() {
 		return CurseDependencyType.fromID(type);
 	}
 
-	@Override
-	public CurseProject toCurseProject() throws CurseException {
-		return ForgeSVCProvider.INSTANCE.project(addonId);
+	//This is called by ForgeSVCFile#dependencies().
+	void setDependent(CurseFile file) {
+		dependent = file;
 	}
 }

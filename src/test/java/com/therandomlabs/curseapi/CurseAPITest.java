@@ -110,7 +110,7 @@ public class CurseAPITest {
 		assertThat(file.status()).isEqualTo(CurseFileStatus.NORMAL);
 		assertThat(file.downloadURL()).isNotNull();
 		assertThat(file.dependencies(CurseDependencyType.REQUIRED)).isNotEmpty();
-		assertThat(file.dependencies().iterator().next().toCurseProject()).isNotNull();
+		assertThat(file.dependencies().iterator().next().project()).isNotNull();
 		assertThat(file.gameVersionStrings()).isNotEmpty();
 		assertThat(file.changelogPlainText()).isNotEmpty();
 	}

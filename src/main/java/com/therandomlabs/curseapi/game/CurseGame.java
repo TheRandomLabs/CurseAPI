@@ -95,11 +95,17 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	public abstract Set<CurseCategorySection> categorySections();
 
 	/**
-	 * Returns this {@link CurseGame}'s categories.
+	 * Returns this {@link CurseGame}'s categories. This value may be cached.
 	 *
 	 * @return a mutable {@link Set} that contains this {@link CurseGame}'s categories
 	 * as {@link CurseCategory}s.
 	 * @throws CurseException if an error occurs.
 	 */
 	public abstract Set<CurseCategory> categories() throws CurseException;
+
+	/**
+	 * If this {@link CurseGame} implementation caches the value returned by {@link #categories()},
+	 * this method clears this cached value.
+	 */
+	public abstract void clearCategoriesCache();
 }
