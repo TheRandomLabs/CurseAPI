@@ -102,6 +102,7 @@ public class CurseAPITest {
 		final CurseFile file = optionalFile.get();
 		assertThat(file.projectID()).isEqualTo(308836);
 		assertThat(file.id()).isEqualTo(2735727);
+		assertThat(file.url()).isNotNull();
 		assertThat(file.displayName()).isNotEmpty();
 		assertThat(file.nameOnDisk()).isNotEmpty();
 		assertThat(file.uploadTime()).isNotNull();

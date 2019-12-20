@@ -7,9 +7,11 @@ import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
+import okhttp3.HttpUrl;
 
 /**
- * A basic representation of a CurseForge file.
+ * A basic representation of a CurseForge file. Files represented by implementations of this class
+ * are not required to exist.
  * Implementations of this interface are not necessarily immutable.
  */
 public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
@@ -166,6 +168,18 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * @return this file's ID.
 	 */
 	public abstract int id();
+
+	/**
+	 * Returns this file's URL. This method depends on the {@link CurseProject} value
+	 * returned by {@link #project()}, so this value may be cached. The existence and availability
+	 * of this file are not verified.
+	 *
+	 * @return this file's URL.
+	 * @throws CurseException if an error occurs.
+	 */
+	public HttpUrl url() throws CurseException {
+		return HttpUrl.get(project().url() + "/files/" + id());
+	}
 
 	/**
 	 * Returns whether this file is older than the specified file.
