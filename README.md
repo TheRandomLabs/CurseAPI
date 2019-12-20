@@ -52,15 +52,26 @@ CurseForge project category with the specified ID.
 
 ## Using with Gradle
 
+CurseAPI can be found on [Jitpack](https://jitpack.io/):
+
+```groovy
+repositories {
+	mavenCentral()
+
+	maven {
+		url "https://jitpack.io"
+	}
+}
+
+dependencies {
+	api "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT"
+}
+```
+
 CurseAPI uses SLF4J to log warnings, errors and information messages.
 Put the following in your buildscript to enable SLF4J with Log4j 2:
 
 ```groovy
-
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation "org.slf4j:slf4j-api:2.0.0-alpha1"
 	implementation "org.apache.logging.log4j:log4j-core:2.12.1"
