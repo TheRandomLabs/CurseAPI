@@ -103,7 +103,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * @param versions a collection of game versions.
 	 * @return this {@link CurseFileFilter}.
 	 */
-	public CurseFileFilter gameVersions(Collection<CurseGameVersion<?>> versions) {
+	public CurseFileFilter gameVersions(Collection<? extends CurseGameVersion<?>> versions) {
 		Preconditions.checkNotNull(versions, "versions should not be null");
 
 		for (CurseGameVersion<?> version : versions) {
@@ -130,7 +130,9 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * @param versionGroups a collection of game version groups.
 	 * @return this {@link CurseFileFilter}.
 	 */
-	public CurseFileFilter gameVersionGroups(Collection<CurseGameVersionGroup<?>> versionGroups) {
+	public CurseFileFilter gameVersionGroups(
+			Collection<? extends CurseGameVersionGroup<?>> versionGroups
+	) {
 		Preconditions.checkNotNull(versionGroups, "versionGroups should not be null");
 
 		for (CurseGameVersionGroup<?> versionGroup : versionGroups) {
