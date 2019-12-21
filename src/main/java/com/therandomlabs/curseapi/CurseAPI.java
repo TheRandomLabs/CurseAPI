@@ -19,6 +19,7 @@ import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
+import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -112,6 +113,39 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns the description for the project with the specified ID as plain text.
+	 *
+	 * @param id a project ID.
+	 * @return the description for the project with the specified ID as plain text wrapped in an
+	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#getPlainText(Element, int)
+	 */
+	public static Optional<String> projectDescriptionPlainText(int id)
+			throws CurseException {
+		return projectDescriptionPlainText(id, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Returns the description for the project with the specified ID as plain text.
+	 *
+	 * @param id a project ID.
+	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
+	 * @return the description for the project with the specified ID as plain text wrapped in an
+	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#getPlainText(Element, int)
+	 */
+	public static Optional<String> projectDescriptionPlainText(int id, int maxLineLength)
+			throws CurseException {
+		CursePreconditions.checkProjectID(id, "id");
+		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
+		return projectDescription(id).map(
+				description -> JsoupUtils.getPlainText(description, maxLineLength).trim()
+		);
+	}
+
+	/**
 	 * Executes a {@link CurseSearchQuery}.
 	 *
 	 * @param query a {@link CurseSearchQuery}.
@@ -157,7 +191,7 @@ public final class CurseAPI {
 	/**
 	 * Returns the changelog for the specified project and file ID.
 	 *
-	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
+	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @return an {@link Optional} containing an {@link Element} containing the changelog for the
 	 * specified project and file ID or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
@@ -168,6 +202,44 @@ public final class CurseAPI {
 		CursePreconditions.checkProjectID(projectID, "projectID");
 		CursePreconditions.checkFileID(fileID, "fileID");
 		return get(provider -> provider.fileChangelog(projectID, fileID));
+	}
+
+	/**
+	 * Returns the changelog for the specified project and file ID as plain text.
+	 *
+	 * @param projectID a project ID.
+	 * @param fileID a file ID.
+	 * @return an {@link Optional} containing an the changelog for the specified project and file ID
+	 * as plain text or {@link CurseAPI#NO_CHANGELOG_PROVIDED} as plain text if none is provided.
+	 * If the specified file does not exist, {@link Optional#empty()} is returned.
+	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#getPlainText(Element, int)
+	 */
+	public static Optional<String> fileChangelogPlainText(int projectID, int fileID)
+			throws CurseException {
+		return fileChangelogPlainText(projectID, fileID, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Returns the changelog for the specified project and file ID as plain text.
+	 *
+	 * @param projectID a project ID.
+	 * @param fileID a file ID.
+	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
+	 * @return an {@link Optional} containing an the changelog for the specified project and file ID
+	 * as plain text or {@link CurseAPI#NO_CHANGELOG_PROVIDED} as plain text if none is provided.
+	 * If the specified file does not exist, {@link Optional#empty()} is returned.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<String> fileChangelogPlainText(
+			int projectID, int fileID, int maxLineLength
+	) throws CurseException {
+		CursePreconditions.checkProjectID(projectID, "projectID");
+		CursePreconditions.checkFileID(fileID, "fileID");
+		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
+		return fileChangelog(projectID, fileID).map(
+				changelog -> JsoupUtils.getPlainText(changelog, maxLineLength).trim()
+		);
 	}
 
 	/**

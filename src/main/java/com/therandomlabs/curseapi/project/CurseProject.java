@@ -167,9 +167,9 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract String summary();
 
 	/**
-	 * Returns this project's description as an {@link Element}.
+	 * Returns this project's description.
 	 *
-	 * @return this project's description as an {@link Element}.
+	 * @return an {@link Element} that contains this project's description.
 	 * @throws CurseException if an error occurs.
 	 */
 	public abstract Element description() throws CurseException;
@@ -177,9 +177,9 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	/**
 	 * Returns this project's description as plain text.
 	 *
-	 * @return this project's description as plain text as returned by
-	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @return this project's description as plain text.
 	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
 	public String descriptionPlainText() throws CurseException {
 		return descriptionPlainText(Integer.MAX_VALUE);
@@ -189,9 +189,9 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 * Returns this project's description as plain text.
 	 *
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
-	 * @return this project's description as plain text as returned by
-	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @return this project's description as plain text.
 	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
 	public String descriptionPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");

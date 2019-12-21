@@ -174,10 +174,10 @@ public abstract class CurseFile extends BasicCurseFile {
 	}
 
 	/**
-	 * Returns this file's changelog as an {@link Element}. This value may be cached.
+	 * Returns this file's changelog. This value may be cached.
 	 *
-	 * @return this file's changelog as an {@link Element}. If no changelog is provided,
-	 * {@link CurseAPI#NO_CHANGELOG_PROVIDED} is returned.
+	 * @return an {@link Element} containing this file's changelog,
+	 * or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
 	 */
@@ -186,10 +186,10 @@ public abstract class CurseFile extends BasicCurseFile {
 	/**
 	 * Returns this file's changelog as plain text. This value may be cached.
 	 *
-	 * @return this file's changelog as plain text as returned by
-	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @return this file's changelog as plain text.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
+	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
 	public String changelogPlainText() throws CurseException {
 		return changelogPlainText(Integer.MAX_VALUE);
@@ -199,10 +199,10 @@ public abstract class CurseFile extends BasicCurseFile {
 	 * Returns this file's changelog as plain text. This value may be cached.
 	 *
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
-	 * @return this file's changelog as plain text as returned by
-	 * {@link JsoupUtils#getPlainText(Element, int)}.
+	 * @return this file's changelog as plain text.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
+	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
 	public String changelogPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
