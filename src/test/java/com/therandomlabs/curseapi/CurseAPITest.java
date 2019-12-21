@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 
 import com.therandomlabs.curseapi.file.CurseDependencyType;
 import com.therandomlabs.curseapi.file.CurseFile;
@@ -100,8 +99,8 @@ public class CurseAPITest {
 				gameVersionStrings("1.12.2").
 				apply(files);
 
-		new TreeMap<>(
-				files.parallelMap(CurseFile::displayName, CurseFile::changelogPlainText)
+		files.parallelMap(
+				CurseFile::displayName, CurseFile::changelogPlainText
 		).forEach((displayName, changelog) -> {
 			assertThat(displayName).isNotEmpty();
 			assertThat(changelog).isNotEmpty();
