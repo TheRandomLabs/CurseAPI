@@ -5,7 +5,7 @@
 
 A Java library for handling interactions with CurseForge.
 
-All code is documented with Javadoc and tested with JUnit.
+All public-facing code is documented with Javadoc and (mostly) tested with JUnit.
 
 ## Usage
 
