@@ -16,6 +16,10 @@
 	</Match>
 
 	<Match>
+		<Bug pattern="FII_USE_METHOD_REFERENCE"/>
+	</Match>
+
+	<Match>
 		<Class name="~.*Test"/>
 
 		<Not>

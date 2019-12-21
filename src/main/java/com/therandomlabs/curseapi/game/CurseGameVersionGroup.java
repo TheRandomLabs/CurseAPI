@@ -185,23 +185,4 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	public static <V extends CurseGameVersion<?>> CurseGameVersionGroup<V> none(int gameID) {
 		return new None<>(gameID);
 	}
-
-	/**
-	 * Returns a {@link Set} of {@link CurseGameVersionGroup}s for the specified
-	 * {@link CurseGameVersion}s.
-	 *
-	 * @param versions a {@link Collection} of {@link CurseGameVersion}s.
-	 * @param <V> the type of {@link CurseGameVersion}.
-	 * @return a mutable {@link Set} of {@link CurseGameVersionGroup}s for the specified
-	 * {@link CurseGameVersion}s.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <V extends CurseGameVersion<?>> Set<CurseGameVersionGroup<V>> of(
-			Collection<? extends V> versions
-	) {
-		return versions.stream().
-				map(version -> (CurseGameVersionGroup<V>) version.versionGroup()).
-				filter(group -> !group.isNone()).
-				collect(Collectors.toCollection(HashSet::new));
-	}
 }

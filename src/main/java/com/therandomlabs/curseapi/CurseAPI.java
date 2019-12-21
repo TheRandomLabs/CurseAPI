@@ -1,10 +1,13 @@
 package com.therandomlabs.curseapi;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
@@ -16,6 +19,7 @@ import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
+import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
@@ -448,6 +452,25 @@ public final class CurseAPI {
 	public static Optional<CurseCategory> category(int id) throws CurseException {
 		CursePreconditions.checkCategoryID(id, "id");
 		return get(provider -> provider.category(id));
+	}
+
+	/**
+	 * Returns a {@link Set} of {@link CurseGameVersionGroup}s for the specified
+	 * {@link CurseGameVersion}s.
+	 *
+	 * @param versions a {@link Collection} of {@link CurseGameVersion}s.
+	 * @param <V> the type of {@link CurseGameVersion}.
+	 * @return a mutable {@link Set} of {@link CurseGameVersionGroup}s for the specified
+	 * {@link CurseGameVersion}s.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V extends CurseGameVersion<?>> Set<CurseGameVersionGroup<V>> gameVersionGroups(
+			Collection<? extends V> versions
+	) {
+		return versions.stream().
+				map(version -> (CurseGameVersionGroup<V>) version.versionGroup()).
+				filter(group -> !group.isNone()).
+				collect(Collectors.toCollection(HashSet::new));
 	}
 
 	/**
