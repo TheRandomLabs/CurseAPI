@@ -1,13 +1,17 @@
 package com.therandomlabs.curseapi;
 
 import java.nio.file.Path;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -491,6 +495,85 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns a collection derived from the elements of the specified {@link Collection} by
+	 * applying the specified mapping function.
+	 * <p>
+	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
+	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * and this allows methods that throw {@link CurseException}s such as
+	 * {@link CurseFile#changelog()} to be called.
+	 * <p>
+	 * {@link Collection#parallelStream()} is used to iterate over elements of the
+	 * {@link Collection}, meaning that time-consuming requests may be executed in parallel.
+	 *
+	 * @param collection a {@link Collection} to derive the result from.
+	 * @param function a {@link CheckedFunction} that maps objects of type {@link E} to objects of
+	 * type {@link R}.
+	 * @param collector a {@link Collector}.
+	 * @param <E> the type of the elements.
+	 * @param <R> the type of the resultant values.
+	 * @param <C> the type of the resultant collection.
+	 * @return a collection derived from the elements of the specified {@link Collection}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static <E, R, C> C parallelMap(
+			Collection<? extends E> collection,
+			CheckedFunction<? super E, ? extends R, CurseException> function,
+			Collector<? super R, ?, C> collector
+	) throws CurseException {
+		try {
+			return collection.parallelStream().
+					map(element -> callCheckedFunction(element, function)).
+					collect(collector);
+		} catch (RuntimeException ex) {
+			if (ex.getCause() instanceof CurseException) {
+				throw (CurseException) ex.getCause();
+			}
+
+			throw ex;
+		}
+	}
+
+	/**
+	 * Returns a {@link Map} derived from the elements of the specified {@link Collection}.
+	 * <p>
+	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
+	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * and this allows methods that throw {@link CurseException}s such as
+	 * {@link CurseFile#changelog()} to be called.
+	 * <p>
+	 * The key function and the value function are both called on each element to retrieve the keys
+	 * and values of the {@link Map} respectively. Additionally, {@link Collection#parallelStream()}
+	 * is used to iterate over elements of the {@link Collection}, meaning that time-consuming
+	 * requests may be executed in parallel.
+	 *
+	 * @param collection a {@link Collection} to derive the result from.
+	 * @param keyMapper a {@link CheckedFunction} that maps objects of type {@link E} to objects of
+	 * type {@link K}.
+	 * @param valueMapper a {@link CheckedFunction} that maps objects of type {@link E} to objects
+	 * of type {@link V}.
+	 * @param <E> the type of the elements.
+	 * @param <K> the type of the keys.
+	 * @param <V> the type of the values.
+	 * @return a {@link Map} derived from the elements of the specified {@link Collection}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static <E, K, V> Map<K, V> parallelMap(
+			Collection<? extends E> collection,
+			CheckedFunction<? super E, ? extends K, CurseException> keyMapper,
+			CheckedFunction<? super E, ? extends V, CurseException> valueMapper
+	) throws CurseException {
+		return parallelMap(
+				collection,
+				element -> new AbstractMap.SimpleEntry<>(
+						keyMapper.apply(element),
+						valueMapper.apply(element)
+				),
+				Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)
+		);
+	}
+
+	/**
 	 * Registers a {@link CurseAPIProvider} if has not already been registered.
 	 *
 	 * @param provider a {@link CurseAPIProvider} instance.
@@ -553,5 +636,15 @@ public final class CurseAPI {
 		}
 
 		return Optional.empty();
+	}
+
+	private static <E, T> T callCheckedFunction(
+			E element, CheckedFunction<E, T, CurseException> function
+	) {
+		try {
+			return function.apply(element);
+		} catch (CurseException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 }

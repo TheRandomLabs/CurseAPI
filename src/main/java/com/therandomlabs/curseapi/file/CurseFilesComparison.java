@@ -14,11 +14,11 @@ import com.google.common.base.Preconditions;
  */
 @SuppressWarnings("PMD.LooseCoupling")
 public class CurseFilesComparison<F extends BasicCurseFile> {
-	private final HashSet<F> unchanged;
+	private final CurseFiles<F> unchanged;
 	private final HashSet<CurseFileChange<F>> updated;
 	private final HashSet<CurseFileChange<F>> downgraded;
-	private final HashSet<F> removed;
-	private final HashSet<F> added;
+	private final CurseFiles<F> removed;
+	private final CurseFiles<F> added;
 
 	/**
 	 * Constructs a {@link CurseFilesComparison}.
@@ -38,21 +38,20 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 		Preconditions.checkNotNull(downgraded, "downgraded should not be null");
 		Preconditions.checkNotNull(removed, "removed should not be null");
 		Preconditions.checkNotNull(added, "added should not be null");
-		this.unchanged = new HashSet<>(unchanged);
+		this.unchanged = new CurseFiles<>(unchanged);
 		this.updated = new HashSet<>(updated);
 		this.downgraded = new HashSet<>(downgraded);
-		this.removed = new HashSet<>(removed);
-		this.added = new HashSet<>(added);
+		this.removed = new CurseFiles<>(removed);
+		this.added = new CurseFiles<>(added);
 	}
 
 	/**
-	 * Returns a mutable {@link Set} containing all unchanged files.
+	 * Returns a {@link CurseFiles} containing all unchanged files.
 	 *
-	 * @return a mutable {@link Set} containing all unchanged files.
+	 * @return a {@link CurseFiles} containing all unchanged files.
 	 */
-	@SuppressWarnings("unchecked")
-	public Set<F> unchanged() {
-		return (Set<F>) unchanged.clone();
+	public CurseFiles<F> unchanged() {
+		return unchanged.clone();
 	}
 
 	/**
@@ -76,23 +75,21 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 	}
 
 	/**
-	 * Returns a mutable {@link Set} containing all removed files.
+	 * Returns a {@link CurseFiles} containing all removed files.
 	 *
-	 * @return a mutable {@link Set} containing all removed files.
+	 * @return a {@link CurseFiles} containing all removed files.
 	 */
-	@SuppressWarnings("unchecked")
-	public Set<F> removed() {
-		return (Set<F>) removed.clone();
+	public CurseFiles<F> removed() {
+		return removed.clone();
 	}
 
 	/**
-	 * Returns a mutable {@link Set} containing all added files.
+	 * Returns a {@link CurseFiles} containing all added files.
 	 *
-	 * @return a mutable {@link Set} containing all added files.
+	 * @return a {@link CurseFiles} containing all added files.
 	 */
-	@SuppressWarnings("unchecked")
-	public Set<F> added() {
-		return (Set<F>) added.clone();
+	public CurseFiles<F> added() {
+		return added.clone();
 	}
 
 	/**
