@@ -12,6 +12,7 @@ import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import okhttp3.HttpUrl;
+import org.jsoup.nodes.Element;
 
 /**
  * Provides an implementation of all or a subset of CurseAPI.
@@ -30,6 +31,17 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	default CurseProject project(int id) throws CurseException {
+		return null;
+	}
+
+	/**
+	 * Returns the description for the project with the specified ID.
+	 *
+	 * @param id a project ID.
+	 * @return an {@link Element} containing the description for the project with the specified ID.
+	 * @throws CurseException if an error occurs.
+	 */
+	default Element projectDescription(int id) throws CurseException {
 		return null;
 	}
 
@@ -64,6 +76,19 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 */
 	default CurseFile file(int projectID, int fileID) throws CurseException {
+		return null;
+	}
+
+	/**
+	 * Returns the changelog for the specified project and file ID.
+	 *
+	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
+	 * @param fileID a file ID.
+	 * @return an {@link Element} containing the changelog for the specified project and file ID,
+	 * or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
+	 * @throws CurseException if an error occurs.
+	 */
+	default Element fileChangelog(int projectID, int fileID) throws CurseException {
 		return null;
 	}
 

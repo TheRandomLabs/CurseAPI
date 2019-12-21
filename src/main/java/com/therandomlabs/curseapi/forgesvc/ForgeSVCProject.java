@@ -123,7 +123,13 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public Element description() throws CurseException {
 		if (description == null) {
-			description = ForgeSVCProvider.instance.description(id);
+			final Optional<Element> optionalDescription = CurseAPI.projectDescription(id);
+
+			if (!optionalDescription.isPresent()) {
+				throw new CurseException("Failed to retrieve description for project: " + this);
+			}
+
+			description = optionalDescription.get();
 		}
 
 		return description;

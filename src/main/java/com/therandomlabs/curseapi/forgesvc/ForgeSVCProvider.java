@@ -54,6 +54,14 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public Element projectDescription(int id) throws CurseException {
+		return RetrofitUtils.getElement(forgeSVC.getDescription(id)).children().first();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
 		return new ArrayList<>(RetrofitUtils.execute(forgeSVC.searchProjects(
 				query.gameID(), query.categorySectionID(), query.categoryID(),
@@ -88,6 +96,19 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
+	 */
+	@Override
+	public Element fileChangelog(int projectID, int fileID) throws CurseException {
+		final Element element = RetrofitUtils.getElement(forgeSVC.getChangelog(projectID, fileID)).
+				children().first();
+		return element == null ? CurseAPI.NO_CHANGELOG_PROVIDED : element;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
 	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
 	 */
 	@Override
@@ -133,30 +154,5 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	@Override
 	public CurseCategory category(int id) throws CurseException {
 		return RetrofitUtils.execute(forgeSVC.getCategory(id));
-	}
-
-	/**
-	 * Returns the changelog for the specified project and file ID.
-	 *
-	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
-	 * @param fileID a file ID.
-	 * @return an {@link Element} containing the changelog for the specified project and file ID.
-	 * @throws CurseException if an error occurs.
-	 */
-	public Element changelog(int projectID, int fileID) throws CurseException {
-		final Element element = RetrofitUtils.getElement(forgeSVC.getChangelog(projectID, fileID)).
-				children().first();
-		return element == null ? CurseAPI.NO_CHANGELOG_PROVIDED : element;
-	}
-
-	/**
-	 * Returns the description for the project with the specified ID.
-	 *
-	 * @param projectID a project ID.
-	 * @return an {@link Element} containing the description for the project with the specified ID.
-	 * @throws CurseException if an error occurs.
-	 */
-	public Element description(int projectID) throws CurseException {
-		return RetrofitUtils.getElement(forgeSVC.getDescription(projectID)).children().first();
 	}
 }

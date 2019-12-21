@@ -99,6 +99,19 @@ public final class CurseAPI {
 	}
 
 	/**
+	 * Returns the description for the project with the specified ID.
+	 *
+	 * @param id a project ID.
+	 * @return an {@link Element} containing the description for the project with the specified ID
+	 * wrapped in an {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<Element> projectDescription(int id) throws CurseException {
+		CursePreconditions.checkProjectID(id, "id");
+		return get(provider -> provider.projectDescription(id));
+	}
+
+	/**
 	 * Executes a {@link CurseSearchQuery}.
 	 *
 	 * @param query a {@link CurseSearchQuery}.
@@ -139,6 +152,22 @@ public final class CurseAPI {
 		CursePreconditions.checkProjectID(projectID, "projectID");
 		CursePreconditions.checkFileID(fileID, "fileID");
 		return get(provider -> provider.file(projectID, fileID));
+	}
+
+	/**
+	 * Returns the changelog for the specified project and file ID.
+	 *
+	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
+	 * @param fileID a file ID.
+	 * @return an {@link Optional} containing an {@link Element} containing the changelog for the
+	 * specified project and file ID or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
+	 * If the specified file does not exist, {@link Optional#empty()} is returned.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<Element> fileChangelog(int projectID, int fileID) throws CurseException {
+		CursePreconditions.checkProjectID(projectID, "projectID");
+		CursePreconditions.checkFileID(fileID, "fileID");
+		return get(provider -> provider.fileChangelog(projectID, fileID));
 	}
 
 	/**

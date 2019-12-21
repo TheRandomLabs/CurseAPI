@@ -247,7 +247,7 @@ public class CurseSearchQuery implements Cloneable {
 	}
 
 	/**
-	 * Returns this {@link CurseSearchQuery}'s page size.
+	 * Returns this {@link CurseSearchQuery}'s page size. This is 500 by default.
 	 *
 	 * @return this {@link CurseSearchQuery}'s page size.
 	 */
@@ -311,6 +311,7 @@ public class CurseSearchQuery implements Cloneable {
 
 	/**
 	 * Returns this {@link CurseSearchQuery}'s sorting method.
+	 * This is {@link CurseSearchSort#FEATURED} by default.
 	 *
 	 * @return this {@link CurseSearchQuery}'s sorting method.
 	 */

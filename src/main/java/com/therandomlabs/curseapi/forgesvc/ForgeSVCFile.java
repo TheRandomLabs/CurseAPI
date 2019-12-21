@@ -3,6 +3,7 @@ package com.therandomlabs.curseapi.forgesvc;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -139,7 +140,13 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public Element changelog() throws CurseException {
 		if (changelog == null) {
-			changelog = ForgeSVCProvider.instance.changelog(projectId, id);
+			final Optional<Element> optionalChangelog = CurseAPI.fileChangelog(projectId, id);
+
+			if (!optionalChangelog.isPresent()) {
+				throw new CurseException("Failed to retrieve changelog for file: " + this);
+			}
+
+			changelog = optionalChangelog.get();
 		}
 
 		return changelog;
