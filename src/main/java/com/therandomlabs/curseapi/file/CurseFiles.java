@@ -4,7 +4,6 @@ import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -104,20 +103,20 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * Returns the {@link CurseFile} instance in this {@link CurseFiles} with the specified ID.
 	 *
 	 * @param id a file ID.
-	 * @return the {@link CurseFile} instance in this {@link CurseFiles} with the specified ID
-	 * wrapped in an {@link Optional} if it exists, or otherwise {@link Optional#empty()}.
+	 * @return the {@link CurseFile} instance in this {@link CurseFiles} with the specified ID,
+	 * or {@code null} if it does not exist.
 	 * @see CurseFileFilter
 	 */
-	public Optional<F> fileWithID(int id) {
+	public F fileWithID(int id) {
 		CursePreconditions.checkFileID(id, "id");
 
 		for (F file : this) {
-			if (file.id() == file.id()) {
-				return Optional.of(file);
+			if (id == file.id()) {
+				return file;
 			}
 		}
 
-		return Optional.empty();
+		return null;
 	}
 
 	/**
