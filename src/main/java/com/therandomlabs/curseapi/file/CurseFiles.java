@@ -147,6 +147,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * @param <C> the type of the resultant collection.
 	 * @return a collection derived from the elements of this {@link CurseFiles}.
 	 * @throws CurseException if an error occurs.
+	 * @see CurseAPI#parallelMap(Collection, CheckedFunction, Collector)
 	 */
 	public <R, C> C parallelMap(
 			CheckedFunction<? super F, ? extends R, CurseException> function,
