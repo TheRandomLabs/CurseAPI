@@ -93,6 +93,6 @@ public final class RetrofitUtils {
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
 	public static Element getElement(Call<ResponseBody> call) throws CurseException {
-		return Jsoup.parse(getString(call));
+		return Jsoup.parseBodyFragment(getString(call)).body();
 	}
 }

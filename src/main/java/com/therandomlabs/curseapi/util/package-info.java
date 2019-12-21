@@ -1,5 +1,6 @@
 /**
  * Contains utility classes for CurseAPI.
- * Classes in this package should be avoided by non-CurseAPI classes where possible.
+ * Where possible, other CurseAPI methods should be preferred over methods in this package,
+ * although this package is still available for general use.
  */
 package com.therandomlabs.curseapi.util;

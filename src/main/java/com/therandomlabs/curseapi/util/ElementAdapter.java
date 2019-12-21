@@ -35,6 +35,6 @@ public final class ElementAdapter {
 	 */
 	@FromJson
 	public Element fromJSON(String element) {
-		return Jsoup.parse(element);
+		return Jsoup.parseBodyFragment(element).body();
 	}
 }

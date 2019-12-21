@@ -12,6 +12,10 @@
 	</Match>
 
 	<Match>
+		<Bug pattern="LEST_LOST_EXCEPTION_STACK_TRACE"/>
+	</Match>
+
+	<Match>
 		<Class name="~.*Test"/>
 
 		<Not>

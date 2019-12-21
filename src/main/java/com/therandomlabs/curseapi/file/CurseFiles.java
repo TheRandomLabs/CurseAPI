@@ -1,12 +1,18 @@
 package com.therandomlabs.curseapi.file;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CursePreconditions;
+import com.therandomlabs.curseapi.util.CheckedFunction;
 
 /**
  * An implementation of {@link TreeSet} with additional utility methods for working with
@@ -84,12 +90,14 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 
 	/**
 	 * Removes all {@link CurseFile}s in this {@link CurseFiles} that do not match the specified
-	 * filter.
+	 * filter. This is done by calling {@link #remove(Object)} with the {@link Predicate}
+	 * returned by calling {@link Predicate#negate()} on the specified filter.
 	 *
-	 * @param filter a {@link Predicate} filter.
+	 * @param filter a {@link Predicate}.
+	 * @return {@code true} if any elements were removed, or otherwise {@code false}.
 	 */
-	public void filter(Predicate<? super F> filter) {
-		removeIf(filter.negate());
+	public boolean filter(Predicate<? super F> filter) {
+		return removeIf(filter.negate());
 	}
 
 	/**
@@ -120,5 +128,51 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 */
 	public CurseFiles<F> withComparator(Comparator<? super F> comparator) {
 		return new CurseFiles<>(this, comparator);
+	}
+
+	/**
+	 * Returns a {@link Map} derived from the elements of this {@link CurseFiles}.
+	 * <p>
+	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
+	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * and this allows methods that throw {@link CurseException}s such as
+	 * {@link CurseFile#changelog()} to be called.
+	 * <p>
+	 * The key function and the value function are both called on each {@link CurseFile}
+	 * to retrieve the keys and values of the {@link Map} respectively. Additionally,
+	 * {@link Collection#parallelStream()} is used to iterate over elements of this
+	 * {@link CurseFiles}, meaning that time-consuming requests may be executed in parallel.
+	 *
+	 * @param keyMapper a {@link CheckedFunction} that maps files to objects of type {@link K}.
+	 * @param valueMapper a {@link CheckedFunction} that maps files to objects of type {@link V}.
+	 * @param <K> the type of the keys.
+	 * @param <V> the type of the values.
+	 * @return a {@link Map} derived from the elements of this {@link CurseFiles}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public <K, V> Map<K, V> parallelMap(
+			CheckedFunction<F, K, CurseException> keyMapper,
+			CheckedFunction<F, V, CurseException> valueMapper
+	) throws CurseException {
+		try {
+			return parallelStream().map(file -> new AbstractMap.SimpleEntry<>(
+					callCheckedFunction(file, keyMapper),
+					callCheckedFunction(file, valueMapper)
+			)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		} catch (RuntimeException ex) {
+			if (ex.getCause() instanceof CurseException) {
+				throw (CurseException) ex.getCause();
+			}
+
+			throw ex;
+		}
+	}
+
+	private <T> T callCheckedFunction(F file, CheckedFunction<F, T, CurseException> function) {
+		try {
+			return function.apply(file);
+		} catch (CurseException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 }

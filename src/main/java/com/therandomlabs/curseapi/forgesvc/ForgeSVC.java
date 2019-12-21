@@ -30,9 +30,11 @@ interface ForgeSVC {
 	@GET("api/v2/addon/{projectID}/file/{fileID}")
 	Call<ForgeSVCFile> getFile(@Path("projectID") int projectID, @Path("fileID") int fileID);
 
+	//TODO {projectID} is not needed
 	@GET("api/v2/addon/{projectID}/file/{fileID}/changelog")
 	Call<ResponseBody> getChangelog(@Path("projectID") int projectID, @Path("fileID") int fileID);
 
+	//TODO {projectID} is not needed
 	@GET("api/v2/addon/{projectID}/file/{fileID}/download-url")
 	Call<ResponseBody> getFileDownloadURL(
 			@Path("projectID") int projectID, @Path("fileID") int fileID

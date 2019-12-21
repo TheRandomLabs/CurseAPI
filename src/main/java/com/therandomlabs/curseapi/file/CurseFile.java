@@ -164,9 +164,20 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract void clearGameVersionsCache();
 
 	/**
+	 * Returns whether this file has a changelog.
+	 *
+	 * @return {@code true} if this file has a changelog, or otherwise {@code false}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public boolean hasChangelog() throws CurseException {
+		return changelog() != CurseAPI.NO_CHANGELOG_PROVIDED;
+	}
+
+	/**
 	 * Returns this file's changelog as an {@link Element}. This value may be cached.
 	 *
-	 * @return this file's changelog as an {@link Element}.
+	 * @return this file's changelog as an {@link Element}. If no changelog is provided,
+	 * {@link CurseAPI#NO_CHANGELOG_PROVIDED} is returned.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
 	 */
@@ -195,7 +206,7 @@ public abstract class CurseFile extends BasicCurseFile {
 	 */
 	public String changelogPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
-		return JsoupUtils.getPlainText(changelog(), maxLineLength);
+		return JsoupUtils.getPlainText(changelog(), maxLineLength).trim();
 	}
 
 	/**

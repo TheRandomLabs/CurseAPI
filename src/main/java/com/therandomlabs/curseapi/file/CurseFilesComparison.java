@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
  *
  * @param <F> the type of {@link BasicCurseFile}.
  */
+@SuppressWarnings("PMD.LooseCoupling")
 public class CurseFilesComparison<F extends BasicCurseFile> {
 	private final HashSet<F> unchanged;
 	private final HashSet<CurseFileChange<F>> updated;

@@ -195,7 +195,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	 */
 	public String descriptionPlainText(int maxLineLength) throws CurseException {
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
-		return JsoupUtils.getPlainText(description(), maxLineLength);
+		return JsoupUtils.getPlainText(description(), maxLineLength).trim();
 	}
 
 	/**

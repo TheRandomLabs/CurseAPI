@@ -47,6 +47,8 @@ public class CurseFileChange<F extends BasicCurseFile> {
 
 	/**
 	 * Returns the project of the old and new files as a {@link CurseProject}.
+	 * This is equivalent to calling {@link BasicCurseFile#project()} on the value returned
+	 * by {@link #oldFile()}; hence, this value may be cached.
 	 *
 	 * @return the project of the old and new files as a {@link CurseProject}.
 	 * @throws CurseException if an error occurs.
@@ -101,5 +103,29 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 */
 	public boolean isDowngrade() {
 		return oldFile.newerThan(newFile);
+	}
+
+	/**
+	 * Returns all files that are chronologically between the old file and the new file.
+	 * The old file is excluded and the new file is included, even if the old file
+	 * is chronologically the newer file.
+	 *
+	 * @return a {@link CurseFiles} that contains all files that are chronologically between
+	 * the old file and the new file.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseFiles<CurseFile> filesBetween() throws CurseException {
+		int olderFileID = olderFile().id();
+		int newerFileID = newerFile().id();
+
+		if (isDowngrade()) {
+			olderFileID--;
+		} else {
+			newerFileID++;
+		}
+
+		final CurseFiles<CurseFile> files = project().files();
+		new CurseFileFilter().between(olderFileID, newerFileID).apply(files);
+		return files;
 	}
 }

@@ -6,9 +6,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.therandomlabs.curseapi.file.CurseDependencyType;
 import com.therandomlabs.curseapi.file.CurseFile;
+import com.therandomlabs.curseapi.file.CurseFileFilter;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
@@ -92,6 +94,22 @@ public class CurseAPITest {
 		final CurseFiles<CurseFile> sortedByOldest =
 				files.withComparator(CurseFiles.SORT_BY_OLDEST);
 		assertThat(sortedByOldest.first().id()).isEqualTo(2522102);
+
+		new CurseFileFilter().
+				between(2735698 - 1, 2801312 + 1).
+				gameVersionStrings("1.12.2").
+				apply(files);
+
+		final long millis = System.currentTimeMillis();
+
+		new TreeMap<>(
+				files.parallelMap(CurseFile::displayName, CurseFile::changelogPlainText)
+		).forEach((displayName, changelog) -> {
+			assertThat(displayName).isNotEmpty();
+			assertThat(changelog).isNotEmpty();
+		});
+
+		System.out.println(System.currentTimeMillis() - millis);
 	}
 
 	@Test

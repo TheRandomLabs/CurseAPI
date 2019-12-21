@@ -21,6 +21,7 @@ import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,13 @@ public final class CurseAPI {
 	 */
 	public static final HttpUrl PLACEHOLDER_PROJECT_THUMBNAIL =
 			HttpUrl.get("https://media.forgecdn.net/avatars/0/93/635227964539626926.png");
+
+	/**
+	 * The {@link Element} returned by {@link CurseFile#changelog()} if no changelog
+	 * is provided.
+	 */
+	public static final Element NO_CHANGELOG_PROVIDED =
+			new Element("p").appendText("No changelog provided.");
 
 	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
 

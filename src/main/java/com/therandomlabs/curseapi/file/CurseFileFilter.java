@@ -19,6 +19,7 @@ import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
  * @see CurseFiles#filter(Predicate)
  */
 public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
+	@SuppressWarnings("PMD.LooseCoupling")
 	private HashSet<String> gameVersionStrings = new HashSet<>();
 	private int newerThan = CurseAPI.MIN_FILE_ID - 1;
 	private int olderThan = Integer.MAX_VALUE;
@@ -312,5 +313,17 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	public CurseFileFilter clearMinimumStability() {
 		minimumStability = CurseReleaseType.ALPHA;
 		return this;
+	}
+
+	/**
+	 * Applies this {@link CurseFileFilter} on the specified {@link Collection} of
+	 * {@link CurseFile}s. This is done by calling {@link Collection#removeIf(Predicate)}
+	 * with the {@link Predicate} returned by {@link #negate()}.
+	 *
+	 * @param files a {@link Collection} of {@link CurseFile}s.
+	 * @return {@code true} if any elements were removed, or otherwise {@code false}.
+	 */
+	public boolean apply(Collection<? extends CurseFile> files) {
+		return files.removeIf(negate());
 	}
 }

@@ -140,9 +140,14 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public Element changelog() throws CurseException {
 		if (changelog == null) {
+			//There should only be one parent element.
 			changelog = RetrofitUtils.getElement(
 					ForgeSVCProvider.FORGESVC.getChangelog(projectId, id)
-			);
+			).children().first();
+
+			if (changelog == null) {
+				changelog = CurseAPI.NO_CHANGELOG_PROVIDED;
+			}
 		}
 
 		return changelog;
