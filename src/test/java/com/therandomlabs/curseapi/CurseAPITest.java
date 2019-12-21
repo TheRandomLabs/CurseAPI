@@ -100,16 +100,12 @@ public class CurseAPITest {
 				gameVersionStrings("1.12.2").
 				apply(files);
 
-		final long millis = System.currentTimeMillis();
-
 		new TreeMap<>(
 				files.parallelMap(CurseFile::displayName, CurseFile::changelogPlainText)
 		).forEach((displayName, changelog) -> {
 			assertThat(displayName).isNotEmpty();
 			assertThat(changelog).isNotEmpty();
 		});
-
-		System.out.println(System.currentTimeMillis() - millis);
 	}
 
 	@Test
