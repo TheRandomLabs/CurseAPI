@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -452,6 +453,22 @@ public final class CurseAPI {
 	public static Optional<CurseCategory> category(int id) throws CurseException {
 		CursePreconditions.checkCategoryID(id, "id");
 		return get(provider -> provider.category(id));
+	}
+
+	/**
+	 * Returns a {@link Set} of {@link CurseGameVersionGroup}s for the specified
+	 * {@link CurseGameVersion}s.
+	 *
+	 * @param versions an array of {@link CurseGameVersion}s.
+	 * @param <V> the type of {@link CurseGameVersion}.
+	 * @return a mutable {@link Set} of {@link CurseGameVersionGroup}s for the specified
+	 * {@link CurseGameVersion}s.
+	 */
+	@SafeVarargs
+	public static <V extends CurseGameVersion<?>> Set<CurseGameVersionGroup<V>> gameVersionGroups(
+			V... versions
+	) {
+		return gameVersionGroups(Arrays.asList(versions));
 	}
 
 	/**

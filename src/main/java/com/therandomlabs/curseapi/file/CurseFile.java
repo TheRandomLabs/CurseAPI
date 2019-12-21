@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi.file;
 
 import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -13,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
+import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
@@ -145,7 +147,7 @@ public abstract class CurseFile extends BasicCurseFile {
 	/**
 	 * Returns this file's game versions. This value may be cached.
 	 *
-	 * @param <V> the implementation of {@link CurseGameVersion}.
+	 * @param <V> the type of {@link CurseGameVersion}.
 	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances that is equivalent
 	 * to the result obtained by calling {@link CurseAPI#gameVersion(int, String)} on the version
 	 * strings returned by {@link #gameVersionStrings()}.
@@ -156,6 +158,21 @@ public abstract class CurseFile extends BasicCurseFile {
 	 */
 	public abstract <V extends CurseGameVersion<?>> SortedSet<V> gameVersions()
 			throws CurseException;
+
+	/**
+	 * Returns this file's game version groups. This value is obtained by calling
+	 * {@link CurseAPI#gameVersionGroups(Collection)} on the value returned by
+	 * {@link #gameVersions()}, therefore this value may be cached.
+	 *
+	 * @param <V> the type of {@link CurseGameVersion}.
+	 * @return a mutable {@link Set} containing this file's game version groups as
+	 * {@link CurseGameVersionGroup}s.
+	 * @throws CurseException if an error occurs.
+	 */
+	public <V extends CurseGameVersion<?>> Set<CurseGameVersionGroup<V>> gameVersionGroups()
+			throws CurseException {
+		return CurseAPI.gameVersionGroups(gameVersions());
+	}
 
 	/**
 	 * If this {@link CurseFile} implementation caches the value returned by
