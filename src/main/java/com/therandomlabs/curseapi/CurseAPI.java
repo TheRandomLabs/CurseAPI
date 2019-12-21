@@ -81,7 +81,7 @@ public final class CurseAPI {
 	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
 
 	private static final List<CurseAPIProvider> providers =
-			Lists.newArrayList(ForgeSVCProvider.INSTANCE);
+			Lists.newArrayList(ForgeSVCProvider.instance);
 
 	private CurseAPI() {}
 

@@ -15,7 +15,6 @@ import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseReleaseType;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
-import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
@@ -140,14 +139,7 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public Element changelog() throws CurseException {
 		if (changelog == null) {
-			//There should only be one parent element.
-			changelog = RetrofitUtils.getElement(
-					ForgeSVCProvider.FORGESVC.getChangelog(projectId, id)
-			).children().first();
-
-			if (changelog == null) {
-				changelog = CurseAPI.NO_CHANGELOG_PROVIDED;
-			}
+			changelog = ForgeSVCProvider.instance.changelog(projectId, id);
 		}
 
 		return changelog;

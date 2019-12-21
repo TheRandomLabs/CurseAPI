@@ -16,7 +16,6 @@ import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
-import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
@@ -124,7 +123,7 @@ final class ForgeSVCProject extends CurseProject {
 	@Override
 	public Element description() throws CurseException {
 		if (description == null) {
-			description = RetrofitUtils.getElement(ForgeSVCProvider.FORGESVC.getDescription(id));
+			description = ForgeSVCProvider.instance.description(id);
 		}
 
 		return description;
