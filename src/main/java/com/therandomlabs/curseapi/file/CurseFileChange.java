@@ -1,5 +1,8 @@
 package com.therandomlabs.curseapi.file;
 
+import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
@@ -34,6 +37,43 @@ public class CurseFileChange<F extends BasicCurseFile> {
 		);
 		this.oldFile = oldFile;
 		this.newFile = newFile;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final int hashCode() {
+		return Objects.hash(oldFile, newFile);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+
+		if (!(object instanceof CurseFileChange)) {
+			return false;
+		}
+
+		final CurseFileChange<? extends BasicCurseFile> fileChange =
+				(CurseFileChange<? extends BasicCurseFile>) object;
+		return oldFile.equals(fileChange.oldFile) && newFile.equals(fileChange.oldFile);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this).
+				add("oldFile", oldFile).
+				add("newFile", newFile).
+				toString();
 	}
 
 	/**
