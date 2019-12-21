@@ -88,6 +88,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 
 	/**
 	 * {@inheritDoc}
+	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
 	 */
 	@Override
 	public HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
