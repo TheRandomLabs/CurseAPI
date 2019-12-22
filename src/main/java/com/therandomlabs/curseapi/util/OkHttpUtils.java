@@ -31,6 +31,26 @@ public final class OkHttpUtils {
 	private OkHttpUtils() {}
 
 	/**
+	 * Reads a string from the specified URL.
+	 *
+	 * @param url a URL.
+	 * @return a string read from the specified URL.
+	 * @throws CurseException if the request cannot be executed correctly.
+	 */
+	public static String read(HttpUrl url) throws CurseException {
+		Preconditions.checkNotNull(url, "url should not be null");
+
+		final Request request = new Request.Builder().url(url).build();
+		logger.info("Executing request: {}", request);
+
+		try {
+			return client.newCall(request).execute().body().string();
+		} catch (IOException ex) {
+			throw new CurseException(ex);
+		}
+	}
+
+	/**
 	 * Reads a {@link BufferedImage} from the specified URL.
 	 *
 	 * @param url an image URL.
