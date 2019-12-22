@@ -109,13 +109,15 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	/**
 	 * Returns the value returned by {@link #oldFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
-	 * by {@link #project()}, so this value may be cached.
+	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
+	 * so this value may be cached.
 	 *
 	 * @return the old file as a {@link CurseFile}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile oldCurseFile() throws CurseException {
-		return project().files().fileWithID(oldFile.id());
+		return oldFile instanceof CurseFile ?
+				(CurseFile) oldFile : project().files().fileWithID(oldFile.id());
 	}
 
 	/**
@@ -130,13 +132,15 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	/**
 	 * Returns the value returned by {@link #newFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
-	 * by {@link #project()}, so this value may be cached.
+	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
+	 * so this value may be cached.
 	 *
 	 * @return the new file as a {@link CurseFile}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile newCurseFile() throws CurseException {
-		return project().files().fileWithID(newFile.id());
+		return newFile instanceof CurseFile ?
+				(CurseFile) newFile : project().files().fileWithID(newFile.id());
 	}
 
 	/**
@@ -152,13 +156,15 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	/**
 	 * Returns the value returned by {@link #olderFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
-	 * by {@link #project()}, so this value may be cached.
+	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
+	 * so this value may be cached.
 	 *
 	 * @return the older file as a {@link CurseFile}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile olderCurseFile() throws CurseException {
-		return project().files().fileWithID(olderFile().id());
+		return olderFile() instanceof CurseFile ?
+				((CurseFile) olderFile()) : project().files().fileWithID(olderFile().id());
 	}
 
 	/**
@@ -174,13 +180,15 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	/**
 	 * Returns the value returned by {@link #newerFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
-	 * by {@link #project()}, so this value may be cached.
+	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
+	 * so this value may be cached.
 	 *
 	 * @return the newer file as a {@link CurseFile}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile newerCurseFile() throws CurseException {
-		return project().files().fileWithID(newerFile().id());
+		return newerFile() instanceof CurseFile ?
+				((CurseFile) newerFile()) : project().files().fileWithID(newerFile().id());
 	}
 
 	/**
