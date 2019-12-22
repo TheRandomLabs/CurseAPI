@@ -129,7 +129,7 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 
 			if (oldFile.equals(newFile)) {
 				unchanged.add(newFile);
-				break;
+				continue;
 			}
 
 			final CurseFileChange<F> fileChange = new CurseFileChange<>(oldFile, newFile);
