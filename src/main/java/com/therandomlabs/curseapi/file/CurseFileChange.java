@@ -107,12 +107,36 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	}
 
 	/**
+	 * Returns the value returned by {@link #oldFile()} as a {@link CurseFile}.
+	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
+	 * by {@link #project()}, so this value may be cached.
+	 *
+	 * @return the old file as a {@link CurseFile}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseFile oldCurseFile() throws CurseException {
+		return project().files().fileWithID(oldFile.id());
+	}
+
+	/**
 	 * Returns the new file. This is not necessarily newer than the old file.
 	 *
 	 * @return the new file.
 	 */
 	public F newFile() {
 		return newFile;
+	}
+
+	/**
+	 * Returns the value returned by {@link #newFile()} as a {@link CurseFile}.
+	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
+	 * by {@link #project()}, so this value may be cached.
+	 *
+	 * @return the new file as a {@link CurseFile}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseFile newCurseFile() throws CurseException {
+		return project().files().fileWithID(newFile.id());
 	}
 
 	/**
@@ -126,6 +150,18 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	}
 
 	/**
+	 * Returns the value returned by {@link #olderFile()} as a {@link CurseFile}.
+	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
+	 * by {@link #project()}, so this value may be cached.
+	 *
+	 * @return the older file as a {@link CurseFile}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseFile olderCurseFile() throws CurseException {
+		return project().files().fileWithID(olderFile().id());
+	}
+
+	/**
 	 * Returns the newer file.
 	 * This may refer to the old file if this {@link CurseFileChange} represents a downgrade.
 	 *
@@ -133,6 +169,18 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 */
 	public F newerFile() {
 		return isDowngrade() ? oldFile : newFile;
+	}
+
+	/**
+	 * Returns the value returned by {@link #newerFile()} as a {@link CurseFile}.
+	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
+	 * by {@link #project()}, so this value may be cached.
+	 *
+	 * @return the newer file as a {@link CurseFile}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseFile newerCurseFile() throws CurseException {
+		return project().files().fileWithID(newerFile().id());
 	}
 
 	/**
