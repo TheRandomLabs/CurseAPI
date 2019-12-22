@@ -78,7 +78,8 @@ public final class RetrofitUtils {
 	 */
 	public static String getString(Call<ResponseBody> call) throws CurseException {
 		try {
-			return execute(call).string();
+			final ResponseBody responseBody = execute(call);
+			return responseBody == null ? null : responseBody.string();
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}
@@ -93,6 +94,7 @@ public final class RetrofitUtils {
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
 	public static Element getElement(Call<ResponseBody> call) throws CurseException {
-		return Jsoup.parseBodyFragment(getString(call)).body();
+		final String string = getString(call);
+		return string == null ? null : Jsoup.parseBodyFragment(string).body();
 	}
 }

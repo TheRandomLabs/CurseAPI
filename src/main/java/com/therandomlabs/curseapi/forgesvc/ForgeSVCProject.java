@@ -162,7 +162,7 @@ final class ForgeSVCProject extends CurseProject {
 			}
 		}
 
-		return files;
+		return new CurseFiles<>(files);
 	}
 
 	@Override

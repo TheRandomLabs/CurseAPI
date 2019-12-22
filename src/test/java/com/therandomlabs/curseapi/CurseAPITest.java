@@ -88,7 +88,7 @@ public class CurseAPITest {
 		assertThat(optionalFiles).isPresent();
 
 		final CurseFiles<CurseFile> files = optionalFiles.get();
-		assertThat(files).isNotEmpty();
+		assertThat(files).hasSizeGreaterThan(10);
 
 		final CurseFiles<CurseFile> sortedByOldest =
 				files.withComparator(CurseFiles.SORT_BY_OLDEST);

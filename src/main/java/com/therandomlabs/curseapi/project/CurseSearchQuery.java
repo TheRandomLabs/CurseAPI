@@ -1,5 +1,6 @@
 package com.therandomlabs.curseapi.project;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.game.CurseCategory;
@@ -20,6 +21,20 @@ public class CurseSearchQuery implements Cloneable {
 	private int pageSize = 500;
 	private String searchFilter = "";
 	private CurseSearchSort sortingMethod = CurseSearchSort.FEATURED;
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this).
+				add("gameID", gameID).
+				add("categorySectionID", categorySectionID).
+				add("categoryID", categoryID).
+				add("gameVersion", gameVersion).
+				add("pageIndex", pageIndex).
+				add("pageSize", pageSize).
+				add("searchFilter", searchFilter).
+				add("sortingMethod", sortingMethod).
+				toString();
+	}
 
 	/**
 	 * {@inheritDoc}
