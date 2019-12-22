@@ -23,7 +23,7 @@ public final class JsoupUtils {
 		final Element body = Jsoup.parseBodyFragment(html).body();
 		final Elements children = body.children();
 
-		if (children.size() == 0) {
+		if (children.isEmpty()) {
 			return null;
 		}
 
@@ -65,7 +65,12 @@ public final class JsoupUtils {
 		NodeTraversor.traverse(formatter, element);
 
 		//Some people (e.g. Speiger) do this in their changelogs.
-		final String string = formatter.toString().replace("\n\n\n", "\n");
-		return string.startsWith("\n") ? string.substring(1) : string;
+		String string = formatter.toString().replace("\n\n\n", "\n");
+
+		if (string.startsWith("\n")) {
+			string = string.substring(1);
+		}
+
+		return string.replace("\n", System.lineSeparator());
 	}
 }
