@@ -62,6 +62,17 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract String nameOnDisk();
 
 	/**
+	 * Returns this file's Maven dependency string.
+	 *
+	 * @return this file's Maven dependency string, for example,
+	 * {@code "randompatches:randompatches:1.12.2:1.20.1.0"}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public String mavenDependency() throws CurseException {
+		return project().slug() + ':' + nameOnDisk().replace('-', ':').replaceAll("\\.[^/.]+$", "");
+	}
+
+	/**
 	 * Returns this file's upload time.
 	 *
 	 * @return a {@link ZonedDateTime} instance that represents this file's upload time.

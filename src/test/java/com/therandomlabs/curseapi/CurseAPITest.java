@@ -118,6 +118,7 @@ public class CurseAPITest {
 		assertThat(file.url()).isNotNull();
 		assertThat(file.displayName()).isNotEmpty();
 		assertThat(file.nameOnDisk()).isNotEmpty();
+		assertThat(file.mavenDependency()).isNotEmpty();
 		assertThat(file.uploadTime()).isNotNull();
 		assertThat(file.fileSize()).isGreaterThan(0);
 		assertThat(file.releaseType()).isNotNull();
