@@ -1,7 +1,9 @@
 package com.therandomlabs.curseapi.util;
 
 import com.google.common.base.Preconditions;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.jsoup.select.NodeTraversor;
 
 /**
@@ -9,6 +11,34 @@ import org.jsoup.select.NodeTraversor;
  */
 public final class JsoupUtils {
 	private JsoupUtils() {}
+
+	/**
+	 * Parses the specified HTML fragment and returns the body as a single {@link Element}.
+	 *
+	 * @param html an HTML fragment.
+	 * @return the body of the specified HTML fragment as a single {@link Element},
+	 * or {@code null} if the body is empty.
+	 */
+	public static Element parseBody(String html) {
+		final Element body = Jsoup.parseBodyFragment(html).body();
+		final Elements children = body.children();
+
+		if (children.size() == 0) {
+			return null;
+		}
+
+		if (children.size() == 1) {
+			return children.first();
+		}
+
+		final Element div = new Element("div");
+
+		for (Element child : children) {
+			child.appendTo(div);
+		}
+
+		return div;
+	}
 
 	/**
 	 * Converts the specified {@link Element} to plain text.

@@ -22,6 +22,9 @@ public class CurseSearchQuery implements Cloneable {
 	private String searchFilter = "";
 	private CurseSearchSort sortingMethod = CurseSearchSort.FEATURED;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).

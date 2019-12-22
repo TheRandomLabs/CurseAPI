@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.therandomlabs.curseapi.CurseException;
 import okhttp3.ResponseBody;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,11 +89,22 @@ public final class RetrofitUtils {
 	 * body as an {@link Element}.
 	 *
 	 * @param call a {@link Call}.
-	 * @return the response body as an {@link Element}.
+	 * @param defaultValue the value to return if the response body is empty.
+	 * This is different from when the {@link Call} fails to execute, in which case
+	 * {@code null} is returned as usual.
+	 * @return the response body as an {@link Element}, or the specified default value if it is
+	 * empty.
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
-	public static Element getElement(Call<ResponseBody> call) throws CurseException {
+	public static Element getElement(Call<ResponseBody> call, Element defaultValue)
+			throws CurseException {
 		final String string = getString(call);
-		return string == null ? null : Jsoup.parseBodyFragment(string).body();
+
+		if (string == null) {
+			return null;
+		}
+
+		final Element element = JsoupUtils.parseBody(string);
+		return element == null ? defaultValue : element;
 	}
 }

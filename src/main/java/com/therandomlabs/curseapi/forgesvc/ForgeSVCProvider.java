@@ -55,7 +55,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Element projectDescription(int id) throws CurseException {
-		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id));
+		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id), null);
 		return element == null ? null : element.child(0);
 	}
 
@@ -117,14 +117,9 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Element fileChangelog(int projectID, int fileID) throws CurseException {
-		Element element = RetrofitUtils.getElement(forgeSVC.getChangelog(projectID, fileID));
-
-		if (element == null) {
-			return null;
-		}
-
-		element = element.child(0);
-		return element == null ? CurseAPI.NO_CHANGELOG_PROVIDED : element;
+		return RetrofitUtils.getElement(
+				forgeSVC.getChangelog(projectID, fileID), CurseAPI.NO_CHANGELOG_PROVIDED
+		);
 	}
 
 	/**
