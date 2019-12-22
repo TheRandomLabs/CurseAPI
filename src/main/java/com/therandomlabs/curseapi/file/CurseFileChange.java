@@ -25,7 +25,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @param oldFile an old file.
 	 * @param newFile a new file.
 	 */
-	protected CurseFileChange(F oldFile, F newFile) {
+	public CurseFileChange(F oldFile, F newFile) {
 		Preconditions.checkNotNull(oldFile, "oldFile should not be null");
 		Preconditions.checkNotNull(newFile, "newFile should not be null");
 		Preconditions.checkArgument(
