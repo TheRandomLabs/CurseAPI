@@ -116,8 +116,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile oldCurseFile() throws CurseException {
-		return oldFile instanceof CurseFile ?
-				(CurseFile) oldFile : project().files().fileWithID(oldFile.id());
+		return asCurseFile(oldFile);
 	}
 
 	/**
@@ -139,8 +138,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile newCurseFile() throws CurseException {
-		return newFile instanceof CurseFile ?
-				(CurseFile) newFile : project().files().fileWithID(newFile.id());
+		return asCurseFile(newFile);
 	}
 
 	/**
@@ -163,8 +161,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile olderCurseFile() throws CurseException {
-		return olderFile() instanceof CurseFile ?
-				((CurseFile) olderFile()) : project().files().fileWithID(olderFile().id());
+		return asCurseFile(olderFile());
 	}
 
 	/**
@@ -187,8 +184,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile newerCurseFile() throws CurseException {
-		return newerFile() instanceof CurseFile ?
-				((CurseFile) newerFile()) : project().files().fileWithID(newerFile().id());
+		return asCurseFile(newerFile());
 	}
 
 	/**
@@ -223,5 +219,19 @@ public class CurseFileChange<F extends BasicCurseFile> {
 		final CurseFiles<CurseFile> files = project().files();
 		new CurseFileFilter().between(olderFileID, newerFileID).apply(files);
 		return files;
+	}
+
+	private CurseFile asCurseFile(F file) throws CurseException {
+		if (file instanceof CurseFile) {
+			return (CurseFile) file;
+		}
+
+		final CurseFile curseFile = project().files().fileWithID(file.id());
+
+		if (curseFile == null) {
+			throw new CurseException("Could not retrieve as CurseFile: " + file);
+		}
+
+		return curseFile;
 	}
 }
