@@ -19,18 +19,18 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
-final class ForgeSVCProject extends CurseProject {
+final class ForgeSvcProject extends CurseProject {
 	private int id;
 	private String name;
-	private List<ForgeSVCMember> authors;
-	private Set<ForgeSVCAttachment> attachments;
+	private List<ForgeSvcMember> authors;
+	private Set<ForgeSvcAttachment> attachments;
 	private HttpUrl websiteUrl;
 	private int gameId;
 	private String summary;
 	private int downloadCount;
-	private Set<ForgeSVCCategory> categories;
+	private Set<ForgeSvcCategory> categories;
 	private int primaryCategoryId;
-	private ForgeSVCCategorySection categorySection;
+	private ForgeSvcCategorySection categorySection;
 	private String slug;
 	private ZonedDateTime dateCreated;
 	private ZonedDateTime dateReleased;
@@ -65,7 +65,7 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public HttpUrl avatarURL() {
-		for (ForgeSVCAttachment attachment : attachments) {
+		for (ForgeSvcAttachment attachment : attachments) {
 			if (attachment.isDefault()) {
 				return attachment.url();
 			}
@@ -76,7 +76,7 @@ final class ForgeSVCProject extends CurseProject {
 
 	@Override
 	public HttpUrl avatarThumbnailURL() {
-		for (ForgeSVCAttachment attachment : attachments) {
+		for (ForgeSvcAttachment attachment : attachments) {
 			if (attachment.isDefault()) {
 				return attachment.thumbnailURL();
 			}
@@ -154,10 +154,10 @@ final class ForgeSVCProject extends CurseProject {
 				throw new CurseException("Failed to retrieve project files: " + this);
 			}
 
-			//Set the project cache if the files are ForgeSVCFiles.
+			//Set the project cache if the files are ForgeSvcFiles.
 			for (CurseFile file : files) {
-				if (file instanceof ForgeSVCFile) {
-					((ForgeSVCFile) file).setProject(this);
+				if (file instanceof ForgeSvcFile) {
+					((ForgeSvcFile) file).setProject(this);
 				}
 			}
 		}

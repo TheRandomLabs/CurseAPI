@@ -31,16 +31,16 @@ import org.jsoup.nodes.Element;
  * Where possible, this class should not be accessed directly, and the methods declared in
  * {@link com.therandomlabs.curseapi.CurseAPI} should be favored.
  */
-public final class ForgeSVCProvider implements CurseAPIProvider {
+public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
-	 * The singleton instance of {@link ForgeSVCProvider}.
+	 * The singleton instance of {@link ForgeSvcProvider}.
 	 */
-	public static final ForgeSVCProvider instance = new ForgeSVCProvider();
+	public static final ForgeSvcProvider instance = new ForgeSvcProvider();
 
-	private static final ForgeSVC forgeSVC =
-			RetrofitUtils.get("https://addons-ecs.forgesvc.net/").create(ForgeSVC.class);
+	private static final ForgeSvc forgeSVC =
+			RetrofitUtils.get("https://addons-ecs.forgesvc.net/").create(ForgeSvc.class);
 
-	private ForgeSVCProvider() {}
+	private ForgeSvcProvider() {}
 
 	/**
 	 * {@inheritDoc}
@@ -64,7 +64,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
-		final List<ForgeSVCProject> projects = RetrofitUtils.execute(forgeSVC.searchProjects(
+		final List<ForgeSvcProject> projects = RetrofitUtils.execute(forgeSVC.searchProjects(
 				query.gameID(), query.categorySectionID(), query.categoryID(),
 				query.gameVersionString(), query.pageIndex(), query.pageSize(),
 				query.searchFilter(), query.sortingMethod().id()
@@ -82,13 +82,13 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public CurseFiles<CurseFile> files(int projectID) throws CurseException {
-		final Set<ForgeSVCFile> files = RetrofitUtils.execute(forgeSVC.getFiles(projectID));
+		final Set<ForgeSvcFile> files = RetrofitUtils.execute(forgeSVC.getFiles(projectID));
 
 		if (files == null) {
 			return null;
 		}
 
-		for (ForgeSVCFile file : files) {
+		for (ForgeSvcFile file : files) {
 			file.setProjectID(projectID);
 		}
 
@@ -100,7 +100,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public CurseFile file(int projectID, int fileID) throws CurseException {
-		final ForgeSVCFile file = RetrofitUtils.execute(forgeSVC.getFile(projectID, fileID));
+		final ForgeSvcFile file = RetrofitUtils.execute(forgeSVC.getFile(projectID, fileID));
 
 		if (file == null) {
 			return null;
@@ -138,7 +138,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Set<CurseGame> games() throws CurseException {
-		final Set<ForgeSVCGame> games = RetrofitUtils.execute(forgeSVC.getGames(false));
+		final Set<ForgeSvcGame> games = RetrofitUtils.execute(forgeSVC.getGames(false));
 
 		if (games == null) {
 			throw new CurseException("Failed to retrieve games");
@@ -160,7 +160,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Set<CurseCategory> categories() throws CurseException {
-		final Set<ForgeSVCCategory> categories = RetrofitUtils.execute(forgeSVC.getCategories());
+		final Set<ForgeSvcCategory> categories = RetrofitUtils.execute(forgeSVC.getCategories());
 
 		if (categories == null) {
 			throw new CurseException("Failed to retrieve categories");
@@ -174,7 +174,7 @@ public final class ForgeSVCProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Set<CurseCategory> categories(int sectionID) throws CurseException {
-		final Set<ForgeSVCCategory> categories =
+		final Set<ForgeSvcCategory> categories =
 				RetrofitUtils.execute(forgeSVC.getCategories(sectionID));
 		return categories == null ? null : new TreeSet<>(categories);
 	}

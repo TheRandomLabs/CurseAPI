@@ -9,7 +9,7 @@ import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
 import okhttp3.HttpUrl;
 
-final class ForgeSVCCategory extends CurseCategory {
+final class ForgeSvcCategory extends CurseCategory {
 	private int gameId;
 
 	//This is the usual name.

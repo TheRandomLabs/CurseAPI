@@ -7,7 +7,7 @@ import com.therandomlabs.curseapi.file.CurseDependencyType;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.project.CurseProject;
 
-final class ForgeSVCDependency extends CurseDependency {
+final class ForgeSvcDependency extends CurseDependency {
 	private int addonId;
 	private int type;
 
@@ -45,7 +45,7 @@ final class ForgeSVCDependency extends CurseDependency {
 		return CurseDependencyType.fromID(type);
 	}
 
-	//This is called by ForgeSVCFile#dependencies().
+	//This is called by ForgeSvcFile#dependencies().
 	void setDependent(CurseFile file) {
 		dependent = file;
 	}

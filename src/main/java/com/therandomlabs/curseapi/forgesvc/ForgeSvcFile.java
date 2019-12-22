@@ -19,7 +19,7 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
-final class ForgeSVCFile extends CurseFile {
+final class ForgeSvcFile extends CurseFile {
 	private int projectId;
 	private int id;
 	private String displayName;
@@ -29,7 +29,7 @@ final class ForgeSVCFile extends CurseFile {
 	private int releaseType;
 	private int fileStatus;
 	private HttpUrl downloadUrl;
-	private Set<ForgeSVCDependency> dependencies;
+	private Set<ForgeSvcDependency> dependencies;
 	private Set<String> gameVersion;
 
 	private transient boolean dependenciesInitialized;
@@ -101,7 +101,7 @@ final class ForgeSVCFile extends CurseFile {
 	@Override
 	public Set<CurseDependency> dependencies() {
 		if (!dependenciesInitialized) {
-			for (ForgeSVCDependency dependency : dependencies) {
+			for (ForgeSvcDependency dependency : dependencies) {
 				dependency.setDependent(this);
 			}
 
@@ -157,12 +157,12 @@ final class ForgeSVCFile extends CurseFile {
 		changelog = null;
 	}
 
-	//This is called by ForgeSVCProvider so that projectId is not 0.
+	//This is called by ForgeSvcProvider so that projectId is not 0.
 	void setProjectID(int id) {
 		projectId = id;
 	}
 
-	//This is called by ForgeSVCProject#files().
+	//This is called by ForgeSvcProject#files().
 	void setProject(CurseProject project) {
 		this.project = project;
 	}

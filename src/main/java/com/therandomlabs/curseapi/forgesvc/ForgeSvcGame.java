@@ -12,11 +12,11 @@ import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 
-final class ForgeSVCGame extends CurseGame {
+final class ForgeSvcGame extends CurseGame {
 	private int id;
 	private String name;
 	private String slug;
-	private Set<ForgeSVCCategorySection> categorySections;
+	private Set<ForgeSvcCategorySection> categorySections;
 
 	//Cache.
 	private transient Set<CurseCategory> categories;

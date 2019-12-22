@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
-import com.therandomlabs.curseapi.forgesvc.ForgeSVCProvider;
+import com.therandomlabs.curseapi.forgesvc.ForgeSvcProvider;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
@@ -91,7 +91,7 @@ public final class CurseAPI {
 	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
 
 	private static final List<CurseAPIProvider> providers =
-			Lists.newArrayList(ForgeSVCProvider.instance);
+			Lists.newArrayList(ForgeSvcProvider.instance);
 
 	private CurseAPI() {}
 

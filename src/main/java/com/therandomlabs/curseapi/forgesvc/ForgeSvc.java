@@ -9,12 +9,12 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-interface ForgeSVC {
+interface ForgeSvc {
 	@GET("api/v2/addon/{projectID}")
-	Call<ForgeSVCProject> getProject(@Path("projectID") int id);
+	Call<ForgeSvcProject> getProject(@Path("projectID") int id);
 
 	@GET("api/v2/addon/search")
-	Call<List<ForgeSVCProject>> searchProjects(
+	Call<List<ForgeSvcProject>> searchProjects(
 			@Query("gameId") int gameID, @Query("sectionId") int categorySectionID,
 			@Query("categoryId") int categoryID, @Query("gameVersion") String gameVersionString,
 			@Query("index") int pageIndex, @Query("pageSize") int pageSize,
@@ -25,10 +25,10 @@ interface ForgeSVC {
 	Call<ResponseBody> getDescription(@Path("projectID") int projectID);
 
 	@GET("api/v2/addon/{projectID}/files")
-	Call<Set<ForgeSVCFile>> getFiles(@Path("projectID") int projectID);
+	Call<Set<ForgeSvcFile>> getFiles(@Path("projectID") int projectID);
 
 	@GET("api/v2/addon/{projectID}/file/{fileID}")
-	Call<ForgeSVCFile> getFile(@Path("projectID") int projectID, @Path("fileID") int fileID);
+	Call<ForgeSvcFile> getFile(@Path("projectID") int projectID, @Path("fileID") int fileID);
 
 	@GET("api/v2/addon/{projectID}/file/{fileID}/changelog")
 	Call<ResponseBody> getChangelog(@Path("projectID") int projectID, @Path("fileID") int fileID);
@@ -39,17 +39,17 @@ interface ForgeSVC {
 	);
 
 	@GET("api/v2/game")
-	Call<Set<ForgeSVCGame>> getGames(@Query("supportsAddons") boolean requireAddonSupport);
+	Call<Set<ForgeSvcGame>> getGames(@Query("supportsAddons") boolean requireAddonSupport);
 
 	@GET("api/v2/game/{gameID}")
-	Call<ForgeSVCGame> getGame(@Path("gameID") int id);
+	Call<ForgeSvcGame> getGame(@Path("gameID") int id);
 
 	@GET("api/v2/category")
-	Call<Set<ForgeSVCCategory>> getCategories();
+	Call<Set<ForgeSvcCategory>> getCategories();
 
 	@GET("api/v2/category/section/{sectionID}")
-	Call<Set<ForgeSVCCategory>> getCategories(@Path("sectionID") int sectionID);
+	Call<Set<ForgeSvcCategory>> getCategories(@Path("sectionID") int sectionID);
 
 	@GET("api/v2/category/{categoryID}")
-	Call<ForgeSVCCategory> getCategory(@Path("categoryID") int id);
+	Call<ForgeSvcCategory> getCategory(@Path("categoryID") int id);
 }

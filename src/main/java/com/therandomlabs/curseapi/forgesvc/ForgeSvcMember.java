@@ -3,7 +3,7 @@ package com.therandomlabs.curseapi.forgesvc;
 import com.therandomlabs.curseapi.project.CurseMember;
 import okhttp3.HttpUrl;
 
-final class ForgeSVCMember extends CurseMember {
+final class ForgeSvcMember extends CurseMember {
 	private int userId;
 	private String name;
 	private HttpUrl url;

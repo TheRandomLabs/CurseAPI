@@ -9,7 +9,7 @@ import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 
-final class ForgeSVCCategorySection extends CurseCategorySection {
+final class ForgeSvcCategorySection extends CurseCategorySection {
 	private int gameId;
 	private int gameCategoryId;
 	private String name;
