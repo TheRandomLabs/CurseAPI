@@ -199,25 +199,15 @@ public class CurseFileChange<F extends BasicCurseFile> {
 
 	/**
 	 * Returns all files that are chronologically between the old file and the new file.
-	 * The old file is excluded and the new file is included, even if the old file
-	 * is chronologically the newer file.
+	 * The older file is excluded and the newer file is included.
 	 *
 	 * @return a {@link CurseFiles} that contains all files that are chronologically between
 	 * the old file and the new file.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFiles<CurseFile> filesBetween() throws CurseException {
-		int olderFileID = olderFile().id();
-		int newerFileID = newerFile().id();
-
-		if (isDowngrade()) {
-			olderFileID--;
-		} else {
-			newerFileID++;
-		}
-
 		final CurseFiles<CurseFile> files = project().files();
-		new CurseFileFilter().between(olderFileID, newerFileID).apply(files);
+		new CurseFileFilter().between(olderFile().id(), newerFile().id() + 1).apply(files);
 		return files;
 	}
 
