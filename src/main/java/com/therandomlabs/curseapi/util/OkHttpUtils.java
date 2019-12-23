@@ -41,7 +41,7 @@ public final class OkHttpUtils {
 		Preconditions.checkNotNull(url, "url should not be null");
 
 		final Request request = new Request.Builder().url(url).build();
-		logger.info("Executing request: {}", request);
+		logger.debug("Executing request: {}", request);
 
 		try {
 			return client.newCall(request).execute().body().string();
@@ -61,7 +61,7 @@ public final class OkHttpUtils {
 		Preconditions.checkNotNull(url, "url should not be null");
 
 		final Request request = new Request.Builder().url(url).build();
-		logger.info("Executing request: {}", request);
+		logger.debug("Executing request: {}", request);
 
 		try {
 			return ImageIO.read(client.newCall(request).execute().body().byteStream());
@@ -82,7 +82,7 @@ public final class OkHttpUtils {
 		Preconditions.checkNotNull(path, "path should not be null");
 
 		final Request request = new Request.Builder().url(url).build();
-		logger.info("Executing request: {}", request);
+		logger.debug("Executing request: {}", request);
 
 		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
 			sink.writeAll(client.newCall(request).execute().body().source());

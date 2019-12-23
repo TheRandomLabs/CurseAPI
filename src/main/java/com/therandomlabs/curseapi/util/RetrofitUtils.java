@@ -44,7 +44,7 @@ public final class RetrofitUtils {
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
 	public static <T> T execute(Call<T> call) throws CurseException {
-		logger.info("Executing request: {}", call.request());
+		logger.debug("Executing request: {}", call.request());
 
 		try {
 			final Response<T> response = call.execute();
@@ -59,7 +59,7 @@ public final class RetrofitUtils {
 			}
 
 			throw new CurseException(String.format(
-					"Failed to execute call. HTTP status %s (%s). Response body: %s",
+					"Failed to execute call. HTTP status: %s (%s). Response body: %s",
 					response.message(), response.code(), response.errorBody().string()
 			));
 		} catch (IOException ex) {
