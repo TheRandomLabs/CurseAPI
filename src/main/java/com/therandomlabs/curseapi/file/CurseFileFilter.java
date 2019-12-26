@@ -88,11 +88,13 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 
 	/**
 	 * Adds the specified game versions to this {@link CurseFileFilter}.
+	 * "Array" has been appended to the method name to prevent compile-time ambiguity
+	 * with {@link #gameVersions(Collection)}.
 	 *
 	 * @param versions an array of game versions.
 	 * @return this {@link CurseFileFilter}.
 	 */
-	public CurseFileFilter gameVersions(CurseGameVersion<?>... versions) {
+	public CurseFileFilter gameVersionsArray(CurseGameVersion<?>... versions) {
 		Preconditions.checkNotNull(versions, "versions should not be null");
 		return gameVersions(ImmutableSet.copyOf(versions));
 	}
@@ -115,11 +117,13 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 
 	/**
 	 * Adds the specified game version groups to this {@link CurseFileFilter}.
+	 * "Array" has been appended to the method name to prevent compile-time ambiguity
+	 * with {@link #gameVersionGroups(Collection)}.
 	 *
 	 * @param versionGroups an array of game version groups.
 	 * @return this {@link CurseFileFilter}.
 	 */
-	public CurseFileFilter gameVersionGroups(CurseGameVersionGroup<?>... versionGroups) {
+	public CurseFileFilter gameVersionGroupsArray(CurseGameVersionGroup<?>... versionGroups) {
 		Preconditions.checkNotNull(versionGroups, "versionGroups should not be null");
 		return gameVersionGroups(ImmutableSet.copyOf(versionGroups));
 	}
