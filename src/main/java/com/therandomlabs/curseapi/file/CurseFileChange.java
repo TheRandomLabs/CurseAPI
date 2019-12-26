@@ -6,6 +6,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
+import com.therandomlabs.curseapi.util.CheckedFunction;
 
 /**
  * Represents a change between two CurseForge file versions, an old file and a new file.
@@ -157,7 +158,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
 	 * so this value may be cached.
 	 *
-	 * @return the older file as a {@link CurseFile}.
+	 * @return the older file as a {@link CurseFile}, or {@code null} if it cannot be retrieved.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile olderCurseFile() throws CurseException {
@@ -180,11 +181,42 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
 	 * so this value may be cached.
 	 *
-	 * @return the newer file as a {@link CurseFile}.
+	 * @return the newer file as a {@link CurseFile}, or {@code null} if it cannot be retrieved.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFile newerCurseFile() throws CurseException {
 		return asCurseFile(newerFile());
+	}
+
+	/**
+	 * Calls the specified function on the value returned by {@link #olderCurseFile()}.
+	 * If the value returned by {@link #olderCurseFile()} is {@code null},
+	 * the value returned by {@link #newerCurseFile()} is used instead.
+	 * If both values are {@code null}, a {@link CurseException} is thrown.
+	 *
+	 * @param function a {@link CheckedFunction}.
+	 * @param <T> the type of the return value.
+	 * @return the return value of the {@link CheckedFunction}.
+	 * @throws CurseException if an error occurs, or if the values returned by
+	 * {@link #olderCurseFile()} and {@link #newerCurseFile()} are both {@code null}.
+	 */
+	public <T> T get(CheckedFunction<? super CurseFile, ? extends T, CurseException> function)
+			throws CurseException {
+		final CurseFile olderFile = olderCurseFile();
+
+		if (olderFile != null) {
+			return function.apply(olderFile);
+		}
+
+		final CurseFile newerFile = newerCurseFile();
+
+		if (newerFile != null) {
+			return function.apply(newerFile);
+		}
+
+		throw new CurseException(
+				"Neither file for CurseFileChange could be retrieved as CurseFiles: " + this
+		);
 	}
 
 	/**
@@ -212,16 +244,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	}
 
 	private CurseFile asCurseFile(F file) throws CurseException {
-		if (file instanceof CurseFile) {
-			return (CurseFile) file;
-		}
-
-		final CurseFile curseFile = project().files().fileWithID(file.id());
-
-		if (curseFile == null) {
-			throw new CurseException("Could not retrieve as CurseFile: " + file);
-		}
-
-		return curseFile;
+		return file instanceof CurseFile ?
+				(CurseFile) file : project().files().fileWithID(file.id());
 	}
 }
