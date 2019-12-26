@@ -238,13 +238,30 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFiles<CurseFile> filesBetween() throws CurseException {
-		final CurseFiles<CurseFile> files = project().files();
-		new CurseFileFilter().between(olderFile().id(), newerFile().id() + 1).apply(files);
-		return files;
+		return filesBetween(false);
+	}
+
+	/**
+	 * Returns all files that are chronologically between the old file and the new file inclusively.
+	 *
+	 * @return a {@link CurseFiles} instance that contains all files that are chronologically
+	 * between the old file and the new file inclusively.
+	 * @throws CurseException if an error occurs.
+	 */
+	public CurseFiles<CurseFile> filesBetweenInclusive() throws CurseException {
+		return filesBetween(true);
 	}
 
 	private CurseFile asCurseFile(F file) throws CurseException {
 		return file instanceof CurseFile ?
 				(CurseFile) file : project().files().fileWithID(file.id());
+	}
+
+	private CurseFiles<CurseFile> filesBetween(boolean inclusive) throws CurseException {
+		final CurseFiles<CurseFile> files = project().files();
+		new CurseFileFilter().between(
+				olderFile().id() - (inclusive ? 1 : 0), newerFile().id() + 1
+		).apply(files);
+		return files;
 	}
 }
