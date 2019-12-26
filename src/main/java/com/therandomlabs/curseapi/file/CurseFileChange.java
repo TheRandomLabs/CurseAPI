@@ -199,7 +199,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 
 	/**
 	 * Returns all files that are chronologically between the old file and the new file.
-	 * The older file is excluded and the newer file is included.
+	 * The older file is excluded, and the newer file is included.
 	 *
 	 * @return a {@link CurseFiles} that contains all files that are chronologically between
 	 * the old file and the new file.

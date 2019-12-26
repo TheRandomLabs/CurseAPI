@@ -36,6 +36,7 @@ final class ForgeSvcProject extends CurseProject {
 	private ZonedDateTime dateReleased;
 	private ZonedDateTime dateModified;
 	//"isExperimental" is spelled incorrectly in the JSON.
+	@SuppressWarnings("SpellCheckingInspection")
 	private boolean isExperiemental;
 
 	//Cache.

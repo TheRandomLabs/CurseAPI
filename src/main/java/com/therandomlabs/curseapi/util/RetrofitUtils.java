@@ -43,6 +43,7 @@ public final class RetrofitUtils {
 	 * @return the deserialized response body.
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
+	@SuppressWarnings("GrazieInspection")
 	public static <T> T execute(Call<T> call) throws CurseException {
 		logger.debug("Executing request: {}", call.request());
 

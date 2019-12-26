@@ -102,6 +102,7 @@ public final class OkHttpUtils {
 	 * @return a {@link Path} to the downloaded file.
 	 * @throws CurseException if the request cannot be executed correctly or if an I/O error occurs.
 	 */
+	@SuppressWarnings("GrazieInspection")
 	public static Path downloadToDirectory(HttpUrl url, Path directory, String fileName)
 			throws CurseException {
 		Preconditions.checkNotNull(url, "url should not be null");

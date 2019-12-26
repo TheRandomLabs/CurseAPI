@@ -134,7 +134,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * specified mapping function.
 	 * <p>
 	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
-	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * methods is that it uses {@link CheckedFunction}s rather than regular {@link Function}s,
 	 * and this allows methods that throw {@link CurseException}s such as
 	 * {@link CurseFile#changelog()} to be called.
 	 * <p>
@@ -160,7 +160,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * Returns a {@link Map} derived from the elements of this {@link CurseFiles}.
 	 * <p>
 	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
-	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * methods is that it uses {@link CheckedFunction}s rather than regular {@link Function}s,
 	 * and this allows methods that throw {@link CurseException}s such as
 	 * {@link CurseFile#changelog()} to be called.
 	 * <p>

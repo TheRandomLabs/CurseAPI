@@ -93,7 +93,7 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	public abstract int gameID();
 
 	/**
-	 * Returns a version string that represents this game version version group.
+	 * Returns a version string that represents this game version group.
 	 *
 	 * @return a version string that represents this game version group.
 	 */
@@ -164,10 +164,10 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	}
 
 	/**
-	 * Returns whether this {@link CurseGameVersionGroup} represents no or an unknown game version
+	 * Returns whether this {@link CurseGameVersionGroup} represents an unknown or no game version
 	 * group.
 	 *
-	 * @return {@code true} if this {@link CurseGameVersionGroup} represents no or an unknown
+	 * @return {@code true} if this {@link CurseGameVersionGroup} represents an unknown or no
 	 * game version group, or otherwise {@code false}.
 	 */
 	public final boolean isNone() {
@@ -175,12 +175,11 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	}
 
 	/**
-	 * Returns a {@link CurseGameVersionGroup} that represents no or an unknown game version
-	 * group.
+	 * Returns a {@link CurseGameVersionGroup} that represents an unknown or no game version group.
 	 *
 	 * @param gameID a game ID.
 	 * @param <V> the type of {@link CurseGameVersion}.
-	 * @return a {@link CurseGameVersionGroup} that represents no or an unknown game version group.
+	 * @return a {@link CurseGameVersionGroup} that represents an unknown or no game version group.
 	 */
 	public static <V extends CurseGameVersion<?>> CurseGameVersionGroup<V> none(int gameID) {
 		return new None<>(gameID);

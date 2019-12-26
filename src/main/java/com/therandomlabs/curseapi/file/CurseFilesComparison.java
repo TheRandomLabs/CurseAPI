@@ -94,7 +94,7 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 
 	/**
 	 * Returns a {@link CurseFilesComparison} instance that represents a comparison between
-	 * an old collection of files and a new collection of files.
+	 * an old and new collection of files.
 	 * Files in the old collection may be newer than files of the same project in the new
 	 * collection.
 	 *

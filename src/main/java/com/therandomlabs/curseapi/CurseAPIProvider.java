@@ -19,7 +19,7 @@ import org.jsoup.nodes.Element;
  * <p>
  * Implementations of this interface may return {@code null} to signify that a fallback
  * {@link CurseAPIProvider} should be used instead. As input validation is performed
- * by the methods in {@link CurseAPI}, it need not be performed by implementations of this
+ * by the methods in {@link CurseAPI}, it does not need to be performed by implementations of this
  * interface.
  */
 public interface CurseAPIProvider {

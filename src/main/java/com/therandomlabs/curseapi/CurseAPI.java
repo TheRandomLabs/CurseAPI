@@ -218,7 +218,7 @@ public final class CurseAPI {
 	 *
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
-	 * @return an {@link Optional} containing an the changelog for the specified project and file ID
+	 * @return an {@link Optional} containing the changelog for the specified project and file ID
 	 * as plain text or {@link CurseAPI#NO_CHANGELOG_PROVIDED} as plain text if none is provided.
 	 * If the specified file does not exist, {@link Optional#empty()} is returned.
 	 * @throws CurseException if an error occurs.
@@ -235,7 +235,7 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
-	 * @return an {@link Optional} containing an the changelog for the specified project and file ID
+	 * @return an {@link Optional} containing the changelog for the specified project and file ID
 	 * as plain text or {@link CurseAPI#NO_CHANGELOG_PROVIDED} as plain text if none is provided.
 	 * If the specified file does not exist, {@link Optional#empty()} is returned.
 	 * @throws CurseException if an error occurs.
@@ -499,7 +499,7 @@ public final class CurseAPI {
 	 * applying the specified mapping function.
 	 * <p>
 	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
-	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * methods is that it uses {@link CheckedFunction}s rather than regular {@link Function}s,
 	 * and this allows methods that throw {@link CurseException}s such as
 	 * {@link CurseFile#changelog()} to be called.
 	 * <p>
@@ -538,7 +538,7 @@ public final class CurseAPI {
 	 * Returns a {@link Map} derived from the elements of the specified {@link Collection}.
 	 * <p>
 	 * The advantage of this method over the traditional {@link java.util.stream.Stream}
-	 * methods is that it uses {@link CheckedFunction}s rather then regular {@link Function}s,
+	 * methods is that it uses {@link CheckedFunction}s rather than regular {@link Function}s,
 	 * and this allows methods that throw {@link CurseException}s such as
 	 * {@link CurseFile#changelog()} to be called.
 	 * <p>

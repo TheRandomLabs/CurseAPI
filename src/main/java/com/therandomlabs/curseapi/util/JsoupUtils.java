@@ -19,6 +19,7 @@ public final class JsoupUtils {
 	 * @return the body of the specified HTML fragment as a single {@link Element},
 	 * or {@code null} if the body is empty.
 	 */
+	@SuppressWarnings("GrazieInspection")
 	public static Element parseBody(String html) {
 		final Element body = Jsoup.parseBodyFragment(html).body();
 		final Elements children = body.children();

@@ -64,7 +64,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	}
 
 	/**
-	 * Adds the specified game version stringsto this {@link CurseFileFilter}.
+	 * Adds the specified game version strings to this {@link CurseFileFilter}.
 	 *
 	 * @param versions an array of game version strings.
 	 * @return this {@link CurseFileFilter}.
