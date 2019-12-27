@@ -14,6 +14,7 @@ public final class JsoupUtils {
 
 	/**
 	 * Parses the specified HTML fragment and returns the body as a single {@link Element}.
+	 * If there are multiple {@link Element}s, they are wrapped in a {@code div} tag.
 	 *
 	 * @param html an HTML fragment.
 	 * @return the body of the specified HTML fragment as a single {@link Element},
@@ -32,13 +33,7 @@ public final class JsoupUtils {
 			return children.first();
 		}
 
-		final Element div = new Element("div");
-
-		for (Element child : children) {
-			child.appendTo(div);
-		}
-
-		return div;
+		return body.tagName("div");
 	}
 
 	/**
