@@ -1,10 +1,15 @@
 package com.therandomlabs.curseapi.util;
 
+import java.util.List;
+
+import com.google.common.base.Splitter;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.NodeVisitor;
 
 final class FormattingVisitor implements NodeVisitor {
+	private static final Splitter whitespaceSplitter = Splitter.onPattern("\\s+");
+
 	private final int maxLineLength;
 
 	@SuppressWarnings("PMD.AvoidStringBufferField")
@@ -85,10 +90,10 @@ final class FormattingVisitor implements NodeVisitor {
 	}
 
 	private void wrapAndAppend(String string) {
-		final String[] words = string.split("\\s+");
+		final List<String> words = whitespaceSplitter.splitToList(string);
 
-		for (int i = 0; i < words.length; i++) {
-			final String word = words[i];
+		for (int i = 0; i < words.size(); i++) {
+			final String word = words.get(i);
 
 			if (string.length() + currentLineLength > maxLineLength) {
 				//Wrap and reset counter.
@@ -100,7 +105,7 @@ final class FormattingVisitor implements NodeVisitor {
 			text.append(word);
 
 			//If this isn't the last word, insert a space.
-			if (i < words.length - 1) {
+			if (i < words.size() - 1) {
 				text.append(' ');
 				currentLineLength++;
 			}

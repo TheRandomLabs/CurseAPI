@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseAPIProvider;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
@@ -14,6 +13,7 @@ import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
+import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
@@ -55,8 +55,8 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Element projectDescription(int id) throws CurseException {
-		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id), null);
-		return element == null ? null : element.child(0);
+		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id));
+		return JsoupUtils.isEmpty(element) ? null : element.child(0);
 	}
 
 	/**
@@ -117,9 +117,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Element fileChangelog(int projectID, int fileID) throws CurseException {
-		return RetrofitUtils.getElement(
-				forgeSVC.getChangelog(projectID, fileID), CurseAPI.NO_CHANGELOG_PROVIDED
-		);
+		return RetrofitUtils.getElement(forgeSVC.getChangelog(projectID, fileID));
 	}
 
 	/**

@@ -90,15 +90,13 @@ public final class RetrofitUtils {
 	 * body as an {@link Element}.
 	 *
 	 * @param call a {@link Call}.
-	 * @param defaultValue the value to return if the response body is empty.
 	 * This is different from when the {@link Call} fails to execute, in which case
 	 * {@code null} is returned as usual.
-	 * @return the response body as an {@link Element}, or the specified default value if it is
-	 * empty.
+	 * @return the response body as an {@link Element}, or an empty {@link Element} if it is empty.
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
+	 * @see JsoupUtils#emptyElement()
 	 */
-	public static Element getElement(Call<ResponseBody> call, Element defaultValue)
-			throws CurseException {
+	public static Element getElement(Call<ResponseBody> call) throws CurseException {
 		final String string = getString(call);
 
 		if (string == null) {
@@ -106,6 +104,6 @@ public final class RetrofitUtils {
 		}
 
 		final Element element = JsoupUtils.parseBody(string);
-		return element == null ? defaultValue : element;
+		return element == null ? JsoupUtils.emptyElement() : element;
 	}
 }

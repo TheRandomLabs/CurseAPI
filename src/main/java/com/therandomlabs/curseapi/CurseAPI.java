@@ -81,13 +81,6 @@ public final class CurseAPI {
 	public static final HttpUrl PLACEHOLDER_PROJECT_THUMBNAIL =
 			HttpUrl.get("https://media.forgecdn.net/avatars/0/93/635227964539626926.png");
 
-	/**
-	 * The {@link Element} returned by {@link CurseFile#changelog()} if no changelog
-	 * is provided.
-	 */
-	public static final Element NO_CHANGELOG_PROVIDED =
-			new Element("p").appendText("No changelog provided.");
-
 	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
 
 	private static final List<CurseAPIProvider> providers =
@@ -100,7 +93,7 @@ public final class CurseAPI {
 	 *
 	 * @param id a project ID.
 	 * @return a {@link CurseProject} instance for the specified project ID wrapped in an
-	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseProject> project(int id) throws CurseException {
@@ -113,7 +106,7 @@ public final class CurseAPI {
 	 *
 	 * @param id a project ID.
 	 * @return an {@link Element} containing the description for the project with the specified ID
-	 * wrapped in an {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * wrapped in an {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<Element> projectDescription(int id) throws CurseException {
@@ -126,7 +119,7 @@ public final class CurseAPI {
 	 *
 	 * @param id a project ID.
 	 * @return the description for the project with the specified ID as plain text wrapped in an
-	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
@@ -141,7 +134,7 @@ public final class CurseAPI {
 	 * @param id a project ID.
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
 	 * @return the description for the project with the specified ID as plain text wrapped in an
-	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
@@ -174,7 +167,7 @@ public final class CurseAPI {
 	 *
 	 * @param projectID a project ID.
 	 * @return a {@link CurseFiles} instance for the specified project ID wrapped in an
-	 * {@link Optional} if the project exists, or otherwise {@link Optional#empty()}.
+	 * {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFiles<CurseFile>> files(int projectID) throws CurseException {
@@ -188,7 +181,7 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @return a {@link CurseFile} instance for the specified project and file ID wrapped in an
-	 * {@link Optional} if the file exists, or otherwise {@link Optional#empty()}.
+	 * {@link Optional} if the file exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseFile> file(int projectID, int fileID) throws CurseException {
@@ -202,10 +195,11 @@ public final class CurseAPI {
 	 *
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
-	 * @return an {@link Optional} containing an {@link Element} containing the changelog for the
-	 * specified project and file ID or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
-	 * If the specified file does not exist, {@link Optional#empty()} is returned.
+	 * @return an {@link Element} containing the changelog for the specified project and file ID
+	 * wrapped in an {@link Optional} if the file exists, or otherwise an empty {@link Optional}.
+	 * If no changelog is provided for the specified file, the {@link Element} is empty.
 	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#emptyElement()
 	 */
 	public static Optional<Element> fileChangelog(int projectID, int fileID) throws CurseException {
 		CursePreconditions.checkProjectID(projectID, "projectID");
@@ -218,9 +212,9 @@ public final class CurseAPI {
 	 *
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
-	 * @return an {@link Optional} containing the changelog for the specified project and file ID
-	 * as plain text or {@link CurseAPI#NO_CHANGELOG_PROVIDED} as plain text if none is provided.
-	 * If the specified file does not exist, {@link Optional#empty()} is returned.
+	 * @return the changelog for the specified project and file ID as plain text if the file exists,
+	 * or otherwise an empty {@link Optional}. If no changelog is provided for the specified file,
+	 * the string wrapped in the {@link Optional} is empty.
 	 * @throws CurseException if an error occurs.
 	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
@@ -235,9 +229,9 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
-	 * @return an {@link Optional} containing the changelog for the specified project and file ID
-	 * as plain text or {@link CurseAPI#NO_CHANGELOG_PROVIDED} as plain text if none is provided.
-	 * If the specified file does not exist, {@link Optional#empty()} is returned.
+	 * @return the changelog for the specified project and file ID as plain text if the file exists,
+	 * or otherwise an empty {@link Optional}. If no changelog is provided for the specified file,
+	 * the string wrapped in the {@link Optional} is empty.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<String> fileChangelogPlainText(
@@ -257,7 +251,7 @@ public final class CurseAPI {
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
 	 * @return the download URL for the specified project and file ID wrapped in an
-	 * {@link Optional} if the file exists, or otherwise {@link Optional#empty()}.
+	 * {@link Optional} if the file exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<HttpUrl> fileDownloadURL(int projectID, int fileID)
@@ -298,7 +292,7 @@ public final class CurseAPI {
 	 * @param fileID a file ID.
 	 * @param directory a {@link Path} to a directory.
 	 * @return a {@link Path} to the downloaded file wrapped in an {@link Optional} if the
-	 * download is successful, or otherwise {@link Optional#empty()}.
+	 * download is successful, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<Path> downloadFileToDirectory(int projectID, int fileID, Path directory)
@@ -324,7 +318,7 @@ public final class CurseAPI {
 	 *
 	 * @return a mutable {@link Set} containing {@link CurseGame} instances that represent
 	 * all games supported by CurseForge wrapped in an {@link Optional} if it can be retrieved,
-	 * or otherwise {@link Optional#empty()}.
+	 * or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<Set<CurseGame>> games() throws CurseException {
@@ -348,7 +342,7 @@ public final class CurseAPI {
 	 *
 	 * @param id a game ID.
 	 * @return a {@link CurseGame} instance that represents the CurseForge game with the specified
-	 * ID wrapped in an {@link Optional} if it exists, or otherwise {@link Optional#empty()}.
+	 * ID wrapped in an {@link Optional} if it exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<CurseGame> game(int id) throws CurseException {
@@ -363,7 +357,7 @@ public final class CurseAPI {
 	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return a mutable {@link SortedSet} containing {@link CurseGameVersion} instances that
 	 * represent all game versions of the game with the specified ID supported by CurseForge wrapped
-	 * in an {@link Optional} if it can be retrieved, or otherwise {@link Optional#empty()}.
+	 * in an {@link Optional} if it can be retrieved, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	@SuppressWarnings("unchecked")
@@ -382,7 +376,7 @@ public final class CurseAPI {
 	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return a {@link CurseGameVersion} instance that represents the game version of the game
 	 * with the specified ID with the specified version string wrapped in an {@link Optional}
-	 * if it exists, or otherwise {@link Optional#empty()}.
+	 * if it exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	@SuppressWarnings("unchecked")
@@ -399,7 +393,7 @@ public final class CurseAPI {
 	 *
 	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
 	 * all project categories on CurseForge wrapped in an {@link Optional} if it can be retrieved,
-	 * or otherwise {@link Optional#empty()}.
+	 * or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<Set<CurseCategory>> categories() throws CurseException {
@@ -412,7 +406,7 @@ public final class CurseAPI {
 	 * @param sectionID a category section ID.
 	 * @return a mutable {@link Set} containing {@link CurseCategory} instances that represent
 	 * all categories in the category section with the specified ID wrapped in an optional if it
-	 * can be retrieved, or otherwise {@link Optional#empty()}.
+	 * can be retrieved, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	public static Optional<Set<CurseCategory>> categories(int sectionID) throws CurseException {
@@ -468,6 +462,7 @@ public final class CurseAPI {
 	 * @return a mutable {@link Set} of {@link CurseGameVersionGroup}s for the specified
 	 * {@link CurseGameVersion}s.
 	 */
+	@SuppressWarnings("varargs")
 	@SafeVarargs
 	public static <V extends CurseGameVersion<?>> Set<CurseGameVersionGroup<V>> gameVersionGroups(
 			V... versions

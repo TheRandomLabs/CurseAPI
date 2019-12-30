@@ -13,6 +13,27 @@ public final class JsoupUtils {
 	private JsoupUtils() {}
 
 	/**
+	 * Returns an empty {@link Element}.
+	 *
+	 * @return an empty {@link Element}.
+	 * @see #isEmpty(Element)
+	 */
+	public static Element emptyElement() {
+		return new Element("div");
+	}
+
+	/**
+	 * Returns whether the specified {@link Element} is empty.
+	 *
+	 * @param element an {@link Element}.
+	 * @return {@code true} if the specified {@link Element} is empty, or otherwise {@code false}.
+	 * @see #emptyElement()
+	 */
+	public static boolean isEmpty(Element element) {
+		return element.childNodes().isEmpty();
+	}
+
+	/**
 	 * Parses the specified HTML fragment and returns the body as a single {@link Element}.
 	 * If there are multiple {@link Element}s, they are wrapped in a {@code div} tag.
 	 *

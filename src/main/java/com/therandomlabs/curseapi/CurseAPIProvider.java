@@ -11,6 +11,7 @@ import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
+import com.therandomlabs.curseapi.util.JsoupUtils;
 import okhttp3.HttpUrl;
 import org.jsoup.nodes.Element;
 
@@ -18,9 +19,9 @@ import org.jsoup.nodes.Element;
  * Provides an implementation of all or a subset of CurseAPI.
  * <p>
  * Implementations of this interface may return {@code null} to signify that a fallback
- * {@link CurseAPIProvider} should be used instead. As input validation is performed
- * by the methods in {@link CurseAPI}, it does not need to be performed by implementations of this
- * interface.
+ * {@link CurseAPIProvider} should be used instead or that an object does not exist on CurseForge.
+ * As input validation is performed by the methods in {@link CurseAPI}, it does not need to be
+ * performed by implementations of this interface.
  */
 public interface CurseAPIProvider {
 	/**
@@ -82,11 +83,12 @@ public interface CurseAPIProvider {
 	/**
 	 * Returns the changelog for the specified project and file ID.
 	 *
-	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
+	 * @param projectID a project ID.
 	 * @param fileID a file ID.
-	 * @return an {@link Element} containing the changelog for the specified project and file ID,
-	 * or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
+	 * @return an {@link Element} containing the changelog for the specified project and file ID.
+	 * If no changelog is provided for the specified file, an empty {@link Element} is returned.
 	 * @throws CurseException if an error occurs.
+	 * @see JsoupUtils#emptyElement()
 	 */
 	default Element fileChangelog(int projectID, int fileID) throws CurseException {
 		return null;

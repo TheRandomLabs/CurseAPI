@@ -112,6 +112,7 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	 * @return a mutable {@link Set} containing all game versions in this game version group as
 	 * version strings.
 	 */
+	@SuppressWarnings({"rawtypes", "RedundantSuppression"})
 	public Set<String> versionStrings() {
 		return versions().stream().
 				map(CurseGameVersion::versionString).
@@ -125,6 +126,7 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	 * @return {@code true} if this game version group contains any of the specified game versions,
 	 * or otherwise {@code false}.
 	 */
+	@SuppressWarnings("varargs")
 	@SafeVarargs
 	public final boolean containsAny(V... versions) {
 		return containsAny(Arrays.asList(versions));

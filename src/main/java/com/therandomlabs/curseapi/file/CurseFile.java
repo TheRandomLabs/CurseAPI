@@ -192,29 +192,21 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract void clearGameVersionsCache();
 
 	/**
-	 * Returns whether this file has a changelog.
-	 *
-	 * @return {@code true} if this file has a changelog, or otherwise {@code false}.
-	 * @throws CurseException if an error occurs.
-	 */
-	public boolean hasChangelog() throws CurseException {
-		return changelog() != CurseAPI.NO_CHANGELOG_PROVIDED;
-	}
-
-	/**
 	 * Returns this file's changelog. This value may be cached.
 	 *
-	 * @return an {@link Element} containing this file's changelog,
-	 * or {@link CurseAPI#NO_CHANGELOG_PROVIDED} if none is provided.
+	 * @return an {@link Element} containing this file's changelog. If a changelog is not provided,
+	 * an empty {@link Element} is returned.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
+	 * @see JsoupUtils#emptyElement()
 	 */
 	public abstract Element changelog() throws CurseException;
 
 	/**
 	 * Returns this file's changelog as plain text. This value may be cached.
 	 *
-	 * @return this file's changelog as plain text.
+	 * @return this file's changelog as plain text. If a changelog is not provided, an empty
+	 * string is returned.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
 	 * @see JsoupUtils#getPlainText(Element, int)
@@ -227,7 +219,8 @@ public abstract class CurseFile extends BasicCurseFile {
 	 * Returns this file's changelog as plain text. This value may be cached.
 	 *
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
-	 * @return this file's changelog as plain text.
+	 * @return this file's changelog as plain text. If a changelog is not provided, an empty
+	 * string is returned.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearChangelogCache()
 	 * @see JsoupUtils#getPlainText(Element, int)

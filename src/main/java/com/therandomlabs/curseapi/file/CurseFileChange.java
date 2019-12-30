@@ -63,7 +63,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 
 		final CurseFileChange<? extends BasicCurseFile> fileChange =
 				(CurseFileChange<? extends BasicCurseFile>) object;
-		return oldFile.equals(fileChange.oldFile) && newFile.equals(fileChange.oldFile);
+		return oldFile.equals(fileChange.oldFile) && newFile.equals(fileChange.newFile);
 	}
 
 	/**
