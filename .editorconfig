@@ -423,7 +423,6 @@ ij_groovy_while_on_new_line = false
 ij_groovy_wrap_long_lines = false
 
 [{*.mkd,*.markdown,*.md}]
-indent_style = space
 ij_markdown_abbreviations_placement = 0
 ij_markdown_abbreviations_sort = 0
 ij_markdown_attribute_class = 0
