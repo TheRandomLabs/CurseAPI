@@ -105,13 +105,6 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract HttpUrl avatarURL();
 
 	/**
-	 * Returns the URL to this project's avatar thumbnail.
-	 *
-	 * @return the URL to this project's avatar thumbnail.
-	 */
-	public abstract HttpUrl avatarThumbnailURL();
-
-	/**
 	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarURL()}.
 	 *
 	 * @return this project's avatar as a {@link BufferedImage}.
@@ -120,6 +113,13 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public BufferedImage avatar() throws CurseException {
 		return OkHttpUtils.readImage(avatarURL());
 	}
+
+	/**
+	 * Returns the URL to this project's avatar thumbnail.
+	 *
+	 * @return the URL to this project's avatar thumbnail.
+	 */
+	public abstract HttpUrl avatarThumbnailURL();
 
 	/**
 	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarThumbnailURL()}.
@@ -228,6 +228,9 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	/**
 	 * Returns the URL of the file in this project with the specified ID.
 	 * The existence and availability of the file are not verified.
+	 *
+	 * Implementations of this method should validate the file ID by calling
+	 * {@link com.therandomlabs.curseapi.CursePreconditions#checkFileID(int, String)}.
 	 *
 	 * @param fileID a file ID.
 	 * @return the URL of the file in this project with the specified ID.

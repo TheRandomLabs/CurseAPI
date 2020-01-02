@@ -46,7 +46,6 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0-M1"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0-M1"
 	testImplementation "org.assertj:assertj-core:3.14.0"
-	testImplementation "nl.jqno.equalsverifier:equalsverifier:3.1.11"
 	testImplementation "org.mockito:mockito-core:3.2.4"
 
 	spotbugsPlugins "com.mebigfatguy.sb-contrib:sb-contrib:7.4.7"

@@ -83,7 +83,7 @@ final class ForgeSvcProject extends CurseProject {
 			}
 		}
 
-		return CurseAPI.PLACEHOLDER_PROJECT_THUMBNAIL;
+		return CurseAPI.PLACEHOLDER_PROJECT_AVATAR_THUMBNAIL;
 	}
 
 	@Override

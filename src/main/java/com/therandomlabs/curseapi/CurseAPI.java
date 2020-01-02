@@ -76,9 +76,9 @@ public final class CurseAPI {
 	);
 
 	/**
-	 * The placeholder CurseForge project thumbnail URL.
+	 * The placeholder CurseForge project avatar thumbnail URL.
 	 */
-	public static final HttpUrl PLACEHOLDER_PROJECT_THUMBNAIL =
+	public static final HttpUrl PLACEHOLDER_PROJECT_AVATAR_THUMBNAIL =
 			HttpUrl.get("https://media.forgecdn.net/avatars/0/93/635227964539626926.png");
 
 	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
