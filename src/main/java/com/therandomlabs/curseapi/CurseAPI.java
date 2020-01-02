@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi;
 
 import java.nio.file.Path;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
@@ -606,12 +606,12 @@ public final class CurseAPI {
 	}
 
 	/**
-	 * Returns an immutable {@link List} of all registered {@link CurseAPIProvider}s.
+	 * Returns an mutable {@link List} of all registered {@link CurseAPIProvider}s.
 	 *
-	 * @return an immutable {@link List} of all registered {@link CurseAPIProvider}s.
+	 * @return an mutable {@link List} of all registered {@link CurseAPIProvider}s.
 	 */
-	public static List<CurseAPIProvider> getProviders() {
-		return ImmutableList.copyOf(providers);
+	public static List<CurseAPIProvider> providers() {
+		return new ArrayList<>(providers);
 	}
 
 	private static <T> Optional<T> get(

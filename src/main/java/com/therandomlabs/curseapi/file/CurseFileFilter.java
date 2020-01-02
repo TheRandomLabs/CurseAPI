@@ -44,13 +44,15 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 */
 	@Override
 	public boolean test(CurseFile file) {
+		final Set<String> gameVersionStrings = gameVersionStrings();
+
 		if (!gameVersionStrings.isEmpty() &&
 				Collections.disjoint(gameVersionStrings, file.gameVersionStrings())) {
 			return false;
 		}
 
-		return file.newerThan(newerThan) && file.olderThan(olderThan) &&
-				file.releaseType().matchesMinimumStability(minimumStability);
+		return file.newerThan(newerThan()) && file.olderThan(olderThan()) &&
+				file.releaseType().matchesMinimumStability(minimumStability());
 	}
 
 	/**
@@ -206,6 +208,16 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	public CurseFileFilter clearNewerThan() {
 		newerThan = CurseAPI.MIN_FILE_ID - 1;
 		return this;
+	}
+
+	/**
+	 * Returns this {@link CurseFileFilter}'s "older than" file ID.
+	 *
+	 * @return this {@link CurseFileFilter}'s "older than" file ID.
+	 * @see #olderThan(int)
+	 */
+	public int olderThan() {
+		return olderThan;
 	}
 
 	/**

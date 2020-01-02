@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.therandomlabs.curseapi.CursePreconditions;
+
 /**
  * Represents a group of game versions.
  * <p>
@@ -184,6 +186,7 @@ public abstract class CurseGameVersionGroup<V extends CurseGameVersion<?>> {
 	 * @return a {@link CurseGameVersionGroup} that represents an unknown or no game version group.
 	 */
 	public static <V extends CurseGameVersion<?>> CurseGameVersionGroup<V> none(int gameID) {
+		CursePreconditions.checkGameID(gameID, "gameID");
 		return new None<>(gameID);
 	}
 }

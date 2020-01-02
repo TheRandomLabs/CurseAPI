@@ -38,7 +38,7 @@ public final class MoshiUtils {
 		try {
 			return moshi.adapter(type).fromJson(json);
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to read JSON: " + json, ex);
 		}
 	}
 
@@ -55,7 +55,7 @@ public final class MoshiUtils {
 		try (BufferedSource source = Okio.buffer(Okio.source(json))) {
 			return fromJSON(source.readUtf8(), type);
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to read JSON: " + json, ex);
 		}
 	}
 
@@ -85,7 +85,7 @@ public final class MoshiUtils {
 		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
 			moshi.adapter(type).toJson(sink, value);
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to write JSON: " + path, ex);
 		}
 	}
 }

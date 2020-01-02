@@ -56,7 +56,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Override
 	public Element projectDescription(int id) throws CurseException {
 		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id));
-		return JsoupUtils.isEmpty(element) ? null : element.child(0);
+		return JsoupUtils.isEmpty(element) ? null : element;
 	}
 
 	/**

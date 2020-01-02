@@ -17,8 +17,7 @@ public class CurseSearchQuery implements Cloneable {
 	private int categoryID;
 	private String gameVersion = "";
 	private int pageIndex;
-	//500 is the default page size if none is specified.
-	private int pageSize = 500;
+	private int pageSize;
 	private String searchFilter = "";
 	private CurseSearchSort sortingMethod = CurseSearchSort.FEATURED;
 
@@ -265,9 +264,10 @@ public class CurseSearchQuery implements Cloneable {
 	}
 
 	/**
-	 * Returns this {@link CurseSearchQuery}'s page size. This is 500 by default.
+	 * Returns this {@link CurseSearchQuery}'s page size.
 	 *
 	 * @return this {@link CurseSearchQuery}'s page size.
+	 * @see #pageSize(int)
 	 */
 	public int pageSize() {
 		return pageSize;
@@ -275,10 +275,17 @@ public class CurseSearchQuery implements Cloneable {
 
 	/**
 	 * Sets this {@link CurseSearchQuery}'s page size.
+	 * <p>
+	 * This page size seems to serve only as a rough guideline,
+	 * and the actual page size often varies.
+	 * <p>
+	 * If no page size is specified, the default page size seems to be 500 if a search filter
+	 * is not specified and 25 if it is.
 	 *
 	 * @param size a page size.
 	 * @return this {@link CurseSearchQuery}.
 	 */
+	@SuppressWarnings("GrazieInspection")
 	public CurseSearchQuery pageSize(int size) {
 		Preconditions.checkArgument(size > 0, "size should be positive");
 		pageSize = size;
@@ -289,9 +296,10 @@ public class CurseSearchQuery implements Cloneable {
 	 * Clears this {@link CurseSearchQuery}'s page size.
 	 *
 	 * @return this {@link CurseSearchQuery}.
+	 * @see #pageSize(int)
 	 */
 	public CurseSearchQuery clearPageSize() {
-		pageSize = 500;
+		pageSize = 0;
 		return this;
 	}
 

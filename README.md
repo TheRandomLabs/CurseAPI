@@ -82,12 +82,4 @@ dependencies {
 }
 ```
 
-CurseAPI uses SLF4J to log warnings, errors and information messages. To enable SLF4J with Log4j 2:
-
-```groovy
-dependencies {
-	implementation "org.slf4j:slf4j-api:2.0.0-alpha1"
-	implementation "org.apache.logging.log4j:log4j-core:2.12.1"
-	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.12.1"
-}
-```
+CurseAPI uses SLF4J to log warnings, errors and information messages.
