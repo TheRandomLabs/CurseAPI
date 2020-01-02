@@ -9,7 +9,7 @@ buildscript {
 
 	dependencies {
 		classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6"
-		pitest "org.pitest:pitest-junit5-plugin:0.10"
+		pitest "org.pitest:pitest-junit5-plugin:0.11"
 	}
 }
 
@@ -46,8 +46,9 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0-M1"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0-M1"
 	testImplementation "org.assertj:assertj-core:3.14.0"
+	testImplementation "nl.jqno.equalsverifier:equalsverifier:3.1.11"
 
-	spotbugsPlugins "com.mebigfatguy.fb-contrib:fb-contrib:7.4.3.sb"
+	spotbugsPlugins "com.mebigfatguy.sb-contrib:sb-contrib:7.4.7"
 	spotbugsPlugins "com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1"
 	spotbugsPlugins "jp.skypencil.findbugs.slf4j:bug-pattern:1.5.0@jar"
 
@@ -64,11 +65,6 @@ jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			element = "CLASS"
-			//We only test the ForgeSVC package since most other classes are either
-			//abstract classes, interfaces or small utility classes.
-			includes = [
-			        "com.therandomlabs.utils.curseapi.forgesvc.*"
-			]
 
 			limit {
 				counter = "INSTRUCTION"
@@ -88,7 +84,7 @@ pitest {
     timestampedReports = false
 }
 
-check.dependsOn pitest
+check.dependsOn "pitest"
 
 pmd {
 	ruleSets = []
