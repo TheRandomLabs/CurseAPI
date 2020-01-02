@@ -8,9 +8,9 @@
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/TheRandomLabs/CurseAPI.svg)](http://isitmaintained.com/project/TheRandomLabs/CurseAPI "Average time to resolve an issue")
 
-[comment]: # [![Maven Central](https://img.shields.io/maven-central/v/com.therandomlabs.curseapi/curseapi.svg?style=shield)](https://maven-badges.herokuapp.com/maven-central/com.therandomlabs.curseapi/curseapi/)
+<!-- [![Maven Central](https://img.shields.io/maven-central/v/com.therandomlabs.curseapi/curseapi.svg?style=shield)](https://maven-badges.herokuapp.com/maven-central/com.therandomlabs.curseapi/curseapi/)
 
-[comment]: # [![Javadoc](https://javadoc.io/badge/com.therandomlabs.curseapi/curseapi.svg?color=blue)](https://javadoc.io/doc/com.therandomlabs.curseapi/curseapi)
+[comment]: # [![Javadoc](https://javadoc.io/badge/com.therandomlabs.curseapi/curseapi.svg?color=blue)](https://javadoc.io/doc/com.therandomlabs.curseapi/curseapi)-->
 
 A Java library for handling interactions with CurseForge.
 
