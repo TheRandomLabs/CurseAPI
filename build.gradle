@@ -17,6 +17,7 @@ buildscript {
 plugins {
 	id "java-library"
 	id "maven-publish"
+	id "net.minecrell.licenser" version "0.4"
 	id "checkstyle"
 	id "pmd"
 	id "com.github.spotbugs" version "3.0.0"
@@ -77,6 +78,12 @@ jacocoTestCoverageVerification {
 		}
 	}
 }
+
+license {
+	exclude "**/*.xml"
+}
+
+build.dependsOn updateLicenses
 
 check.dependsOn jacocoTestCoverageVerification
 
