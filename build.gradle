@@ -65,7 +65,12 @@ test {
 	finalizedBy jacocoTestReport
 }
 
-license.mapping "java", "SLASHSTAR_STYLE"
+license {
+	mapping "java", "SLASHSTAR_STYLE"
+	exclude "**/*.xml"
+}
+
+build.dependsOn licenseFormat
 
 jacocoTestCoverageVerification {
 	violationRules {
