@@ -39,6 +39,7 @@ import com.therandomlabs.curseapi.CurseException;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import org.slf4j.Logger;
@@ -66,8 +67,12 @@ public final class OkHttpUtils {
 		final Request request = new Request.Builder().url(url).build();
 		logger.debug("Executing request: {}", request);
 
-		try {
-			return client.newCall(request).execute().body().string();
+		try (ResponseBody responseBody = client.newCall(request).execute().body()) {
+			if (responseBody == null) {
+				throw new CurseException("Failed to execute request: " + request);
+			}
+
+			return responseBody.string();
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}
@@ -86,8 +91,12 @@ public final class OkHttpUtils {
 		final Request request = new Request.Builder().url(url).build();
 		logger.debug("Executing request: {}", request);
 
-		try {
-			return ImageIO.read(client.newCall(request).execute().body().byteStream());
+		try (ResponseBody responseBody = client.newCall(request).execute().body()) {
+			if (responseBody == null) {
+				throw new CurseException("Failed to execute request: " + request);
+			}
+
+			return ImageIO.read(responseBody.byteStream());
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}
@@ -107,8 +116,15 @@ public final class OkHttpUtils {
 		final Request request = new Request.Builder().url(url).build();
 		logger.debug("Executing request: {}", request);
 
-		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
-			sink.writeAll(client.newCall(request).execute().body().source());
+		try (
+				ResponseBody responseBody = client.newCall(request).execute().body();
+				BufferedSink sink = Okio.buffer(Okio.sink(path))
+		) {
+			if (responseBody == null) {
+				throw new CurseException("Failed to execute request: " + request);
+			}
+
+			sink.writeAll(responseBody.source());
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}

@@ -84,10 +84,13 @@ public final class RetrofitUtils {
 				return null;
 			}
 
-			throw new CurseException(String.format(
-					"Failed to execute call. HTTP status: %s (%s). Response body: %s",
-					response.message(), response.code(), response.errorBody().string()
-			));
+			try (ResponseBody errorBody = response.errorBody()) {
+				throw new CurseException(String.format(
+						"Failed to execute call. HTTP status: %s (%s). Response body: %s",
+						response.message(), response.code(),
+						errorBody == null ? null : errorBody.string()
+				));
+			}
 		} catch (IOException ex) {
 			throw new CurseException(ex);
 		}
