@@ -27,6 +27,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 
 		//Cache.
 		private transient CurseProject project;
+		private transient boolean projectRetrieved;
 
 		/**
 		 * Constructs an immutable {@link BasicCurseFile} with the specified project and file ID.
@@ -55,8 +56,9 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		 */
 		@Override
 		public CurseProject project() throws CurseException {
-			if (project == null) {
-				project = CurseAPI.project(projectID).orElse(null);
+			if (!projectRetrieved) {
+				project = CurseAPI.project(projectID()).orElse(null);
+				projectRetrieved = true;
 			}
 
 			return project;
@@ -68,6 +70,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		@Override
 		public void clearProjectCache() {
 			project = null;
+			projectRetrieved = false;
 		}
 
 		/**
@@ -140,6 +143,12 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	public abstract CurseProject project() throws CurseException;
 
 	/**
+	 * If this {@link BasicCurseFile} implementation caches the value returned by
+	 * {@link #project()}, this method clears this cached value.
+	 */
+	public abstract void clearProjectCache();
+
+	/**
 	 * Returns whether the specified file belongs to the same project as this file.
 	 *
 	 * @param file a {@link BasicCurseFile}.
@@ -148,14 +157,9 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * or otherwise {@code false}.
 	 */
 	public boolean sameProject(BasicCurseFile file) {
+		Preconditions.checkNotNull(file, "file should not be null");
 		return projectID() == file.projectID();
 	}
-
-	/**
-	 * If this {@link BasicCurseFile} implementation caches the value returned by
-	 * {@link #project()}, this method clears this cached value.
-	 */
-	public abstract void clearProjectCache();
 
 	/**
 	 * Returns this file's ID.

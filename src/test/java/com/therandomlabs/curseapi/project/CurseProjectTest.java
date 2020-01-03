@@ -133,6 +133,10 @@ public class CurseProjectTest {
 		final CurseFiles<CurseFile> files = project.files();
 		assertThat(files).isNotEmpty();
 
+		for (CurseFile file : files) {
+			assertThat(file.project()).isEqualTo(project);
+		}
+
 		project.clearFilesCache();
 		assertThat(project.files()).isEqualTo(files);
 	}
