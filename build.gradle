@@ -17,7 +17,6 @@ buildscript {
 plugins {
 	id "java-library"
 	id "maven-publish"
-	id "com.github.hierynomus.license" version "0.15.0"
 	id "checkstyle"
 	id "pmd"
 	id "com.github.spotbugs" version "3.0.0"
@@ -64,13 +63,6 @@ test {
 	useJUnitPlatform()
 	finalizedBy jacocoTestReport
 }
-
-license {
-	mapping "java", "SLASHSTAR_STYLE"
-	exclude "**/*.xml"
-}
-
-build.dependsOn licenseFormat
 
 jacocoTestCoverageVerification {
 	violationRules {
