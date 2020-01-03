@@ -1,18 +1,4 @@
-buildscript {
-	repositories {
-		mavenCentral()
-	}
-
-	configurations.maybeCreate("pitest")
-
-	dependencies {
-		classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.6"
-		pitest "org.pitest:pitest-junit5-plugin:0.11"
-	}
-}
-
 apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
-apply plugin: "info.solidsoft.pitest"
 
 group = "com.therandomlabs.curseapi"
 version = "1.0.0"
@@ -37,10 +23,3 @@ dependencies {
 		}
 	}
 } */
-
-pitest {
-	testPlugin = "junit5"
-	threads = 4
-	outputFormats = ["XML", "HTML"]
-	timestampedReports = false
-}
