@@ -9,7 +9,7 @@ import com.therandomlabs.curseapi.project.CurseProject;
  * <p>
  * Implementations of this class should be effectively immutable.
  */
-public abstract class CurseDependency implements Comparable<CurseDependency> {
+public abstract class CurseDependency {
 	/**
 	 * {@inheritDoc}
 	 * <p>
@@ -42,17 +42,6 @@ public abstract class CurseDependency implements Comparable<CurseDependency> {
 				add("projectID", projectID()).
 				add("type", type()).
 				toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * {@link Integer#compare(int, int)} is used on the values returned by
-	 * {@link #projectID()} to determine the value that this method returns.
-	 */
-	@Override
-	public final int compareTo(CurseDependency game) {
-		return Integer.compare(projectID(), game.projectID());
 	}
 
 	/**

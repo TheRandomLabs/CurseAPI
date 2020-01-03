@@ -149,7 +149,7 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void fileURLShouldNotBeNull() {
+	public void fileURLShouldBeValid() throws CurseException {
 		assertThat(project.fileURL(CurseAPI.MIN_FILE_ID)).isNotNull();
 	}
 

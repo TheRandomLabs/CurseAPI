@@ -152,6 +152,9 @@ public class CurseFileTest {
 		assertThat(dependentFile.dependencies()).isNotEmpty();
 
 		for (CurseDependency dependency : dependentFile.dependencies()) {
+			assertThat(dependency).isEqualTo(dependency);
+			assertThat(dependency).isNotEqualTo(null);
+			assertThat(dependency.toString()).isNotEmpty();
 			assertThat(dependency.dependent()).isEqualTo(dependentFile);
 		}
 

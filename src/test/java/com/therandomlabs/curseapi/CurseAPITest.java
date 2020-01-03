@@ -2,6 +2,7 @@ package com.therandomlabs.curseapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
@@ -21,7 +22,6 @@ import com.therandomlabs.curseapi.project.CurseSearchSort;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 public class CurseAPITest {
 	@Test
@@ -219,17 +219,17 @@ public class CurseAPITest {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Test
 	public void gameVersionGroupsShouldBeValid() throws CurseException {
-		final CurseGameVersionGroup mockVersionGroup = Mockito.mock(CurseGameVersionGroup.class);
+		final CurseGameVersionGroup mockVersionGroup = mock(CurseGameVersionGroup.class);
 
-		final CurseGameVersion<?> mockVersion1 = Mockito.mock(CurseGameVersion.class);
+		final CurseGameVersion mockVersion1 = mock(CurseGameVersion.class);
 		when(mockVersion1.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion1.versionGroup()).thenCallRealMethod();
 
-		final CurseGameVersion<?> mockVersion2 = Mockito.mock(CurseGameVersion.class);
+		final CurseGameVersion mockVersion2 = mock(CurseGameVersion.class);
 		when(mockVersion2.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion2.versionGroup()).thenReturn(mockVersionGroup);
 
-		final CurseGameVersion<?> mockVersion3 = Mockito.mock(CurseGameVersion.class);
+		final CurseGameVersion mockVersion3 = mock(CurseGameVersion.class);
 		when(mockVersion3.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion3.versionGroup()).thenReturn(mockVersionGroup);
 
@@ -277,7 +277,7 @@ public class CurseAPITest {
 		final Optional<CurseProject> optionalProject = CurseAPI.project(CurseAPI.MIN_PROJECT_ID);
 		assertThat(optionalProject).isPresent();
 
-		final CurseAPIProvider mockProvider = Mockito.mock(CurseAPIProvider.class);
+		final CurseAPIProvider mockProvider = mock(CurseAPIProvider.class);
 		assertThat(CurseAPI.addProvider(mockProvider, true)).isTrue();
 		assertThat(CurseAPI.addProvider(mockProvider, true)).isFalse();
 

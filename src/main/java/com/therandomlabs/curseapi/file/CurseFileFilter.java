@@ -111,7 +111,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 		Preconditions.checkNotNull(versions, "versions should not be null");
 
 		for (CurseGameVersion<?> version : versions) {
-			gameVersionStrings.add(version.versionString());
+			gameVersionStrings(version.versionString());
 		}
 
 		return this;
@@ -142,7 +142,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 		Preconditions.checkNotNull(versionGroups, "versionGroups should not be null");
 
 		for (CurseGameVersionGroup<?> versionGroup : versionGroups) {
-			gameVersionStrings.addAll(versionGroup.versionStrings());
+			gameVersions(versionGroup.versions());
 		}
 
 		return this;
@@ -170,13 +170,13 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 
 	/**
 	 * Sets this {@link CurseFileFilter}'s "newer than" file ID to the ID of the specified
-	 * {@link CurseFile}.
+	 * {@link BasicCurseFile}.
 	 *
-	 * @param file a {@link CurseFile}.
+	 * @param file a {@link BasicCurseFile}.
 	 * @return this {@link CurseFileFilter}.
 	 * @see #newerThan(int)
 	 */
-	public CurseFileFilter newerThan(CurseFile file) {
+	public CurseFileFilter newerThan(BasicCurseFile file) {
 		Preconditions.checkNotNull(file, "file should not be null");
 		return newerThan(file.id());
 	}
@@ -222,13 +222,13 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 
 	/**
 	 * Sets this {@link CurseFileFilter}'s "older than" file ID to the ID of the specified
-	 * {@link CurseFile}.
+	 * {@link BasicCurseFile}.
 	 *
-	 * @param file a {@link CurseFile}.
+	 * @param file a {@link BasicCurseFile}.
 	 * @return this {@link CurseFileFilter}.
 	 * @see #olderThan(int)
 	 */
-	public CurseFileFilter olderThan(CurseFile file) {
+	public CurseFileFilter olderThan(BasicCurseFile file) {
 		Preconditions.checkNotNull(file, "file should not be null");
 		return olderThan(file.id());
 	}
@@ -264,15 +264,16 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 
 	/**
 	 * Sets this {@link CurseFileFilter}'s "older than" file ID to the ID of the newer
-	 * {@link CurseFile} and its "newer than" file ID to the ID of the older {@link CurseFile}.
+	 * {@link BasicCurseFile} and its "newer than" file ID to the ID of the older
+	 * {@link BasicCurseFile}.
 	 *
-	 * @param olderFile an older {@link CurseFile}.
-	 * @param newerFile a newer {@link CurseFile}.
+	 * @param olderFile an older {@link BasicCurseFile}.
+	 * @param newerFile a newer {@link BasicCurseFile}.
 	 * @return this {@link CurseFileFilter}.
 	 * @see #newerThan(int)
 	 * @see #olderThan(int)
 	 */
-	public CurseFileFilter between(CurseFile olderFile, CurseFile newerFile) {
+	public CurseFileFilter between(BasicCurseFile olderFile, BasicCurseFile newerFile) {
 		Preconditions.checkNotNull(olderFile, "olderFile should not be null");
 		Preconditions.checkNotNull(newerFile, "newerFile should not be null");
 		return between(olderFile.id(), newerFile.id());
@@ -294,8 +295,8 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 		Preconditions.checkArgument(
 				newerFileID > olderFileID, "newerFileID should be newer than olderFileID"
 		);
-		newerThan = olderFileID;
-		olderThan = newerFileID;
+		newerThan(olderFileID);
+		olderThan(newerFileID);
 		return this;
 	}
 
