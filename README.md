@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 [![Build](https://jitci.com/gh/TheRandomLabs/CurseAPI/svg)](https://jitci.com/gh/TheRandomLabs/CurseAPI)
-[![Dependabot](https://flat.badgen.net/dependabot/jqno/equalsverifier?icon=dependabot)](https://dependabot.com/)
+[![Dependabot](https://badgen.net/dependabot/TheRandomLabs/CurseAPI/?icon=dependabot)](https://dependabot.com/)
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/TheRandomLabs/CurseAPI.svg)](http://isitmaintained.com/project/TheRandomLabs/CurseAPI "Average time to resolve an issue")
 

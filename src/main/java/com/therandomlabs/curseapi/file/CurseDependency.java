@@ -91,6 +91,7 @@ public abstract class CurseDependency {
 
 	/**
 	 * Returns the {@link CurseFile} from which this {@link CurseDependency} has been retrieved.
+	 *
 	 * @return the {@link CurseFile} from which this {@link CurseDependency} has been retrieved.
 	 */
 	public abstract CurseFile dependent();

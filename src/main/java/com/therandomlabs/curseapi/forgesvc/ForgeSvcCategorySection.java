@@ -49,6 +49,11 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	private transient CurseCategory category;
 
 	@Override
+	public int gameID() {
+		return gameId;
+	}
+
+	@Override
 	public CurseGame game() throws CurseException {
 		if (game == null) {
 			final Optional<CurseGame> optionalGame = CurseAPI.game(gameId);
@@ -66,11 +71,6 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	@Override
 	public void clearGameCache() {
 		game = null;
-	}
-
-	@Override
-	public int gameID() {
-		return gameId;
 	}
 
 	@Override

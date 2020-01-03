@@ -251,7 +251,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	/**
 	 * Returns the URL of the file in this project with the specified ID.
 	 * The existence and availability of the file are not verified.
-	 *
+	 * <p>
 	 * Implementations of this method should validate the file ID by calling
 	 * {@link com.therandomlabs.curseapi.CursePreconditions#checkFileID(int, String)}.
 	 *

@@ -48,6 +48,18 @@ public class CurseSearchQuery implements Cloneable {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public CurseSearchQuery clone() {
+		try {
+			return (CurseSearchQuery) super.clone();
+		} catch (CloneNotSupportedException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).
 				add("gameID", gameID).
@@ -59,18 +71,6 @@ public class CurseSearchQuery implements Cloneable {
 				add("searchFilter", searchFilter).
 				add("sortingMethod", sortingMethod).
 				toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CurseSearchQuery clone() {
-		try {
-			return (CurseSearchQuery) super.clone();
-		} catch (CloneNotSupportedException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	/**
