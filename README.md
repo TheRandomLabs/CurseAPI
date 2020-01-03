@@ -4,7 +4,6 @@
 
 [![Build](https://jitci.com/gh/TheRandomLabs/CurseAPI/svg)](https://jitci.com/gh/TheRandomLabs/CurseAPI)
 [![Dependabot](https://flat.badgen.net/dependabot/jqno/equalsverifier?icon=dependabot)](https://dependabot.com/)
-[![SemVer stability](https://api.dependabot.com/badges/compatibility_score?dependency-name=nl.jqno.equalsverifier:equalsverifier&package-manager=maven&version-scheme=semver)](https://dependabot.com/compatibility-score/?dependency-name=nl.jqno.equalsverifier:equalsverifier&package-manager=maven&version-scheme=semver)
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/TheRandomLabs/CurseAPI.svg)](http://isitmaintained.com/project/TheRandomLabs/CurseAPI "Average time to resolve an issue")
 
