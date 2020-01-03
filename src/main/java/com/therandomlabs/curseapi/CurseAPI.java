@@ -526,7 +526,7 @@ public final class CurseAPI {
 	 * {@link Collection}, meaning that time-consuming requests may be executed in parallel.
 	 *
 	 * @param collection a {@link Collection} to derive the result from.
-	 * @param function a {@link CheckedFunction} that maps objects of type {@link E} to objects of
+	 * @param function a {@link CheckedFunction} that maps objects of type {@code E} to objects of
 	 * type {@link R}.
 	 * @param collector a {@link Collector}.
 	 * @param <E> the type of the elements.
@@ -567,10 +567,10 @@ public final class CurseAPI {
 	 * requests may be executed in parallel.
 	 *
 	 * @param collection a {@link Collection} to derive the result from.
-	 * @param keyMapper a {@link CheckedFunction} that maps objects of type {@link E} to objects of
+	 * @param keyMapper a {@link CheckedFunction} that maps objects of type {@code E} to objects of
 	 * type {@link K}.
-	 * @param valueMapper a {@link CheckedFunction} that maps objects of type {@link E} to objects
-	 * of type {@link V}.
+	 * @param valueMapper a {@link CheckedFunction} that maps objects of type {@code E} to objects
+	 * of type {@code V}.
 	 * @param <E> the type of the elements.
 	 * @param <K> the type of the keys.
 	 * @param <V> the type of the values.

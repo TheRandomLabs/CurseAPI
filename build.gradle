@@ -12,6 +12,7 @@ buildscript {
 }
 
 apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
+apply plugin: "maven"
 apply plugin: "info.solidsoft.pitest"
 
 group = "com.therandomlabs.curseapi"

@@ -166,7 +166,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * {@link #parallelStream()} is used to iterate over elements of this {@link CurseFiles},
 	 * meaning that time-consuming requests may be executed in parallel.
 	 *
-	 * @param function a {@link CheckedFunction} that maps files to objects of type {@link R}.
+	 * @param function a {@link CheckedFunction} that maps files to objects of type {@code R}.
 	 * @param collector a {@link Collector}.
 	 * @param <R> the type of the resultant values.
 	 * @param <C> the type of the resultant collection.
@@ -194,8 +194,8 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * {@link #parallelStream()} is used to iterate over elements of this {@link CurseFiles},
 	 * meaning that time-consuming requests may be executed in parallel.
 	 *
-	 * @param keyMapper a {@link CheckedFunction} that maps files to objects of type {@link K}.
-	 * @param valueMapper a {@link CheckedFunction} that maps files to objects of type {@link V}.
+	 * @param keyMapper a {@link CheckedFunction} that maps files to objects of type {@code K}.
+	 * @param valueMapper a {@link CheckedFunction} that maps files to objects of type {@code V}.
 	 * @param <K> the type of the keys.
 	 * @param <V> the type of the values.
 	 * @return a {@link Map} derived from the elements of this {@link CurseFiles}.

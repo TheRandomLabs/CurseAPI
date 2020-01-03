@@ -40,7 +40,7 @@ public interface CheckedFunction<T, R, E extends Exception> {
 	 *
 	 * @param t an argument.
 	 * @return the function result.
-	 * @throws E if the function throws a checked {@link Exception} of type {@link E}.
+	 * @throws E if the function throws a checked {@link Exception} of type {@code E}.
 	 */
 	@Nullable
 	R apply(T t) throws E;

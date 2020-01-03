@@ -91,7 +91,7 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<?>> implements
 	/**
 	 * Returns whether this game version is newer than the specified game version.
 	 *
-	 * @param version a {@link CurseGameVersion} of type {@link V}.
+	 * @param version a {@link CurseGameVersion} of type {@code V}.
 	 * @return {@code true} if this game version is newer than the specified game version,
 	 * or otherwise {@code false}.
 	 */
@@ -102,7 +102,7 @@ public abstract class CurseGameVersion<V extends CurseGameVersion<?>> implements
 	/**
 	 * Returns whether this game version is older than the specified game version.
 	 *
-	 * @param version a {@link CurseGameVersion} of type {@link V}.
+	 * @param version a {@link CurseGameVersion} of type {@code V}.
 	 * @return {@code true} if this game version is older than the specified game version,
 	 * or otherwise {@code false}.
 	 */
