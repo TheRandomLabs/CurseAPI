@@ -65,6 +65,12 @@ test {
 	finalizedBy jacocoTestReport
 }
 
+license {
+	exclude "**/*.xml"
+}
+
+build.dependsOn updateLicenses
+
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
@@ -78,12 +84,6 @@ jacocoTestCoverageVerification {
 		}
 	}
 }
-
-license {
-	exclude "**/*.xml"
-}
-
-build.dependsOn updateLicenses
 
 check.dependsOn jacocoTestCoverageVerification
 
