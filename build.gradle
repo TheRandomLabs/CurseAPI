@@ -38,7 +38,7 @@ dependencies {
 	implementation "com.google.guava:guava:28.2-jre"
 	implementation "org.slf4j:slf4j-api:2.0.0-alpha1"
 	api "com.squareup.moshi:moshi:1.9.2"
-	api "com.squareup.retrofit2:retrofit:2.7.0"
+	api "com.squareup.retrofit2:retrofit:2.7.1"
 	api "com.squareup.retrofit2:converter-moshi:2.7.0"
 	api "org.jsoup:jsoup:1.12.1"
 
