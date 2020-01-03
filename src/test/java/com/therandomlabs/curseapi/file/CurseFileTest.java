@@ -181,11 +181,11 @@ public class CurseFileTest {
 
 	@Test
 	public void changelogPlainTextShouldBeValid() throws CurseException {
-		final String changelog = file.changelogPlainText();
+		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotEmpty();
 
 		file.clearChangelogCache();
-		assertThat(file.changelogPlainText()).isEqualTo(changelog);
+		assertThat(file.changelogPlainText(10)).isEqualTo(changelog);
 	}
 
 	@BeforeAll
