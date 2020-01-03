@@ -90,7 +90,7 @@ public class CurseFileTest {
 
 	@Test
 	public void toCurseFileShouldReturnSameFile() throws CurseException {
-		assertThat(file.toCurseFile()).get().isSameAs(file);
+		assertThat(file.toCurseFile()).isSameAs(file);
 	}
 
 	@Test

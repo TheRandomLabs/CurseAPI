@@ -1,7 +1,5 @@
 package com.therandomlabs.curseapi.file;
 
-import java.util.Optional;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -232,11 +230,10 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * Returns this {@link BasicCurseFile} as a {@link CurseFile}.
 	 *
 	 * @return a {@link CurseFile} that represents the same CurseForge file as this
-	 * {@link BasicCurseFile} wrapped in an {@link Optional} if it exists, or otherwise
-	 * {@link Optional#empty()}.
+	 * {@link BasicCurseFile} if it exists, or otherwise {@code null}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public Optional<CurseFile> toCurseFile() throws CurseException {
-		return CurseAPI.file(projectID(), id());
+	public CurseFile toCurseFile() throws CurseException {
+		return CurseAPI.file(projectID(), id()).orElse(null);
 	}
 }

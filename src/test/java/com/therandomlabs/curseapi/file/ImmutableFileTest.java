@@ -24,13 +24,13 @@ public class ImmutableFileTest {
 	public void toCurseFileShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(new BasicCurseFile.Immutable(
 				Integer.MAX_VALUE, Integer.MAX_VALUE
-		).toCurseFile()).isNotPresent();
+		).toCurseFile()).isNull();
 	}
 
 	@Test
 	public void toCurseFileShouldBePresentIfExistent() throws CurseException {
 		assertThat(new BasicCurseFile.Immutable(
 				CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID
-		).toCurseFile()).isPresent();
+		).toCurseFile()).isNotNull();
 	}
 }
