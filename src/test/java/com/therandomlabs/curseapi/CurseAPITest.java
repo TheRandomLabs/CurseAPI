@@ -70,16 +70,28 @@ public class CurseAPITest {
 				findAny();
 		assertThat(optionalCategory).isPresent();
 
-		assertThat(CurseAPI.searchProjects(
-				new CurseSearchQuery().
-						game(optionalGame.get()).
-						category(optionalCategory.get()).
-						gameVersionString("1.12.2").
-						pageIndex(6).
-						pageSize(20).
-						searchFilter("Weapons").
-						sortingMethod(CurseSearchSort.LAST_UPDATED)
-		)).isPresent().get().asList().hasSizeGreaterThan(15);
+		//We also test CurseSearchQuery.
+		final CurseSearchQuery query = new CurseSearchQuery().
+				game(optionalGame.get()).
+				category(optionalCategory.get()).
+				gameVersionString("1.12.2").
+				pageIndex(6).
+				pageSize(20).
+				searchFilter("Weapons").
+				sortingMethod(CurseSearchSort.LAST_UPDATED);
+
+		assertThat(query.toString()).isNotEmpty();
+		assertThat(CurseAPI.searchProjects(query.clone())).get().asList().hasSizeGreaterThan(15);
+
+		query.clearCategorySection();
+		query.clearCategory();
+		query.clearGameVersionString();
+		query.clearPageIndex();
+		query.clearPageSize();
+		query.clearSearchFilter();
+		query.clearSortingMethod();
+
+		assertThat(CurseAPI.searchProjects(query)).get().asList().hasSizeGreaterThan(15);
 	}
 
 	@Test
@@ -216,7 +228,7 @@ public class CurseAPITest {
 		assertThat(CurseAPI.category(Integer.MAX_VALUE)).isNotPresent();
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes", "unchecked", "RedundantSuppression"})
 	@Test
 	public void gameVersionGroupsShouldBeValid() throws CurseException {
 		final CurseGameVersionGroup mockVersionGroup = mock(CurseGameVersionGroup.class);
