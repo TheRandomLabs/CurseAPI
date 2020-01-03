@@ -51,7 +51,7 @@ public class CurseFilesTest {
 		filter.apply(filtered);
 
 		assertThat(filtered.fileWithID(2522102)).isNull();
-		assertThat(filtered.fileWithID(2733070)).isNotNull();
+		assertThat(filtered.fileWithID(2634354)).isNotNull();
 		assertThat(filtered.fileWithID(2831330)).isNull();
 
 		for (CurseFile file : filtered) {
@@ -73,10 +73,12 @@ public class CurseFilesTest {
 
 	@Test
 	public void parallelMapProducesValidOutput() throws CurseException {
-		assertThat(files.parallelMap(
-				file -> file.project().name(),
+		final CurseFiles<CurseFile> smallerFiles = files.clone();
+		new CurseFileFilter().olderThan(2581245).apply(smallerFiles);
+		assertThat(smallerFiles.parallelMap(
+				CurseFile::displayName,
 				CurseFile::changelogPlainText
-		)).hasSameSizeAs(files);
+		)).hasSameSizeAs(smallerFiles);
 	}
 
 	@BeforeAll
