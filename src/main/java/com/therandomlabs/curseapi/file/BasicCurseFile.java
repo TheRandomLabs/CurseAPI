@@ -53,7 +53,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		private transient boolean projectRetrieved;
 
 		/**
-		 * Constructs an immutable {@link BasicCurseFile} with the specified project and file ID.
+		 * Constructs an {@link Immutable} with the specified project and file ID.
 		 * The existence of the specified file is not verified.
 		 *
 		 * @param projectID a project ID.
@@ -158,19 +158,19 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	public abstract int projectID();
 
 	/**
-	 * Returns this file's project as a {@link CurseProject}. This value may be cached.
+	 * Returns this file's project as a {@link CurseProject}.
+	 * This value may be refreshed by calling {@link #clearProjectCache()}.
 	 *
 	 * @return this file's project as a {@link CurseProject} if it exists,
 	 * or otherwise {@code null}.
 	 * @throws CurseException if an error occurs.
-	 * @see #clearProjectCache()
 	 */
 	@Nullable
 	public abstract CurseProject project() throws CurseException;
 
 	/**
 	 * If this {@link BasicCurseFile} implementation caches the value returned by
-	 * {@link #project()}, this method clears this cached value.
+	 * {@link #project()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearProjectCache();
 
@@ -196,7 +196,8 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 
 	/**
 	 * Returns this file's URL. This method uses the {@link CurseProject} value returned by
-	 * {@link #project()} to retrieve the URL, so this value may be cached.
+	 * {@link #project()} to retrieve the URL, so this value may be refreshed by calling
+	 * {@link #clearProjectCache()}.
 	 * The existence and availability of this file are not verified.
 	 *
 	 * @return this file's URL. If this file's project does not exist, {@code null} is returned.

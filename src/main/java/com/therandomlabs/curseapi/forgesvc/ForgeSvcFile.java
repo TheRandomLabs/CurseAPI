@@ -33,6 +33,7 @@ import java.util.TreeSet;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.file.CurseAlternateFile;
 import com.therandomlabs.curseapi.file.CurseDependency;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
@@ -58,9 +59,11 @@ final class ForgeSvcFile extends CurseFile {
 	private int releaseType;
 	private int fileStatus;
 	private HttpUrl downloadUrl;
+	private int alternateFileId;
 	private Set<ForgeSvcDependency> dependencies;
 	private Set<String> gameVersion;
 
+	private transient ForgeSvcAlternateFile alternateFile;
 	private transient boolean dependenciesInitialized;
 
 	//Cache.
@@ -73,10 +76,17 @@ final class ForgeSvcFile extends CurseFile {
 		return projectId;
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	public CurseProject project() throws CurseException {
 		if (project == null) {
-			project = CurseAPI.project(projectId).orElse(null);
+			final Optional<CurseProject> optionalProject = CurseAPI.project(projectId);
+
+			if (!optionalProject.isPresent()) {
+				throw new CurseException("Failed to retrieve CurseProject: " + this);
+			}
+
+			project = optionalProject.get();
 		}
 
 		return project;
@@ -125,6 +135,24 @@ final class ForgeSvcFile extends CurseFile {
 	@Override
 	public HttpUrl downloadURL() {
 		return downloadUrl;
+	}
+
+	@Override
+	public int alternateFileID() {
+		return alternateFileId;
+	}
+
+	@Override
+	public CurseAlternateFile alternateFile() {
+		if (!hasAlternateFile()) {
+			return null;
+		}
+
+		if (alternateFile == null) {
+			alternateFile = new ForgeSvcAlternateFile(this, project);
+		}
+
+		return alternateFile;
 	}
 
 	@Override

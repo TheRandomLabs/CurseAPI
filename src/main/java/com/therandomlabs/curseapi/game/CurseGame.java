@@ -134,7 +134,8 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	}
 
 	/**
-	 * Returns this {@link CurseGame}'s categories. This value may be cached.
+	 * Returns this {@link CurseGame}'s categories.
+	 * This value may be refreshed by calling {@link #clearCategoriesCache()}.
 	 *
 	 * @return a mutable {@link Set} that contains this {@link CurseGame}'s categories
 	 * as {@link CurseCategory}s.
@@ -143,13 +144,14 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	public abstract Set<CurseCategory> categories() throws CurseException;
 
 	/**
-	 * If this {@link CurseGame} implementation caches the value returned by {@link #categories()},
-	 * this method clears this cached value.
+	 * If this {@link CurseGame} implementation caches the value returned by {@link #categories()}
+	 * and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearCategoriesCache();
 
 	/**
-	 * Returns all known versions of this {@link CurseGame}. This value may be cached.
+	 * Returns all known versions of this {@link CurseGame}.
+	 * This value may be refreshed by calling {@link #clearVersionsCache()}.
 	 *
 	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances equivalent to
@@ -163,7 +165,7 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 
 	/**
 	 * If this {@link CurseGame} implementation caches the value returned by
-	 * {@link #versions()}, this method clears this cached value.
+	 * {@link #versions()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearVersionsCache();
 }

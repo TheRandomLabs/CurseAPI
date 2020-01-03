@@ -88,7 +88,8 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	public abstract int gameID();
 
 	/**
-	 * Returns this category section's game. This value may be cached.
+	 * Returns this category section's game.
+	 * This value may be refreshed by calling {@link #clearGameCache()}.
 	 *
 	 * @return a {@link CurseGame} instance that represents this category section's game.
 	 * @throws CurseException if an error occurs.
@@ -97,7 +98,7 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 
 	/**
 	 * If this {@link CurseCategorySection} implementation caches the value returned by
-	 * {@link #game()}, this method clears this cached value.
+	 * {@link #game()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearGameCache();
 
@@ -116,7 +117,8 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 	public abstract String name();
 
 	/**
-	 * Returns this category section's categories. This value may be cached.
+	 * Returns this category section's categories.
+	 * This value may be refreshed by calling {@link #clearCategoriesCache()}.
 	 *
 	 * @return this category section's categories.
 	 * @throws CurseException if an error occurs.
@@ -125,13 +127,13 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 
 	/**
 	 * If this {@link CurseCategorySection} implementation caches the value returned by
-	 * {@link #categories()}, this method clears this cached value.
+	 * {@link #categories()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearCategoriesCache();
 
 	/**
 	 * Returns this {@link CurseCategorySection} as a {@link CurseCategory}.
-	 * This value may be cached.
+	 * This value may be refreshed by calling {@link #clearCategoryCache()}.
 	 *
 	 * @return this {@link CurseCategorySection} as a {@link CurseCategory}.
 	 * @throws CurseException if an error occurs.
@@ -140,7 +142,7 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 
 	/**
 	 * If this {@link CurseCategorySection} implementation caches the value returned by
-	 * {@link #category()}, this method clears this cached value.
+	 * {@link #category()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearCategoryCache();
 }

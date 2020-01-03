@@ -132,6 +132,17 @@ public class CurseFileTest {
 	}
 
 	@Test
+	public void alternateFileIDShouldBeValid() {
+		assertThat(comparisonFile2.hasAlternateFile()).isTrue();
+		assertThat(comparisonFile2.alternateFileID()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
+	}
+
+	@Test
+	public void alternateFileShouldNotBeNull() {
+		assertThat(comparisonFile2.alternateFile()).isNotNull();
+	}
+
+	@Test
 	public void uploadTimeShouldNotBeNull() {
 		assertThat(file.uploadTime()).isNotNull();
 	}

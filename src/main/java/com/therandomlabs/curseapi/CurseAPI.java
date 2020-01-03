@@ -201,6 +201,9 @@ public final class CurseAPI {
 
 	/**
 	 * Returns a {@link CurseFile} instance for the specified project and file ID.
+	 * Note that if the specified file is an alternate file, a
+	 * {@link com.therandomlabs.curseapi.file.BasicCurseFile.Immutable} instance should be
+	 * created instead, as {@link CurseFile} instances cannot be retrieved for alternate files.
 	 *
 	 * @param projectID a project ID.
 	 * @param fileID a file ID.
@@ -318,6 +321,7 @@ public final class CurseAPI {
 	 * @return a {@link Path} to the downloaded file wrapped in an {@link Optional} if the
 	 * download is successful, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
+	 * @see OkHttpUtils#getFileNameFromURLPath(HttpUrl)
 	 */
 	public static Optional<Path> downloadFileToDirectory(int projectID, int fileID, Path directory)
 			throws CurseException {

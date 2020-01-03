@@ -75,7 +75,8 @@ public abstract class CurseDependency {
 	public abstract int projectID();
 
 	/**
-	 * Returns this {@link CurseDependency} as a {@link CurseProject}. This value may be cached.
+	 * Returns this {@link CurseDependency} as a {@link CurseProject}.
+	 * This value may be refreshed by calling {@link #clearProjectCache()}.
 	 *
 	 * @return this {@link CurseDependency} as a {@link CurseProject}.
 	 * @throws CurseException if an error occurs.
@@ -85,7 +86,7 @@ public abstract class CurseDependency {
 
 	/**
 	 * If this {@link CurseDependency} implementation caches the value returned by
-	 * {@link #project()}, this method clears this cached value.
+	 * {@link #project()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearProjectCache();
 

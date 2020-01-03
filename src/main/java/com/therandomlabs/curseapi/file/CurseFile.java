@@ -23,7 +23,6 @@
 
 package com.therandomlabs.curseapi.file;
 
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,18 +37,16 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
 import com.therandomlabs.curseapi.project.CurseProject;
-import com.therandomlabs.curseapi.util.JsoupUtils;
-import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jsoup.nodes.Element;
 
 /**
  * Represents a CurseForge file.
  * <p>
  * Implementations of this class should be effectively immutable.
  */
-public abstract class CurseFile extends BasicCurseFile {
+public abstract class CurseFile extends BasicCurseFile implements ExistingCurseFile {
 	/**
 	 * {@inheritDoc}
 	 */
@@ -61,6 +58,37 @@ public abstract class CurseFile extends BasicCurseFile {
 				add("displayName", displayName()).
 				add("downloadURL", downloadURL()).
 				toString();
+	}
+
+	/**
+	 * Returns this file's project as a {@link CurseProject}.
+	 * This value may be refreshed by calling {@link #clearProjectCache()}.
+	 *
+	 * @return this file's project as a {@link CurseProject}.
+	 * @throws CurseException if an error occurs.
+	 */
+	@NonNull
+	@Override
+	public abstract CurseProject project() throws CurseException;
+
+	/**
+	 * Returns this file's URL. This method uses the {@link CurseProject} value returned by
+	 * {@link #project()} to retrieve the URL, so this value may be refreshed by calling
+	 * {@link #clearProjectCache()}.
+	 *
+	 * @return this file's URL.
+	 * @throws CurseException if an error occurs.
+	 */
+	@NonNull
+	@Override
+	public HttpUrl url() throws CurseException {
+		final HttpUrl url = super.url();
+
+		if (url == null) {
+			throw new CurseException("Failed to retrieve URL: " + this);
+		}
+
+		return url;
 	}
 
 	/**
@@ -86,22 +114,23 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract String nameOnDisk();
 
 	/**
-	 * Returns this file's Maven dependency string.
+	 * Returns this file's download URL. Note that calling {@link #clearDownloadURLCache()}
+	 * is redundant.
 	 *
-	 * @return this file's Maven dependency string, for example,
-	 * {@code "randompatches:randompatches:1.12.2:1.20.1.0"}.
-	 * If this file's project does not exist, {@code null} is returned.
-	 * @throws CurseException if an error occurs.
+	 * @return this file's download URL.
 	 */
-	@Nullable
-	public String mavenDependency() throws CurseException {
-		final CurseProject project = project();
+	@Override
+	public abstract HttpUrl downloadURL();
 
-		if (project == null) {
-			return null;
-		}
-
-		return project.slug() + ':' + nameOnDisk().replace('-', ':').replaceAll("\\.[^/.]+$", "");
+	/**
+	 * This method is redundant. The point of clearing the cache is so that data can be
+	 * refreshed; however, this usually means a {@link CurseException} can be thrown.
+	 * Since {@link #downloadURL()} never throws a {@link CurseException}, there is no need for
+	 * this method.
+	 */
+	@Override
+	public final void clearDownloadURLCache() {
+		//Redundant method.
 	}
 
 	/**
@@ -133,32 +162,40 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract CurseFileStatus status();
 
 	/**
-	 * Returns this file's download URL.
+	 * Returns this file's Maven dependency string.
 	 *
-	 * @return this file's download URL.
-	 */
-	public abstract HttpUrl downloadURL();
-
-	/**
-	 * Downloads this file to the specified {@link Path}.
-	 *
-	 * @param path a {@link Path}.
+	 * @return this file's Maven dependency string, for example,
+	 * {@code "randompatches:randompatches:1.12.2:1.20.1.0"}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public void download(Path path) throws CurseException {
-		OkHttpUtils.download(downloadURL(), path);
+	public String mavenDependency() throws CurseException {
+		return project().slug() + ':' + nameOnDisk().replace('-', ':').replaceAll("\\.[^/.]+$", "");
 	}
 
 	/**
-	 * Downloads this file to the specified directory.
+	 * Returns whether this file has an alternate file.
 	 *
-	 * @param directory a {@link Path} to a directory.
-	 * @return a {@link Path} to the downloaded file.
-	 * @throws CurseException if an error occurs.
+	 * @return {@code true} if this file has an alternate file, or otherwise {@code false}.
 	 */
-	public Path downloadToDirectory(Path directory) throws CurseException {
-		return OkHttpUtils.downloadToDirectory(downloadURL(), directory, nameOnDisk());
+	public boolean hasAlternateFile() {
+		return alternateFileID() != 0;
 	}
+
+	/**
+	 * Returns ID of this file's alternate file. For Minecraft modpacks, this refers
+	 * to the server pack. {@link CurseFile} instances cannot be retrieved for alternate files.
+	 *
+	 * @return the ID of this file's alternate file if it exists, or otherwise {@code 0}.
+	 */
+	public abstract int alternateFileID();
+
+	/**
+	 * Returns this file's alternate file as a {@link CurseAlternateFile}.
+	 *
+	 * @return a {@link CurseAlternateFile} that represents this file's alternate file.
+	 */
+	@Nullable
+	public abstract CurseAlternateFile alternateFile();
 
 	/**
 	 * Returns this file's dependencies.
@@ -188,7 +225,8 @@ public abstract class CurseFile extends BasicCurseFile {
 	public abstract Set<String> gameVersionStrings();
 
 	/**
-	 * Returns this file's game versions. This value may be cached.
+	 * Returns this file's game versions.
+	 * This value may be refreshed by calling {@link #clearGameVersionsCache()}.
 	 *
 	 * @param <V> the type of {@link CurseGameVersion}.
 	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances that is equivalent
@@ -205,7 +243,8 @@ public abstract class CurseFile extends BasicCurseFile {
 	/**
 	 * Returns this file's game version groups. This value is obtained by calling
 	 * {@link CurseAPI#gameVersionGroups(Collection)} on the value returned by
-	 * {@link #gameVersions()}, therefore this value may be cached.
+	 * {@link #gameVersions()}, therefore this value may be refreshed by calling
+	 * {@link #clearGameVersionsCache()}.
 	 *
 	 * @param <V> the type of {@link CurseGameVersion}.
 	 * @return a mutable {@link Set} containing this file's game version groups as
@@ -219,52 +258,8 @@ public abstract class CurseFile extends BasicCurseFile {
 
 	/**
 	 * If this {@link CurseFile} implementation caches the value returned by
-	 * {@link #gameVersions()}, this method clears this cached value.
+	 * {@link #gameVersions()} and supports clearing this cache, this method clears this cached
+	 * value.
 	 */
 	public abstract void clearGameVersionsCache();
-
-	/**
-	 * Returns this file's changelog. This value may be cached.
-	 *
-	 * @return an {@link Element} containing this file's changelog. If a changelog is not provided,
-	 * an empty {@link Element} is returned.
-	 * @throws CurseException if an error occurs.
-	 * @see #clearChangelogCache()
-	 * @see JsoupUtils#emptyElement()
-	 */
-	public abstract Element changelog() throws CurseException;
-
-	/**
-	 * Returns this file's changelog as plain text. This value may be cached.
-	 *
-	 * @return this file's changelog as plain text. If a changelog is not provided, an empty
-	 * string is returned.
-	 * @throws CurseException if an error occurs.
-	 * @see #clearChangelogCache()
-	 * @see JsoupUtils#getPlainText(Element, int)
-	 */
-	public String changelogPlainText() throws CurseException {
-		return changelogPlainText(Integer.MAX_VALUE);
-	}
-
-	/**
-	 * Returns this file's changelog as plain text. This value may be cached.
-	 *
-	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
-	 * @return this file's changelog as plain text. If a changelog is not provided, an empty
-	 * string is returned.
-	 * @throws CurseException if an error occurs.
-	 * @see #clearChangelogCache()
-	 * @see JsoupUtils#getPlainText(Element, int)
-	 */
-	public String changelogPlainText(int maxLineLength) throws CurseException {
-		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
-		return JsoupUtils.getPlainText(changelog(), maxLineLength).trim();
-	}
-
-	/**
-	 * If this {@link CurseFile} implementation caches the value returned by {@link #changelog()},
-	 * this method clears this cached value.
-	 */
-	public abstract void clearChangelogCache();
 }

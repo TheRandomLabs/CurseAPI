@@ -169,7 +169,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract int gameID();
 
 	/**
-	 * Returns this project's game. This value may be cached.
+	 * Returns this project's game.
+	 * This value may be refreshed by calling {@link #clearGameCache()}.
 	 *
 	 * @return a {@link CurseGame} instance that represents this project's game.
 	 * @throws CurseException if an error occurs.
@@ -178,7 +179,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * If this {@link CurseProject} implementation caches the value returned by
-	 * {@link #game()}, this method clears this cached value.
+	 * {@link #game()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearGameCache();
 
@@ -223,7 +224,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * If this {@link CurseProject} implementation caches the value returned by
-	 * {@link #description()}, this method clears this cached value.
+	 * {@link #description()} and supports clearing this cache, this method clears this cached
+	 * value.
 	 */
 	public abstract void clearDescriptionCache();
 
@@ -235,7 +237,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract int downloadCount();
 
 	/**
-	 * Returns a {@link CurseFiles} instance for this project. This value may be cached.
+	 * Returns a {@link CurseFiles} instance for this project.
+	 * This value may be refreshed by calling {@link #clearFilesCache()}.
 	 *
 	 * @return a {@link CurseFiles} instance for this project.
 	 * @throws CurseException if an error occurs.
@@ -244,7 +247,7 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * If this {@link CurseProject} implementation caches the value returned by
-	 * {@link #files()}, this method clears this cached value.
+	 * {@link #files()} and supports clearing this cache, this method clears this cached value.
 	 */
 	public abstract void clearFilesCache();
 
