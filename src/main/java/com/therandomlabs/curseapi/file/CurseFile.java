@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
@@ -15,9 +14,11 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
+import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
 /**
@@ -43,8 +44,8 @@ public abstract class CurseFile extends BasicCurseFile {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Optional<CurseFile> toCurseFile() {
-		return Optional.of(this);
+	public CurseFile toCurseFile() {
+		return this;
 	}
 
 	/**
@@ -66,10 +67,18 @@ public abstract class CurseFile extends BasicCurseFile {
 	 *
 	 * @return this file's Maven dependency string, for example,
 	 * {@code "randompatches:randompatches:1.12.2:1.20.1.0"}.
+	 * If this file's project does not exist, {@code null} is returned.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public String mavenDependency() throws CurseException {
-		return project().slug() + ':' + nameOnDisk().replace('-', ':').replaceAll("\\.[^/.]+$", "");
+		final CurseProject project = project();
+
+		if (project == null) {
+			return null;
+		}
+
+		return project.slug() + ':' + nameOnDisk().replace('-', ':').replaceAll("\\.[^/.]+$", "");
 	}
 
 	/**

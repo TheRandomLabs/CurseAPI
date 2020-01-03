@@ -17,8 +17,14 @@ import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.project.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.checkerframework.framework.qual.TypeUseLocation;
 import org.jsoup.nodes.Element;
 
+//NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
+@SuppressWarnings("NullAway")
+@DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
 final class ForgeSvcProject extends CurseProject {
 	private int id;
 	private String name;

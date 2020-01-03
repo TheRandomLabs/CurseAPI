@@ -7,6 +7,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A basic representation of a CurseForge file. Files represented by implementations of this class
@@ -24,6 +25,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		private final int fileID;
 
 		//Cache.
+		@Nullable
 		private transient CurseProject project;
 		private transient boolean projectRetrieved;
 
@@ -52,6 +54,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		/**
 		 * {@inheritDoc}
 		 */
+		@Nullable
 		@Override
 		public CurseProject project() throws CurseException {
 			if (!projectRetrieved) {
@@ -134,10 +137,12 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	/**
 	 * Returns this file's project as a {@link CurseProject}. This value may be cached.
 	 *
-	 * @return this file's project as a {@link CurseProject}.
+	 * @return this file's project as a {@link CurseProject} if it exists,
+	 * or otherwise {@code null}.
 	 * @throws CurseException if an error occurs.
 	 * @see #clearProjectCache()
 	 */
+	@Nullable
 	public abstract CurseProject project() throws CurseException;
 
 	/**
@@ -171,11 +176,13 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * {@link #project()} to retrieve the URL, so this value may be cached.
 	 * The existence and availability of this file are not verified.
 	 *
-	 * @return this file's URL.
+	 * @return this file's URL. If this file's project does not exist, {@code null} is returned.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public HttpUrl url() throws CurseException {
-		return project().fileURL(id());
+		final CurseProject project = project();
+		return project == null ? null : project.fileURL(id());
 	}
 
 	/**

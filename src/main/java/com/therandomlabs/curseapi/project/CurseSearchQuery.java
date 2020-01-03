@@ -45,9 +45,9 @@ public class CurseSearchQuery implements Cloneable {
 	public CurseSearchQuery clone() {
 		try {
 			return (CurseSearchQuery) super.clone();
-		} catch (CloneNotSupportedException ignored) {}
-
-		return null;
+		} catch (CloneNotSupportedException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	/**

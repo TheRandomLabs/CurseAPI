@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.therandomlabs.curseapi.CurseException;
 import okhttp3.ResponseBody;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ public final class RetrofitUtils {
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
 	@SuppressWarnings("GrazieInspection")
+	@Nullable
 	public static <T> T execute(Call<T> call) throws CurseException {
 		logger.debug("Executing request: {}", call.request());
 
@@ -76,6 +78,7 @@ public final class RetrofitUtils {
 	 * @return the response body as a string.
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
+	@Nullable
 	public static String getString(Call<ResponseBody> call) throws CurseException {
 		try {
 			final ResponseBody responseBody = execute(call);
@@ -96,6 +99,7 @@ public final class RetrofitUtils {
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 * @see JsoupUtils#emptyElement()
 	 */
+	@Nullable
 	public static Element getElement(Call<ResponseBody> call) throws CurseException {
 		final String string = getString(call);
 

@@ -11,7 +11,13 @@ import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.checkerframework.framework.qual.TypeUseLocation;
 
+//NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
+@SuppressWarnings("NullAway")
+@DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
 final class ForgeSvcGame extends CurseGame {
 	private int id;
 	private String name;

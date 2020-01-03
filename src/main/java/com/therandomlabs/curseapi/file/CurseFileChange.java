@@ -7,6 +7,7 @@ import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.CheckedFunction;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a change between two CurseForge file versions, an old file and a new file.
@@ -92,8 +93,10 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #oldFile()}; hence, this value may be cached.
 	 *
 	 * @return the project of the old and new files as a {@link CurseProject}.
+	 * If the project does not exist, {@code null} is returned.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public CurseProject project() throws CurseException {
 		return oldFile.project();
 	}
@@ -113,9 +116,10 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
 	 * so this value may be cached.
 	 *
-	 * @return the old file as a {@link CurseFile}.
+	 * @return the old file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public CurseFile oldCurseFile() throws CurseException {
 		return asCurseFile(oldFile);
 	}
@@ -135,9 +139,10 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
 	 * so this value may be cached.
 	 *
-	 * @return the new file as a {@link CurseFile}.
+	 * @return the new file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public CurseFile newCurseFile() throws CurseException {
 		return asCurseFile(newFile);
 	}
@@ -158,9 +163,10 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
 	 * so this value may be cached.
 	 *
-	 * @return the older file as a {@link CurseFile}, or {@code null} if it cannot be retrieved.
+	 * @return the older file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public CurseFile olderCurseFile() throws CurseException {
 		return asCurseFile(olderFile());
 	}
@@ -181,9 +187,10 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
 	 * so this value may be cached.
 	 *
-	 * @return the newer file as a {@link CurseFile}, or {@code null} if it cannot be retrieved.
+	 * @return the newer file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public CurseFile newerCurseFile() throws CurseException {
 		return asCurseFile(newerFile());
 	}
@@ -200,6 +207,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * @throws CurseException if an error occurs, or if the values returned by
 	 * {@link #olderCurseFile()} and {@link #newerCurseFile()} are both {@code null}.
 	 */
+	@Nullable
 	public <T> T get(CheckedFunction<? super CurseFile, ? extends T, CurseException> function)
 			throws CurseException {
 		final CurseFile olderFile = olderCurseFile();
@@ -234,11 +242,18 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * The older file is excluded, and the newer file is included.
 	 *
 	 * @return a {@link CurseFiles} that contains all files that are chronologically between
-	 * the old file and the new file.
+	 * the old file and the new file. If this {@link CurseFileChange}'s project does not exist,
+	 * an empty {@link CurseFiles} is returned.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFiles<CurseFile> filesBetween() throws CurseException {
-		final CurseFiles<CurseFile> files = project().files();
+		final CurseProject project = project();
+
+		if (project == null) {
+			return new CurseFiles<>();
+		}
+
+		final CurseFiles<CurseFile> files = project.files();
 		new CurseFileFilter().between(olderFile().id(), newerFile().id() + 1).apply(files);
 		return files;
 	}
@@ -248,16 +263,29 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 *
 	 * @return a {@link CurseFiles} instance that contains all files that are chronologically
 	 * between the old file and the new file inclusively.
+	 * If this {@link CurseFileChange}'s project does not exist,
+	 * an empty {@link CurseFiles} is returned.
 	 * @throws CurseException if an error occurs.
 	 */
 	public CurseFiles<CurseFile> filesBetweenInclusive() throws CurseException {
-		final CurseFiles<CurseFile> files = project().files();
+		final CurseProject project = project();
+
+		if (project == null) {
+			return new CurseFiles<>();
+		}
+
+		final CurseFiles<CurseFile> files = project.files();
 		new CurseFileFilter().between(olderFile().id() - 1, newerFile().id() + 1).apply(files);
 		return files;
 	}
 
+	@Nullable
 	private CurseFile asCurseFile(F file) throws CurseException {
-		return file instanceof CurseFile ?
-				(CurseFile) file : project().files().fileWithID(file.id());
+		if (file instanceof CurseFile) {
+			return (CurseFile) file;
+		}
+
+		final CurseProject project = project();
+		return project == null ? null : project.files().fileWithID(file.id());
 	}
 }

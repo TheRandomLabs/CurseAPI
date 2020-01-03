@@ -31,6 +31,7 @@ import com.therandomlabs.curseapi.util.CheckedFunction;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -633,6 +634,7 @@ public final class CurseAPI {
 		return Optional.empty();
 	}
 
+	@Nullable
 	private static <E, T> T callCheckedFunction(
 			E element, CheckedFunction<E, T, CurseException> function
 	) {

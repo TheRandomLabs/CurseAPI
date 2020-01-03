@@ -12,6 +12,7 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.util.CheckedFunction;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * An implementation of {@link TreeSet} with additional utility methods for working with
@@ -107,6 +108,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 * or {@code null} if it does not exist.
 	 * @see CurseFileFilter
 	 */
+	@Nullable
 	public F fileWithID(int id) {
 		CursePreconditions.checkFileID(id, "id");
 

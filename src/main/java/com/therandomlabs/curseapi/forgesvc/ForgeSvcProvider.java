@@ -16,6 +16,7 @@ import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
 /**
@@ -45,6 +46,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public CurseProject project(int id) throws CurseException {
 		return RetrofitUtils.execute(forgeSVC.getProject(id));
@@ -53,6 +55,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public Element projectDescription(int id) throws CurseException {
 		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id));
@@ -80,6 +83,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public CurseFiles<CurseFile> files(int projectID) throws CurseException {
 		final Set<ForgeSvcFile> files = RetrofitUtils.execute(forgeSVC.getFiles(projectID));
@@ -98,6 +102,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public CurseFile file(int projectID, int fileID) throws CurseException {
 		final ForgeSvcFile file = RetrofitUtils.execute(forgeSVC.getFile(projectID, fileID));
@@ -115,6 +120,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 *
 	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
 	 */
+	@Nullable
 	@Override
 	public Element fileChangelog(int projectID, int fileID) throws CurseException {
 		return RetrofitUtils.getElement(forgeSVC.getChangelog(projectID, fileID));
@@ -125,6 +131,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 *
 	 * @param projectID a project ID. This is apparently not necessary, so {@code 0} will suffice.
 	 */
+	@Nullable
 	@Override
 	public HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
 		final String url = RetrofitUtils.getString(forgeSVC.getFileDownloadURL(projectID, fileID));
@@ -148,6 +155,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public CurseGame game(int id) throws CurseException {
 		return RetrofitUtils.execute(forgeSVC.getGame(id));
@@ -170,6 +178,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public Set<CurseCategory> categories(int sectionID) throws CurseException {
 		final Set<ForgeSvcCategory> categories =
@@ -180,6 +189,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Nullable
 	@Override
 	public CurseCategory category(int id) throws CurseException {
 		return RetrofitUtils.execute(forgeSVC.getCategory(id));

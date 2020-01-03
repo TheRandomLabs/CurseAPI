@@ -13,6 +13,7 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
 /**
@@ -31,6 +32,7 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseProject} instance for the specified project ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default CurseProject project(int id) throws CurseException {
 		return null;
 	}
@@ -42,6 +44,7 @@ public interface CurseAPIProvider {
 	 * @return an {@link Element} containing the description for the project with the specified ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default Element projectDescription(int id) throws CurseException {
 		return null;
 	}
@@ -53,6 +56,7 @@ public interface CurseAPIProvider {
 	 * @return a mutable {@link List} of {@link CurseProject}s that match the specified query.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
 		return null;
 	}
@@ -64,6 +68,7 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseFiles} instance for the specified project ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default CurseFiles<CurseFile> files(int projectID) throws CurseException {
 		return null;
 	}
@@ -76,6 +81,7 @@ public interface CurseAPIProvider {
 	 * @return a {@link CurseFile} instance for the specified project and file ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default CurseFile file(int projectID, int fileID) throws CurseException {
 		return null;
 	}
@@ -90,6 +96,7 @@ public interface CurseAPIProvider {
 	 * @throws CurseException if an error occurs.
 	 * @see JsoupUtils#emptyElement()
 	 */
+	@Nullable
 	default Element fileChangelog(int projectID, int fileID) throws CurseException {
 		return null;
 	}
@@ -102,6 +109,7 @@ public interface CurseAPIProvider {
 	 * @return the download URL for the specified project and file ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
 		return null;
 	}
@@ -113,6 +121,7 @@ public interface CurseAPIProvider {
 	 * all games supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default Set<CurseGame> games() throws CurseException {
 		return null;
 	}
@@ -125,6 +134,7 @@ public interface CurseAPIProvider {
 	 * ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default CurseGame game(int id) throws CurseException {
 		return null;
 	}
@@ -137,6 +147,7 @@ public interface CurseAPIProvider {
 	 * represent all game versions of the game with the specified ID supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default SortedSet<? extends CurseGameVersion<?>> gameVersions(int gameID)
 			throws CurseException {
 		return null;
@@ -152,6 +163,7 @@ public interface CurseAPIProvider {
 	 * with the specified ID with the specified version string.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default CurseGameVersion<?> gameVersion(int gameID, String versionString)
 			throws CurseException {
 		return null;
@@ -164,6 +176,7 @@ public interface CurseAPIProvider {
 	 * all project categories on CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default Set<CurseCategory> categories() throws CurseException {
 		return null;
 	}
@@ -176,6 +189,7 @@ public interface CurseAPIProvider {
 	 * all categories in the category section with the specified ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default Set<CurseCategory> categories(int sectionID) throws CurseException {
 		return null;
 	}
@@ -188,6 +202,7 @@ public interface CurseAPIProvider {
 	 * specified ID.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	default CurseCategory category(int id) throws CurseException {
 		return null;
 	}

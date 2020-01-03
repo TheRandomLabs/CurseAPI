@@ -1,6 +1,7 @@
 package com.therandomlabs.curseapi.util;
 
 import com.google.common.base.Preconditions;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,14 +24,15 @@ public final class JsoupUtils {
 	}
 
 	/**
-	 * Returns whether the specified {@link Element} is empty.
+	 * Returns whether the specified {@link Element} is {@code null} empty.
 	 *
 	 * @param element an {@link Element}.
-	 * @return {@code true} if the specified {@link Element} is empty, or otherwise {@code false}.
+	 * @return {@code true} if the specified {@link Element} is {@code null} or empty,
+	 * or otherwise {@code false}.
 	 * @see #emptyElement()
 	 */
-	public static boolean isEmpty(Element element) {
-		return element.childNodes().isEmpty();
+	public static boolean isEmpty(@Nullable Element element) {
+		return element == null || element.childNodes().isEmpty();
 	}
 
 	/**
@@ -41,6 +43,7 @@ public final class JsoupUtils {
 	 * @return the body of the specified HTML fragment as a single {@link Element},
 	 * or {@code null} if the body is empty.
 	 */
+	@Nullable
 	@SuppressWarnings("GrazieInspection")
 	public static Element parseBody(String html) {
 		final Element body = Jsoup.parseBodyFragment(html).body();

@@ -1,5 +1,7 @@
 package com.therandomlabs.curseapi.util;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * A {@link java.util.function.Function}-like interface which allows for throwing
  * checked {@link Exception}s.
@@ -17,5 +19,6 @@ public interface CheckedFunction<T, R, E extends Exception> {
 	 * @return the function result.
 	 * @throws E if the function throws a checked {@link Exception} of type {@link E}.
 	 */
+	@Nullable
 	R apply(T t) throws E;
 }

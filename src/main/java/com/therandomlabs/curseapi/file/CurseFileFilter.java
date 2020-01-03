@@ -34,9 +34,9 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 			final CurseFileFilter filter = (CurseFileFilter) super.clone();
 			filter.gameVersionStrings = new HashSet<>(gameVersionStrings);
 			return filter;
-		} catch (CloneNotSupportedException ignored) {}
-
-		return null;
+		} catch (CloneNotSupportedException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	/**
