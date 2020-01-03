@@ -25,7 +25,6 @@ package com.therandomlabs.curseapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
@@ -44,9 +43,27 @@ import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.project.CurseSearchSort;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@SuppressWarnings("rawtypes")
+@ExtendWith(MockitoExtension.class)
 public class CurseAPITest {
+	@Mock(lenient = true)
+	private CurseGameVersionGroup mockVersionGroup;
+
+	@Mock(lenient = true)
+	private CurseGameVersion mockVersion1;
+	@Mock(lenient = true)
+	private CurseGameVersion mockVersion2;
+	@Mock(lenient = true)
+	private CurseGameVersion mockVersion3;
+
+	@Mock
+	private CurseAPIProvider mockProvider;
+
 	@Test
 	public void shouldThrowExceptionIfInvalidProjectID() {
 		assertThatThrownBy(() -> CurseAPI.project(CurseAPI.MIN_PROJECT_ID - 1)).
@@ -251,20 +268,15 @@ public class CurseAPITest {
 		assertThat(CurseAPI.category(Integer.MAX_VALUE)).isNotPresent();
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked", "RedundantSuppression"})
+	@SuppressWarnings({"unchecked", "RedundantSuppression"})
 	@Test
 	public void gameVersionGroupsShouldBeValid() throws CurseException {
-		final CurseGameVersionGroup mockVersionGroup = mock(CurseGameVersionGroup.class);
-
-		final CurseGameVersion mockVersion1 = mock(CurseGameVersion.class);
 		when(mockVersion1.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion1.versionGroup()).thenCallRealMethod();
 
-		final CurseGameVersion mockVersion2 = mock(CurseGameVersion.class);
 		when(mockVersion2.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion2.versionGroup()).thenReturn(mockVersionGroup);
 
-		final CurseGameVersion mockVersion3 = mock(CurseGameVersion.class);
 		when(mockVersion3.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion3.versionGroup()).thenReturn(mockVersionGroup);
 
@@ -312,7 +324,6 @@ public class CurseAPITest {
 		final Optional<CurseProject> optionalProject = CurseAPI.project(CurseAPI.MIN_PROJECT_ID);
 		assertThat(optionalProject).isPresent();
 
-		final CurseAPIProvider mockProvider = mock(CurseAPIProvider.class);
 		assertThat(CurseAPI.addProvider(mockProvider, true)).isTrue();
 		assertThat(CurseAPI.addProvider(mockProvider, true)).isFalse();
 
