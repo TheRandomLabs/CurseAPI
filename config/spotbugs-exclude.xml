@@ -20,6 +20,10 @@
 	</Match>
 
 	<Match>
+		<Bug pattern="IMC_IMMATURE_CLASS_BAD_SERIALVERSIONUID"/>
+	</Match>
+
+	<Match>
 		<Class name="~.*Test"/>
 
 		<Not>

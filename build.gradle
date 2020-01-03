@@ -1,6 +1,3 @@
-import com.github.spotbugs.SpotBugsTask
-import net.ltgt.gradle.errorprone.CheckSeverity
-
 buildscript {
 	repositories {
 		mavenCentral()
@@ -14,64 +11,20 @@ buildscript {
 	}
 }
 
-plugins {
-	id "java-library"
-	id "maven-publish"
-	id "net.minecrell.licenser" version "0.4"
-	id "checkstyle"
-	id "pmd"
-	id "com.github.spotbugs" version "3.0.0"
-	id "net.ltgt.errorprone" version "1.1.1"
-	id "jacoco"
-}
-
+apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
 apply plugin: "info.solidsoft.pitest"
 
 group = "com.therandomlabs.curseapi"
 version = "1.0.0"
 
-repositories {
-	mavenCentral()
-}
-
 dependencies {
-	implementation "com.google.guava:guava:28.2-jre"
-	implementation "org.slf4j:slf4j-api:2.0.0-alpha1"
 	api "com.squareup.moshi:moshi:1.9.2"
-	api "com.squareup.retrofit2:retrofit:2.7.0"
-	api "com.squareup.retrofit2:converter-moshi:2.7.0"
+	api "com.squareup.retrofit2:retrofit:2.7.1"
+	api "com.squareup.retrofit2:converter-moshi:2.7.1"
 	api "org.jsoup:jsoup:1.12.1"
-
-	testRuntimeOnly "org.apache.logging.log4j:log4j-core:2.13.0"
-	testRuntimeOnly "org.apache.logging.log4j:log4j-slf4j18-impl:2.13.0"
-
-	testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.0-M1"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.0-M1"
-	testImplementation "org.assertj:assertj-core:3.14.0"
-	testImplementation "org.mockito:mockito-core:3.2.4"
-
-	spotbugsPlugins "com.mebigfatguy.sb-contrib:sb-contrib:7.4.7"
-	spotbugsPlugins "com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1"
-	spotbugsPlugins "jp.skypencil.findbugs.slf4j:bug-pattern:1.5.0@jar"
-
-	errorprone "com.google.errorprone:error_prone_core:2.3.4"
-	errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
-
-	annotationProcessor "com.uber.nullaway:nullaway:0.7.9"
 }
 
-test {
-	useJUnitPlatform()
-	finalizedBy jacocoTestReport
-}
-
-license {
-	exclude "**/*.xml"
-}
-
-build.dependsOn updateLicenses
-
-jacocoTestCoverageVerification {
+/* jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			element = "CLASS"
@@ -83,80 +36,11 @@ jacocoTestCoverageVerification {
 			}
 		}
 	}
-}
-
-check.dependsOn jacocoTestCoverageVerification
+} */
 
 pitest {
 	testPlugin = "junit5"
-    threads = 4
-    outputFormats = ["XML", "HTML"]
-    timestampedReports = false
-}
-
-check.dependsOn "pitest"
-
-pmd {
-	ruleSets = []
-	ruleSetConfig = resources.text.fromFile("config/pmd.xml")
-}
-
-spotbugs {
-	excludeFilter = file("config/spotbugs-exclude.xml")
-}
-
-tasks.withType(SpotBugsTask) {
-	reports {
-		xml.enabled false
-		html.enabled true
-	}
-}
-
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
-	options.compilerArgs << "-Xlint:all"
-
-	if (!name.toLowerCase().contains("test")) {
-		options.errorprone {
-			check("NullAway", CheckSeverity.ERROR)
-			option("NullAway:AnnotatedPackages", "com.therandomlabs.curseapi")
-		}
-	}
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-	archiveClassifier.set("sources")
-	from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar) {
-	archiveClassifier.set("javadoc")
-	from javadoc
-}
-
-artifacts {
-	archives sourcesJar
-	archives javadocJar
-}
-
-publishing {
-	repositories {
-		maven {
-			name = "GitHubPackages"
-			url = uri("https://maven.pkg.github.com/TheRandomLabs/CurseAPI")
-
-			credentials {
-				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-				password = project.findProperty("gpr.key") ?: System.getenv("PASSWORD")
-			}
-		}
-	}
-
-	publications {
-		gpr(MavenPublication) {
-			artifact sourcesJar
-			artifact javadocJar
-			from components.java
-		}
-	}
+	threads = 4
+	outputFormats = ["XML", "HTML"]
+	timestampedReports = false
 }

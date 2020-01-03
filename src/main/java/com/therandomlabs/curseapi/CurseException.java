@@ -27,7 +27,7 @@ package com.therandomlabs.curseapi;
  * Represents an error that has occurred while using CurseAPI.
  */
 public class CurseException extends Exception {
-	private static final long serialVersionUID = 6173129011499048103L;
+	private static final long serialVersionUID = -2652096507664856578L;
 
 	/**
 	 * Constructs a {@link CurseException} with the specified detail message.

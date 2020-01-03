@@ -60,7 +60,7 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 	 */
 	public static final Comparator<BasicCurseFile> SORT_BY_OLDEST = SORT_BY_NEWEST.reversed();
 
-	private static final long serialVersionUID = -7609834501394579694L;
+	private static final long serialVersionUID = 4762475826152943776L;
 
 	/**
 	 * Creates an empty {@link CurseFiles} instance ordered from newest to oldest.
