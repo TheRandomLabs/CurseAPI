@@ -48,7 +48,7 @@ public class ExistingFileTest {
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfNonexistent() {
+	public void exceptionShouldBeThrownIfProjectIsNonexistent() {
 		assertThatThrownBy(() -> nonexistentFile.project()).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining("Project does not exist");
@@ -61,6 +61,16 @@ public class ExistingFileTest {
 
 		file.clearProjectCache();
 		assertThat(file.project()).isEqualTo(project);
+	}
+
+	@Test
+	public void exceptionShouldBeThrownIfNonexistent() {
+		assertThatThrownBy(() -> nonexistentFile.downloadURL()).
+				isInstanceOf(CurseException.class).
+				hasMessageContaining("File does not exist");
+		assertThatThrownBy(() -> nonexistentFile.changelogPlainText(10)).
+				isInstanceOf(CurseException.class).
+				hasMessageContaining("File does not exist");
 	}
 
 	@Test
