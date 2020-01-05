@@ -247,7 +247,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 		}
 
 		throw new CurseException(
-				"Neither file for CurseFileChange could be retrieved as CurseFiles: " + this
+				"Neither file for CurseFileChange could be retrieved as CurseFile: " + this
 		);
 	}
 

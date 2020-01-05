@@ -24,6 +24,7 @@
 package com.therandomlabs.curseapi.file;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.therandomlabs.curseapi.CurseException;
 import org.junit.jupiter.api.Test;
@@ -34,11 +35,14 @@ public class CurseFilesComparisonTest {
 	public void comparisonShouldBeCorrect() throws CurseException {
 		final BasicCurseFile quarkUnchanged = new BasicCurseFile.Immutable(243121, 2759240);
 
-		final BasicCurseFile enderCoreOld = new BasicCurseFile.Immutable(231868, 2578528);
+		final BasicCurseFile enderCoreOld =
+				new BasicCurseFile.Immutable(231868, 2578528).toCurseFile();
 		final BasicCurseFile enderCoreNew = new BasicCurseFile.Immutable(231868, 2822401);
 
-		final BasicCurseFile enderIONew = new BasicCurseFile.Immutable(64578, 2809869);
-		final BasicCurseFile enderIOOld = new BasicCurseFile.Immutable(64578, 2666521);
+		final BasicCurseFile nonexistentFileNew =
+				new BasicCurseFile.Immutable(Integer.MAX_VALUE, Integer.MAX_VALUE);
+		final BasicCurseFile nonexistentFileOld =
+				new BasicCurseFile.Immutable(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);
 
 		final BasicCurseFile jei = new BasicCurseFile.Immutable(238222, 2803400);
 		final BasicCurseFile eu2 = new BasicCurseFile.Immutable(225561, 2678374);
@@ -46,13 +50,13 @@ public class CurseFilesComparisonTest {
 		final CurseFiles<BasicCurseFile> files1 = new CurseFiles<>();
 		files1.add(quarkUnchanged);
 		files1.add(enderCoreOld);
-		files1.add(enderIONew);
+		files1.add(nonexistentFileNew);
 		files1.add(jei);
 
 		final CurseFiles<BasicCurseFile> files2 = new CurseFiles<>();
 		files2.add(quarkUnchanged);
 		files2.add(enderCoreNew);
-		files2.add(enderIOOld);
+		files2.add(nonexistentFileOld);
 		files2.add(eu2);
 
 		final CurseFilesComparison<BasicCurseFile> comparison =
@@ -72,10 +76,10 @@ public class CurseFilesComparisonTest {
 		final CurseFileChange<BasicCurseFile> downgrade =
 				Iterables.firstOf(comparison.downgraded());
 		assertThat(downgrade.isDowngrade()).isTrue();
-		assertThat(downgrade.oldFile()).isEqualTo(enderIONew);
-		assertThat(downgrade.olderFile()).isEqualTo(enderIOOld);
-		assertThat(downgrade.newFile()).isEqualTo(enderIOOld);
-		assertThat(downgrade.newerFile()).isEqualTo(enderIONew);
+		assertThat(downgrade.oldFile()).isEqualTo(nonexistentFileNew);
+		assertThat(downgrade.olderFile()).isEqualTo(nonexistentFileOld);
+		assertThat(downgrade.newFile()).isEqualTo(nonexistentFileOld);
+		assertThat(downgrade.newerFile()).isEqualTo(nonexistentFileNew);
 
 		assertThat(comparison.removed()).containsOnly(jei);
 		assertThat(comparison.added()).containsOnly(eu2);
@@ -93,10 +97,22 @@ public class CurseFilesComparisonTest {
 		assertThat(update.projectID()).isEqualTo(enderCoreOld.projectID());
 		assertThat(update.project()).isEqualTo(enderCoreOld.project());
 
+		//Since enderCoreOld is already a CurseFile, the same reference should be returned.
+		assertThat(update.oldCurseFile()).isSameAs(enderCoreOld);
+
 		assertThat(update.oldCurseFile().id()).isEqualTo(enderCoreOld.id());
 		assertThat(update.olderCurseFile()).isEqualTo(update.oldCurseFile());
 
 		assertThat(update.newCurseFile().id()).isEqualTo(enderCoreNew.id());
 		assertThat(update.newerCurseFile()).isEqualTo(update.newCurseFile());
+
+		assertThat((String) update.get(file -> file.project().name())).
+				isEqualTo(update.project().name());
+
+		assertThatThrownBy(() -> downgrade.get(file -> file.project().name())).
+				isInstanceOf(CurseException.class).
+				hasMessageContaining(
+						"Neither file for CurseFileChange could be retrieved as CurseFile"
+				);
 	}
 }
