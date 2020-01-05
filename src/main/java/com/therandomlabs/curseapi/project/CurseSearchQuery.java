@@ -241,7 +241,7 @@ public class CurseSearchQuery implements Cloneable {
 			);
 		}
 
-		gameVersion = version.versionString();
+		gameVersionString(version.versionString());
 		return this;
 	}
 

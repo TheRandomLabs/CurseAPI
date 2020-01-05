@@ -75,7 +75,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 		}
 
 		return file.newerThan(newerThan()) && file.olderThan(olderThan()) &&
-				file.releaseType().matchesMinimumStability(minimumStability());
+				file.releaseType().hasMinimumStability(minimumStability());
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * Returns this {@link CurseFileFilter}'s minimum stability.
 	 *
 	 * @return this {@link CurseFileFilter}'s minimum stability.
-	 * @see CurseReleaseType#matchesMinimumStability(CurseReleaseType)
+	 * @see CurseReleaseType#hasMinimumStability(CurseReleaseType)
 	 */
 	public CurseReleaseType minimumStability() {
 		return minimumStability;
@@ -338,7 +338,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 *
 	 * @param releaseType a minimum stability.
 	 * @return this {@link CurseFileFilter}.
-	 * @see CurseReleaseType#matchesMinimumStability(CurseReleaseType)
+	 * @see CurseReleaseType#hasMinimumStability(CurseReleaseType)
 	 */
 	public CurseFileFilter minimumStability(CurseReleaseType releaseType) {
 		Preconditions.checkNotNull(releaseType, "releaseType should not be null");
@@ -350,7 +350,7 @@ public class CurseFileFilter implements Cloneable, Predicate<CurseFile> {
 	 * Clears this {@link CurseFileFilter}'s minimum stability.
 	 *
 	 * @return this {@link CurseFileFilter}.
-	 * @see CurseReleaseType#matchesMinimumStability(CurseReleaseType)
+	 * @see CurseReleaseType#hasMinimumStability(CurseReleaseType)
 	 */
 	public CurseFileFilter clearMinimumStability() {
 		minimumStability = CurseReleaseType.ALPHA;

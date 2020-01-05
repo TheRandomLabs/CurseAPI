@@ -25,6 +25,8 @@ package com.therandomlabs.curseapi.file;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -32,6 +34,7 @@ import java.util.Optional;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
+import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -132,8 +135,13 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void alternateFileIDShouldBeValid() {
+	public void hasAlternateFileShouldReturnCorrectValue() {
+		assertThat(file.hasAlternateFile()).isFalse();
 		assertThat(comparisonFile2.hasAlternateFile()).isTrue();
+	}
+
+	@Test
+	public void alternateFileIDShouldBeValid() {
 		assertThat(comparisonFile2.alternateFileID()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
 	}
 
@@ -163,8 +171,13 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void downloadURLShouldNotBeNull() {
-		assertThat(file.downloadURL()).isNotNull();
+	public void downloadURLShouldBeValid() {
+		final HttpUrl downloadURL = file.downloadURL();
+		assertThat(downloadURL).isNotNull();
+
+		//This should be a no-op, so we use isSameAs instead of isEqualTo.
+		file.clearDownloadURLCache();
+		assertThat(file.downloadURL()).isSameAs(downloadURL);
 	}
 
 	@Test
@@ -185,9 +198,15 @@ public class CurseFileTest {
 	public void dependenciesShouldBeValid() {
 		assertThat(dependentFile.dependencies()).isNotEmpty();
 
+		//We also test CurseDependency here.
 		for (CurseDependency dependency : dependentFile.dependencies()) {
 			assertThat(dependency).isEqualTo(dependency);
 			assertThat(dependency).isNotEqualTo(null);
+
+			final CurseDependency mockDependency = mock(CurseDependency.class);
+			when(mockDependency.projectID()).thenReturn(dependency.projectID());
+			assertThat(dependency).isEqualTo(mockDependency);
+
 			assertThat(dependency.toString()).isNotEmpty();
 			assertThat(dependency.dependent()).isEqualTo(dependentFile);
 		}
@@ -211,6 +230,13 @@ public class CurseFileTest {
 	@Test
 	public void gameVersionGroupsShouldBeEmpty() throws CurseException {
 		assertThat(file.gameVersionGroups()).isEmpty();
+	}
+
+	@Test
+	public void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() {
+		assertThatThrownBy(() -> file.changelogPlainText(0)).
+				isInstanceOf(IllegalArgumentException.class).
+				hasMessageContaining("should be greater than");
 	}
 
 	@Test

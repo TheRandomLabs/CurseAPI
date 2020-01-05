@@ -61,6 +61,9 @@ public class CurseAPITest {
 	@Mock(lenient = true)
 	private CurseGameVersion mockVersion3;
 
+	@Mock(lenient = true)
+	private CurseGameVersion mock1122;
+
 	@Mock
 	private CurseAPIProvider mockProvider;
 
@@ -104,17 +107,22 @@ public class CurseAPITest {
 	public void searchResultsShouldBeValid() throws CurseException {
 		final Optional<CurseGame> optionalGame = CurseAPI.game(432);
 		assertThat(optionalGame).isPresent();
+		final CurseGame game = optionalGame.get();
 
 		final Optional<CurseCategory> optionalCategory = CurseAPI.streamCategories().
 				filter(category -> "Armor, Tools, and Weapons".equals(category.name())).
 				findAny();
 		assertThat(optionalCategory).isPresent();
+		final CurseCategory category = optionalCategory.get();
+
+		when(mock1122.gameID()).thenReturn(game.id());
+		when(mock1122.versionString()).thenReturn("1.12.2");
 
 		//We also test CurseSearchQuery.
 		final CurseSearchQuery query = new CurseSearchQuery().
-				game(optionalGame.get()).
-				category(optionalCategory.get()).
-				gameVersionString("1.12.2").
+				game(game).
+				category(category).
+				gameVersion(mock1122).
 				pageIndex(6).
 				pageSize(20).
 				searchFilter("Weapons").
@@ -123,6 +131,7 @@ public class CurseAPITest {
 		assertThat(query.toString()).isNotEmpty();
 		assertThat(CurseAPI.searchProjects(query.clone())).get().asList().hasSizeGreaterThan(15);
 
+		query.clearGame();
 		query.clearCategorySection();
 		query.clearCategory();
 		query.clearGameVersionString();
@@ -130,6 +139,8 @@ public class CurseAPITest {
 		query.clearPageSize();
 		query.clearSearchFilter();
 		query.clearSortingMethod();
+
+		query.game(game);
 
 		assertThat(CurseAPI.searchProjects(query)).get().asList().hasSizeGreaterThan(15);
 	}

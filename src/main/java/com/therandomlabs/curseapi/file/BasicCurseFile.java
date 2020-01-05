@@ -229,7 +229,10 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * or otherwise {@code false}.
 	 */
 	public final boolean olderThan(int fileID) {
-		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
+		Preconditions.checkArgument(
+				fileID >= CurseAPI.MIN_FILE_ID - 1,
+				"fileID should not be smaller than " + (CurseAPI.MIN_FILE_ID - 1)
+		);
 		return id() < fileID;
 	}
 
@@ -253,7 +256,10 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * or otherwise {@code false}.
 	 */
 	public final boolean newerThan(int fileID) {
-		Preconditions.checkArgument(fileID >= 10, "fileID should not be below 10");
+		Preconditions.checkArgument(
+				fileID >= CurseAPI.MIN_FILE_ID - 1,
+				"fileID should not be smaller than " + (CurseAPI.MIN_FILE_ID - 1)
+		);
 		return id() > fileID;
 	}
 

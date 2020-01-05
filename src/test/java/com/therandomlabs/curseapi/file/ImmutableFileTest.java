@@ -27,9 +27,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.project.CurseProject;
 import org.junit.jupiter.api.Test;
 
 public class ImmutableFileTest {
+	@Test
+	public void toStringShouldNotBeEmpty() {
+		assertThat(new BasicCurseFile.Immutable(
+				CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID
+		).toString()).isNotEmpty();
+	}
+
+	@Test
+	public void urlShouldNotBeNullIfExistent() throws CurseException {
+		assertThat(new BasicCurseFile.Immutable(
+				CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID
+		).url()).isNotNull();
+	}
+
 	@Test
 	public void projectShouldBeNullIfNonexistent() throws CurseException {
 		assertThat(new BasicCurseFile.Immutable(Integer.MAX_VALUE, Integer.MAX_VALUE).project()).
@@ -37,10 +52,15 @@ public class ImmutableFileTest {
 	}
 
 	@Test
-	public void projectShouldNotBeNullIfExistent() throws CurseException {
-		assertThat(new BasicCurseFile.Immutable(
-				CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID
-		).project()).isNotNull();
+	public void projectShouldBeValidIfExistent() throws CurseException {
+		final BasicCurseFile.Immutable file =
+				new BasicCurseFile.Immutable(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID);
+
+		final CurseProject project = file.project();
+		assertThat(project).isNotNull();
+
+		file.clearProjectCache();
+		assertThat(file.project()).isEqualTo(project);
 	}
 
 	@Test

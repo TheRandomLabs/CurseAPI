@@ -61,7 +61,7 @@ public enum CurseReleaseType {
 	 * @return {@code true} if this release type represents a stability that is equal to or
 	 * higher than that of the specified release type, or otherwise {@code false}.
 	 */
-	public boolean matchesMinimumStability(CurseReleaseType releaseType) {
+	public boolean hasMinimumStability(CurseReleaseType releaseType) {
 		return id <= releaseType.id;
 	}
 

@@ -82,13 +82,7 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	@NonNull
 	@Override
 	public HttpUrl url() throws CurseException {
-		final HttpUrl url = super.url();
-
-		if (url == null) {
-			throw new CurseException("Failed to retrieve URL: " + this);
-		}
-
-		return url;
+		return project().fileURL(id());
 	}
 
 	/**

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -52,7 +53,22 @@ public class CurseFilesTest {
 
 	@Test
 	public void cloneShouldReturnValidValue() {
-		assertThat(files.clone()).isEqualTo(files);
+		final CurseFiles<CurseFile> cloned = files.clone();
+		assertThat(cloned).isEqualTo(files);
+		files = cloned;
+	}
+
+	@Test
+	public void copyConstructorShouldCopyCorrectly() {
+		CurseFiles<CurseFile> copied = new CurseFiles<>(files);
+		assertThat(copied).isEqualTo(files);
+		files = copied;
+
+		copied = new CurseFiles<>(files, null);
+		assertThat(copied).isEqualTo(files);
+		assertThat(copied).isNotEqualTo(new CurseFiles<>());
+		assertThat(copied).isNotEqualTo(new CurseFiles<>(CurseFiles.SORT_BY_NEWEST));
+		files = copied;
 	}
 
 	@Test
@@ -85,12 +101,27 @@ public class CurseFilesTest {
 
 		for (CurseFile file : filtered) {
 			assertThat(file.gameVersionStrings()).contains("1.12.2");
-			assertThat(file.releaseType().matchesMinimumStability(CurseReleaseType.BETA)).isTrue();
+			assertThat(file.releaseType().hasMinimumStability(CurseReleaseType.BETA)).isTrue();
 		}
 
 		final CurseFiles<CurseFile> filtered2 = files.clone();
 		filtered2.filter(filter);
 		assertThat(filtered2).isEqualTo(filtered);
+
+		final CurseFiles<CurseFile> filtered3 = files.clone();
+
+		filter.clearGameVersions();
+		filter.clearNewerThan();
+		filter.clearOlderThan();
+		filter.clearMinimumStability();
+
+		filter.gameVersionsArray(mockVersion);
+
+		filter.apply(filtered3);
+
+		for (CurseFile file : filtered3) {
+			assertThat(file.gameVersionStrings()).contains("1.12.2");
+		}
 	}
 
 	@Test
@@ -101,7 +132,15 @@ public class CurseFilesTest {
 	}
 
 	@Test
-	public void parallelMapProducesValidOutput() throws CurseException {
+	public void parallelMapProducesValidList() throws CurseException {
+		final CurseFiles<CurseFile> smallerFiles = files.clone();
+		new CurseFileFilter().olderThan(2581245).apply(smallerFiles);
+		assertThat(smallerFiles.parallelMap(CurseFile::changelogPlainText, Collectors.toList())).
+				hasSameSizeAs(smallerFiles);
+	}
+
+	@Test
+	public void parallelMapProducesValidMap() throws CurseException {
 		final CurseFiles<CurseFile> smallerFiles = files.clone();
 		new CurseFileFilter().olderThan(2581245).apply(smallerFiles);
 		assertThat(smallerFiles.parallelMap(
