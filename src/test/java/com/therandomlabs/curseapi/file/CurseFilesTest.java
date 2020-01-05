@@ -134,7 +134,10 @@ public class CurseFilesTest {
 	@Test
 	public void parallelMapProducesValidList() throws CurseException {
 		final CurseFiles<CurseFile> smallerFiles = files.clone();
-		new CurseFileFilter().olderThan(2581245).apply(smallerFiles);
+		new CurseFileFilter().
+				olderThan(new BasicCurseFile.Immutable(285612, 2581245)).
+				newerThan(files.last()).
+				apply(smallerFiles);
 		assertThat(smallerFiles.parallelMap(CurseFile::changelogPlainText, Collectors.toList())).
 				hasSameSizeAs(smallerFiles);
 	}
@@ -142,7 +145,10 @@ public class CurseFilesTest {
 	@Test
 	public void parallelMapProducesValidMap() throws CurseException {
 		final CurseFiles<CurseFile> smallerFiles = files.clone();
-		new CurseFileFilter().olderThan(2581245).apply(smallerFiles);
+		new CurseFileFilter().
+				olderThan(new BasicCurseFile.Immutable(285612, 2581245)).
+				newerThan(files.last()).
+				apply(smallerFiles);
 		assertThat(smallerFiles.parallelMap(
 				CurseFile::displayName,
 				CurseFile::changelogPlainText

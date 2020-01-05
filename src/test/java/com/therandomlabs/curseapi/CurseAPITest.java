@@ -52,20 +52,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class CurseAPITest {
 	@Mock(lenient = true)
-	private CurseGameVersionGroup mockVersionGroup;
+	private static CurseGameVersionGroup mockVersionGroup;
 
 	@Mock(lenient = true)
-	private CurseGameVersion mockVersion1;
+	private static CurseGameVersion mockVersion1;
 	@Mock(lenient = true)
-	private CurseGameVersion mockVersion2;
+	private static CurseGameVersion mockVersion2;
 	@Mock(lenient = true)
-	private CurseGameVersion mockVersion3;
+	private static CurseGameVersion mockVersion3;
 
 	@Mock(lenient = true)
-	private CurseGameVersion mock1122;
+	private static CurseGameVersion mock1122;
 
 	@Mock
-	private CurseAPIProvider mockProvider;
+	private static CurseAPIProvider mockProvider;
 
 	@Test
 	public void shouldThrowExceptionIfInvalidProjectID() {
