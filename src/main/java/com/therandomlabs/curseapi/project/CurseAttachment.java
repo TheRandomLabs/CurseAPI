@@ -44,7 +44,7 @@ public abstract class CurseAttachment {
 	 */
 	public static final CurseAttachment PLACEHOLDER_LOGO = new CurseAttachment() {
 		private final HttpUrl url = HttpUrl.get(
-				"https://www.curseforge.com/Content/2-0-7263-28660/Skins/Elerium/images/icons/" +
+				"https://www.curseforge.com/Content/2-0-7277-28660/Skins/Elerium/images/icons/" +
 						"avatar-flame.png"
 		);
 
