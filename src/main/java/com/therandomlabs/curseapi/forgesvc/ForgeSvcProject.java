@@ -24,10 +24,12 @@
 package com.therandomlabs.curseapi.forgesvc;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -37,6 +39,7 @@ import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
+import com.therandomlabs.curseapi.project.CurseAttachment;
 import com.therandomlabs.curseapi.project.CurseMember;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
@@ -94,25 +97,21 @@ final class ForgeSvcProject extends CurseProject {
 	}
 
 	@Override
-	public HttpUrl logoURL() {
-		for (ForgeSvcAttachment attachment : attachments) {
-			if (attachment.isLogo()) {
-				return attachment.url();
-			}
-		}
-
-		return CurseAPI.PLACEHOLDER_PROJECT_LOGO;
+	public Set<CurseAttachment> attachments() {
+		return attachments.stream().
+				filter(attachment -> !attachment.isLogo()).
+				collect(Collectors.toCollection(HashSet::new));
 	}
 
 	@Override
-	public HttpUrl logoThumbnailURL() {
+	public CurseAttachment logo() {
 		for (ForgeSvcAttachment attachment : attachments) {
 			if (attachment.isLogo()) {
-				return attachment.thumbnailURL();
+				return attachment;
 			}
 		}
 
-		return CurseAPI.PLACEHOLDER_PROJECT_LOGO_THUMBNAIL;
+		return CurseAttachment.PLACEHOLDER_LOGO;
 	}
 
 	@Override

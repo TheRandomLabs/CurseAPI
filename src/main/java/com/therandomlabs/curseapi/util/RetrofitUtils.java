@@ -144,9 +144,9 @@ public final class RetrofitUtils {
 	 * body as an {@link Element}.
 	 *
 	 * @param call a {@link Call}.
+	 * @return the response body as an {@link Element}, or an empty {@link Element} if it is empty.
 	 * This is different from when the {@link Call} fails to execute, in which case
 	 * {@code null} is returned as usual.
-	 * @return the response body as an {@link Element}, or an empty {@link Element} if it is empty.
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 * @see JsoupUtils#emptyElement()
 	 */
@@ -160,8 +160,7 @@ public final class RetrofitUtils {
 			return null;
 		}
 
-		final Element element = JsoupUtils.parseBody(string);
-		return element == null ? JsoupUtils.emptyElement() : element;
+		return JsoupUtils.parseBody(string);
 	}
 
 	/**

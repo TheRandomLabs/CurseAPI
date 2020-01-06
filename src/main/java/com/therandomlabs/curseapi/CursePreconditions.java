@@ -108,4 +108,20 @@ public final class CursePreconditions {
 			));
 		}
 	}
+
+	/**
+	 * Ensures that the specified project attachment ID is valid.
+	 *
+	 * @param id a game ID.
+	 * @param name a name to be used in the error message should the check fail.
+	 * @throws IllegalArgumentException if the specified project attachment ID is invalid.
+	 * @see CurseAPI#MIN_ATTACHMENT_ID
+	 */
+	public static void checkAttachmentID(int id, String name) {
+		if (id < CurseAPI.MIN_ATTACHMENT_ID) {
+			throw new IllegalArgumentException(String.format(
+					"%s should not be smaller than %s", name, CurseAPI.MIN_ATTACHMENT_ID
+			));
+		}
+	}
 }

@@ -23,21 +23,21 @@
 
 package com.therandomlabs.curseapi.project;
 
-import java.awt.image.BufferedImage;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.CursePreconditions;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.game.CurseCategory;
 import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.util.JsoupUtils;
-import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
 /**
@@ -121,38 +121,47 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract Set<CurseMember> authors();
 
 	/**
-	 * Returns the URL to this project's logo image.
+	 * Returns this project's attachment image with the specified ID.
+	 * Note that unlike {@link #attachments()}, this method may also return this project's logo.
 	 *
-	 * @return the URL to this project's logo image.
+	 * @param id an attachment ID.
+	 * @return this project's attachment image with the specified ID as a {@link CurseAttachment}
+	 * if it exists, or otherwise {@code null}.
 	 */
-	public abstract HttpUrl logoURL();
+	@Nullable
+	public CurseAttachment attachment(int id) {
+		CursePreconditions.checkAttachmentID(id, "id");
 
-	/**
-	 * Reads a {@link BufferedImage} from the URL returned by {@link #logoURL()}.
-	 *
-	 * @return this project's logo as a {@link BufferedImage}.
-	 * @throws CurseException if an error occurs.
-	 */
-	public BufferedImage logo() throws CurseException {
-		return OkHttpUtils.readImage(logoURL());
+		final CurseAttachment logo = logo();
+
+		if (id == logo.id()) {
+			return logo;
+		}
+
+		for (CurseAttachment attachment : attachments()) {
+			if (attachment.id() == id) {
+				return attachment;
+			}
+		}
+
+		return null;
 	}
 
 	/**
-	 * Returns the URL to this project's logo thumbnail.
+	 * Returns this project's attachment images excluding the logo image.
 	 *
-	 * @return the URL to this project's logo thumbnail.
+	 * @return a mutable {@link Set} containing this project's attachment images excluding
+	 * the logo image.
 	 */
-	public abstract HttpUrl logoThumbnailURL();
+	public abstract Set<CurseAttachment> attachments();
 
 	/**
-	 * Reads a {@link BufferedImage} from the URL returned by {@link #logoThumbnailURL()}.
+	 * Returns this project's logo image as a {@link CurseAttachment}.
 	 *
-	 * @return this project's logo thumbnail as a {@link BufferedImage}.
-	 * @throws CurseException if an error occurs.
+	 * @return this project's logo image as a {@link CurseAttachment},
+	 * or {@link CurseAttachment#PLACEHOLDER_LOGO} if it does not exist.
 	 */
-	public BufferedImage logoThumbnail() throws CurseException {
-		return OkHttpUtils.readImage(logoThumbnailURL());
-	}
+	public abstract CurseAttachment logo();
 
 	/**
 	 * Returns this project's URL.

@@ -82,6 +82,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Override
 	public Element projectDescription(int id) throws CurseException {
 		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id));
+		//If the description is empty, we assume that the project does not exist.
 		return JsoupUtils.isEmpty(element) ? null : element;
 	}
 

@@ -64,16 +64,16 @@ public final class JsoupUtils {
 	 *
 	 * @param html an HTML fragment.
 	 * @return the body of the specified HTML fragment as a single {@link Element},
-	 * or {@code null} if the body is empty.
+	 * or an empty {@link Element} if the body is empty.
+	 * @see #emptyElement()
 	 */
-	@Nullable
 	@SuppressWarnings("GrazieInspection")
 	public static Element parseBody(String html) {
 		final Element body = Jsoup.parseBodyFragment(html).body();
 		final Elements children = body.children();
 
 		if (children.isEmpty()) {
-			return null;
+			return emptyElement();
 		}
 
 		if (children.size() == 1) {

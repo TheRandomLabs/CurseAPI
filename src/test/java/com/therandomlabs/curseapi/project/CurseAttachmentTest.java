@@ -21,53 +21,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.therandomlabs.curseapi.forgesvc;
+package com.therandomlabs.curseapi.project;
 
-import com.therandomlabs.curseapi.project.CurseAttachment;
-import com.therandomlabs.curseapi.util.JsoupUtils;
-import okhttp3.HttpUrl;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.checkerframework.framework.qual.TypeUseLocation;
-import org.jsoup.nodes.Element;
+import static org.assertj.core.api.Assertions.assertThat;
 
-//NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
-@SuppressWarnings("NullAway")
-@DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
-final class ForgeSvcAttachment extends CurseAttachment {
-	private int id;
-	private String title;
-	private String description;
-	private HttpUrl url;
-	private HttpUrl thumbnailUrl;
-	private boolean isDefault;
+import com.therandomlabs.curseapi.CurseAPI;
+import com.therandomlabs.curseapi.CurseException;
+import org.junit.jupiter.api.Test;
 
-	@Override
-	public int id() {
-		return id;
-	}
-
-	@Override
-	public String title() {
-		return title;
-	}
-
-	@Override
-	public Element description() {
-		return JsoupUtils.parseBody(description);
-	}
-
-	@Override
-	public HttpUrl url() {
-		return url;
-	}
-
-	@Override
-	public HttpUrl thumbnailURL() {
-		return thumbnailUrl;
-	}
-
-	boolean isLogo() {
-		return isDefault;
+public class CurseAttachmentTest {
+	@Test
+	public void placeholderLogoShouldBeValid() throws CurseException {
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.id()).
+				isGreaterThanOrEqualTo(CurseAPI.MIN_ATTACHMENT_ID);
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.title()).isNotEmpty();
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.descriptionPlainText()).isNotEmpty();
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.url()).isNotNull();
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.get()).isNotNull();
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.thumbnailURL()).isNotNull();
+		assertThat(CurseAttachment.PLACEHOLDER_LOGO.thumbnail()).isNotNull();
 	}
 }

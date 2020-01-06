@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
 
+import com.google.common.collect.Iterables;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
@@ -79,27 +80,26 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void logoURLShouldNotBeNullOrPlaceholder() {
-		assertThat(project.logoURL()).
+	public void attachmentsShouldBeValid() throws CurseException {
+		assertThat(project.attachments()).isNotEmpty();
+
+		final CurseAttachment attachment = Iterables.getFirst(project.attachments(), null);
+
+		assertThat(attachment.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_ATTACHMENT_ID);
+		assertThat(project.attachment(attachment.id())).isEqualTo(attachment);
+		assertThat(attachment.title()).isNotEmpty();
+		assertThat(attachment.descriptionPlainText()).isNotNull();
+		assertThat(attachment.url()).isNotNull();
+		assertThat(attachment.get()).isNotNull();
+		assertThat(attachment.thumbnailURL()).isNotNull();
+		assertThat(attachment.thumbnail()).isNotNull();
+	}
+
+	@Test
+	public void logoShouldNotBeNullOrPlaceholder() {
+		assertThat(project.logo()).
 				isNotNull().
-				isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_LOGO);
-	}
-
-	@Test
-	public void logoShouldNotBeNull() throws CurseException {
-		assertThat(project.logo()).isNotNull();
-	}
-
-	@Test
-	public void logoThumbnailURLShouldNotBeNullOrPlaceholder() {
-		assertThat(project.logoThumbnailURL()).
-				isNotNull().
-				isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_LOGO_THUMBNAIL);
-	}
-
-	@Test
-	public void logoThumbnailShouldNotBeNull() throws CurseException {
-		assertThat(project.logoThumbnail()).isNotNull();
+				isNotEqualTo(CurseAttachment.PLACEHOLDER_LOGO);
 	}
 
 	@Test
