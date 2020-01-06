@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 
 public class CurseFilesComparisonTest {
+	@SuppressWarnings("cast")
 	@Test
 	public void comparisonShouldBeCorrect() throws CurseException {
 		final BasicCurseFile quarkUnchanged = new BasicCurseFile.Immutable(243121, 2759240);
@@ -106,6 +107,7 @@ public class CurseFilesComparisonTest {
 		assertThat(update.newCurseFile().id()).isEqualTo(enderCoreNew.id());
 		assertThat(update.newerCurseFile()).isEqualTo(update.newCurseFile());
 
+		//This cast is necessary; for some reason, type ambiguity occurs otherwise.
 		assertThat((String) update.get(file -> file.project().name())).
 				isEqualTo(update.project().name());
 

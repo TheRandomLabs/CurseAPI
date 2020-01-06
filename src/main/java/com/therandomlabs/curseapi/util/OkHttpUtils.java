@@ -30,6 +30,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -49,8 +50,16 @@ import org.slf4j.LoggerFactory;
  * Contains utility methods for working with OkHttp.
  */
 public final class OkHttpUtils {
+	private static final long DEFAULT_TIMEOUT_MILLIS = 2000L;
+	private static final Duration DEFAULT_TIMEOUT = Duration.ofMillis(DEFAULT_TIMEOUT_MILLIS);
+
 	private static final Logger logger = LoggerFactory.getLogger(OkHttpUtils.class);
-	private static final OkHttpClient client = new OkHttpClient();
+
+	private static OkHttpClient client = new OkHttpClient.Builder().
+			connectTimeout(DEFAULT_TIMEOUT).
+			readTimeout(DEFAULT_TIMEOUT).
+			writeTimeout(DEFAULT_TIMEOUT).
+			build();
 
 	private OkHttpUtils() {}
 
@@ -181,5 +190,24 @@ public final class OkHttpUtils {
 					"UTF-8 encoding is not supported; this should never happen", ex
 			);
 		}
+	}
+
+	/**
+	 * Returns the {@link OkHttpClient} used by CurseAPI.
+	 *
+	 * @return the {@link OkHttpClient} used by CurseAPI.
+	 */
+	public static OkHttpClient getClient() {
+		return client;
+	}
+
+	/**
+	 * Sets the {@link OkHttpClient} used by CurseAPI.
+	 *
+	 * @param client an {@link OkHttpClient}.
+	 */
+	public static void setClient(OkHttpClient client) {
+		Preconditions.checkNotNull(client, "client should not be null");
+		OkHttpUtils.client = client;
 	}
 }

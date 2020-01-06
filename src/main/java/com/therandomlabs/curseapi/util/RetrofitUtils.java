@@ -24,8 +24,16 @@
 package com.therandomlabs.curseapi.util;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.function.Function;
 
+import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retrofit.CircuitBreakerCallAdapter;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.vavr.control.Try;
 import okhttp3.ResponseBody;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
@@ -42,6 +50,19 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 public final class RetrofitUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RetrofitUtils.class);
 
+	private static final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("curseapi");
+	private static Function<String, Retrofit> retrofitSupplier = baseURL -> new Retrofit.Builder().
+			addCallAdapterFactory(CircuitBreakerCallAdapter.of(
+					circuitBreaker,
+					response -> response.isSuccessful() || response.code() == 404
+			)).
+			baseUrl(baseURL).
+			client(OkHttpUtils.getClient()).
+			addConverterFactory(MoshiConverterFactory.create(MoshiUtils.moshi)).
+			build();
+
+	private static Retry retry = Retry.ofDefaults("curseapi");
+
 	private RetrofitUtils() {}
 
 	/**
@@ -52,10 +73,8 @@ public final class RetrofitUtils {
 	 * @return a {@link Retrofit} instance.
 	 */
 	public static Retrofit get(String baseURL) {
-		return new Retrofit.Builder().
-				baseUrl(baseURL).
-				addConverterFactory(MoshiConverterFactory.create(MoshiUtils.moshi)).
-				build();
+		Preconditions.checkNotNull(baseURL, "baseURL should not be null");
+		return retrofitSupplier.apply(baseURL);
 	}
 
 	/**
@@ -70,10 +89,14 @@ public final class RetrofitUtils {
 	@SuppressWarnings("GrazieInspection")
 	@Nullable
 	public static <T> T execute(Call<T> call) throws CurseException {
+		Preconditions.checkNotNull(call, "call should not be null");
+
 		logger.debug("Executing request: {}", call.request());
 
 		try {
-			final Response<T> response = call.execute();
+			final Response<T> response = Try.of(Retry.decorateCheckedSupplier(
+					retry, () -> call.clone().execute()
+			)).get();
 
 			if (response.isSuccessful()) {
 				return response.body();
@@ -106,6 +129,8 @@ public final class RetrofitUtils {
 	 */
 	@Nullable
 	public static String getString(Call<ResponseBody> call) throws CurseException {
+		Preconditions.checkNotNull(call, "call should not be null");
+
 		try {
 			final ResponseBody responseBody = execute(call);
 			return responseBody == null ? null : responseBody.string();
@@ -127,6 +152,8 @@ public final class RetrofitUtils {
 	 */
 	@Nullable
 	public static Element getElement(Call<ResponseBody> call) throws CurseException {
+		Preconditions.checkNotNull(call, "call should not be null");
+
 		final String string = getString(call);
 
 		if (string == null) {
@@ -135,5 +162,34 @@ public final class RetrofitUtils {
 
 		final Element element = JsoupUtils.parseBody(string);
 		return element == null ? JsoupUtils.emptyElement() : element;
+	}
+
+	/**
+	 * Sets CurseAPI's {@link Retrofit} supplier.
+	 *
+	 * @param supplier a {@link Function} that returns a {@link Retrofit} instance for
+	 * a given base URL.
+	 */
+	public static void setRetrofitSupplier(Function<String, Retrofit> supplier) {
+		Preconditions.checkNotNull(supplier, "supplier should not be null");
+		retrofitSupplier = supplier;
+	}
+
+	/**
+	 * Sets CurseAPI's retry configuration.
+	 *
+	 * @param waitDuration the wait duration between retries.
+	 * @param maxAttempts the maximum number of retries.
+	 */
+	public static void setRetryConfig(Duration waitDuration, int maxAttempts) {
+		Preconditions.checkArgument(waitDuration.toMillis() > 0, "waitDuration should be positive");
+		Preconditions.checkArgument(maxAttempts > 0, "maxAttempts should be positive");
+		retry = Retry.of(
+				"curseapi",
+				RetryConfig.custom().
+						waitDuration(waitDuration).
+						maxAttempts(maxAttempts).
+						build()
+		);
 	}
 }
