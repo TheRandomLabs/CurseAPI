@@ -43,9 +43,12 @@ public abstract class CurseAttachment {
 	 * A placeholder {@link CurseAttachment} that represents the placeholder CurseForge logo.
 	 */
 	public static final CurseAttachment PLACEHOLDER_LOGO = new CurseAttachment() {
+		//We can't access the actual link because of CloudFlare:
+		//https://www.curseforge.com/Content/2-0-7277-28660/Skins/Elerium/images/icons/
+		//avatar-flame.png
 		private final HttpUrl url = HttpUrl.get(
-				"https://www.curseforge.com/Content/2-0-7277-28660/Skins/Elerium/images/icons/" +
-						"avatar-flame.png"
+				"https://raw.githubusercontent.com/TheRandomLabs/CurseAPI/master/" +
+						"placeholder-project-logo.png"
 		);
 
 		private final HttpUrl thumbnailURL =
