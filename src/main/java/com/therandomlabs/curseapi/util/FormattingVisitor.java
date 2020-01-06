@@ -31,6 +31,7 @@ import org.jsoup.nodes.TextNode;
 import org.jsoup.select.NodeVisitor;
 
 final class FormattingVisitor implements NodeVisitor {
+	//Matches all whitespace strings that don't end with a newline.
 	private static final Splitter whitespaceSplitter = Splitter.onPattern("\\s+");
 
 	private final int maxLineLength;
@@ -97,19 +98,12 @@ final class FormattingVisitor implements NodeVisitor {
 			currentLineLength = 0;
 		}
 
-		if (string.matches("\\s") &&
-				(text.length() == 0 || text.substring(text.length() - 1).matches("\\s"))) {
-			//Don't accumulate long runs of empty spaces.
-			return;
-		}
-
-		if (string.length() + currentLineLength <= maxLineLength) {
+		if (string.length() + currentLineLength > maxLineLength) {
+			wrapAndAppend(string);
+		} else {
 			text.append(string);
 			currentLineLength += string.length();
-			return;
 		}
-
-		wrapAndAppend(string);
 	}
 
 	private void wrapAndAppend(String string) {
