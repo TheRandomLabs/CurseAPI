@@ -161,19 +161,19 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	public abstract HttpUrl url() throws CurseException;
 
 	/**
-	 * Returns this category's avatar URL.
+	 * Returns this category's logo image URL.
 	 *
-	 * @return this category's avatar URL.
+	 * @return this category's logo image URL.
 	 */
-	public abstract HttpUrl avatarURL();
+	public abstract HttpUrl logoURL();
 
 	/**
-	 * Returns this category's avatar as a {@link BufferedImage}.
+	 * Returns this category's logo as a {@link BufferedImage}.
 	 *
-	 * @return this category's avatar as a {@link BufferedImage}.
+	 * @return this category's logo as a {@link BufferedImage}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public BufferedImage avatar() throws CurseException {
-		return OkHttpUtils.readImage(avatarURL());
+	public BufferedImage logo() throws CurseException {
+		return OkHttpUtils.readImage(logoURL());
 	}
 }

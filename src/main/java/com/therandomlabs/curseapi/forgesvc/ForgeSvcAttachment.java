@@ -59,7 +59,7 @@ final class ForgeSvcAttachment {
 		return thumbnailUrl;
 	}
 
-	public boolean isDefault() {
+	public boolean isLogo() {
 		return isDefault;
 	}
 }

@@ -94,25 +94,25 @@ final class ForgeSvcProject extends CurseProject {
 	}
 
 	@Override
-	public HttpUrl avatarURL() {
+	public HttpUrl logoURL() {
 		for (ForgeSvcAttachment attachment : attachments) {
-			if (attachment.isDefault()) {
+			if (attachment.isLogo()) {
 				return attachment.url();
 			}
 		}
 
-		return CurseAPI.PLACEHOLDER_PROJECT_AVATAR;
+		return CurseAPI.PLACEHOLDER_PROJECT_LOGO;
 	}
 
 	@Override
-	public HttpUrl avatarThumbnailURL() {
+	public HttpUrl logoThumbnailURL() {
 		for (ForgeSvcAttachment attachment : attachments) {
-			if (attachment.isDefault()) {
+			if (attachment.isLogo()) {
 				return attachment.thumbnailURL();
 			}
 		}
 
-		return CurseAPI.PLACEHOLDER_PROJECT_AVATAR_THUMBNAIL;
+		return CurseAPI.PLACEHOLDER_PROJECT_LOGO_THUMBNAIL;
 	}
 
 	@Override

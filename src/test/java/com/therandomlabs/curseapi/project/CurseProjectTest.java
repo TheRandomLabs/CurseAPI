@@ -79,27 +79,27 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void avatarURLShouldNotBeNullOrPlaceholder() {
-		assertThat(project.avatarURL()).
+	public void logoURLShouldNotBeNullOrPlaceholder() {
+		assertThat(project.logoURL()).
 				isNotNull().
-				isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_AVATAR);
+				isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_LOGO);
 	}
 
 	@Test
-	public void avatarShouldNotBeNull() throws CurseException {
-		assertThat(project.avatar()).isNotNull();
+	public void logoShouldNotBeNull() throws CurseException {
+		assertThat(project.logo()).isNotNull();
 	}
 
 	@Test
-	public void avatarThumbnailURLShouldNotBeNullOrPlaceholder() {
-		assertThat(project.avatarThumbnailURL()).
+	public void logoThumbnailURLShouldNotBeNullOrPlaceholder() {
+		assertThat(project.logoThumbnailURL()).
 				isNotNull().
-				isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_AVATAR_THUMBNAIL);
+				isNotEqualTo(CurseAPI.PLACEHOLDER_PROJECT_LOGO_THUMBNAIL);
 	}
 
 	@Test
-	public void avatarThumbnailShouldNotBeNull() throws CurseException {
-		assertThat(project.avatarThumbnail()).isNotNull();
+	public void logoThumbnailShouldNotBeNull() throws CurseException {
+		assertThat(project.logoThumbnail()).isNotNull();
 	}
 
 	@Test

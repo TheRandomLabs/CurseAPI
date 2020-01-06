@@ -121,37 +121,37 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 	public abstract Set<CurseMember> authors();
 
 	/**
-	 * Returns the URL to this project's avatar.
+	 * Returns the URL to this project's logo image.
 	 *
-	 * @return the URL to this project's avatar.
+	 * @return the URL to this project's logo image.
 	 */
-	public abstract HttpUrl avatarURL();
+	public abstract HttpUrl logoURL();
 
 	/**
-	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarURL()}.
+	 * Reads a {@link BufferedImage} from the URL returned by {@link #logoURL()}.
 	 *
-	 * @return this project's avatar as a {@link BufferedImage}.
+	 * @return this project's logo as a {@link BufferedImage}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public BufferedImage avatar() throws CurseException {
-		return OkHttpUtils.readImage(avatarURL());
+	public BufferedImage logo() throws CurseException {
+		return OkHttpUtils.readImage(logoURL());
 	}
 
 	/**
-	 * Returns the URL to this project's avatar thumbnail.
+	 * Returns the URL to this project's logo thumbnail.
 	 *
-	 * @return the URL to this project's avatar thumbnail.
+	 * @return the URL to this project's logo thumbnail.
 	 */
-	public abstract HttpUrl avatarThumbnailURL();
+	public abstract HttpUrl logoThumbnailURL();
 
 	/**
-	 * Reads a {@link BufferedImage} from the URL returned by {@link #avatarThumbnailURL()}.
+	 * Reads a {@link BufferedImage} from the URL returned by {@link #logoThumbnailURL()}.
 	 *
-	 * @return this project's avatar thumbnail as a {@link BufferedImage}.
+	 * @return this project's logo thumbnail as a {@link BufferedImage}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public BufferedImage avatarThumbnail() throws CurseException {
-		return OkHttpUtils.readImage(avatarThumbnailURL());
+	public BufferedImage logoThumbnail() throws CurseException {
+		return OkHttpUtils.readImage(logoThumbnailURL());
 	}
 
 	/**

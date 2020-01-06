@@ -143,7 +143,7 @@ final class ForgeSvcCategory extends CurseCategory {
 	}
 
 	@Override
-	public HttpUrl avatarURL() {
+	public HttpUrl logoURL() {
 		return avatarUrl;
 	}
 }
