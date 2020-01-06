@@ -85,6 +85,8 @@ public class CurseProjectTest {
 
 		final CurseAttachment attachment = Iterables.getFirst(project.attachments(), null);
 
+		assertThat(attachment).isNotEqualTo(null);
+		assertThat(attachment.toString()).isNotEmpty();
 		assertThat(attachment.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_ATTACHMENT_ID);
 		assertThat(project.attachment(attachment.id())).isEqualTo(attachment);
 		assertThat(attachment.title()).isNotEmpty();
