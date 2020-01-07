@@ -5,15 +5,27 @@ ext.jacocoMinimumInstructionCoverage = 0.0
 
 apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
 
+def retrofitVersion = "2.7.1"
+def resilience4jVersion = "1.2.0"
+
 dependencies {
 	api "com.squareup.moshi:moshi:1.9.2"
 
-	api "com.squareup.retrofit2:retrofit:2.7.1"
-	implementation "com.squareup.retrofit2:converter-moshi:2.7.1"
+	api "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+	implementation "com.squareup.retrofit2:converter-moshi:${retrofitVersion}"
 
 	api "org.jsoup:jsoup:1.12.1"
 
-	implementation "io.github.resilience4j:resilience4j-circuitbreaker:1.2.0"
-	implementation "io.github.resilience4j:resilience4j-retry:1.2.0"
-	implementation "io.github.resilience4j:resilience4j-retrofit:1.2.0"
+	implementation "io.github.resilience4j:resilience4j-circuitbreaker:${resilience4jVersion}"
+	implementation "io.github.resilience4j:resilience4j-retry:${resilience4jVersion}"
+	implementation "io.github.resilience4j:resilience4j-retrofit:${resilience4jVersion}"
+}
+
+javadoc.options {
+	docTitle = "CurseAPI ${project.version}"
+	links.addAll([
+		"https://square.github.io/moshi/1.x/moshi/",
+		"https://square.github.io/retrofit/2.x/retrofit/",
+		"https://jsoup.org/apidocs/"
+	])
 }
