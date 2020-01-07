@@ -23,10 +23,11 @@ dependencies {
 
 javadoc.options {
 	docTitle = "CurseAPI ${project.version}"
+	windowTitle = "CurseAPI ${project.version}"
 	links.addAll([
 		"https://square.github.io/moshi/1.x/moshi/",
-		"https://square.github.io/okio/1.x/okio/",
-		"https://square.github.io/okhttp/2.x/okhttp/",
+		"https://square.github.io/okio/2.x/okio/",
+		"https://square.github.io/okhttp/3.x/okhttp/",
 		"https://square.github.io/retrofit/2.x/retrofit/",
 		"https://jsoup.org/apidocs/"
 	])
