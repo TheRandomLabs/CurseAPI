@@ -146,6 +146,11 @@ public class CurseFileTest {
 	}
 
 	@Test
+	public void alternateFileShouldBeNull() {
+		assertThat(file.alternateFile()).isNull();
+	}
+
+	@Test
 	public void alternateFileShouldNotBeNull() {
 		assertThat(comparisonFile2.alternateFile()).isNotNull();
 	}
@@ -195,7 +200,7 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void dependenciesShouldBeValid() {
+	public void dependenciesShouldBeValid() throws CurseException {
 		assertThat(dependentFile.dependencies()).isNotEmpty();
 
 		//We also test CurseDependency here.
@@ -206,6 +211,11 @@ public class CurseFileTest {
 			final CurseDependency mockDependency = mock(CurseDependency.class);
 			when(mockDependency.projectID()).thenReturn(dependency.projectID());
 			assertThat(dependency).isEqualTo(mockDependency);
+
+			final CurseProject project = dependency.project();
+			assertThat(project).isNotNull();
+			dependency.clearProjectCache();
+			assertThat(dependency.project()).isEqualTo(project);
 
 			assertThat(dependency.toString()).isNotEmpty();
 			assertThat(dependency.dependent()).isEqualTo(dependentFile);

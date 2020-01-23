@@ -121,6 +121,8 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	 *
 	 * @return a {@link CurseCategorySection} instance that represents this category's section
 	 * wrapped in an {@link Optional} if it exists, or otherwise an empty {@link Optional}.
+	 * In some cases, this will return an empty {@link Optional} even if {@link #sectionID()}
+	 * returns a non-zero value.
 	 * @throws CurseException if an error occurs.
 	 */
 	public Optional<CurseCategorySection> section() throws CurseException {

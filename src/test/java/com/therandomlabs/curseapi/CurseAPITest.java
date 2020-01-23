@@ -148,6 +148,11 @@ public class CurseAPITest {
 	}
 
 	@Test
+	public void filesShouldBeEmpty() throws CurseException {
+		assertThat(CurseAPI.files(Integer.MAX_VALUE)).isNotPresent();
+	}
+
+	@Test
 	public void filesShouldNotBeEmpty() throws CurseException {
 		assertThat(CurseAPI.files(CurseAPI.MIN_PROJECT_ID)).get().
 				asInstanceOf(InstanceOfAssertFactories.ITERABLE).

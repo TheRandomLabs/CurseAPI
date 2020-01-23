@@ -30,6 +30,7 @@ import java.util.Optional;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
+import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +69,10 @@ public class CurseAlternateFileTest {
 
 	@Test
 	public void downloadURLShouldNotBeNull() throws CurseException {
-		assertThat(file.downloadURL()).isNotNull();
+		final HttpUrl downloadURL = file.downloadURL();
+		assertThat(downloadURL).isNotNull();
+		file.clearDownloadURLCache();
+		assertThat(file.downloadURL()).isEqualTo(downloadURL);
 	}
 
 	@Test
@@ -78,6 +82,15 @@ public class CurseAlternateFileTest {
 
 		file.clearChangelogCache();
 		assertThat(file.changelogPlainText(10)).isEqualTo(changelog);
+	}
+
+	@Test
+	public void mainFileShouldBeValid() throws CurseException {
+		assertThat(file.mainFileID()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
+		final CurseFile mainFile = file.mainFile();
+		assertThat(mainFile).isNotNull();
+		file.clearMainFileCache();
+		assertThat(file.mainFile()).isEqualTo(mainFile);
 	}
 
 	@BeforeAll
