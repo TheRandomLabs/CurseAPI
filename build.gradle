@@ -28,9 +28,3 @@ javadoc.options.links.addAll([
 	"https://square.github.io/retrofit/2.x/retrofit/",
 	"https://jsoup.org/apidocs/"
 ])
-
-jar {
-	manifest {
-		attributes "Automatic-Module-Name": project.group
-	}
-}
