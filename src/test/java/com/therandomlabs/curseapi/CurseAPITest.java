@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.therandomlabs.curseapi.game.CurseCategory;
-import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
@@ -228,10 +227,6 @@ public class CurseAPITest {
 
 		assertThat(games).isNotEmpty();
 		assertThat(CurseAPI.streamGames()).isNotEmpty();
-
-		final CurseGame game = new ArrayList<>(games).get(0);
-		assertThat(game.toString()).isNotEmpty();
-		assertThat(game.url()).isNotNull();
 	}
 
 	@Test
@@ -242,8 +237,24 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void gameShouldBePresentIfExistent() throws CurseException {
-		assertThat(CurseAPI.game(CurseAPI.MIN_GAME_ID)).isPresent();
+	public void gameShouldBeValidIfExistent() throws CurseException {
+		final Optional<CurseGame> optionalGame = CurseAPI.game(432);
+		assertThat(optionalGame).isPresent();
+		final CurseGame game = optionalGame.get();
+
+		//We also test CurseGame here.
+		assertThat(game.toString()).isNotEmpty();
+		assertThat(game.url()).isNotNull();
+
+		final Set<CurseCategory> categories = game.categories();
+		assertThat(categories).isNotEmpty();
+		game.clearCategoriesCache();
+		assertThat(game.categories()).isEqualTo(categories);
+
+		final Set<CurseGameVersion> versions = game.versions();
+		assertThat(versions).isEmpty();
+		game.clearVersionsCache();
+		assertThat(game.versions()).isEmpty();
 	}
 
 	@Test
@@ -288,19 +299,8 @@ public class CurseAPITest {
 		assertThat(game).isNotNull();
 		category.clearGameCache();
 		assertThat(category.game()).isEqualTo(game);
-
-		assertThat(category.sectionID()).
-				isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
-
-		final Optional<CurseCategorySection> optionalCategorySection = category.section();
-		assertThat(optionalCategorySection).isPresent();
-		final CurseCategorySection categorySection = optionalCategorySection.get();
-
-		//We also test CurseCategorySection here.
-		assertThat(categorySection).isNotEqualTo(null);
-		assertThat(categorySection).isEqualTo(categorySection);
-		assertThat(categorySection.toString()).isNotEmpty();
-
+		assertThat(category.sectionID()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
+		assertThat(category.section()).isPresent();
 		assertThat(category.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_ID);
 		assertThat(category.name()).isNotEmpty();
 		assertThat(category.slug()).isNotEmpty();

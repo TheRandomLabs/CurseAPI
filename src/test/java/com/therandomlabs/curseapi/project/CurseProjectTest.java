@@ -33,6 +33,8 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
+import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -186,8 +188,11 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void primaryCategoryShouldNotBeNull() {
+	public void primaryCategoryShouldBeValid() {
 		assertThat(project.primaryCategory()).isNotNull();
+		assertThat(project.primaryCategory().sectionID()).
+				isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
+		assertThat(project.primaryCategory().slug()).isNotNull();
 	}
 
 	@Test
@@ -196,8 +201,23 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void categorySectionShouldNotBeNull() {
-		assertThat(project.categorySection()).isNotNull();
+	public void categorySectionShouldBeValid() throws CurseException {
+		final CurseCategorySection categorySection = project.categorySection();
+		assertThat(categorySection).isNotNull();
+
+		//We also test CurseCategorySection here.
+		final Optional<CurseCategory> optionalCategory =
+				CurseAPI.category(CurseAPI.MIN_CATEGORY_ID);
+		assertThat(optionalCategory).isPresent();
+		final CurseCategory category = optionalCategory.get();
+
+		final Optional<CurseCategorySection> optionalCategorySection2 = category.section();
+		assertThat(optionalCategorySection2).isPresent();
+
+		assertThat(categorySection).isNotEqualTo(null);
+		assertThat(categorySection).isNotEqualTo(optionalCategorySection2.get());
+		assertThat(categorySection).isEqualTo(categorySection);
+		assertThat(categorySection.toString()).isNotEmpty();
 	}
 
 	@Test

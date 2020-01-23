@@ -23,7 +23,6 @@
 
 package com.therandomlabs.curseapi.forgesvc;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -68,7 +67,7 @@ final class ForgeSvcGame extends CurseGame {
 
 	@Override
 	public Set<CurseCategorySection> categorySections() {
-		return new HashSet<>(categorySections);
+		return new TreeSet<>(categorySections);
 	}
 
 	@Override
