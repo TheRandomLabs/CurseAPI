@@ -206,8 +206,7 @@ public class CurseProjectTest {
 		assertThat(categorySection).isNotNull();
 
 		//We also test CurseCategorySection here.
-		final Optional<CurseCategory> optionalCategory =
-				CurseAPI.category(CurseAPI.MIN_CATEGORY_ID);
+		final Optional<CurseCategory> optionalCategory = CurseAPI.category(423);
 		assertThat(optionalCategory).isPresent();
 		final CurseCategory category = optionalCategory.get();
 

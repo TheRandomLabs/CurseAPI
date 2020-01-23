@@ -126,7 +126,13 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	 * @throws CurseException if an error occurs.
 	 */
 	public Optional<CurseCategorySection> section() throws CurseException {
-		return game().categorySection(sectionID());
+		final int sectionID = sectionID();
+
+		if (sectionID == 0) {
+			return Optional.empty();
+		}
+
+		return game().categorySection(sectionID);
 	}
 
 	/**
