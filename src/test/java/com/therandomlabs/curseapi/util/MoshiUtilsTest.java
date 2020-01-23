@@ -1,3 +1,26 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2019-2020 TheRandomLabs
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.therandomlabs.curseapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,10 +46,23 @@ public class MoshiUtilsTest {
 	);
 
 	@Test
-	public void exceptionShouldBeThrownIfJsonIsInvalid() throws CurseException {
+	public void exceptionShouldBeThrownIfJsonIsInvalid() {
 		assertThatThrownBy(() -> MoshiUtils.fromJSON("", BasicCurseFile.Immutable.class)).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining("Failed to read JSON");
+	}
+
+	@Test
+	public void exceptionShouldBeThrownIfPathDoesNotExist(@TempDir Path tempDirectory) {
+		final Path nonexistent = tempDirectory.resolve("nonexistent").resolve("nonexistent.json");
+
+		assertThatThrownBy(() -> MoshiUtils.fromJSON(nonexistent, BasicCurseFile.Immutable.class)).
+				isInstanceOf(CurseException.class).
+				hasMessageContaining("Failed to read JSON");
+
+		assertThatThrownBy(() -> MoshiUtils.toJSON(
+				new BasicCurseFile.Immutable(PROJECT_ID, FILE_ID), nonexistent
+		)).isInstanceOf(CurseException.class).hasMessageContaining("Failed to write JSON");
 	}
 
 	@Test

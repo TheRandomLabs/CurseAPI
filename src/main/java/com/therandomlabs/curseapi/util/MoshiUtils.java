@@ -26,6 +26,7 @@ package com.therandomlabs.curseapi.util;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.google.common.base.Preconditions;
 import com.squareup.moshi.Moshi;
 import com.therandomlabs.curseapi.CurseException;
 import okio.BufferedSink;
@@ -58,6 +59,9 @@ public final class MoshiUtils {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static <T> T fromJSON(String json, Class<T> type) throws CurseException {
+		Preconditions.checkNotNull(json, "json should not be null");
+		Preconditions.checkNotNull(type, "type should not be null");
+
 		try {
 			return moshi.adapter(type).fromJson(json);
 		} catch (IOException ex) {
@@ -75,6 +79,9 @@ public final class MoshiUtils {
 	 * @throws CurseException if an error occurs.
 	 */
 	public static <T> T fromJSON(Path json, Class<T> type) throws CurseException {
+		Preconditions.checkNotNull(json, "json should not be null");
+		Preconditions.checkNotNull(type, "type should not be null");
+
 		try (BufferedSource source = Okio.buffer(Okio.source(json))) {
 			return fromJSON(source.readUtf8(), type);
 		} catch (IOException ex) {
@@ -90,7 +97,8 @@ public final class MoshiUtils {
 	 * @return a JSON string.
 	 */
 	public static <T> String toJSON(T value) {
-		//CurseForge prefers double space indents
+		Preconditions.checkNotNull(value, "value should not be null");
+		//CurseForge prefers double space indents.
 		return moshi.<T>adapter(value.getClass()).indent("  ").toJson(value);
 	}
 
@@ -103,6 +111,9 @@ public final class MoshiUtils {
 	 * @throws CurseException if an I/O error occurs.
 	 */
 	public static <T> void toJSON(T value, Path path) throws CurseException {
+		Preconditions.checkNotNull(value, "value should not be null");
+		Preconditions.checkNotNull(path, "path should not be null");
+
 		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
 			sink.writeUtf8(toJSON(value)).writeUtf8("\n");
 		} catch (IOException ex) {

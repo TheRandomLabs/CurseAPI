@@ -47,13 +47,4 @@ public class CurseException extends Exception {
 	public CurseException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
-	/**
-	 * Constructs a {@link CurseException} with the specified cause.
-	 *
-	 * @param cause a cause.
-	 */
-	public CurseException(Throwable cause) {
-		super(cause);
-	}
 }

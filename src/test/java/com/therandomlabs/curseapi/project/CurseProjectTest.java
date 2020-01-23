@@ -80,6 +80,13 @@ public class CurseProjectTest {
 	}
 
 	@Test
+	public void exceptionShouldBeThrownIfAttachmentIDIsInvalid() {
+		assertThatThrownBy(() -> project.attachment(CurseAPI.MIN_ATTACHMENT_ID - 1)).
+				isInstanceOf(IllegalArgumentException.class).
+				hasMessageContaining("should not be smaller than");
+	}
+
+	@Test
 	public void attachmentsShouldBeValid() throws CurseException {
 		assertThat(project.attachments()).isNotEmpty();
 

@@ -115,7 +115,7 @@ public final class RetrofitUtils {
 				));
 			}
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to execute request: " + call.request(), ex);
 		}
 	}
 
@@ -135,7 +135,7 @@ public final class RetrofitUtils {
 			final ResponseBody responseBody = execute(call);
 			return responseBody == null ? null : responseBody.string();
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to get string: " + call.request(), ex);
 		}
 	}
 

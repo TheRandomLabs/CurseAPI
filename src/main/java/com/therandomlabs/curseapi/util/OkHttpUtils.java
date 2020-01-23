@@ -83,7 +83,7 @@ public final class OkHttpUtils {
 
 			return responseBody.string();
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to read from URL: " + url, ex);
 		}
 	}
 
@@ -107,7 +107,7 @@ public final class OkHttpUtils {
 
 			return ImageIO.read(responseBody.byteStream());
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to read image from URL: " + url, ex);
 		}
 	}
 
@@ -135,7 +135,7 @@ public final class OkHttpUtils {
 
 			sink.writeAll(responseBody.source());
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to download " + url + " to: " + path, ex);
 		}
 	}
 
@@ -162,12 +162,13 @@ public final class OkHttpUtils {
 
 		try {
 			Files.createDirectories(directory);
-			final Path path = directory.resolve(fileName);
-			download(url, path);
-			return path;
 		} catch (IOException ex) {
-			throw new CurseException(ex);
+			throw new CurseException("Failed to create directory: " + directory, ex);
 		}
+
+		final Path path = directory.resolve(fileName);
+		download(url, path);
+		return path;
 	}
 
 	/**
