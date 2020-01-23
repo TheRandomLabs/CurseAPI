@@ -104,7 +104,7 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	}
 
 	@Override
-	public CurseCategory category() throws CurseException {
+	public CurseCategory asCategory() throws CurseException {
 		if (category == null) {
 			category = CurseAPI.category(gameCategoryId).orElse(null);
 
@@ -119,7 +119,7 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	}
 
 	@Override
-	public void clearCategoryCache() {
+	public void clearAsCategoryCache() {
 		category = null;
 	}
 }

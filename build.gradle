@@ -1,7 +1,14 @@
 group = "com.therandomlabs.curseapi"
 version = "1.0.0"
 
-ext.jacocoMinimumInstructionCoverage = 0.0
+ext.jacocoMinimumInstructionCoverage = 0.9
+ext.jacocoExcludes = [
+	"com.therandomlabs.curseapi.CurseAPIProvider",
+	"com.therandomlabs.curseapi.forgesvc.*",
+	"com.therandomlabs.curseapi.game.CurseGameVersion",
+	"com.therandomlabs.curseapi.game.CurseGameVersionGroup",
+	"com.therandomlabs.curseapi.util.*"
+]
 
 apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
 
@@ -19,6 +26,24 @@ dependencies {
 	implementation "io.github.resilience4j:resilience4j-circuitbreaker:${resilience4jVersion}"
 	implementation "io.github.resilience4j:resilience4j-retry:${resilience4jVersion}"
 	implementation "io.github.resilience4j:resilience4j-retrofit:${resilience4jVersion}"
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = "CLASS"
+
+			limit {
+				counter = "INSTRUCTION"
+				value = "COVEREDRATIO"
+				minimum = 0.67
+			}
+
+			includes = [
+				"com.therandomlabs.curseapi.forgesvc.*"
+			]
+		}
+	}
 }
 
 javadoc.options.links.addAll([

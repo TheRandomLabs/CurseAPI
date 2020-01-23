@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.common.collect.Iterables;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -217,6 +218,21 @@ public class CurseProjectTest {
 		assertThat(categorySection).isNotEqualTo(optionalCategorySection2.get());
 		assertThat(categorySection).isEqualTo(categorySection);
 		assertThat(categorySection.toString()).isNotEmpty();
+
+		final CurseGame game = categorySection.game();
+		assertThat(game).isNotNull();
+		categorySection.clearGameCache();
+		assertThat(categorySection.game()).isEqualTo(game);
+
+		final Set<CurseCategory> categories = categorySection.categories();
+		assertThat(categories).isNotNull();
+		categorySection.clearCategoriesCache();
+		assertThat(categorySection.categories()).isEqualTo(categories);
+
+		final CurseCategory asCategory = categorySection.asCategory();
+		assertThat(asCategory).isNotNull();
+		categorySection.clearAsCategoryCache();
+		assertThat(categorySection.asCategory()).isEqualTo(asCategory);
 	}
 
 	@Test
