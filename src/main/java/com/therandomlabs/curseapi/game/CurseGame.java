@@ -126,7 +126,7 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	 *
 	 * @param id a category section ID.
 	 * @return this {@link CurseGame}'s category section with the specified ID wrapped in an
-	 * {@link Optional} if it exists, or otherwise an empty {@link Optional}}.
+	 * {@link Optional} if it exists, or otherwise an empty {@link Optional}.
 	 */
 	public Optional<CurseCategorySection> categorySection(int id) {
 		CursePreconditions.checkCategorySectionID(id, "id");

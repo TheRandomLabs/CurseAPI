@@ -67,6 +67,7 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	public String toString() {
 		return MoreObjects.toStringHelper(this).
 				add("gameID", gameID()).
+				add("sectionID", sectionID()).
 				add("id", id()).
 				add("name", name()).
 				add("slug", slug()).
@@ -118,17 +119,12 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	 * to retrieve the category section, so this value may be refreshed by calling
 	 * {@link #clearGameCache()}
 	 *
-	 * @return a {@link CurseCategorySection} instance that represents this category's section.
+	 * @return a {@link CurseCategorySection} instance that represents this category's section
+	 * wrapped in an {@link Optional} if it exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public CurseCategorySection section() throws CurseException {
-		final Optional<CurseCategorySection> optionalSection = game().categorySection(sectionID());
-
-		if (optionalSection.isPresent()) {
-			return optionalSection.get();
-		}
-
-		throw new CurseException("Could not retrieve section for category: " + this);
+	public Optional<CurseCategorySection> section() throws CurseException {
+		return game().categorySection(sectionID());
 	}
 
 	/**

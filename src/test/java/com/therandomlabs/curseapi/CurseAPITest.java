@@ -28,9 +28,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -251,15 +253,39 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void categoriesShouldNotBeEmpty() throws CurseException {
+	public void categoriesShouldBeValid() throws CurseException {
 		assertThat(CurseAPI.categories()).get().
 				asInstanceOf(InstanceOfAssertFactories.ITERABLE).
 				isNotEmpty();
-		assertThat(CurseAPI.categories(CurseAPI.MIN_CATEGORY_SECTION_ID)).get().
-				asInstanceOf(InstanceOfAssertFactories.ITERABLE).
-				isNotEmpty();
+
+		final Optional<Set<CurseCategory>> optionalCategories =
+				CurseAPI.categories(CurseAPI.MIN_CATEGORY_SECTION_ID);
+		assertThat(optionalCategories).isPresent();
+		final Set<CurseCategory> categories = optionalCategories.get();
+		assertThat(categories).isNotEmpty();
+
 		assertThat(CurseAPI.streamCategories()).isNotEmpty();
 		assertThat(CurseAPI.streamCategories(CurseAPI.MIN_CATEGORY_SECTION_ID)).isNotEmpty();
+
+		final CurseCategory category = new ArrayList<>(categories).get(0);
+
+		assertThat(category.toString()).isNotEmpty();
+		assertThat(category.gameID()).isGreaterThanOrEqualTo(CurseAPI.MIN_GAME_ID);
+
+		final CurseGame game = category.game();
+		assertThat(game).isNotNull();
+		category.clearGameCache();
+		assertThat(category.game()).isEqualTo(game);
+
+		assertThat(category.sectionID()).
+				isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
+		assertThat(category.section()).isPresent();
+		assertThat(category.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_ID);
+		assertThat(category.name()).isNotEmpty();
+		assertThat(category.slug()).isNotEmpty();
+		assertThat(category.url()).isNotNull();
+		assertThat(category.logoURL()).isNotNull();
+		assertThat(category.logo()).isNotNull();
 	}
 
 	@Test
