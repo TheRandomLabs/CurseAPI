@@ -298,7 +298,7 @@ public class CurseAPITest {
 
 		//We also test CurseCategorySection here.
 		assertThat(categorySection).isNotEqualTo(null);
-		assertThat(categorySection).isEqualTo(optionalCategorySection);
+		assertThat(categorySection).isEqualTo(categorySection);
 		assertThat(categorySection.toString()).isNotEmpty();
 
 		assertThat(category.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_ID);
