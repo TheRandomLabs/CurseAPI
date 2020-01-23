@@ -86,27 +86,25 @@ public final class MoshiUtils {
 	 * Converts the specified value to a JSON string.
 	 *
 	 * @param value a value.
-	 * @param type the {@link Class} of the type.
 	 * @param <T> the type.
 	 * @return a JSON string.
 	 */
-	public static <T> String toJSON(T value, Class<T> type) {
+	public static <T> String toJSON(T value) {
 		//CurseForge prefers double space indents
-		return moshi.adapter(type).indent("  ").toJson(value);
+		return moshi.<T>adapter(value.getClass()).indent("  ").toJson(value);
 	}
 
 	/**
 	 * Converts the specified value to a JSON string and writes it to the specified {@link Path}.
 	 *
 	 * @param value a value.
-	 * @param type the {@link Class} of the type.
 	 * @param path a {@link Path}.
 	 * @param <T> the type.
 	 * @throws CurseException if an I/O error occurs.
 	 */
-	public static <T> void toJSON(T value, Class<T> type, Path path) throws CurseException {
+	public static <T> void toJSON(T value, Path path) throws CurseException {
 		try (BufferedSink sink = Okio.buffer(Okio.sink(path))) {
-			moshi.adapter(type).toJson(sink, value);
+			sink.writeUtf8(toJSON(value)).writeUtf8("\n");
 		} catch (IOException ex) {
 			throw new CurseException("Failed to write JSON: " + path, ex);
 		}
