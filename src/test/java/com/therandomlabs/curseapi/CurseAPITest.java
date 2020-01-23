@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.therandomlabs.curseapi.game.CurseCategory;
+import com.therandomlabs.curseapi.game.CurseCategorySection;
 import com.therandomlabs.curseapi.game.CurseGame;
 import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
@@ -220,11 +221,17 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void gamesShouldNotBeEmpty() throws CurseException {
-		assertThat(CurseAPI.games()).get().
-				asInstanceOf(InstanceOfAssertFactories.ITERABLE).
-				isNotEmpty();
+	public void gamesShouldBeValid() throws CurseException {
+		final Optional<Set<CurseGame>> optionalGames = CurseAPI.games();
+		assertThat(optionalGames).isPresent();
+		final Set<CurseGame> games = optionalGames.get();
+
+		assertThat(games).isNotEmpty();
 		assertThat(CurseAPI.streamGames()).isNotEmpty();
+
+		final CurseGame game = new ArrayList<>(games).get(0);
+		assertThat(game.toString()).isNotEmpty();
+		assertThat(game.url()).isNotNull();
 	}
 
 	@Test
@@ -284,7 +291,16 @@ public class CurseAPITest {
 
 		assertThat(category.sectionID()).
 				isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
-		assertThat(category.section()).isPresent();
+
+		final Optional<CurseCategorySection> optionalCategorySection = category.section();
+		assertThat(optionalCategorySection).isPresent();
+		final CurseCategorySection categorySection = optionalCategorySection.get();
+
+		//We also test CurseCategorySection here.
+		assertThat(optionalCategorySection).isNotEqualTo(null);
+		assertThat(optionalCategorySection).isEqualTo(optionalCategorySection);
+		assertThat(optionalCategorySection.toString()).isNotEmpty();
+
 		assertThat(category.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_ID);
 		assertThat(category.name()).isNotEmpty();
 		assertThat(category.slug()).isNotEmpty();
@@ -318,6 +334,15 @@ public class CurseAPITest {
 
 		when(mockVersion2.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion2.versionGroup()).thenReturn(mockVersionGroup);
+
+		//We test CurseGameVersionGroup$None here as well.
+		final CurseGameVersionGroup none = mockVersion1.versionGroup();
+		assertThat(none).isNotEqualTo(null);
+		assertThat(none).isNotEqualTo(mockVersionGroup);
+		assertThat(none.toString()).isEqualTo(none.versionString());
+		assertThat(none.gameID()).isEqualTo(CurseAPI.MIN_GAME_ID);
+		assertThat(none.versionString()).isEqualTo("*");
+		assertThat(none.versions()).isEmpty();
 
 		when(mockVersion3.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion3.versionGroup()).thenReturn(mockVersionGroup);

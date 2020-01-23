@@ -33,7 +33,7 @@ import com.therandomlabs.curseapi.CurseException;
  * <p>
  * Implementations of this class should be effectively immutable.
  */
-public abstract class CurseCategorySection implements Comparable<CurseCategorySection> {
+public abstract class CurseCategorySection {
 	/**
 	 * {@inheritDoc}
 	 * <p>
@@ -67,17 +67,6 @@ public abstract class CurseCategorySection implements Comparable<CurseCategorySe
 				add("id", id()).
 				add("name", name()).
 				toString();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * {@link String#compareTo(String)} is used on the values returned by
-	 * {@link #name()} to determine the value that this method returns.
-	 */
-	@Override
-	public final int compareTo(CurseCategorySection categorySection) {
-		return name().compareTo(categorySection.name());
 	}
 
 	/**
