@@ -51,6 +51,7 @@ public final class RetrofitUtils {
 	private static final Logger logger = LoggerFactory.getLogger(RetrofitUtils.class);
 
 	private static final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("curseapi");
+
 	private static Function<String, Retrofit> retrofitSupplier = baseURL -> new Retrofit.Builder().
 			addCallAdapterFactory(CircuitBreakerCallAdapter.of(
 					circuitBreaker,
