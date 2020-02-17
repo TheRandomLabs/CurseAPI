@@ -61,6 +61,7 @@ import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.util.CheckedFunction;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import okhttp3.HttpUrl;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
@@ -132,6 +133,7 @@ public final class CurseAPI {
 	 * {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
+	@SuppressFBWarnings("SECSSSRFUC")
 	public static Optional<CurseProject> projectByURL(String url) throws CurseException {
 		url = url.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)",
 				""); //Remove http(s)://(www.)
