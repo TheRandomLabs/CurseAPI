@@ -23,6 +23,11 @@
 
 package com.therandomlabs.curseapi;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -41,6 +46,8 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.forgesvc.ForgeSvcProvider;
@@ -114,6 +121,45 @@ public final class CurseAPI {
 	public static Optional<CurseProject> project(int id) throws CurseException {
 		CursePreconditions.checkProjectID(id, "id");
 		return get(provider -> provider.project(id));
+	}
+
+	/**
+	 * Returns a {@link CurseProject} instance for the specified project URL.
+	 *
+	 * @param url URL to project. Can look like "https://curseforge.com/minecraft/mc-mods/project" or just "/minecraft/mc-mods/project"
+	 * @return a {@link CurseProject} instance for the specified project URL wrapped in an
+	 * {@link Optional} if the project exists, or otherwise an empty {@link Optional}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<CurseProject> projectByURL(String url) throws CurseException {
+		url = url.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)",
+				""); //Remove http(s)://(www.)
+		url = url.replace(
+				"curseforge.com",
+				"https://api.cfwidget.com"
+		); //Replace Curseforge URL with cfwidget api
+		try {
+			final URL u = new URL(url);
+			final URLConnection conn = u.openConnection();
+			conn.connect();
+			final InputStreamReader r = new InputStreamReader(conn.getInputStream());
+			final JsonObject json = JsonParser.parseReader(r).getAsJsonObject();
+			r.close();
+			if (json.has("id")) { return project(json.get("id").getAsInt()); } else if (
+					json.has("title") &&
+							json.get("title").getAsString().equals("Project is queued for fetch")) {
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException ignored) {
+				}
+				return projectByURL(url);
+			}
+		} catch (MalformedURLException e) {
+			throw new CurseException("Invalid Request URL", e);
+		} catch (IOException e) {
+			throw new CurseException("Failed to get info...", e);
+		}
+		return Optional.empty();
 	}
 
 	/**
