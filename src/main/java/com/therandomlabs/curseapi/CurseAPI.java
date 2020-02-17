@@ -142,10 +142,11 @@ public final class CurseAPI {
 			final URL u = new URL(url);
 			final URLConnection conn = u.openConnection();
 			conn.connect();
-			final InputStreamReader r = new InputStreamReader(conn.getInputStream());
-			final JsonObject json = JsonParser.parseReader(r).getAsJsonObject();
-			r.close();
-			if (json.has("id")) { return project(json.get("id").getAsInt()); } else if (
+			try(InputStreamReader r = new InputStreamReader(conn.getInputStream())) {
+				final JsonObject json = JsonParser.parseReader(r).getAsJsonObject();
+			if (json.has("id")) {
+				return project(json.get("id").getAsInt());
+			} else if (
 					json.has("title") &&
 							json.get("title").getAsString().equals("Project is queued for fetch")) {
 				try {
@@ -153,6 +154,7 @@ public final class CurseAPI {
 				} catch (InterruptedException ignored) {
 				}
 				return projectByURL(url);
+			}
 			}
 		} catch (MalformedURLException e) {
 			throw new CurseException("Invalid Request URL", e);
