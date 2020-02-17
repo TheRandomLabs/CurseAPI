@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -142,13 +143,12 @@ public final class CurseAPI {
 			final URL u = new URL(url);
 			final URLConnection conn = u.openConnection();
 			conn.connect();
-			try(InputStreamReader r = new InputStreamReader(conn.getInputStream())) {
+			try(InputStreamReader r = new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8)) {
 				final JsonObject json = JsonParser.parseReader(r).getAsJsonObject();
 			if (json.has("id")) {
 				return project(json.get("id").getAsInt());
 			} else if (
-					json.has("title") &&
-							json.get("title").getAsString().equals("Project is queued for fetch")) {
+					json.has("title") && "Project is queued for fetch".equals(json.get("title").getAsString())) {
 				try {
 					Thread.sleep(10000);
 				} catch (InterruptedException ignored) {
