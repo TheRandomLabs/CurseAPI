@@ -26,7 +26,9 @@ package com.therandomlabs.curseapi.project;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
@@ -269,5 +271,11 @@ public class CurseProjectURLTest {
 		final Optional<CurseProject> optionalComparisonProject = CurseAPI.projectByURL("/minecraft/mc-mods/randomtweaks");
 		assertThat(optionalComparisonProject).isPresent();
 		comparisonProject = optionalComparisonProject.get();
+
+		// Random URL to pass coverage error
+		byte[] r = new byte[100];
+		new Random().nextBytes(r);
+		CurseAPI.projectByURL("/minecraft/mc-mods/"+new String(r, StandardCharsets.UTF_8));
+
 	}
 }

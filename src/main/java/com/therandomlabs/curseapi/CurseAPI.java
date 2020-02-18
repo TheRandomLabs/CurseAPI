@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.AbstractMap;
@@ -45,6 +44,8 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -144,12 +145,20 @@ public final class CurseAPI {
 			url = url.replace("curseforge.com", "api.cfwidget.com");
 		}
 		try {
+			//### Fix bug which might happen for some weird reason
 			if(!url.startsWith("https://")) {
-				url = "https://"+url; //Fix bug which might happen for some weird reason
+				url = "https://"+url;
 			}
+			if(url.startsWith("https://api.cfwidget.com/https://api.cfwidget.com//")){
+				url = url.replace("/https://api.cfwidget.com/", "");
+			}
+			//###
 			final URL u = new URL(url);
-			final URLConnection conn = u.openConnection();
+			final HttpsURLConnection conn = (HttpsURLConnection) u.openConnection();
 			conn.connect();
+			if(conn.getResponseCode() == 404 || conn.getResponseCode() == 400){
+				return Optional.empty();
+			}
 			try(InputStreamReader r = new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8)) {
 				final JsonObject json = JsonParser.parseReader(r).getAsJsonObject();
 			if (json.has("id")) {
@@ -157,6 +166,7 @@ public final class CurseAPI {
 			} else if (
 					json.has("title") && "Project is queued for fetch".equals(json.get("title").getAsString())) {
 				try {
+					System.out.println("Project is queued for fetch.. Retrying in 10 seconds");
 					Thread.sleep(10000);
 				} catch (InterruptedException ignored) {
 				}
