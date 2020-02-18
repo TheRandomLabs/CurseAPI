@@ -137,10 +137,11 @@ public final class CurseAPI {
 	public static Optional<CurseProject> projectByURL(String url) throws CurseException {
 		url = url.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)",
 				""); //Remove http(s)://(www.)
-		if(url.startsWith("curseforge.com"))
-		url = url.replace("curseforge.com", "https://api.cfwidget.com"); //Replace Curseforge URL with cfwidget api
-		else if(url.startsWith("/"))
+		if(url.startsWith("curseforge.com")) {
+			url = url.replace("curseforge.com", "https://api.cfwidget.com"); //Replace Curseforge URL with cfwidget api
+		} else if(url.startsWith("/")) {
 			url = "https://api.cfwidget.com"+url;
+		}
 		try {
 			final URL u = new URL(url);
 			final URLConnection conn = u.openConnection();
