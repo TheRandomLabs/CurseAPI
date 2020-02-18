@@ -138,10 +138,10 @@ public final class CurseAPI {
 	public static Optional<CurseProject> projectByURL(String url) throws CurseException {
 		url = url.replace("www.", "");
 		//Replace Curseforge URL with cfwidget api
-		if(url.startsWith("curseforge.com") || url.startsWith("https://curseforge.com") || url.startsWith("http://curseforge.com")) {
-			url = url.replace("curseforge.com", "api.cfwidget.com");
-		} else {
+		if(!(url.startsWith("curseforge.com") || url.startsWith("https://curseforge.com") || url.startsWith("http://curseforge.com"))) {
 			url = "https://api.cfwidget.com/"+url;
+		} else {
+			url = url.replace("curseforge.com", "api.cfwidget.com");
 		}
 		try {
 			if(!url.startsWith("https://")) {
