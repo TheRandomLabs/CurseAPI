@@ -266,7 +266,7 @@ public class CurseProjectURLTest {
 		assertThat(optionalProject).isPresent();
 		project = optionalProject.get();
 
-		final Optional<CurseProject> optionalComparisonProject = CurseAPI.projectByURL("https://www.curseforge.com/minecraft/mc-mods/randomtweaks");
+		final Optional<CurseProject> optionalComparisonProject = CurseAPI.projectByURL("/minecraft/mc-mods/randomtweaks");
 		assertThat(optionalComparisonProject).isPresent();
 		comparisonProject = optionalComparisonProject.get();
 	}

@@ -23,6 +23,7 @@
 
 package com.therandomlabs.curseapi;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -135,14 +136,17 @@ public final class CurseAPI {
 	 */
 	@SuppressFBWarnings("SECSSSRFUC")
 	public static Optional<CurseProject> projectByURL(String url) throws CurseException {
-		url = url.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)",
-				""); //Remove http(s)://(www.)
-		if(url.startsWith("curseforge.com")) {
-			url = url.replace("curseforge.com", "https://api.cfwidget.com"); //Replace Curseforge URL with cfwidget api
-		} else if(url.startsWith("/")) {
-			url = "https://api.cfwidget.com"+url;
+		url = url.replace("www.", "");
+		//Replace Curseforge URL with cfwidget api
+		if(url.startsWith("curseforge.com") || url.startsWith("https://curseforge.com") || url.startsWith("http://curseforge.com")) {
+			url = url.replace("curseforge.com", "api.cfwidget.com");
+		} else {
+			url = "https://api.cfwidget.com/"+url;
 		}
 		try {
+			if(!url.startsWith("https://")) {
+				url = "https://"+url; //Fix bug which might happen for some weird reason
+			}
 			final URL u = new URL(url);
 			final URLConnection conn = u.openConnection();
 			conn.connect();
@@ -158,6 +162,8 @@ public final class CurseAPI {
 				}
 				return projectByURL(url);
 			}
+			}catch (FileNotFoundException fnf){
+				return Optional.empty(); // Not found :/
 			}
 		} catch (MalformedURLException e) {
 			throw new CurseException("Invalid Request URL", e);
