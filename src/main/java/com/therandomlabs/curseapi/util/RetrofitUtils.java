@@ -87,7 +87,6 @@ public final class RetrofitUtils {
 	 * @return the deserialized response body.
 	 * @throws CurseException if the {@link Call} fails to execute correctly.
 	 */
-	@SuppressWarnings("GrazieInspection")
 	@Nullable
 	public static <T> T execute(Call<T> call) throws CurseException {
 		Preconditions.checkNotNull(call, "call should not be null");
@@ -104,7 +103,7 @@ public final class RetrofitUtils {
 			}
 
 			//The path could not be found, so we return null.
-			if (response.code() == 404) {
+			if (response.code() == 400 || response.code() == 404) {
 				return null;
 			}
 

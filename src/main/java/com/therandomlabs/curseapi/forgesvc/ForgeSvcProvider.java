@@ -43,7 +43,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
 /**
- * A {@link CurseAPIProvider} that uses the API at {@code https://addons-ecs.forgesvc.net/}
+ * A {@link CurseAPIProvider} that uses the API at
+ * <a href="https://addons-ecs.forgesvc.net/">https://addons-ecs.forgesvc.net/</a>
  * used by the Twitch launcher.
  * <p>
  * This provider falls back on the methods declared in
@@ -54,6 +55,8 @@ import org.jsoup.nodes.Element;
  * <p>
  * Where possible, this class should not be accessed directly, and the methods declared in
  * {@link com.therandomlabs.curseapi.CurseAPI} should be favored.
+ *
+ * @see com.therandomlabs.curseapi.cfwidget.CFWidgetProvider
  */
 public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**

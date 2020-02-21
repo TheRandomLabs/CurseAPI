@@ -43,6 +43,7 @@ import com.therandomlabs.curseapi.game.CurseGameVersionGroup;
 import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.project.CurseSearchQuery;
 import com.therandomlabs.curseapi.project.CurseSearchSort;
+import okhttp3.HttpUrl;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,11 +80,16 @@ public class CurseAPITest {
 	@Test
 	public void projectShouldBePresentIfExistent() throws CurseException {
 		assertThat(CurseAPI.project(CurseAPI.MIN_PROJECT_ID)).isPresent();
+		assertThat(CurseAPI.project("minecraft/mc-mods/randompatches")).isPresent();
+		assertThat(CurseAPI.project(HttpUrl.get(
+				"https://www.curseforge.com/minecraft/mc-mods/randomtweaks"
+		))).isPresent();
 	}
 
 	@Test
 	public void projectShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(CurseAPI.project(Integer.MAX_VALUE)).isNotPresent();
+		assertThat(CurseAPI.project("minecraft/randompatches")).isNotPresent();
 	}
 
 	@Test

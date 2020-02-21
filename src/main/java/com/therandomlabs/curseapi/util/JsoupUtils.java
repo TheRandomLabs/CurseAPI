@@ -67,7 +67,6 @@ public final class JsoupUtils {
 	 * or an empty {@link Element} if the body is empty.
 	 * @see #emptyElement()
 	 */
-	@SuppressWarnings("GrazieInspection")
 	public static Element parseBody(String html) {
 		final Element body = Jsoup.parseBodyFragment(html).body();
 		final Elements children = body.children();

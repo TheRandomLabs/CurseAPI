@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.therandomlabs.curseapi.cfwidget.CFWidgetProvider;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
 import com.therandomlabs.curseapi.forgesvc.ForgeSvcProvider;
@@ -98,8 +99,10 @@ public final class CurseAPI {
 
 	private static final Logger logger = LoggerFactory.getLogger(CurseAPI.class);
 
-	private static final List<CurseAPIProvider> providers =
-			Lists.newArrayList(ForgeSvcProvider.instance);
+	private static final List<CurseAPIProvider> providers = Lists.newArrayList(
+			ForgeSvcProvider.instance,
+			CFWidgetProvider.instance
+	);
 
 	private CurseAPI() {}
 
@@ -114,6 +117,37 @@ public final class CurseAPI {
 	public static Optional<CurseProject> project(int id) throws CurseException {
 		CursePreconditions.checkProjectID(id, "id");
 		return get(provider -> provider.project(id));
+	}
+
+	/**
+	 * Returns a {@link CurseProject} instance for the project with the specified URL path.
+	 *
+	 * @param path a project URL path.
+	 * @return a {@link CurseProject} instance for the project with the specified URL path
+	 * wrapped in an {@link Optional} if it exists, or otherwise an empty {@link Optional}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<CurseProject> project(String path) throws CurseException {
+		Preconditions.checkNotNull(path, "path should not be null");
+		Preconditions.checkArgument(!path.isEmpty(), "path should not be empty");
+		return get(provider -> provider.project(path));
+	}
+
+	/**
+	 * Returns a {@link CurseProject} instance for the project with the specified URL.
+	 *
+	 * @param url a project URL..
+	 * @return a {@link CurseProject} instance for the project with the specified URL
+	 * wrapped in an {@link Optional} if it exists, or otherwise an empty {@link Optional}.
+	 * @throws CurseException if an error occurs.
+	 */
+	public static Optional<CurseProject> project(HttpUrl url) throws CurseException {
+		Preconditions.checkNotNull(url, "url should not be null");
+		Preconditions.checkArgument(
+				"curseforge.com".equals(url.topPrivateDomain()),
+				"url should be a CurseForge project URL"
+		);
+		return project(url.encodedPath());
 	}
 
 	/**

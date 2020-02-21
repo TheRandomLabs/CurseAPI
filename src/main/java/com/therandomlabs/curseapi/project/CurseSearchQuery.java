@@ -308,7 +308,6 @@ public class CurseSearchQuery implements Cloneable {
 	 * @param size a page size.
 	 * @return this {@link CurseSearchQuery}.
 	 */
-	@SuppressWarnings("GrazieInspection")
 	public CurseSearchQuery pageSize(int size) {
 		Preconditions.checkArgument(size > 0, "size should be positive");
 		pageSize = size;

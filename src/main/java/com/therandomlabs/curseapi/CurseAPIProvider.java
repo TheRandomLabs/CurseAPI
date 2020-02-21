@@ -46,6 +46,9 @@ import org.jsoup.nodes.Element;
  * {@link CurseAPIProvider} should be used instead or that an object does not exist on CurseForge.
  * As input validation is performed by the methods in {@link CurseAPI}, it does not need to be
  * performed by implementations of this interface.
+ *
+ * @see com.therandomlabs.curseapi.forgesvc.ForgeSvcProvider
+ * @see com.therandomlabs.curseapi.cfwidget.CFWidgetProvider
  */
 public interface CurseAPIProvider {
 	/**
@@ -57,6 +60,18 @@ public interface CurseAPIProvider {
 	 */
 	@Nullable
 	default CurseProject project(int id) throws CurseException {
+		return null;
+	}
+
+	/**
+	 * Returns a {@link CurseProject} instance for the project with the specified URL path.
+	 *
+	 * @param path a project URL path.
+	 * @return a {@link CurseProject} instance for the project with the specified URL path.
+	 * @throws CurseException if an error occurs.
+	 */
+	@Nullable
+	default CurseProject project(String path) throws CurseException {
 		return null;
 	}
 
