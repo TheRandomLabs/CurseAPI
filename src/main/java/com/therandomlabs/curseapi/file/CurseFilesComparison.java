@@ -24,7 +24,9 @@
 package com.therandomlabs.curseapi.file;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -120,6 +122,8 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 	 * an old and new collection of files.
 	 * Files in the old collection may be newer than files of the same project in the new
 	 * collection.
+	 * If either collection contains multiple files from the same project, the newest file
+	 * from each project is selected.
 	 *
 	 * @param oldFiles an old collection of files.
 	 * @param newFiles a new collection of files.
@@ -132,6 +136,9 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 	) {
 		Preconditions.checkNotNull(oldFiles, "oldFiles should not be null");
 		Preconditions.checkNotNull(newFiles, "newFiles should not be null");
+
+		oldFiles = removeDuplicateProjects(oldFiles);
+		newFiles = removeDuplicateProjects(newFiles);
 
 		final Set<F> unchanged = new HashSet<>();
 		final Set<CurseFileChange<F>> updated = new HashSet<>();
@@ -171,5 +178,22 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 		}
 
 		return new CurseFilesComparison<>(unchanged, updated, downgraded, removed, added);
+	}
+
+	private static <F extends BasicCurseFile> Collection<F> removeDuplicateProjects(
+			Collection<F> files
+	) {
+		final Map<Integer, F> projectIDFileMap = new HashMap<>();
+
+		for (F file : files) {
+			final F duplicate = projectIDFileMap.get(file.projectID());
+
+			//Prefer newer files.
+			if (duplicate == null || (duplicate != null && file.newerThan(duplicate))) {
+				projectIDFileMap.put(file.projectID(), file);
+			}
+		}
+
+		return projectIDFileMap.values();
 	}
 }
