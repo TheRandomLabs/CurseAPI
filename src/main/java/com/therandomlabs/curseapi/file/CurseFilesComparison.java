@@ -189,7 +189,7 @@ public class CurseFilesComparison<F extends BasicCurseFile> {
 			final F duplicate = projectIDFileMap.get(file.projectID());
 
 			//Prefer newer files.
-			if (duplicate == null || (duplicate != null && file.newerThan(duplicate))) {
+			if (duplicate == null || file.newerThan(duplicate)) {
 				projectIDFileMap.put(file.projectID(), file);
 			}
 		}
