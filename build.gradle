@@ -14,7 +14,7 @@ ext {
 
 apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
 
-def retrofitVersion = "2.8.0"
+def retrofitVersion = "2.8.1"
 def resilience4jVersion = "1.3.1"
 
 dependencies {
