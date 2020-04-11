@@ -23,7 +23,14 @@
 
 package com.therandomlabs.curseapi.file;
 
+import java.util.Optional;
+
+import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.project.CurseProject;
+import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jsoup.nodes.Element;
 
 /**
  * Represents an alternate file on CurseForge.
@@ -31,6 +38,100 @@ import com.therandomlabs.curseapi.CurseException;
  * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseAlternateFile extends BasicCurseFile implements ExistingCurseFile {
+	//Cache.
+	private transient CurseProject project;
+	private transient HttpUrl downloadURL;
+	private transient Element changelog;
+	private transient CurseFile mainFile;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CurseProject project() throws CurseException {
+		if (project == null) {
+			final Optional<CurseProject> optionalProject = CurseAPI.project(projectID());
+
+			if (!optionalProject.isPresent()) {
+				throw new CurseException("Failed to retrieve CurseProject: " + this);
+			}
+
+			project = optionalProject.get();
+		}
+
+		return project;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void clearProjectCache() {
+		project = null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public HttpUrl url() throws CurseException {
+		return project().fileURL(id());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public HttpUrl downloadURL() throws CurseException {
+		if (downloadURL == null) {
+			final Optional<HttpUrl> optionalDownloadURL =
+					CurseAPI.fileDownloadURL(projectID(), id());
+
+			if (!optionalDownloadURL.isPresent()) {
+				throw new CurseException("Failed to retrieve download URL: " + this);
+			}
+
+			downloadURL = optionalDownloadURL.get();
+		}
+
+		return downloadURL;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void clearDownloadURLCache() {
+		downloadURL = null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Element changelog() throws CurseException {
+		if (changelog == null) {
+			final Optional<Element> optionalChangelog = CurseAPI.fileChangelog(projectID(), id());
+
+			if (!optionalChangelog.isPresent()) {
+				throw new CurseException("Failed to retrieve changelog: " + this);
+			}
+
+			changelog = optionalChangelog.get();
+		}
+
+		return changelog;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void clearChangelogCache() {
+		changelog = null;
+	}
+
 	/**
 	 * Returns the ID of this alternate file's main file.
 	 *
@@ -45,11 +146,25 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	 * @return this alternate file's main file as a {@link CurseFile}.
 	 * @throws CurseException if an error occurs.
 	 */
-	public abstract CurseFile mainFile() throws CurseException;
+	public CurseFile mainFile() throws CurseException {
+		if (mainFile == null) {
+			final Optional<CurseFile> optionalFile = CurseAPI.file(projectID(), mainFileID());
+
+			if (!optionalFile.isPresent()) {
+				throw new CurseException("Failed to retrieve main file as CurseFile: " + this);
+			}
+
+			mainFile = optionalFile.get();
+		}
+
+		return mainFile;
+	}
 
 	/**
 	 * If this {@link CurseAlternateFile} implementation caches the value returned by
 	 * {@link #mainFile()} and supports clearing this cache, this method clears this cached value.
 	 */
-	public abstract void clearMainFileCache();
+	public void clearMainFileCache() {
+		mainFile = null;
+	}
 }
