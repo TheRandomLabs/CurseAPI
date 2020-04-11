@@ -52,7 +52,6 @@ final class ForgeSvcAlternateFile extends CurseAlternateFile {
 		return projectID;
 	}
 
-	@SuppressWarnings("Duplicates")
 	@Override
 	public CurseProject project() throws CurseException {
 		return project == null ? super.project() : project;

@@ -70,7 +70,6 @@ final class ForgeSvcFile extends CurseFile {
 		return projectId;
 	}
 
-	@SuppressWarnings("Duplicates")
 	@Override
 	public CurseProject project() throws CurseException {
 		if (project == null) {
