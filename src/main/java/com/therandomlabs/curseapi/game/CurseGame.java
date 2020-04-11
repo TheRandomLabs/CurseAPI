@@ -23,9 +23,9 @@
 
 package com.therandomlabs.curseapi.game;
 
+import java.util.NavigableSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
 
 import com.google.common.base.MoreObjects;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -154,14 +154,15 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	 * This value may be refreshed by calling {@link #clearVersionsCache()}.
 	 *
 	 * @param <V> the implementation of {@link CurseGameVersion}.
-	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances equivalent to
+	 * @return a mutable {@link NavigableSet} of {@link CurseGameVersion} instances equivalent to
 	 * the result retrieved by calling {@link CurseAPI#gameVersions(int)}.
 	 * If there is no registered {@link com.therandomlabs.curseapi.CurseAPIProvider} implementation
-	 * that provides {@link CurseGameVersion}s for this game, an empty {@link SortedSet} is
+	 * that provides {@link CurseGameVersion}s for this game, an empty {@link NavigableSet} is
 	 * returned.
 	 * @throws CurseException if an error occurs.
 	 */
-	public abstract <V extends CurseGameVersion<?>> SortedSet<V> versions() throws CurseException;
+	public abstract <V extends CurseGameVersion<?>> NavigableSet<V> versions()
+			throws CurseException;
 
 	/**
 	 * If this {@link CurseGame} implementation caches the value returned by

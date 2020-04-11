@@ -26,8 +26,10 @@ package com.therandomlabs.curseapi.file;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.NavigableSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.google.common.base.MoreObjects;
@@ -40,6 +42,7 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jsoup.nodes.Element;
 
 /**
  * Represents a CurseForge file.
@@ -47,6 +50,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseFile extends BasicCurseFile implements ExistingCurseFile {
+	//Cache.
+	@Nullable
+	private transient NavigableSet<CurseGameVersion<?>> gameVersions;
+	@Nullable
+	private transient Element changelog;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -219,20 +228,30 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	public abstract Set<String> gameVersionStrings();
 
 	/**
-	 * Returns this file's game versions.
-	 * This value may be refreshed by calling {@link #clearGameVersionsCache()}.
-	 *
-	 * @param <V> the type of {@link CurseGameVersion}.
-	 * @return a mutable {@link SortedSet} of {@link CurseGameVersion} instances that is equivalent
-	 * to the result obtained by calling {@link CurseAPI#gameVersion(int, String)} on the version
-	 * strings returned by {@link #gameVersionStrings()}.
-	 * If there is no registered {@link com.therandomlabs.curseapi.CurseAPIProvider} implementation
-	 * that provides {@link CurseGameVersion}s for this file's game, an empty {@link SortedSet} is
-	 * returned.
-	 * @throws CurseException if an error occurs.
+	 * {@inheritDoc}
 	 */
-	public abstract <V extends CurseGameVersion<?>> SortedSet<V> gameVersions()
-			throws CurseException;
+	@Override
+	public Element changelog() throws CurseException {
+		if (changelog == null) {
+			final Optional<Element> optionalChangelog = CurseAPI.fileChangelog(projectID(), id());
+
+			if (!optionalChangelog.isPresent()) {
+				throw new CurseException("Failed to retrieve changelog for file: " + this);
+			}
+
+			changelog = optionalChangelog.get();
+		}
+
+		return changelog;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void clearChangelogCache() {
+		changelog = null;
+	}
 
 	/**
 	 * Returns this file's game version groups. This value is obtained by calling
@@ -251,9 +270,39 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	}
 
 	/**
+	 * Returns this file's game versions.
+	 * This value may be refreshed by calling {@link #clearGameVersionsCache()}.
+	 *
+	 * @param <V> the type of {@link CurseGameVersion}.
+	 * @return a mutable {@link NavigableSet} of {@link CurseGameVersion} instances that is
+	 * equivalent to the result obtained by calling {@link CurseAPI#gameVersion(int, String)} on
+	 * the version strings returned by {@link #gameVersionStrings()}.
+	 * If there is no registered {@link com.therandomlabs.curseapi.CurseAPIProvider} implementation
+	 * that provides {@link CurseGameVersion}s for this file's game, an empty {@link NavigableSet}
+	 * is returned.
+	 * @throws CurseException if an error occurs.
+	 */
+	@SuppressWarnings("unchecked")
+	public <V extends CurseGameVersion<?>> NavigableSet<V> gameVersions() throws CurseException {
+		if (gameVersions == null) {
+			final Set<String> versionStrings = gameVersionStrings();
+			gameVersions = new TreeSet<>();
+			final int gameID = project().gameID();
+
+			for (String versionString : versionStrings) {
+				CurseAPI.<V>gameVersion(gameID, versionString).ifPresent(gameVersions::add);
+			}
+		}
+
+		return (NavigableSet<V>) gameVersions;
+	}
+
+	/**
 	 * If this {@link CurseFile} implementation caches the value returned by
 	 * {@link #gameVersions()} and supports clearing this cache, this method clears this cached
 	 * value.
 	 */
-	public abstract void clearGameVersionsCache();
+	public void clearGameVersionsCache() {
+		gameVersions = null;
+	}
 }

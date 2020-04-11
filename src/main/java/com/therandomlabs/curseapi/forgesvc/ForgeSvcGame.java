@@ -23,8 +23,8 @@
 
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.util.NavigableSet;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.therandomlabs.curseapi.CurseAPI;
@@ -48,7 +48,7 @@ final class ForgeSvcGame extends CurseGame {
 
 	//Cache.
 	private transient Set<CurseCategory> categories;
-	private transient SortedSet<CurseGameVersion<?>> versions;
+	private transient NavigableSet<CurseGameVersion<?>> versions;
 
 	@Override
 	public int id() {
@@ -92,12 +92,12 @@ final class ForgeSvcGame extends CurseGame {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V extends CurseGameVersion<?>> SortedSet<V> versions() throws CurseException {
+	public <V extends CurseGameVersion<?>> NavigableSet<V> versions() throws CurseException {
 		if (versions == null) {
 			versions = CurseAPI.gameVersions(id()).orElseGet(TreeSet::new);
 		}
 
-		return (SortedSet<V>) versions;
+		return (NavigableSet<V>) versions;
 	}
 
 	@Override

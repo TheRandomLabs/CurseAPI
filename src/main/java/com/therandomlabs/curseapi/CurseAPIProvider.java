@@ -24,8 +24,8 @@
 package com.therandomlabs.curseapi;
 
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
-import java.util.SortedSet;
 
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFiles;
@@ -181,12 +181,12 @@ public interface CurseAPIProvider {
 	 * Returns all game versions of the game with the specified ID supported by CurseForge.
 	 *
 	 * @param gameID a game ID.
-	 * @return a mutable {@link SortedSet} containing {@link CurseGameVersion} instances that
+	 * @return a mutable {@link NavigableSet} containing {@link CurseGameVersion} instances that
 	 * represent all game versions of the game with the specified ID supported by CurseForge.
 	 * @throws CurseException if an error occurs.
 	 */
 	@Nullable
-	default SortedSet<? extends CurseGameVersion<?>> gameVersions(int gameID)
+	default NavigableSet<? extends CurseGameVersion<?>> gameVersions(int gameID)
 			throws CurseException {
 		return null;
 	}

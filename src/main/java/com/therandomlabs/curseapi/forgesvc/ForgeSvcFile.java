@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -38,13 +36,11 @@ import com.therandomlabs.curseapi.file.CurseDependency;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseReleaseType;
-import com.therandomlabs.curseapi.game.CurseGameVersion;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.checkerframework.framework.qual.TypeUseLocation;
-import org.jsoup.nodes.Element;
 
 //NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
 @SuppressWarnings("NullAway")
@@ -68,8 +64,6 @@ final class ForgeSvcFile extends CurseFile {
 
 	//Cache.
 	private transient CurseProject project;
-	private transient SortedSet<CurseGameVersion<?>> gameVersions;
-	private transient Element changelog;
 
 	@Override
 	public int projectID() {
@@ -171,47 +165,6 @@ final class ForgeSvcFile extends CurseFile {
 	@Override
 	public Set<String> gameVersionStrings() {
 		return new LinkedHashSet<>(gameVersion);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <V extends CurseGameVersion<?>> SortedSet<V> gameVersions() throws CurseException {
-		if (gameVersions == null) {
-			final Set<String> versionStrings = gameVersionStrings();
-			gameVersions = new TreeSet<>();
-			final int gameID = project().gameID();
-
-			for (String versionString : versionStrings) {
-				CurseAPI.<V>gameVersion(gameID, versionString).ifPresent(gameVersions::add);
-			}
-		}
-
-		return (SortedSet<V>) gameVersions;
-	}
-
-	@Override
-	public void clearGameVersionsCache() {
-		gameVersions = null;
-	}
-
-	@Override
-	public Element changelog() throws CurseException {
-		if (changelog == null) {
-			final Optional<Element> optionalChangelog = CurseAPI.fileChangelog(projectId, id);
-
-			if (!optionalChangelog.isPresent()) {
-				throw new CurseException("Failed to retrieve changelog for file: " + this);
-			}
-
-			changelog = optionalChangelog.get();
-		}
-
-		return changelog;
-	}
-
-	@Override
-	public void clearChangelogCache() {
-		changelog = null;
 	}
 
 	//This is called by ForgeSvcProvider so that projectId is not 0.

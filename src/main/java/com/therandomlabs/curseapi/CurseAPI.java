@@ -31,9 +31,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -408,16 +408,16 @@ public final class CurseAPI {
 	 *
 	 * @param gameID a game ID.
 	 * @param <V> the implementation of {@link CurseGameVersion}.
-	 * @return a mutable {@link SortedSet} containing {@link CurseGameVersion} instances that
+	 * @return a mutable {@link NavigableSet} containing {@link CurseGameVersion} instances that
 	 * represent all game versions of the game with the specified ID supported by CurseForge wrapped
 	 * in an {@link Optional} if it can be retrieved, or otherwise an empty {@link Optional}.
 	 * @throws CurseException if an error occurs.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <V extends CurseGameVersion<?>> Optional<SortedSet<V>> gameVersions(int gameID)
+	public static <V extends CurseGameVersion<?>> Optional<NavigableSet<V>> gameVersions(int gameID)
 			throws CurseException {
 		CursePreconditions.checkGameID(gameID, "gameID");
-		return get(provider -> (SortedSet<V>) provider.gameVersions(gameID));
+		return get(provider -> (NavigableSet<V>) provider.gameVersions(gameID));
 	}
 
 	/**
