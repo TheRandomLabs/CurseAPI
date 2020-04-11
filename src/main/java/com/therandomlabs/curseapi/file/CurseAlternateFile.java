@@ -30,6 +30,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
 /**
@@ -39,9 +40,13 @@ import org.jsoup.nodes.Element;
  */
 public abstract class CurseAlternateFile extends BasicCurseFile implements ExistingCurseFile {
 	//Cache.
+	@Nullable
 	private transient CurseProject project;
+	@Nullable
 	private transient HttpUrl downloadURL;
+	@Nullable
 	private transient Element changelog;
+	@Nullable
 	private transient CurseFile mainFile;
 
 	/**
