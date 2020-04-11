@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -207,5 +208,17 @@ public class CurseFiles<F extends BasicCurseFile> extends TreeSet<F> {
 			CheckedFunction<? super F, ? extends V, CurseException> valueMapper
 	) throws CurseException {
 		return CurseAPI.parallelMap(this, keyMapper, valueMapper);
+	}
+
+	/**
+	 * Returns a {@link Collector} that accumulates the input elements into a
+	 * new {@link CurseFiles}.
+	 *
+	 * @param <F> the type of {@link BasicCurseFile}.
+	 * @return a {@link Collector} that accumulates the input elements into a
+	 * new {@link CurseFiles}.
+	 */
+	public static <F extends BasicCurseFile> Collector<F, ?, CurseFiles<F>> toCurseFiles() {
+		return Collectors.toCollection(CurseFiles::new);
 	}
 }
