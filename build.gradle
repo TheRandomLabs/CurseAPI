@@ -15,7 +15,7 @@ ext {
 apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
 
 def retrofitVersion = "2.9.0"
-def resilience4jVersion = "1.4.0"
+def resilience4jVersion = "1.5.0"
 
 dependencies {
 	api "com.squareup.moshi:moshi:1.9.2"
