@@ -659,9 +659,9 @@ public final class CurseAPI {
 	}
 
 	/**
-	 * Returns an mutable {@link List} of all registered {@link CurseAPIProvider}s.
+	 * Returns a mutable {@link List} of all registered {@link CurseAPIProvider}s.
 	 *
-	 * @return an mutable {@link List} of all registered {@link CurseAPIProvider}s.
+	 * @return a mutable {@link List} of all registered {@link CurseAPIProvider}s.
 	 */
 	public static List<CurseAPIProvider> providers() {
 		return new ArrayList<>(providers);
