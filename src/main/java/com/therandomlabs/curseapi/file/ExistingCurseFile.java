@@ -114,8 +114,9 @@ public interface ExistingCurseFile {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void clearDownloadURLCache() {
+		public HttpUrl refreshDownloadURL() throws CurseException {
 			downloadURL = null;
+			return downloadURL();
 		}
 
 		/**
@@ -141,14 +142,16 @@ public interface ExistingCurseFile {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void clearChangelogCache() {
+		public Element refreshChangelog() throws CurseException {
 			changelog = null;
+			return changelog();
 		}
 	}
 
 	/**
 	 * Returns this file's download URL.
-	 * This value may be refreshed by calling {@link #clearDownloadURLCache()}.
+	 * If this implementation of {@link ExistingCurseFile} caches this value,
+	 * it may be refreshed by calling {@link #refreshDownloadURL()}.
 	 *
 	 * @return this file's download URL.
 	 * @throws CurseException if an error occurs.
@@ -181,31 +184,33 @@ public interface ExistingCurseFile {
 
 	/**
 	 * If this {@link ExistingCurseFile} implementation caches the value returned by
-	 * {@link #downloadURL()} and supports clearing this cache, this method clears this cached
-	 * value.
+	 * {@link #downloadURL()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #downloadURL()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	void clearDownloadURLCache();
+	HttpUrl refreshDownloadURL() throws CurseException;
 
 	/**
 	 * Returns this file's changelog.
-	 * This value may be refreshed by calling {@link #clearChangelogCache()}.
+	 * If this {@link ExistingCurseFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshChangelog()}.
 	 *
 	 * @return an {@link Element} containing this file's changelog. If a changelog is not provided,
 	 * an empty {@link Element} is returned.
 	 * @throws CurseException if an error occurs.
-	 * @see #clearChangelogCache()
 	 * @see JsoupUtils#emptyElement()
 	 */
 	Element changelog() throws CurseException;
 
 	/**
 	 * Returns this file's changelog as plain text.
-	 * This value may be refreshed by calling {@link #clearChangelogCache()}.
+	 * If this {@link ExistingCurseFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshChangelog()}.
 	 *
 	 * @return this file's changelog as plain text. If a changelog is not provided, an empty
 	 * string is returned.
 	 * @throws CurseException if an error occurs.
-	 * @see #clearChangelogCache()
 	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
 	default String changelogPlainText() throws CurseException {
@@ -214,13 +219,13 @@ public interface ExistingCurseFile {
 
 	/**
 	 * Returns this file's changelog as plain text.
-	 * This value may be refreshed by calling {@link #clearChangelogCache()}.
+	 * If this {@link ExistingCurseFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshChangelog()}.
 	 *
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
 	 * @return this file's changelog as plain text. If a changelog is not provided, an empty
 	 * string is returned.
 	 * @throws CurseException if an error occurs.
-	 * @see #clearChangelogCache()
 	 * @see JsoupUtils#getPlainText(Element, int)
 	 */
 	default String changelogPlainText(int maxLineLength) throws CurseException {
@@ -230,7 +235,10 @@ public interface ExistingCurseFile {
 
 	/**
 	 * If this {@link ExistingCurseFile} implementation caches the value returned by
-	 * {@link #changelog()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #changelog()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #changelog()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	void clearChangelogCache();
+	Element refreshChangelog() throws CurseException;
 }

@@ -251,16 +251,10 @@ public class CurseAPITest {
 		//We also test CurseGame here.
 		assertThat(game.toString()).isNotEmpty();
 		assertThat(game.url()).isNotNull();
-
-		final Set<CurseCategory> categories = game.categories();
-		assertThat(categories).isNotEmpty();
-		game.clearCategoriesCache();
-		assertThat(game.categories()).isEqualTo(categories);
-
-		final Set<CurseGameVersion> versions = game.versions();
-		assertThat(versions).isEmpty();
-		game.clearVersionsCache();
+		assertThat(game.categories()).isNotEmpty().isEqualTo(game.refreshCategories());
+		//These should be empty since CurseAPI-Minecraft is not present.
 		assertThat(game.versions()).isEmpty();
+		assertThat(game.refreshVersions()).isEmpty();
 	}
 
 	@Test
@@ -302,9 +296,7 @@ public class CurseAPITest {
 		assertThat(category.gameID()).isGreaterThanOrEqualTo(CurseAPI.MIN_GAME_ID);
 
 		final CurseGame game = category.game();
-		assertThat(game).isNotNull();
-		category.clearGameCache();
-		assertThat(category.game()).isEqualTo(game);
+		assertThat(game).isNotNull().isEqualTo(category.refreshGame());
 		assertThat(category.sectionID()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
 		assertThat(category.section()).isPresent();
 		assertThat(category.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_ID);

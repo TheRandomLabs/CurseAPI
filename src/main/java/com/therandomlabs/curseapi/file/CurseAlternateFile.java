@@ -71,8 +71,9 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void clearProjectCache() {
+	public CurseProject refreshProject() throws CurseException {
 		project = null;
+		return project();
 	}
 
 	/**
@@ -107,8 +108,9 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void clearDownloadURLCache() {
+	public HttpUrl refreshDownloadURL() throws CurseException {
 		downloadURL = null;
+		return downloadURL();
 	}
 
 	/**
@@ -133,8 +135,9 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void clearChangelogCache() {
+	public Element refreshChangelog() throws CurseException {
 		changelog = null;
+		return changelog();
 	}
 
 	/**
@@ -146,7 +149,8 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 
 	/**
 	 * Returns this alternate file's main file.
-	 * This value may be refreshed by calling {@link #clearMainFileCache()}.
+	 * If this {@link CurseAlternateFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshMainFile()}.
 	 *
 	 * @return this alternate file's main file as a {@link CurseFile}.
 	 * @throws CurseException if an error occurs.
@@ -167,9 +171,13 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 
 	/**
 	 * If this {@link CurseAlternateFile} implementation caches the value returned by
-	 * {@link #mainFile()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #mainFile()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #mainFile()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public void clearMainFileCache() {
+	public CurseFile refreshMainFile() throws CurseException {
 		mainFile = null;
+		return mainFile();
 	}
 }

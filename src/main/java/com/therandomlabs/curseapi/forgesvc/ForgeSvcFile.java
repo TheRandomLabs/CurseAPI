@@ -86,8 +86,9 @@ final class ForgeSvcFile extends CurseFile {
 	}
 
 	@Override
-	public void clearProjectCache() {
+	public CurseProject refreshProject() throws CurseException {
 		project = null;
+		return project();
 	}
 
 	@Override

@@ -114,7 +114,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * Returns the project of the old and new files as a {@link CurseProject}.
 	 * This is equivalent to calling {@link BasicCurseFile#project()} on the value returned
 	 * by {@link #oldFile()}; hence, this value may be refreshed by calling
-	 * {@link BasicCurseFile#clearProjectCache()} on {@link #oldFile()}.
+	 * {@link BasicCurseFile#refreshProject()} on {@link #oldFile()}.
 	 *
 	 * @return the project of the old and new files as a {@link CurseProject}.
 	 * If the project does not exist, {@code null} is returned.
@@ -138,7 +138,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * Returns the value returned by {@link #oldFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
-	 * so this value may be refreshed by calling {@link CurseProject#clearFilesCache()}.
+	 * so this value may be refreshed by calling {@link CurseProject#refreshFiles()}.
 	 *
 	 * @return the old file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
@@ -161,7 +161,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * Returns the value returned by {@link #newFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
-	 * so this value may be refreshed by calling {@link CurseProject#clearFilesCache()}.
+	 * so this value may be refreshed by calling {@link CurseProject#refreshFiles()}.
 	 *
 	 * @return the new file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
@@ -185,7 +185,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * Returns the value returned by {@link #olderFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
-	 * so this value may be refreshed by calling {@link CurseProject#clearFilesCache()}.
+	 * so this value may be refreshed by calling {@link CurseProject#refreshFiles()}.
 	 *
 	 * @return the older file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.
@@ -209,7 +209,7 @@ public class CurseFileChange<F extends BasicCurseFile> {
 	 * Returns the value returned by {@link #newerFile()} as a {@link CurseFile}.
 	 * This value is retrieved by calling {@link CurseProject#files()} on the value returned
 	 * by {@link #project()} if it is not already an instance of {@link CurseFile},
-	 * so this value may be refreshed by calling {@link CurseProject#clearFilesCache()}.
+	 * so this value may be refreshed by calling {@link CurseProject#refreshFiles()}.
 	 *
 	 * @return the newer file as a {@link CurseFile}, or {@code null} if it does not exist.
 	 * @throws CurseException if an error occurs.

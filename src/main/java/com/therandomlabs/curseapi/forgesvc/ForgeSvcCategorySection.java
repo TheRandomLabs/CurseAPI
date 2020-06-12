@@ -69,8 +69,9 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	}
 
 	@Override
-	public void clearGameCache() {
+	public CurseGame refreshGame() throws CurseException {
 		game = null;
+		return game();
 	}
 
 	@Override
@@ -99,8 +100,9 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	}
 
 	@Override
-	public void clearCategoriesCache() {
+	public Set<CurseCategory> refreshCategories() throws CurseException {
 		categories = null;
+		return categories();
 	}
 
 	@Override
@@ -119,7 +121,8 @@ final class ForgeSvcCategorySection extends CurseCategorySection {
 	}
 
 	@Override
-	public void clearAsCategoryCache() {
+	public CurseCategory refreshAsCategory() throws CurseException {
 		category = null;
+		return asCategory();
 	}
 }

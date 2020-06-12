@@ -76,19 +76,22 @@ public abstract class CurseDependency {
 
 	/**
 	 * Returns this {@link CurseDependency} as a {@link CurseProject}.
-	 * This value may be refreshed by calling {@link #clearProjectCache()}.
+	 * If this implementation of {@link CurseDependency} caches this value,
+	 * it may be refreshed by calling {@link #refreshProject()}.
 	 *
 	 * @return this {@link CurseDependency} as a {@link CurseProject}.
 	 * @throws CurseException if an error occurs.
-	 * @see #clearProjectCache()
 	 */
 	public abstract CurseProject project() throws CurseException;
 
 	/**
 	 * If this {@link CurseDependency} implementation caches the value returned by
-	 * {@link #project()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #project()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #project()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearProjectCache();
+	public abstract CurseProject refreshProject() throws CurseException;
 
 	/**
 	 * Returns the {@link CurseFile} from which this {@link CurseDependency} has been retrieved.

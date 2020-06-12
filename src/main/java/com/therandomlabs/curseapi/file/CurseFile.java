@@ -71,7 +71,8 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 
 	/**
 	 * Returns this file's project as a {@link CurseProject}.
-	 * This value may be refreshed by calling {@link #clearProjectCache()}.
+	 * If this {@link CurseFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshProject()}.
 	 *
 	 * @return this file's project as a {@link CurseProject}.
 	 * @throws CurseException if an error occurs.
@@ -83,7 +84,7 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	/**
 	 * Returns this file's URL. This method uses the {@link CurseProject} value returned by
 	 * {@link #project()} to retrieve the URL, so this value may be refreshed by calling
-	 * {@link #clearProjectCache()}.
+	 * {@link #refreshProject()}.
 	 *
 	 * @return this file's URL.
 	 * @throws CurseException if an error occurs.
@@ -117,7 +118,7 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	public abstract String nameOnDisk();
 
 	/**
-	 * Returns this file's download URL. Note that calling {@link #clearDownloadURLCache()}
+	 * Returns this file's download URL. Note that calling {@link #refreshDownloadURL()}
 	 * is redundant.
 	 *
 	 * @return this file's download URL.
@@ -130,10 +131,12 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	 * refreshed; however, this usually means a {@link CurseException} can be thrown.
 	 * Since {@link #downloadURL()} never throws a {@link CurseException}, there is no need for
 	 * this method.
+	 *
+	 * @return the value returned by {@link #downloadURL()}.
 	 */
 	@Override
-	public final void clearDownloadURLCache() {
-		//Redundant method.
+	public final HttpUrl refreshDownloadURL() {
+		return downloadURL();
 	}
 
 	/**
@@ -249,15 +252,16 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void clearChangelogCache() {
+	public Element refreshChangelog() throws CurseException {
 		changelog = null;
+		return changelog();
 	}
 
 	/**
 	 * Returns this file's game version groups. This value is obtained by calling
 	 * {@link CurseAPI#gameVersionGroups(Collection)} on the value returned by
 	 * {@link #gameVersions()}, therefore this value may be refreshed by calling
-	 * {@link #clearGameVersionsCache()}.
+	 * {@link #refreshGameVersions()}.
 	 *
 	 * @param <V> the type of {@link CurseGameVersion}.
 	 * @return a mutable {@link Set} containing this file's game version groups as
@@ -271,7 +275,8 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 
 	/**
 	 * Returns this file's game versions.
-	 * This value may be refreshed by calling {@link #clearGameVersionsCache()}.
+	 * If this {@link CurseFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshGameVersions()}.
 	 *
 	 * @param <V> the type of {@link CurseGameVersion}.
 	 * @return a mutable {@link NavigableSet} of {@link CurseGameVersion} instances that is
@@ -299,10 +304,14 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 
 	/**
 	 * If this {@link CurseFile} implementation caches the value returned by
-	 * {@link #gameVersions()} and supports clearing this cache, this method clears this cached
-	 * value.
+	 * {@link #gameVersions()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #gameVersions()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public void clearGameVersionsCache() {
+	public <V extends CurseGameVersion<?>> NavigableSet<V> refreshGameVersions()
+			throws CurseException {
 		gameVersions = null;
+		return gameVersions();
 	}
 }

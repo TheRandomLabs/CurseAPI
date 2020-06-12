@@ -58,9 +58,10 @@ final class ForgeSvcAlternateFile extends CurseAlternateFile {
 	}
 
 	@Override
-	public void clearProjectCache() {
-		super.clearProjectCache();
+	public CurseProject refreshProject() throws CurseException {
+		super.refreshProject();
 		project = null;
+		return project();
 	}
 
 	@Override

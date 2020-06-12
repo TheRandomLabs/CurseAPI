@@ -91,10 +91,11 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 		/**
 		 * {@inheritDoc}
 		 */
+		@Nullable
 		@Override
-		public void clearProjectCache() {
-			project = null;
+		public CurseProject refreshProject() throws CurseException {
 			projectRetrieved = false;
+			return project();
 		}
 
 		/**
@@ -159,7 +160,8 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 
 	/**
 	 * Returns this file's project as a {@link CurseProject}.
-	 * This value may be refreshed by calling {@link #clearProjectCache()}.
+	 * If this {@link BasicCurseFile} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshProject()}.
 	 *
 	 * @return this file's project as a {@link CurseProject} if it exists,
 	 * or otherwise {@code null}.
@@ -170,9 +172,13 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 
 	/**
 	 * If this {@link BasicCurseFile} implementation caches the value returned by
-	 * {@link #project()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #project()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #project()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearProjectCache();
+	@Nullable
+	public abstract CurseProject refreshProject() throws CurseException;
 
 	/**
 	 * Returns whether the specified file belongs to the same project as this file.
@@ -197,7 +203,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	/**
 	 * Returns this file's URL. This method uses the {@link CurseProject} value returned by
 	 * {@link #project()} to retrieve the URL, so this value may be refreshed by calling
-	 * {@link #clearProjectCache()}.
+	 * {@link #refreshProject()}.
 	 * The existence and availability of this file are not verified.
 	 *
 	 * @return this file's URL. If this file's project does not exist, {@code null} is returned.

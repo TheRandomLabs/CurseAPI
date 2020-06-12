@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.project.CurseProject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -52,11 +51,7 @@ public class ImmutableFileTest {
 
 	@Test
 	public void projectShouldBeValidIfExistent() throws CurseException {
-		final CurseProject project = file.project();
-		assertThat(project).isNotNull();
-
-		file.clearProjectCache();
-		assertThat(file.project()).isEqualTo(project);
+		assertThat(file.project()).isNotNull().isEqualTo(file.refreshProject());
 	}
 
 	@Test

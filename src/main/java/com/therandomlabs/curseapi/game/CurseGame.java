@@ -135,7 +135,8 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 
 	/**
 	 * Returns this {@link CurseGame}'s categories.
-	 * This value may be refreshed by calling {@link #clearCategoriesCache()}.
+	 * If this {@link CurseGame} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshCategories()}.
 	 *
 	 * @return a mutable {@link Set} that contains this {@link CurseGame}'s categories
 	 * as {@link CurseCategory}s.
@@ -144,14 +145,18 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	public abstract Set<CurseCategory> categories() throws CurseException;
 
 	/**
-	 * If this {@link CurseGame} implementation caches the value returned by {@link #categories()}
-	 * and supports clearing this cache, this method clears this cached value.
+	 * If this {@link CurseGame} implementation caches the value returned by
+	 * {@link #categories()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #categories()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearCategoriesCache();
+	public abstract Set<CurseCategory> refreshCategories() throws CurseException;
 
 	/**
 	 * Returns all known versions of this {@link CurseGame}.
-	 * This value may be refreshed by calling {@link #clearVersionsCache()}.
+	 * If this {@link CurseGame} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshVersions()}.
 	 *
 	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return a mutable {@link NavigableSet} of {@link CurseGameVersion} instances equivalent to
@@ -166,7 +171,11 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 
 	/**
 	 * If this {@link CurseGame} implementation caches the value returned by
-	 * {@link #versions()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #versions()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #versions()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearVersionsCache();
+	public abstract <V extends CurseGameVersion<?>> NavigableSet<V> refreshVersions()
+			throws CurseException;
 }

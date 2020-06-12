@@ -28,8 +28,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
-import com.therandomlabs.curseapi.project.CurseProject;
-import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -56,11 +54,7 @@ public class ExistingFileTest {
 
 	@Test
 	public void projectShouldBeValidIfExistent() throws CurseException {
-		final CurseProject project = file.project();
-		assertThat(project).isNotNull();
-
-		file.clearProjectCache();
-		assertThat(file.project()).isEqualTo(project);
+		assertThat(file.project()).isNotNull().isEqualTo(file.refreshProject());
 	}
 
 	@Test
@@ -75,11 +69,7 @@ public class ExistingFileTest {
 
 	@Test
 	public void downloadURLShouldBeValid() throws CurseException {
-		final HttpUrl downloadURL = file.downloadURL();
-		assertThat(downloadURL).isNotNull();
-
-		file.clearDownloadURLCache();
-		assertThat(file.downloadURL()).isEqualTo(downloadURL);
+		assertThat(file.downloadURL()).isNotNull().isEqualTo(file.refreshDownloadURL());
 	}
 
 	@Test
@@ -87,7 +77,7 @@ public class ExistingFileTest {
 		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotEmpty();
 
-		file.clearChangelogCache();
+		file.refreshChangelog();
 		assertThat(file.changelogPlainText(10)).isEqualTo(changelog);
 	}
 

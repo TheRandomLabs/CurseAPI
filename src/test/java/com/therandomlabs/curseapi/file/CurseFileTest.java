@@ -75,9 +75,7 @@ public class CurseFileTest {
 		final CurseProject project = file.project();
 		assertThat(project).isNotNull();
 		assertThat(project.id()).isEqualTo(file.projectID());
-
-		file.clearProjectCache();
-		assertThat(file.project()).isEqualTo(project);
+		assertThat(file.project()).isEqualTo(file.refreshProject());
 	}
 
 	@Test
@@ -179,10 +177,8 @@ public class CurseFileTest {
 	public void downloadURLShouldBeValid() {
 		final HttpUrl downloadURL = file.downloadURL();
 		assertThat(downloadURL).isNotNull();
-
 		//This should be a no-op, so we use isSameAs instead of isEqualTo.
-		file.clearDownloadURLCache();
-		assertThat(file.downloadURL()).isSameAs(downloadURL);
+		assertThat(file.downloadURL()).isSameAs(file.refreshDownloadURL());
 	}
 
 	@Test
@@ -205,18 +201,12 @@ public class CurseFileTest {
 
 		//We also test CurseDependency here.
 		for (CurseDependency dependency : dependentFile.dependencies()) {
-			assertThat(dependency).isEqualTo(dependency);
-			assertThat(dependency).isNotEqualTo(null);
+			assertThat(dependency).isEqualTo(dependency).isNotNull();
 
 			final CurseDependency mockDependency = mock(CurseDependency.class);
 			when(mockDependency.projectID()).thenReturn(dependency.projectID());
 			assertThat(dependency).isEqualTo(mockDependency);
-
-			final CurseProject project = dependency.project();
-			assertThat(project).isNotNull();
-			dependency.clearProjectCache();
-			assertThat(dependency.project()).isEqualTo(project);
-
+			assertThat(dependency.project()).isNotNull().isEqualTo(dependency.refreshProject());
 			assertThat(dependency.toString()).isNotEmpty();
 			assertThat(dependency.dependent()).isEqualTo(dependentFile);
 		}
@@ -233,8 +223,7 @@ public class CurseFileTest {
 	@Test
 	public void gameVersionsShouldBeEmpty() throws CurseException {
 		assertThat(file.gameVersions()).isEmpty();
-		file.clearGameVersionsCache();
-		assertThat(file.gameVersions()).isEmpty();
+		assertThat(file.refreshGameVersions()).isEmpty();
 	}
 
 	@Test
@@ -254,7 +243,7 @@ public class CurseFileTest {
 		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotEmpty();
 
-		file.clearChangelogCache();
+		file.refreshChangelog();
 		assertThat(file.changelogPlainText(10)).isEqualTo(changelog);
 	}
 

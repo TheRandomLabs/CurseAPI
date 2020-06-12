@@ -86,8 +86,9 @@ final class ForgeSvcGame extends CurseGame {
 	}
 
 	@Override
-	public void clearCategoriesCache() {
+	public Set<CurseCategory> refreshCategories() throws CurseException {
 		categories = null;
+		return categories();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -101,7 +102,8 @@ final class ForgeSvcGame extends CurseGame {
 	}
 
 	@Override
-	public void clearVersionsCache() {
+	public <V extends CurseGameVersion<?>> NavigableSet<V> refreshVersions() throws CurseException {
 		versions = null;
+		return versions();
 	}
 }

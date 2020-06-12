@@ -27,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Optional;
-import java.util.Set;
 
 import com.google.common.collect.Iterables;
 import com.therandomlabs.curseapi.CurseAPI;
@@ -129,9 +128,7 @@ public class CurseProjectTest {
 		final CurseGame game1 = project.game();
 		assertThat(game1).isNotNull();
 
-		project.clearGameCache();
-
-		final CurseGame game2 = project.game();
+		final CurseGame game2 = project.refreshGame();
 		assertThat(game1.id()).isEqualTo(project.gameID());
 
 		assertThat(game1).isEqualTo(game2);
@@ -154,7 +151,7 @@ public class CurseProjectTest {
 		final String description = project.descriptionPlainText();
 		assertThat(description).isNotEmpty();
 
-		project.clearDescriptionCache();
+		project.refreshDescription();
 		assertThat(project.descriptionPlainText()).isEqualTo(description);
 	}
 
@@ -172,8 +169,7 @@ public class CurseProjectTest {
 			assertThat(file.project()).isEqualTo(project);
 		}
 
-		project.clearFilesCache();
-		assertThat(project.files()).isEqualTo(files);
+		assertThat(files).isEqualTo(project.refreshFiles());
 	}
 
 	@Test
@@ -218,21 +214,13 @@ public class CurseProjectTest {
 		assertThat(categorySection).isNotEqualTo(optionalCategorySection2.get());
 		assertThat(categorySection).isEqualTo(categorySection);
 		assertThat(categorySection.toString()).isNotEmpty();
-
-		final CurseGame game = categorySection.game();
-		assertThat(game).isNotNull();
-		categorySection.clearGameCache();
-		assertThat(categorySection.game()).isEqualTo(game);
-
-		final Set<CurseCategory> categories = categorySection.categories();
-		assertThat(categories).isNotNull();
-		categorySection.clearCategoriesCache();
-		assertThat(categorySection.categories()).isEqualTo(categories);
-
-		final CurseCategory asCategory = categorySection.asCategory();
-		assertThat(asCategory).isNotNull();
-		categorySection.clearAsCategoryCache();
-		assertThat(categorySection.asCategory()).isEqualTo(asCategory);
+		assertThat(categorySection.game()).isNotNull().isEqualTo(categorySection.refreshGame());
+		assertThat(categorySection.categories()).
+				isNotNull().
+				isEqualTo(categorySection.refreshCategories());
+		assertThat(categorySection.asCategory()).
+				isNotNull().
+				isEqualTo(categorySection.refreshAsCategory());
 	}
 
 	@Test

@@ -94,7 +94,8 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 
 	/**
 	 * Returns this category's game.
-	 * This value may be refreshed by calling {@link #clearGameCache()}.
+	 * If this {@link CurseCategory} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshGame()}.
 	 *
 	 * @return a {@link CurseGame} instance that represents this category's game.
 	 * @throws CurseException if an error occurs.
@@ -103,9 +104,12 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 
 	/**
 	 * If this {@link CurseCategory} implementation caches the value returned by
-	 * {@link #game()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #game()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #game()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearGameCache();
+	public abstract CurseGame refreshGame() throws CurseException;
 
 	/**
 	 * Returns the ID of this category's section.
@@ -117,7 +121,7 @@ public abstract class CurseCategory implements Comparable<CurseCategory> {
 	/**
 	 * Returns this category's section. This method uses the value returned by {@link #game()}
 	 * to retrieve the category section, so this value may be refreshed by calling
-	 * {@link #clearGameCache()}
+	 * {@link #refreshGame()}
 	 *
 	 * @return a {@link CurseCategorySection} instance that represents this category's section
 	 * wrapped in an {@link Optional} if it exists, or otherwise an empty {@link Optional}.

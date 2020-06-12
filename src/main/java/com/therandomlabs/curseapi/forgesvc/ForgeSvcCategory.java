@@ -80,8 +80,9 @@ final class ForgeSvcCategory extends CurseCategory {
 	}
 
 	@Override
-	public void clearGameCache() {
+	public CurseGame refreshGame() throws CurseException {
 		game = null;
+		return game();
 	}
 
 	@Override

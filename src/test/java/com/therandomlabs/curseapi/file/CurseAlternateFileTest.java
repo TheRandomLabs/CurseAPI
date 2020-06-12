@@ -30,7 +30,6 @@ import java.util.Optional;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
-import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -45,11 +44,8 @@ public class CurseAlternateFileTest {
 	@Test
 	public void projectShouldBeValid() throws CurseException {
 		final CurseProject project = file.project();
-		assertThat(project).isNotNull();
+		assertThat(project).isNotNull().isEqualTo(file.refreshProject());
 		assertThat(project.id()).isEqualTo(file.projectID());
-
-		file.clearProjectCache();
-		assertThat(file.project()).isEqualTo(project);
 	}
 
 	@Test
@@ -69,10 +65,7 @@ public class CurseAlternateFileTest {
 
 	@Test
 	public void downloadURLShouldNotBeNull() throws CurseException {
-		final HttpUrl downloadURL = file.downloadURL();
-		assertThat(downloadURL).isNotNull();
-		file.clearDownloadURLCache();
-		assertThat(file.downloadURL()).isEqualTo(downloadURL);
+		assertThat(file.downloadURL()).isNotNull().isEqualTo(file.refreshDownloadURL());
 	}
 
 	@Test
@@ -80,17 +73,14 @@ public class CurseAlternateFileTest {
 		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotNull();
 
-		file.clearChangelogCache();
+		file.refreshChangelog();
 		assertThat(file.changelogPlainText(10)).isEqualTo(changelog);
 	}
 
 	@Test
 	public void mainFileShouldBeValid() throws CurseException {
 		assertThat(file.mainFileID()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
-		final CurseFile mainFile = file.mainFile();
-		assertThat(mainFile).isNotNull();
-		file.clearMainFileCache();
-		assertThat(file.mainFile()).isEqualTo(mainFile);
+		assertThat(file.mainFile()).isNotNull().isEqualTo(file.refreshMainFile());
 	}
 
 	@BeforeAll

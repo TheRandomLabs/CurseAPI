@@ -140,8 +140,9 @@ final class ForgeSvcProject extends CurseProject {
 	}
 
 	@Override
-	public void clearGameCache() {
+	public CurseGame refreshGame() throws CurseException {
 		game = null;
+		return game();
 	}
 
 	@Override
@@ -165,8 +166,9 @@ final class ForgeSvcProject extends CurseProject {
 	}
 
 	@Override
-	public void clearDescriptionCache() {
+	public Element refreshDescription() throws CurseException {
 		description = null;
+		return description();
 	}
 
 	@Override
@@ -195,8 +197,9 @@ final class ForgeSvcProject extends CurseProject {
 	}
 
 	@Override
-	public void clearFilesCache() {
+	public CurseFiles<CurseFile> refreshFiles() throws CurseException {
 		files = null;
+		return files();
 	}
 
 	@Override

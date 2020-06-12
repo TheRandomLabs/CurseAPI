@@ -5,6 +5,7 @@ ext {
 	jacocoMinimumInstructionCoverage = 0.9
 	jacocoExcludes = [
 		"com.therandomlabs.curseapi.CurseAPIProvider",
+		"com.therandomlabs.curseapi.file.CurseAlternateFile",
 		"com.therandomlabs.curseapi.forgesvc.*",
 		"com.therandomlabs.curseapi.game.CurseGameVersion",
 		"com.therandomlabs.curseapi.game.CurseGameVersionGroup",

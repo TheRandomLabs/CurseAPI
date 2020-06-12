@@ -179,7 +179,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns this project's game.
-	 * This value may be refreshed by calling {@link #clearGameCache()}.
+	 * If this {@link CurseProject} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshGame()}.
 	 *
 	 * @return a {@link CurseGame} instance that represents this project's game.
 	 * @throws CurseException if an error occurs.
@@ -188,9 +189,12 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * If this {@link CurseProject} implementation caches the value returned by
-	 * {@link #game()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #game()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #game()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearGameCache();
+	public abstract CurseGame refreshGame() throws CurseException;
 
 	/**
 	 * Returns this project's summary.
@@ -201,6 +205,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns this project's description.
+	 * If this {@link CurseProject} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshDescription()}.
 	 *
 	 * @return an {@link Element} that contains this project's description.
 	 * @throws CurseException if an error occurs.
@@ -209,6 +215,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns this project's description as plain text.
+	 * If this {@link CurseProject} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshDescription()}.
 	 *
 	 * @return this project's description as plain text.
 	 * @throws CurseException if an error occurs.
@@ -220,6 +228,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns this project's description as plain text.
+	 * If this {@link CurseProject} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshDescription()}.
 	 *
 	 * @param maxLineLength the maximum length of a line. This value is used for word wrapping.
 	 * @return this project's description as plain text.
@@ -233,10 +243,12 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * If this {@link CurseProject} implementation caches the value returned by
-	 * {@link #description()} and supports clearing this cache, this method clears this cached
-	 * value.
+	 * {@link #description()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #description()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearDescriptionCache();
+	public abstract Element refreshDescription() throws CurseException;
 
 	/**
 	 * Returns this project's download count.
@@ -247,7 +259,8 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * Returns a {@link CurseFiles} instance for this project.
-	 * This value may be refreshed by calling {@link #clearFilesCache()}.
+	 * If this {@link CurseProject} implementation caches this value,
+	 * it may be refreshed by calling {@link #refreshFiles()}.
 	 *
 	 * @return a {@link CurseFiles} instance for this project.
 	 * @throws CurseException if an error occurs.
@@ -256,9 +269,12 @@ public abstract class CurseProject implements Comparable<CurseProject> {
 
 	/**
 	 * If this {@link CurseProject} implementation caches the value returned by
-	 * {@link #files()} and supports clearing this cache, this method clears this cached value.
+	 * {@link #files()}, this method refreshes this value and returns it.
+	 *
+	 * @return the refreshed value returned by {@link #files()}.
+	 * @throws CurseException if an error occurs.
 	 */
-	public abstract void clearFilesCache();
+	public abstract CurseFiles<CurseFile> refreshFiles() throws CurseException;
 
 	/**
 	 * Returns the URL of the file in this project with the specified ID.

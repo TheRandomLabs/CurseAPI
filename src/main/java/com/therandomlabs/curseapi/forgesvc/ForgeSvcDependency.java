@@ -60,8 +60,9 @@ final class ForgeSvcDependency extends CurseDependency {
 	}
 
 	@Override
-	public void clearProjectCache() {
+	public CurseProject refreshProject() throws CurseException {
 		project = null;
+		return project();
 	}
 
 	@Override
