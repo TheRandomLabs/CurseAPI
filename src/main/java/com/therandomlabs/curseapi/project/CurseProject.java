@@ -24,6 +24,7 @@
 package com.therandomlabs.curseapi.project;
 
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.Set;
 
 import com.google.common.base.MoreObjects;
@@ -46,6 +47,33 @@ import org.jsoup.nodes.Element;
  * Implementations of this class should be effectively immutable.
  */
 public abstract class CurseProject implements Comparable<CurseProject> {
+	/**
+	 * When used as a {@link Comparator} for a collection of {@link CurseProject}s,
+	 * the {@link CurseProject}s are ordered from oldest to newest in terms of creation time.
+	 */
+	public static final Comparator<CurseProject> SORT_BY_OLDEST =
+			Comparator.comparingInt(CurseProject::id);
+
+	/**
+	 * When used as a {@link Comparator} for a collection of {@link CurseProject}s,
+	 * the {@link CurseProject}s are ordered from newest to oldest in terms of creation time.
+	 */
+	public static final Comparator<CurseProject> SORT_BY_NEWEST = SORT_BY_OLDEST.reversed();
+
+	/**
+	 * When used as a {@link Comparator} for a collection of {@link CurseProject}s,
+	 * the {@link CurseProject}s are ordered from oldest to newest in terms of last update time.
+	 */
+	public static final Comparator<CurseProject> SORT_BY_FIRST_UPDATED =
+			Comparator.comparing(CurseProject::lastUpdateTime);
+
+	/**
+	 * When used as a {@link Comparator} for a collection of {@link CurseProject}s,
+	 * the {@link CurseProject}s are ordered from newest to oldest in terms of last update time.
+	 */
+	public static final Comparator<CurseProject> SORT_BY_LAST_UPDATED =
+			SORT_BY_FIRST_UPDATED.reversed();
+
 	/**
 	 * {@inheritDoc}
 	 * <p>

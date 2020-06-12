@@ -44,6 +44,13 @@ public class CurseProjectTest {
 	private static CurseProject comparisonProject;
 
 	@Test
+	public void comparatorsShouldBeValid() {
+		assertThat(CurseProject.SORT_BY_OLDEST.compare(project, comparisonProject)).
+				isGreaterThan(0);
+		assertThat(CurseProject.SORT_BY_NEWEST.compare(project, comparisonProject)).isLessThan(0);
+	}
+
+	@Test
 	public void equalsShouldBeValid() {
 		assertThat(project).isEqualTo(project);
 		assertThat(project).isNotEqualTo(comparisonProject);
