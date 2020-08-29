@@ -278,7 +278,7 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	 * If this {@link CurseFile} implementation caches this value,
 	 * it may be refreshed by calling {@link #refreshGameVersions()}.
 	 *
-	 * @param <V> the type of {@link CurseGameVersion}.
+	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return a mutable {@link NavigableSet} of {@link CurseGameVersion} instances that is
 	 * equivalent to the result obtained by calling {@link CurseAPI#gameVersion(int, String)} on
 	 * the version strings returned by {@link #gameVersionStrings()}.
@@ -306,6 +306,7 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	 * If this {@link CurseFile} implementation caches the value returned by
 	 * {@link #gameVersions()}, this method refreshes this value and returns it.
 	 *
+	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return the refreshed value returned by {@link #gameVersions()}.
 	 * @throws CurseException if an error occurs.
 	 */

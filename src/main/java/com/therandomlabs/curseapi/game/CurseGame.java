@@ -173,6 +173,7 @@ public abstract class CurseGame implements Comparable<CurseGame> {
 	 * If this {@link CurseGame} implementation caches the value returned by
 	 * {@link #versions()}, this method refreshes this value and returns it.
 	 *
+	 * @param <V> the implementation of {@link CurseGameVersion}.
 	 * @return the refreshed value returned by {@link #versions()}.
 	 * @throws CurseException if an error occurs.
 	 */

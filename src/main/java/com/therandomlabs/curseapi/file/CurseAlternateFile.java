@@ -52,6 +52,7 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	/**
 	 * {@inheritDoc}
 	 */
+	@NonNull
 	@Override
 	public CurseProject project() throws CurseException {
 		if (project == null) {
@@ -70,6 +71,7 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	/**
 	 * {@inheritDoc}
 	 */
+	@NonNull
 	@Override
 	public CurseProject refreshProject() throws CurseException {
 		project = null;

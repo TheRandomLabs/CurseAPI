@@ -276,6 +276,7 @@ public abstract class BasicCurseFile implements Comparable<BasicCurseFile> {
 	 * {@link BasicCurseFile} if it exists, or otherwise {@code null}.
 	 * @throws CurseException if an error occurs.
 	 */
+	@Nullable
 	public CurseFile toCurseFile() throws CurseException {
 		return CurseAPI.file(projectID(), id()).orElse(null);
 	}
