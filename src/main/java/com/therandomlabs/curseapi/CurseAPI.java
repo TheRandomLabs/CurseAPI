@@ -556,7 +556,7 @@ public final class CurseAPI {
 	 *
 	 * @param collection a {@link Collection} to derive the result from.
 	 * @param function a {@link CheckedFunction} that maps objects of type {@code E} to objects of
-	 * type {@link R}.
+	 * type {@code R}.
 	 * @param collector a {@link Collector}.
 	 * @param <E> the type of the elements.
 	 * @param <R> the type of the resultant values.
@@ -597,7 +597,7 @@ public final class CurseAPI {
 	 *
 	 * @param collection a {@link Collection} to derive the result from.
 	 * @param keyMapper a {@link CheckedFunction} that maps objects of type {@code E} to objects of
-	 * type {@link K}.
+	 * type {@code K}.
 	 * @param valueMapper a {@link CheckedFunction} that maps objects of type {@code E} to objects
 	 * of type {@code V}.
 	 * @param <E> the type of the elements.
