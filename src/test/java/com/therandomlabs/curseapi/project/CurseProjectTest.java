@@ -39,64 +39,64 @@ import com.therandomlabs.curseapi.game.CurseGame;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class CurseProjectTest {
+class CurseProjectTest {
 	private static CurseProject project;
 	private static CurseProject comparisonProject;
 
 	@Test
-	public void comparatorsShouldBeValid() {
+	void comparatorsShouldBeValid() {
 		assertThat(CurseProject.SORT_BY_OLDEST.compare(project, comparisonProject)).
 				isGreaterThan(0);
 		assertThat(CurseProject.SORT_BY_NEWEST.compare(project, comparisonProject)).isLessThan(0);
 	}
 
 	@Test
-	public void equalsShouldBeValid() {
+	void equalsShouldBeValid() {
 		assertThat(project).isEqualTo(project);
 		assertThat(project).isNotEqualTo(comparisonProject);
 		assertThat(project).isNotEqualTo(null);
 	}
 
 	@Test
-	public void toStringShouldNotBeEmpty() {
+	void toStringShouldNotBeEmpty() {
 		assertThat(project.toString()).isNotEmpty();
 	}
 
 	@Test
-	public void compareToShouldBeBasedOnName() {
+	void compareToShouldBeBasedOnName() {
 		assertThat(project).isEqualByComparingTo(project);
 		assertThat(project.compareTo(comparisonProject)).isNegative();
 	}
 
 	@Test
-	public void idShouldBeValid() {
+	void idShouldBeValid() {
 		assertThat(project.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_PROJECT_ID);
 	}
 
 	@Test
-	public void nameShouldNotBeEmpty() {
+	void nameShouldNotBeEmpty() {
 		assertThat(project.name()).isNotEmpty();
 	}
 
 	@Test
-	public void authorShouldNotBeNull() {
+	void authorShouldNotBeNull() {
 		assertThat(project.author()).isNotNull();
 	}
 
 	@Test
-	public void authorsShouldContainAuthor() {
+	void authorsShouldContainAuthor() {
 		assertThat(project.authors()).contains(project.author());
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfAttachmentIDIsInvalid() {
+	void exceptionShouldBeThrownIfAttachmentIDIsInvalid() {
 		assertThatThrownBy(() -> project.attachment(CurseAPI.MIN_ATTACHMENT_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void attachmentsShouldBeValid() throws CurseException {
+	void attachmentsShouldBeValid() throws CurseException {
 		assertThat(project.attachments()).isNotEmpty();
 
 		final CurseAttachment attachment = Iterables.getFirst(project.attachments(), null);
@@ -114,24 +114,24 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void logoShouldNotBeNullOrPlaceholder() {
+	void logoShouldNotBeNullOrPlaceholder() {
 		assertThat(project.logo()).
 				isNotNull().
 				isNotEqualTo(CurseAttachment.PLACEHOLDER_LOGO);
 	}
 
 	@Test
-	public void urlShouldNotBeNull() {
+	void urlShouldNotBeNull() {
 		assertThat(project.url()).isNotNull();
 	}
 
 	@Test
-	public void gameIDShouldBeValid() {
+	void gameIDShouldBeValid() {
 		assertThat(project.gameID()).isGreaterThanOrEqualTo(CurseAPI.MIN_GAME_ID);
 	}
 
 	@Test
-	public void gameShouldBeValid() throws CurseException {
+	void gameShouldBeValid() throws CurseException {
 		final CurseGame game1 = project.game();
 		assertThat(game1).isNotNull();
 
@@ -142,19 +142,19 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void summaryShouldNotBeEmpty() {
+	void summaryShouldNotBeEmpty() {
 		assertThat(project.summary()).isNotEmpty();
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() throws CurseException {
+	void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() throws CurseException {
 		assertThatThrownBy(() -> project.descriptionPlainText(0)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should be greater than 0");
 	}
 
 	@Test
-	public void descriptionPlainTextShouldBeValid() throws CurseException {
+	void descriptionPlainTextShouldBeValid() throws CurseException {
 		final String description = project.descriptionPlainText();
 		assertThat(description).isNotEmpty();
 
@@ -163,12 +163,12 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void downloadCountShouldBePositive() throws CurseException {
+	void downloadCountShouldBePositive() throws CurseException {
 		assertThat(project.downloadCount()).isPositive();
 	}
 
 	@Test
-	public void filesShouldBeValid() throws CurseException {
+	void filesShouldBeValid() throws CurseException {
 		final CurseFiles<CurseFile> files = project.files();
 		assertThat(files).isNotEmpty();
 
@@ -180,19 +180,19 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfFileIDIsInvalid() {
+	void exceptionShouldBeThrownIfFileIDIsInvalid() {
 		assertThatThrownBy(() -> project.fileURL(CurseAPI.MIN_FILE_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void fileURLShouldBeValid() throws CurseException {
+	void fileURLShouldBeValid() throws CurseException {
 		assertThat(project.fileURL(CurseAPI.MIN_FILE_ID)).isNotNull();
 	}
 
 	@Test
-	public void primaryCategoryShouldBeValid() {
+	void primaryCategoryShouldBeValid() {
 		assertThat(project.primaryCategory()).isNotNull();
 		assertThat(project.primaryCategory().sectionID()).
 				isGreaterThanOrEqualTo(CurseAPI.MIN_CATEGORY_SECTION_ID);
@@ -200,12 +200,12 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void categoriesShouldContainPrimaryCategory() {
+	void categoriesShouldContainPrimaryCategory() {
 		assertThat(project.categories()).contains(project.primaryCategory());
 	}
 
 	@Test
-	public void categorySectionShouldBeValid() throws CurseException {
+	void categorySectionShouldBeValid() throws CurseException {
 		final CurseCategorySection categorySection = project.categorySection();
 		assertThat(categorySection).isNotNull();
 
@@ -231,32 +231,32 @@ public class CurseProjectTest {
 	}
 
 	@Test
-	public void slugShouldNotBeNull() {
+	void slugShouldNotBeNull() {
 		assertThat(project.slug()).isNotNull();
 	}
 
 	@Test
-	public void creationTimeShouldNotBeNull() {
+	void creationTimeShouldNotBeNull() {
 		assertThat(project.creationTime()).isNotNull();
 	}
 
 	@Test
-	public void lastUpdateTimeShouldNotBeNull() {
+	void lastUpdateTimeShouldNotBeNull() {
 		assertThat(project.lastUpdateTime()).isNotNull();
 	}
 
 	@Test
-	public void lastModificationTimeShouldNotBeNull() {
+	void lastModificationTimeShouldNotBeNull() {
 		assertThat(project.lastModificationTime()).isNotNull();
 	}
 
 	@Test
-	public void experimentalShouldBeFalse() {
+	void experimentalShouldBeFalse() {
 		assertThat(project.experimental()).isFalse();
 	}
 
 	@BeforeAll
-	public static void getProject() throws CurseException {
+	static void getProject() throws CurseException {
 		final Optional<CurseProject> optionalProject = CurseAPI.project(285612);
 		assertThat(optionalProject).isPresent();
 		project = optionalProject.get();

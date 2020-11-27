@@ -28,16 +28,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-public class CurseReleaseTypeTest {
+class CurseReleaseTypeTest {
 	@Test
-	public void idsShouldBeCorrect() {
+	void idsShouldBeCorrect() {
 		assertThat(CurseReleaseType.RELEASE.id()).isEqualTo(1);
 		assertThat(CurseReleaseType.BETA.id()).isEqualTo(2);
 		assertThat(CurseReleaseType.ALPHA.id()).isEqualTo(3);
 	}
 
 	@Test
-	public void minimumStabilityShouldBeMatchedCorrectly() {
+	void minimumStabilityShouldBeMatchedCorrectly() {
 		assertThat(CurseReleaseType.ALPHA.hasMinimumStability(CurseReleaseType.RELEASE)).isFalse();
 		assertThat(CurseReleaseType.ALPHA.hasMinimumStability(CurseReleaseType.BETA)).isFalse();
 		assertThat(CurseReleaseType.ALPHA.hasMinimumStability(CurseReleaseType.ALPHA)).isTrue();
@@ -52,7 +52,7 @@ public class CurseReleaseTypeTest {
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfIDIsInvalid() {
+	void exceptionShouldBeThrownIfIDIsInvalid() {
 		assertThatThrownBy(() -> CurseReleaseType.fromID(0)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should be positive");
@@ -62,7 +62,7 @@ public class CurseReleaseTypeTest {
 	}
 
 	@Test
-	public void fromIDShouldReturnCorrectValues() {
+	void fromIDShouldReturnCorrectValues() {
 		assertThat(CurseReleaseType.fromID(1)).isEqualTo(CurseReleaseType.RELEASE);
 		assertThat(CurseReleaseType.fromID(2)).isEqualTo(CurseReleaseType.BETA);
 		assertThat(CurseReleaseType.fromID(3)).isEqualTo(CurseReleaseType.ALPHA);

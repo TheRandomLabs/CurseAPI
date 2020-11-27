@@ -29,9 +29,9 @@ import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import org.junit.jupiter.api.Test;
 
-public class CurseAttachmentTest {
+class CurseAttachmentTest {
 	@Test
-	public void placeholderLogoShouldBeValid() throws CurseException {
+	void placeholderLogoShouldBeValid() throws CurseException {
 		assertThat(CurseAttachment.PLACEHOLDER_LOGO.toString()).isNotEmpty();
 		assertThat(CurseAttachment.PLACEHOLDER_LOGO.id()).
 				isGreaterThanOrEqualTo(CurseAPI.MIN_ATTACHMENT_ID);

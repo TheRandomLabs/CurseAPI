@@ -39,26 +39,26 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class CurseFileTest {
+class CurseFileTest {
 	private static CurseFile file;
 	private static CurseFile comparisonFile;
 	private static CurseFile comparisonFile2;
 	private static CurseFile dependentFile;
 
 	@Test
-	public void equalsShouldBeValid() {
+	void equalsShouldBeValid() {
 		assertThat(file).isEqualTo(file);
 		assertThat(file).isNotEqualTo(comparisonFile);
 		assertThat(file).isNotEqualTo(null);
 	}
 
 	@Test
-	public void toStringShouldNotBeEmpty() {
+	void toStringShouldNotBeEmpty() {
 		assertThat(file.toString()).isNotEmpty();
 	}
 
 	@Test
-	public void compareToShouldBeBasedOnID() {
+	void compareToShouldBeBasedOnID() {
 		assertThat(file).isEqualByComparingTo(file);
 		assertThat(file.compareTo(comparisonFile)).isNegative();
 		assertThat(file.compareTo(comparisonFile2)).isNegative();
@@ -66,12 +66,12 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void projectIDShouldBeValid() {
+	void projectIDShouldBeValid() {
 		assertThat(file.projectID()).isGreaterThanOrEqualTo(CurseAPI.MIN_PROJECT_ID);
 	}
 
 	@Test
-	public void projectShouldBeValid() throws CurseException {
+	void projectShouldBeValid() throws CurseException {
 		final CurseProject project = file.project();
 		assertThat(project).isNotNull();
 		assertThat(project.id()).isEqualTo(file.projectID());
@@ -79,7 +79,7 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void sameProjectShouldReturnCorrectValues() {
+	void sameProjectShouldReturnCorrectValues() {
 		assertThatThrownBy(() -> file.sameProject(null)).
 				isInstanceOf(NullPointerException.class).
 				hasMessageContaining("should not be null");
@@ -89,92 +89,92 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void idShouldBeValid() {
+	void idShouldBeValid() {
 		assertThat(file.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
 	}
 
 	@Test
-	public void urlShouldNotBeNull() throws CurseException {
+	void urlShouldNotBeNull() throws CurseException {
 		assertThat(file.url()).isNotNull();
 	}
 
 	@Test
-	public void olderThanShouldBeBasedOnID() {
+	void olderThanShouldBeBasedOnID() {
 		assertThat(file.olderThan(comparisonFile)).isFalse();
 		assertThat(file.olderThan(comparisonFile2)).isFalse();
 		assertThat(comparisonFile2.olderThan(file)).isTrue();
 	}
 
 	@Test
-	public void newerThanShouldBeBasedOnID() {
+	void newerThanShouldBeBasedOnID() {
 		assertThat(file.newerThan(comparisonFile)).isTrue();
 		assertThat(file.newerThan(comparisonFile2)).isTrue();
 		assertThat(comparisonFile2.newerThan(file)).isFalse();
 	}
 
 	@Test
-	public void toCurseFileShouldReturnSameFile() throws CurseException {
+	void toCurseFileShouldReturnSameFile() throws CurseException {
 		assertThat(file.toCurseFile()).isSameAs(file);
 	}
 
 	@Test
-	public void displayNameShouldNotBeNull() {
+	void displayNameShouldNotBeNull() {
 		assertThat(file.displayName()).isNotEmpty();
 	}
 
 	@Test
-	public void nameOnDiskShouldNotBeEmpty() {
+	void nameOnDiskShouldNotBeEmpty() {
 		assertThat(file.nameOnDisk()).isNotEmpty();
 	}
 
 	@Test
-	public void mavenDependencyShouldNotBeEmpty() throws CurseException {
+	void mavenDependencyShouldNotBeEmpty() throws CurseException {
 		assertThat(file.mavenDependency()).isNotEmpty();
 	}
 
 	@Test
-	public void hasAlternateFileShouldReturnCorrectValue() {
+	void hasAlternateFileShouldReturnCorrectValue() {
 		assertThat(file.hasAlternateFile()).isFalse();
 		assertThat(comparisonFile2.hasAlternateFile()).isTrue();
 	}
 
 	@Test
-	public void alternateFileIDShouldBeValid() {
+	void alternateFileIDShouldBeValid() {
 		assertThat(comparisonFile2.alternateFileID()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
 	}
 
 	@Test
-	public void alternateFileShouldBeNull() {
+	void alternateFileShouldBeNull() {
 		assertThat(file.alternateFile()).isNull();
 	}
 
 	@Test
-	public void alternateFileShouldNotBeNull() {
+	void alternateFileShouldNotBeNull() {
 		assertThat(comparisonFile2.alternateFile()).isNotNull();
 	}
 
 	@Test
-	public void uploadTimeShouldNotBeNull() {
+	void uploadTimeShouldNotBeNull() {
 		assertThat(file.uploadTime()).isNotNull();
 	}
 
 	@Test
-	public void fileSizeShouldBePositive() {
+	void fileSizeShouldBePositive() {
 		assertThat(file.fileSize()).isPositive();
 	}
 
 	@Test
-	public void releaseTypeShouldNotBeNull() {
+	void releaseTypeShouldNotBeNull() {
 		assertThat(file.releaseType()).isNotNull();
 	}
 
 	@Test
-	public void statusShouldNotBeNull() {
+	void statusShouldNotBeNull() {
 		assertThat(file.status()).isNotNull();
 	}
 
 	@Test
-	public void downloadURLShouldBeValid() {
+	void downloadURLShouldBeValid() {
 		final HttpUrl downloadURL = file.downloadURL();
 		assertThat(downloadURL).isNotNull();
 		//This should be a no-op, so we use isSameAs instead of isEqualTo.
@@ -182,21 +182,21 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void downloadShouldDownload(@TempDir Path tempDirectory) throws CurseException {
+	void downloadShouldDownload(@TempDir Path tempDirectory) throws CurseException {
 		final Path path = tempDirectory.resolve("randompatches-1.14.4-19.1.1.1.jar");
 		file.download(path);
 		assertThat(path).isRegularFile();
 	}
 
 	@Test
-	public void downloadToDirectoryShouldDownloadWithCorrectName(@TempDir Path tempDirectory)
+	void downloadToDirectoryShouldDownloadWithCorrectName(@TempDir Path tempDirectory)
 			throws CurseException {
 		final Path path = file.downloadToDirectory(tempDirectory);
 		assertThat(path).isRegularFile().hasFileName("randompatches-1.14.4-1.19.1.1.jar");
 	}
 
 	@Test
-	public void dependenciesShouldBeValid() throws CurseException {
+	void dependenciesShouldBeValid() throws CurseException {
 		assertThat(dependentFile.dependencies()).isNotEmpty();
 
 		//We also test CurseDependency here.
@@ -216,30 +216,30 @@ public class CurseFileTest {
 	}
 
 	@Test
-	public void gameVersionStringsShouldNotBeEmpty() {
+	void gameVersionStringsShouldNotBeEmpty() {
 		assertThat(file.gameVersionStrings()).isNotEmpty();
 	}
 
 	@Test
-	public void gameVersionsShouldBeEmpty() throws CurseException {
+	void gameVersionsShouldBeEmpty() throws CurseException {
 		assertThat(file.gameVersions()).isEmpty();
 		assertThat(file.refreshGameVersions()).isEmpty();
 	}
 
 	@Test
-	public void gameVersionGroupsShouldBeEmpty() throws CurseException {
+	void gameVersionGroupsShouldBeEmpty() throws CurseException {
 		assertThat(file.gameVersionGroups()).isEmpty();
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() {
+	void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() {
 		assertThatThrownBy(() -> file.changelogPlainText(0)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should be greater than");
 	}
 
 	@Test
-	public void changelogPlainTextShouldBeValid() throws CurseException {
+	void changelogPlainTextShouldBeValid() throws CurseException {
 		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotEmpty();
 
@@ -248,7 +248,7 @@ public class CurseFileTest {
 	}
 
 	@BeforeAll
-	public static void getFile() throws CurseException {
+	static void getFile() throws CurseException {
 		final Optional<CurseFile> optionalFile = CurseAPI.file(285612, 2803612);
 		assertThat(optionalFile).isPresent();
 		file = optionalFile.get();

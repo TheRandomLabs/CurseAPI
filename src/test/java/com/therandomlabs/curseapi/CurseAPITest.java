@@ -53,7 +53,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @SuppressWarnings("rawtypes")
 @ExtendWith(MockitoExtension.class)
-public class CurseAPITest {
+class CurseAPITest {
 	@Mock(lenient = true)
 	private static CurseGameVersionGroup mockVersionGroup;
 
@@ -71,14 +71,14 @@ public class CurseAPITest {
 	private static CurseAPIProvider mockProvider;
 
 	@Test
-	public void shouldThrowExceptionIfInvalidProjectID() {
+	void shouldThrowExceptionIfInvalidProjectID() {
 		assertThatThrownBy(() -> CurseAPI.project(CurseAPI.MIN_PROJECT_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void projectShouldBePresentIfExistent() throws CurseException {
+	void projectShouldBePresentIfExistent() throws CurseException {
 		assertThat(CurseAPI.project(CurseAPI.MIN_PROJECT_ID)).isPresent();
 		assertThat(CurseAPI.project("minecraft/mc-mods/randompatches")).isPresent();
 		assertThat(CurseAPI.project(HttpUrl.get(
@@ -87,13 +87,13 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void projectShouldNotBePresentIfNonexistent() throws CurseException {
+	void projectShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(CurseAPI.project(Integer.MAX_VALUE)).isNotPresent();
 		assertThat(CurseAPI.project("minecraft/randompatches")).isNotPresent();
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() {
+	void exceptionShouldBeThrownIfMaxLineLengthIsInvalid() {
 		assertThatThrownBy(() -> CurseAPI.projectDescriptionPlainText(CurseAPI.MIN_PROJECT_ID, 0)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should be greater than");
@@ -105,14 +105,14 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void projectDescriptionPlainTextShouldNotBeEmpty() throws CurseException {
+	void projectDescriptionPlainTextShouldNotBeEmpty() throws CurseException {
 		assertThat(CurseAPI.projectDescriptionPlainText(
 				CurseAPI.MIN_PROJECT_ID
 		)).get().asString().isNotEmpty();
 	}
 
 	@Test
-	public void searchResultsShouldBeValid() throws CurseException {
+	void searchResultsShouldBeValid() throws CurseException {
 		final Optional<CurseGame> optionalGame = CurseAPI.game(432);
 		assertThat(optionalGame).isPresent();
 		final CurseGame game = optionalGame.get();
@@ -154,43 +154,43 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void filesShouldBeEmpty() throws CurseException {
+	void filesShouldBeEmpty() throws CurseException {
 		assertThat(CurseAPI.files(Integer.MAX_VALUE)).isNotPresent();
 	}
 
 	@Test
-	public void filesShouldNotBeEmpty() throws CurseException {
+	void filesShouldNotBeEmpty() throws CurseException {
 		assertThat(CurseAPI.files(CurseAPI.MIN_PROJECT_ID)).get().
 				asInstanceOf(InstanceOfAssertFactories.ITERABLE).
 				isNotEmpty();
 	}
 
 	@Test
-	public void shouldThrowExceptionIfInvalidFileID() throws CurseException {
+	void shouldThrowExceptionIfInvalidFileID() throws CurseException {
 		assertThatThrownBy(() -> CurseAPI.file(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void fileShouldBePresentIfExistent() throws CurseException {
+	void fileShouldBePresentIfExistent() throws CurseException {
 		assertThat(CurseAPI.file(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID)).isPresent();
 	}
 
 	@Test
-	public void fileShouldNotBePresentIfNonexistent() throws CurseException {
+	void fileShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(CurseAPI.file(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID + 1)).isNotPresent();
 	}
 
 	@Test
-	public void fileChangelogShouldNotBeEmpty() throws CurseException {
+	void fileChangelogShouldNotBeEmpty() throws CurseException {
 		assertThat(CurseAPI.fileChangelogPlainText(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID)).
 				get().asString().isNotEmpty();
 	}
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
-	public void fileShouldDownload(@TempDir Path tempDirectory) throws CurseException {
+	void fileShouldDownload(@TempDir Path tempDirectory) throws CurseException {
 		final Path path = tempDirectory.resolve("assistpartymember-10900.zip");
 		assertThat(CurseAPI.downloadFile(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID, path)).
 				isTrue();
@@ -198,7 +198,7 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void nonexistentFileShouldNotDownload(@TempDir Path tempDirectory)
+	void nonexistentFileShouldNotDownload(@TempDir Path tempDirectory)
 			throws CurseException {
 		final Path path = tempDirectory.resolve("download.zip");
 		assertThat(CurseAPI.downloadFile(CurseAPI.MIN_PROJECT_ID, Integer.MAX_VALUE, path)).
@@ -208,7 +208,7 @@ public class CurseAPITest {
 
 	@SuppressWarnings("SpellCheckingInspection")
 	@Test
-	public void fileShouldDownloadToDirectoryWithCorrectName(@TempDir Path tempDirectory)
+	void fileShouldDownloadToDirectoryWithCorrectName(@TempDir Path tempDirectory)
 			throws CurseException {
 		assertThat(CurseAPI.downloadFileToDirectory(
 				CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID, tempDirectory
@@ -218,7 +218,7 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void nonexistentFileShouldNotDownloadToDirectory(@TempDir Path tempDirectory)
+	void nonexistentFileShouldNotDownloadToDirectory(@TempDir Path tempDirectory)
 			throws CurseException {
 		assertThat(CurseAPI.downloadFileToDirectory(
 				CurseAPI.MIN_PROJECT_ID, Integer.MAX_VALUE, tempDirectory
@@ -226,7 +226,7 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void gamesShouldBeValid() throws CurseException {
+	void gamesShouldBeValid() throws CurseException {
 		final Optional<Set<CurseGame>> optionalGames = CurseAPI.games();
 		assertThat(optionalGames).isPresent();
 		final Set<CurseGame> games = optionalGames.get();
@@ -236,14 +236,14 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfInvalidGameID() {
+	void shouldThrowExceptionIfInvalidGameID() {
 		assertThatThrownBy(() -> CurseAPI.game(CurseAPI.MIN_GAME_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void gameShouldBeValidIfExistent() throws CurseException {
+	void gameShouldBeValidIfExistent() throws CurseException {
 		final Optional<CurseGame> optionalGame = CurseAPI.game(432);
 		assertThat(optionalGame).isPresent();
 		final CurseGame game = optionalGame.get();
@@ -258,25 +258,25 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void gameShouldNotBePresentIfNonexistent() throws CurseException {
+	void gameShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(CurseAPI.game(Integer.MAX_VALUE)).isNotPresent();
 	}
 
 	@Test
-	public void gameVersionsShouldNotBePresent() throws CurseException {
+	void gameVersionsShouldNotBePresent() throws CurseException {
 		assertThat(CurseAPI.gameVersions(CurseAPI.MIN_GAME_ID)).isNotPresent();
 		assertThat(CurseAPI.gameVersion(CurseAPI.MIN_GAME_ID, "")).isNotPresent();
 	}
 
 	@Test
-	public void shouldThrowExceptionIfInvalidCategorySectionID() {
+	void shouldThrowExceptionIfInvalidCategorySectionID() {
 		assertThatThrownBy(() -> CurseAPI.categories(CurseAPI.MIN_CATEGORY_SECTION_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void categoriesShouldBeValid() throws CurseException {
+	void categoriesShouldBeValid() throws CurseException {
 		assertThat(CurseAPI.categories()).get().
 				asInstanceOf(InstanceOfAssertFactories.ITERABLE).
 				isNotEmpty();
@@ -308,25 +308,25 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void shouldThrowExceptionIfInvalidCategoryID() {
+	void shouldThrowExceptionIfInvalidCategoryID() {
 		assertThatThrownBy(() -> CurseAPI.category(CurseAPI.MIN_CATEGORY_ID - 1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be smaller than");
 	}
 
 	@Test
-	public void categoryShouldBePresentIfExistent() throws CurseException {
+	void categoryShouldBePresentIfExistent() throws CurseException {
 		assertThat(CurseAPI.category(CurseAPI.MIN_CATEGORY_ID)).isPresent();
 	}
 
 	@Test
-	public void categoryShouldNotBePresentIfNonexistent() throws CurseException {
+	void categoryShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(CurseAPI.category(Integer.MAX_VALUE)).isNotPresent();
 	}
 
 	@SuppressWarnings({"unchecked", "RedundantSuppression"})
 	@Test
-	public void gameVersionGroupsShouldBeValid() throws CurseException {
+	void gameVersionGroupsShouldBeValid() throws CurseException {
 		when(mockVersion1.gameID()).thenReturn(CurseAPI.MIN_GAME_ID);
 		when(mockVersion1.versionGroup()).thenCallRealMethod();
 
@@ -351,7 +351,7 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void parallelMapProducesValidOutput() throws CurseException {
+	void parallelMapProducesValidOutput() throws CurseException {
 		assertThat(CurseAPI.parallelMap(
 				IntStream.range(
 						CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_PROJECT_ID + 4
@@ -362,7 +362,7 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void parallelMapShouldThrowCorrectly() {
+	void parallelMapShouldThrowCorrectly() {
 		assertThatThrownBy(() -> CurseAPI.parallelMap(
 				Collections.singletonList("Test exception"),
 				message -> {
@@ -385,7 +385,7 @@ public class CurseAPITest {
 	}
 
 	@Test
-	public void customProviderFunctionsCorrectly() throws CurseException {
+	void customProviderFunctionsCorrectly() throws CurseException {
 		final Optional<CurseProject> optionalProject = CurseAPI.project(CurseAPI.MIN_PROJECT_ID);
 		assertThat(optionalProject).isPresent();
 

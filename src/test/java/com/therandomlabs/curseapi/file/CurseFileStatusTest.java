@@ -28,9 +28,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-public class CurseFileStatusTest {
+class CurseFileStatusTest {
 	@Test
-	public void idsShouldBeCorrect() {
+	void idsShouldBeCorrect() {
 		assertThat(CurseFileStatus.STATUS_1.id()).isEqualTo(1);
 		assertThat(CurseFileStatus.STATUS_2.id()).isEqualTo(2);
 		assertThat(CurseFileStatus.STATUS_3.id()).isEqualTo(3);
@@ -42,7 +42,7 @@ public class CurseFileStatusTest {
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfIDIsInvalid() {
+	void exceptionShouldBeThrownIfIDIsInvalid() {
 		assertThatThrownBy(() -> CurseFileStatus.fromID(0)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should be positive");
@@ -52,7 +52,7 @@ public class CurseFileStatusTest {
 	}
 
 	@Test
-	public void fromIDShouldReturnCorrectValues() {
+	void fromIDShouldReturnCorrectValues() {
 		assertThat(CurseFileStatus.fromID(1)).isEqualTo(CurseFileStatus.STATUS_1);
 		assertThat(CurseFileStatus.fromID(2)).isEqualTo(CurseFileStatus.STATUS_2);
 		assertThat(CurseFileStatus.fromID(3)).isEqualTo(CurseFileStatus.STATUS_3);

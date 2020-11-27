@@ -28,9 +28,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-public class CurseSearchSortTest {
+class CurseSearchSortTest {
 	@Test
-	public void exceptionShouldBeThrownIfIDIsInvalid() {
+	void exceptionShouldBeThrownIfIDIsInvalid() {
 		assertThatThrownBy(() -> CurseSearchSort.fromID(-1)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should not be below 0");
@@ -41,7 +41,7 @@ public class CurseSearchSortTest {
 	}
 
 	@Test
-	public void fromIDShouldReturnCorrectSearchSort() {
+	void fromIDShouldReturnCorrectSearchSort() {
 		assertThat(CurseSearchSort.fromID(2)).isEqualTo(CurseSearchSort.LAST_UPDATED);
 	}
 }

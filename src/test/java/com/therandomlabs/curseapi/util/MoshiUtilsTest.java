@@ -37,7 +37,7 @@ import okio.Okio;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class MoshiUtilsTest {
+class MoshiUtilsTest {
 	private static final int PROJECT_ID = 100000;
 	private static final int FILE_ID = 200000;
 
@@ -46,14 +46,14 @@ public class MoshiUtilsTest {
 	);
 
 	@Test
-	public void exceptionShouldBeThrownIfJsonIsInvalid() {
+	void exceptionShouldBeThrownIfJsonIsInvalid() {
 		assertThatThrownBy(() -> MoshiUtils.fromJSON("", BasicCurseFile.Immutable.class)).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining("Failed to read JSON");
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfPathDoesNotExist(@TempDir Path tempDirectory) {
+	void exceptionShouldBeThrownIfPathDoesNotExist(@TempDir Path tempDirectory) {
 		final Path nonexistent = tempDirectory.resolve("nonexistent").resolve("nonexistent.json");
 
 		assertThatThrownBy(() -> MoshiUtils.fromJSON(nonexistent, BasicCurseFile.Immutable.class)).
@@ -66,7 +66,7 @@ public class MoshiUtilsTest {
 	}
 
 	@Test
-	public void jsonShouldConvertToValidImmutableFile(@TempDir Path tempDirectory)
+	void jsonShouldConvertToValidImmutableFile(@TempDir Path tempDirectory)
 			throws CurseException, IOException {
 		final Path json = tempDirectory.resolve("file.json");
 
@@ -83,7 +83,7 @@ public class MoshiUtilsTest {
 	}
 
 	@Test
-	public void immutableFileShouldConvertToValidJSON(@TempDir Path tempDirectory)
+	void immutableFileShouldConvertToValidJSON(@TempDir Path tempDirectory)
 			throws CurseException, IOException {
 		final Path json = tempDirectory.resolve("file.json");
 		MoshiUtils.toJSON(new BasicCurseFile.Immutable(PROJECT_ID, FILE_ID), json);

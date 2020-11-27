@@ -43,7 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @SuppressWarnings("rawtypes")
 @ExtendWith(MockitoExtension.class)
-public class CurseFilesTest {
+class CurseFilesTest {
 	@Mock(lenient = true)
 	private static CurseGameVersionGroup mockVersionGroup;
 	@Mock(lenient = true)
@@ -52,14 +52,14 @@ public class CurseFilesTest {
 	private static CurseFiles<CurseFile> files;
 
 	@Test
-	public void cloneShouldReturnValidValue() {
+	void cloneShouldReturnValidValue() {
 		final CurseFiles<CurseFile> cloned = files.clone();
 		assertThat(cloned).isEqualTo(files);
 		files = cloned;
 	}
 
 	@Test
-	public void copyConstructorShouldCopyCorrectly() {
+	void copyConstructorShouldCopyCorrectly() {
 		CurseFiles<CurseFile> copied = new CurseFiles<>(files);
 		assertThat(copied).isEqualTo(files);
 		files = copied;
@@ -72,7 +72,7 @@ public class CurseFilesTest {
 	}
 
 	@Test
-	public void filterShouldWorkCorrectly() {
+	void filterShouldWorkCorrectly() {
 		final Set<CurseGameVersion> mockVersions = new HashSet<>();
 
 		when(mockVersionGroup.versions()).thenReturn(mockVersions);
@@ -125,14 +125,14 @@ public class CurseFilesTest {
 	}
 
 	@Test
-	public void sortingShouldWorkCorrectly() {
+	void sortingShouldWorkCorrectly() {
 		final CurseFiles<CurseFile> sortedByOldest =
 				files.withComparator(CurseFiles.SORT_BY_OLDEST);
 		assertThat(sortedByOldest.first().id()).isEqualTo(2522102);
 	}
 
 	@Test
-	public void parallelMapProducesValidList() throws CurseException {
+	void parallelMapProducesValidList() throws CurseException {
 		final CurseFiles<CurseFile> smallerFiles = files.clone();
 		new CurseFileFilter().
 				olderThan(new BasicCurseFile.Immutable(285612, 2581245)).
@@ -143,7 +143,7 @@ public class CurseFilesTest {
 	}
 
 	@Test
-	public void parallelMapProducesValidMap() throws CurseException {
+	void parallelMapProducesValidMap() throws CurseException {
 		final CurseFiles<CurseFile> smallerFiles = files.clone();
 		new CurseFileFilter().
 				olderThan(new BasicCurseFile.Immutable(285612, 2581245)).
@@ -156,7 +156,7 @@ public class CurseFilesTest {
 	}
 
 	@BeforeAll
-	public static void getFiles() throws CurseException {
+	static void getFiles() throws CurseException {
 		final Optional<CurseFiles<CurseFile>> optionalFiles = CurseAPI.files(285612);
 		assertThat(optionalFiles).isPresent();
 		files = optionalFiles.get();

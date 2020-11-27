@@ -32,45 +32,45 @@ import com.therandomlabs.curseapi.CurseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class CurseMemberTest {
+class CurseMemberTest {
 	private static CurseMember member;
 	private static CurseMember comparisonMember;
 
 	@Test
-	public void equalsShouldBeValid() {
+	void equalsShouldBeValid() {
 		assertThat(member).isEqualTo(member);
 		assertThat(member).isNotEqualTo(comparisonMember);
 		assertThat(member).isNotEqualTo(null);
 	}
 
 	@Test
-	public void toStringShouldNotBeEmpty() {
+	void toStringShouldNotBeEmpty() {
 		assertThat(member.toString()).isNotEmpty();
 	}
 
 	@Test
-	public void compareToShouldBeBasedOnName() {
+	void compareToShouldBeBasedOnName() {
 		assertThat(member).isEqualByComparingTo(member);
 		assertThat(member.compareTo(comparisonMember)).isNegative();
 	}
 
 	@Test
-	public void idShouldBeValid() {
+	void idShouldBeValid() {
 		assertThat(member.id()).isPositive();
 	}
 
 	@Test
-	public void nameShouldNotBeEmpty() {
+	void nameShouldNotBeEmpty() {
 		assertThat(member.name()).isNotEmpty();
 	}
 
 	@Test
-	public void urlShouldNotBeNull() {
+	void urlShouldNotBeNull() {
 		assertThat(member.url()).isNotNull();
 	}
 
 	@BeforeAll
-	public static void getMember() throws CurseException {
+	static void getMember() throws CurseException {
 		final Optional<CurseProject> optionalProject = CurseAPI.project(285612);
 		assertThat(optionalProject).isPresent();
 		member = optionalProject.get().author();

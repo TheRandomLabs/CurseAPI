@@ -31,34 +31,34 @@ import com.therandomlabs.curseapi.CurseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class ExistingFileTest {
+class ExistingFileTest {
 	private static ExistingCurseFile.Existing file;
 	private static ExistingCurseFile.Existing nonexistentFile;
 
 	@Test
-	public void toStringShouldNotBeEmpty() {
+	void toStringShouldNotBeEmpty() {
 		assertThat(file.toString()).isNotEmpty();
 	}
 
 	@Test
-	public void urlShouldNotBeNullIfExistent() throws CurseException {
+	void urlShouldNotBeNullIfExistent() throws CurseException {
 		assertThat(file.url()).isNotNull();
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfProjectIsNonexistent() {
+	void exceptionShouldBeThrownIfProjectIsNonexistent() {
 		assertThatThrownBy(() -> nonexistentFile.project()).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining("Project does not exist");
 	}
 
 	@Test
-	public void projectShouldBeValidIfExistent() throws CurseException {
+	void projectShouldBeValidIfExistent() throws CurseException {
 		assertThat(file.project()).isNotNull().isEqualTo(file.refreshProject());
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfNonexistent() {
+	void exceptionShouldBeThrownIfNonexistent() {
 		assertThatThrownBy(() -> nonexistentFile.downloadURL()).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining("File does not exist");
@@ -68,12 +68,12 @@ public class ExistingFileTest {
 	}
 
 	@Test
-	public void downloadURLShouldBeValid() throws CurseException {
+	void downloadURLShouldBeValid() throws CurseException {
 		assertThat(file.downloadURL()).isNotNull().isEqualTo(file.refreshDownloadURL());
 	}
 
 	@Test
-	public void changelogPlainTextShouldBeValid() throws CurseException {
+	void changelogPlainTextShouldBeValid() throws CurseException {
 		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotEmpty();
 
@@ -82,7 +82,7 @@ public class ExistingFileTest {
 	}
 
 	@BeforeAll
-	public static void getFiles() {
+	static void getFiles() {
 		file = new ExistingCurseFile.Existing(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID);
 		nonexistentFile = new ExistingCurseFile.Existing(Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}

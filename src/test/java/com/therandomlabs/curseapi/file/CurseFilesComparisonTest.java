@@ -30,10 +30,10 @@ import com.therandomlabs.curseapi.CurseException;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 
-public class CurseFilesComparisonTest {
+class CurseFilesComparisonTest {
 	@SuppressWarnings("cast")
 	@Test
-	public void comparisonShouldBeCorrect() throws CurseException {
+	void comparisonShouldBeCorrect() throws CurseException {
 		final BasicCurseFile quarkUnchanged = new BasicCurseFile.Immutable(243121, 2759240);
 
 		final BasicCurseFile enderCoreOld =

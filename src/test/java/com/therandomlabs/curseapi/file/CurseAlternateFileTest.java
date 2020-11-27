@@ -33,43 +33,43 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class CurseAlternateFileTest {
+class CurseAlternateFileTest {
 	private static CurseAlternateFile file;
 
 	@Test
-	public void projectIDShouldBeValid() {
+	void projectIDShouldBeValid() {
 		assertThat(file.projectID()).isGreaterThanOrEqualTo(CurseAPI.MIN_PROJECT_ID);
 	}
 
 	@Test
-	public void projectShouldBeValid() throws CurseException {
+	void projectShouldBeValid() throws CurseException {
 		final CurseProject project = file.project();
 		assertThat(project).isNotNull().isEqualTo(file.refreshProject());
 		assertThat(project.id()).isEqualTo(file.projectID());
 	}
 
 	@Test
-	public void idShouldBeValid() {
+	void idShouldBeValid() {
 		assertThat(file.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
 	}
 
 	@Test
-	public void urlShouldNotBeNull() throws CurseException {
+	void urlShouldNotBeNull() throws CurseException {
 		assertThat(file.url()).isNotNull();
 	}
 
 	@Test
-	public void toCurseFileShouldReturnNull() throws CurseException {
+	void toCurseFileShouldReturnNull() throws CurseException {
 		assertThat(file.toCurseFile()).isNull();
 	}
 
 	@Test
-	public void downloadURLShouldNotBeNull() throws CurseException {
+	void downloadURLShouldNotBeNull() throws CurseException {
 		assertThat(file.downloadURL()).isNotNull().isEqualTo(file.refreshDownloadURL());
 	}
 
 	@Test
-	public void changelogPlainTextShouldBeValid() throws CurseException {
+	void changelogPlainTextShouldBeValid() throws CurseException {
 		final String changelog = file.changelogPlainText(10);
 		assertThat(changelog).isNotNull();
 
@@ -78,13 +78,13 @@ public class CurseAlternateFileTest {
 	}
 
 	@Test
-	public void mainFileShouldBeValid() throws CurseException {
+	void mainFileShouldBeValid() throws CurseException {
 		assertThat(file.mainFileID()).isGreaterThanOrEqualTo(CurseAPI.MIN_FILE_ID);
 		assertThat(file.mainFile()).isNotNull().isEqualTo(file.refreshMainFile());
 	}
 
 	@BeforeAll
-	public static void getFile() throws CurseException {
+	static void getFile() throws CurseException {
 		final Optional<CurseFile> optionalFile = CurseAPI.file(258205, 2758483);
 		assertThat(optionalFile).isPresent();
 

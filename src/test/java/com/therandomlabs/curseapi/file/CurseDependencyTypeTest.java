@@ -28,9 +28,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-public class CurseDependencyTypeTest {
+class CurseDependencyTypeTest {
 	@Test
-	public void idsShouldBeCorrect() {
+	void idsShouldBeCorrect() {
 		assertThat(CurseDependencyType.EMBEDDED_LIBRARY.id()).isEqualTo(1);
 		assertThat(CurseDependencyType.OPTIONAL.id()).isEqualTo(2);
 		assertThat(CurseDependencyType.REQUIRED.id()).isEqualTo(3);
@@ -40,7 +40,7 @@ public class CurseDependencyTypeTest {
 	}
 
 	@Test
-	public void exceptionShouldBeThrownIfIDIsInvalid() {
+	void exceptionShouldBeThrownIfIDIsInvalid() {
 		assertThatThrownBy(() -> CurseDependencyType.fromID(0)).
 				isInstanceOf(IllegalArgumentException.class).
 				hasMessageContaining("should be positive");
@@ -50,7 +50,7 @@ public class CurseDependencyTypeTest {
 	}
 
 	@Test
-	public void fromIDShouldReturnCorrectValues() {
+	void fromIDShouldReturnCorrectValues() {
 		assertThat(CurseDependencyType.fromID(1)).isEqualTo(CurseDependencyType.EMBEDDED_LIBRARY);
 		assertThat(CurseDependencyType.fromID(2)).isEqualTo(CurseDependencyType.OPTIONAL);
 		assertThat(CurseDependencyType.fromID(3)).isEqualTo(CurseDependencyType.REQUIRED);

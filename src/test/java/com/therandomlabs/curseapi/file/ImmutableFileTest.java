@@ -30,42 +30,42 @@ import com.therandomlabs.curseapi.CurseException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class ImmutableFileTest {
+class ImmutableFileTest {
 	private static BasicCurseFile file;
 	private static BasicCurseFile nonexistentFile;
 
 	@Test
-	public void toStringShouldNotBeEmpty() {
+	void toStringShouldNotBeEmpty() {
 		assertThat(file.toString()).isNotEmpty();
 	}
 
 	@Test
-	public void urlShouldNotBeNullIfExistent() throws CurseException {
+	void urlShouldNotBeNullIfExistent() throws CurseException {
 		assertThat(file.url()).isNotNull();
 	}
 
 	@Test
-	public void projectShouldBeNullIfNonexistent() throws CurseException {
+	void projectShouldBeNullIfNonexistent() throws CurseException {
 		assertThat(nonexistentFile.project()).isNull();
 	}
 
 	@Test
-	public void projectShouldBeValidIfExistent() throws CurseException {
+	void projectShouldBeValidIfExistent() throws CurseException {
 		assertThat(file.project()).isNotNull().isEqualTo(file.refreshProject());
 	}
 
 	@Test
-	public void toCurseFileShouldNotBePresentIfNonexistent() throws CurseException {
+	void toCurseFileShouldNotBePresentIfNonexistent() throws CurseException {
 		assertThat(nonexistentFile.toCurseFile()).isNull();
 	}
 
 	@Test
-	public void toCurseFileShouldBePresentIfExistent() throws CurseException {
+	void toCurseFileShouldBePresentIfExistent() throws CurseException {
 		assertThat(file.toCurseFile()).isNotNull();
 	}
 
 	@BeforeAll
-	public static void getFiles() {
+	static void getFiles() {
 		file = new BasicCurseFile.Immutable(CurseAPI.MIN_PROJECT_ID, CurseAPI.MIN_FILE_ID);
 		nonexistentFile = new BasicCurseFile.Immutable(Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}
