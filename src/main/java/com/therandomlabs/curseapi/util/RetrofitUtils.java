@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
+import com.squareup.moshi.JsonDataException;
 import com.therandomlabs.curseapi.CurseException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.retrofit.CircuitBreakerCallAdapter;
@@ -114,7 +115,7 @@ public final class RetrofitUtils {
 						errorBody == null ? null : errorBody.string()
 				));
 			}
-		} catch (IOException ex) {
+		} catch (IOException | JsonDataException ex) {
 			throw new CurseException("Failed to execute request: " + call.request(), ex);
 		}
 	}
