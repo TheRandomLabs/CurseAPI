@@ -64,7 +64,7 @@ final class ForgeSvcAttachment extends CurseAttachment {
 
 	@Override
 	public HttpUrl thumbnailURL() {
-		return thumbnailUrl;
+		return thumbnailUrl == null ? PLACEHOLDER_LOGO.thumbnailURL() : thumbnailUrl;
 	}
 
 	boolean isLogo() {

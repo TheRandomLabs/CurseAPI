@@ -57,6 +57,6 @@ public final class HttpUrlAdapter {
 	 */
 	@FromJson
 	public HttpUrl fromJSON(String url) {
-		return HttpUrl.get(url);
+		return url.isEmpty() ? null : HttpUrl.get(url);
 	}
 }

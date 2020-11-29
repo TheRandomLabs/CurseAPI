@@ -184,14 +184,16 @@ public abstract class CurseAttachment {
 	/**
 	 * Returns the URL to this attachment image's thumbnail.
 	 *
-	 * @return the URL to this attachment image's thumbnail.
+	 * @return the URL to this attachment image's thumbnail,
+	 * or the thumbnail URL of {@link #PLACEHOLDER_LOGO} if it does not exist.
 	 */
 	public abstract HttpUrl thumbnailURL();
 
 	/**
 	 * Reads a {@link BufferedImage} from the URL returned by {@link #thumbnailURL()}.
 	 *
-	 * @return this attachment image's thumbnail as a {@link BufferedImage}.
+	 * @return this attachment image's thumbnail as a {@link BufferedImage},
+	 * or the thumbnail of {@link #PLACEHOLDER_LOGO} if it does not exist.
 	 * @throws CurseException if an error occurs.
 	 */
 	public BufferedImage thumbnail() throws CurseException {
