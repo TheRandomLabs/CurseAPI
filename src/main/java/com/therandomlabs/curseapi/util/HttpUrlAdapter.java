@@ -26,6 +26,7 @@ package com.therandomlabs.curseapi.util;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A Moshi adapter for {@link HttpUrl}s.
@@ -55,6 +56,7 @@ public final class HttpUrlAdapter {
 	 * @param url a JSON string.
 	 * @return an {@link HttpUrl}.
 	 */
+	@Nullable
 	@FromJson
 	public HttpUrl fromJSON(String url) {
 		return url.isEmpty() ? null : HttpUrl.get(url);
