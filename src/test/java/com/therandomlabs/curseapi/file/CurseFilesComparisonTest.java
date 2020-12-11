@@ -111,6 +111,7 @@ class CurseFilesComparisonTest {
 		assertThat((String) update.get(file -> file.project().name())).
 				isEqualTo(update.project().name());
 
+		//CHECKSTYLE IGNORE Indentation FOR NEXT 5 LINES
 		assertThatThrownBy(() -> downgrade.get(file -> file.project().name())).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining(

@@ -181,7 +181,7 @@ public final class OkHttpUtils {
 
 		final List<String> pathSegments = url.encodedPathSegments();
 		//I don't know if CurseForge still put tabs in their file names.
-		final String path = pathSegments.get(pathSegments.size() - 1);//.replace('\t', ' ');
+		final String path = pathSegments.get(pathSegments.size() - 1); //.replace('\t', ' ');
 
 		try {
 			return URLDecoder.decode(path, StandardCharsets.UTF_8.name());

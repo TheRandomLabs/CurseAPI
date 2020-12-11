@@ -2,6 +2,7 @@ group = "com.therandomlabs.curseapi"
 version = "1.0.0"
 
 ext {
+	commonGradleBranch = "master"
 	jacocoMinimumInstructionCoverage = 0.9
 	jacocoExcludes = [
 		"com.therandomlabs.curseapi.CurseAPIProvider",
@@ -13,7 +14,7 @@ ext {
 	]
 }
 
-apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/master/build.gradle"
+apply from: "https://raw.githubusercontent.com/TheRandomLabs/Common-Gradle/${project.commonGradleBranch}/build.gradle"
 
 def retrofitVersion = "2.9.0"
 def resilience4jVersion = "1.6.1"
