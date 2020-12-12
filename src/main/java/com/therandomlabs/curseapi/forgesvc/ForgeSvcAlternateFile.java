@@ -27,6 +27,7 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.file.CurseAlternateFile;
 import com.therandomlabs.curseapi.file.CurseFile;
 import com.therandomlabs.curseapi.project.CurseProject;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.checkerframework.framework.qual.TypeUseLocation;
@@ -52,6 +53,7 @@ final class ForgeSvcAlternateFile extends CurseAlternateFile {
 		return projectID;
 	}
 
+	@NonNull
 	@Override
 	public CurseProject project() throws CurseException {
 		return project == null ? super.project() : project;

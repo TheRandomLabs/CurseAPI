@@ -47,9 +47,10 @@ class CurseFileTest {
 
 	@Test
 	void equalsShouldBeValid() {
-		assertThat(file).isEqualTo(file);
-		assertThat(file).isNotEqualTo(comparisonFile);
-		assertThat(file).isNotEqualTo(null);
+		assertThat(file).
+				isEqualTo(file).
+				isNotEqualTo(comparisonFile).
+				isNotEqualTo(null);
 	}
 
 	@Test

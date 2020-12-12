@@ -65,9 +65,10 @@ class CurseFilesTest {
 		files = copied;
 
 		copied = new CurseFiles<>(files, null);
-		assertThat(copied).isEqualTo(files);
-		assertThat(copied).isNotEqualTo(new CurseFiles<>());
-		assertThat(copied).isNotEqualTo(new CurseFiles<>(CurseFiles.SORT_BY_NEWEST));
+		assertThat(copied).
+				isEqualTo(files).
+				isNotEqualTo(new CurseFiles<>()).
+				isNotEqualTo(new CurseFiles<>(CurseFiles.SORT_BY_NEWEST));
 		files = copied;
 	}
 

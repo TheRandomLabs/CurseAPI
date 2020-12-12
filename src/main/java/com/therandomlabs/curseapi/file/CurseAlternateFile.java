@@ -71,7 +71,6 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
 	public CurseProject refreshProject() throws CurseException {
 		project = null;
@@ -81,7 +80,6 @@ public abstract class CurseAlternateFile extends BasicCurseFile implements Exist
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
 	public HttpUrl url() throws CurseException {
 		return project().fileURL(id());

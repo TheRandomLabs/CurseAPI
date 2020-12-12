@@ -49,7 +49,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 import org.jsoup.nodes.Element;
 
 //NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
-@SuppressWarnings("NullAway")
+@SuppressWarnings({"ConstantConditions", "MismatchedQueryAndUpdateOfCollection", "NullAway"})
 @DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
 final class ForgeSvcProject extends CurseProject {
 	private int id;

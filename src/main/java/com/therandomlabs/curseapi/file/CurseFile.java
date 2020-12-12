@@ -89,7 +89,6 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	 * @return this file's URL.
 	 * @throws CurseException if an error occurs.
 	 */
-	@NonNull
 	@Override
 	public HttpUrl url() throws CurseException {
 		return project().fileURL(id());
@@ -102,20 +101,6 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	public CurseFile toCurseFile() {
 		return this;
 	}
-
-	/**
-	 * Returns this file's display name.
-	 *
-	 * @return this file's display name.
-	 */
-	public abstract String displayName();
-
-	/**
-	 * Returns this file's name on disk.
-	 *
-	 * @return this file's name on disk.
-	 */
-	public abstract String nameOnDisk();
 
 	/**
 	 * Returns this file's download URL. Note that calling {@link #refreshDownloadURL()}
@@ -138,6 +123,47 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	public final HttpUrl refreshDownloadURL() {
 		return downloadURL();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Element changelog() throws CurseException {
+		if (changelog == null) {
+			final Optional<Element> optionalChangelog = CurseAPI.fileChangelog(projectID(), id());
+
+			if (!optionalChangelog.isPresent()) {
+				throw new CurseException("Failed to retrieve changelog for file: " + this);
+			}
+
+			changelog = optionalChangelog.get();
+		}
+
+		return changelog;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Element refreshChangelog() throws CurseException {
+		changelog = null;
+		return changelog();
+	}
+
+	/**
+	 * Returns this file's display name.
+	 *
+	 * @return this file's display name.
+	 */
+	public abstract String displayName();
+
+	/**
+	 * Returns this file's name on disk.
+	 *
+	 * @return this file's name on disk.
+	 */
+	public abstract String nameOnDisk();
 
 	/**
 	 * Returns this file's upload time.
@@ -229,33 +255,6 @@ public abstract class CurseFile extends BasicCurseFile implements ExistingCurseF
 	 * @return a mutable {@link Set} containing this file's game version strings.
 	 */
 	public abstract Set<String> gameVersionStrings();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Element changelog() throws CurseException {
-		if (changelog == null) {
-			final Optional<Element> optionalChangelog = CurseAPI.fileChangelog(projectID(), id());
-
-			if (!optionalChangelog.isPresent()) {
-				throw new CurseException("Failed to retrieve changelog for file: " + this);
-			}
-
-			changelog = optionalChangelog.get();
-		}
-
-		return changelog;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Element refreshChangelog() throws CurseException {
-		changelog = null;
-		return changelog();
-	}
 
 	/**
 	 * Returns this file's game version groups. This value is obtained by calling

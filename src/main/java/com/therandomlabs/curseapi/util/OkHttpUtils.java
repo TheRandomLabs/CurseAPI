@@ -32,7 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
-
 import javax.imageio.ImageIO;
 
 import com.google.common.base.Preconditions;

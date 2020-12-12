@@ -38,12 +38,13 @@ import com.therandomlabs.curseapi.file.CurseFileStatus;
 import com.therandomlabs.curseapi.file.CurseReleaseType;
 import com.therandomlabs.curseapi.project.CurseProject;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.checkerframework.framework.qual.TypeUseLocation;
 
 //NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
-@SuppressWarnings("NullAway")
+@SuppressWarnings({"ConstantConditions", "MismatchedQueryAndUpdateOfCollection", "NullAway"})
 @DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
 final class ForgeSvcFile extends CurseFile {
 	private int projectId;
@@ -70,6 +71,7 @@ final class ForgeSvcFile extends CurseFile {
 		return projectId;
 	}
 
+	@NonNull
 	@Override
 	public CurseProject project() throws CurseException {
 		if (project == null) {

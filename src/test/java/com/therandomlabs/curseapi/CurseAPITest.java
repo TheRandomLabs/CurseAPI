@@ -335,8 +335,9 @@ class CurseAPITest {
 
 		//We test CurseGameVersionGroup$None here as well.
 		final CurseGameVersionGroup none = mockVersion1.versionGroup();
-		assertThat(none).isNotEqualTo(null);
-		assertThat(none).isNotEqualTo(mockVersionGroup);
+		assertThat(none).
+				isNotEqualTo(null).
+				isNotEqualTo(mockVersionGroup);
 		assertThat(none.toString()).isEqualTo(none.versionString());
 		assertThat(none.gameID()).isEqualTo(CurseAPI.MIN_GAME_ID);
 		assertThat(none.versionString()).isEqualTo("*");

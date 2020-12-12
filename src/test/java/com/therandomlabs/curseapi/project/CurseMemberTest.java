@@ -38,9 +38,10 @@ class CurseMemberTest {
 
 	@Test
 	void equalsShouldBeValid() {
-		assertThat(member).isEqualTo(member);
-		assertThat(member).isNotEqualTo(comparisonMember);
-		assertThat(member).isNotEqualTo(null);
+		assertThat(member).
+				isEqualTo(member).
+				isNotEqualTo(comparisonMember).
+				isNotEqualTo(null);
 	}
 
 	@Test

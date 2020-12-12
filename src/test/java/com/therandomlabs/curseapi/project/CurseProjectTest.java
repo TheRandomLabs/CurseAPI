@@ -52,9 +52,9 @@ class CurseProjectTest {
 
 	@Test
 	void equalsShouldBeValid() {
-		assertThat(project).isEqualTo(project);
-		assertThat(project).isNotEqualTo(comparisonProject);
-		assertThat(project).isNotEqualTo(null);
+		assertThat(project).isEqualTo(project).
+				isNotEqualTo(comparisonProject).
+				isNotEqualTo(null);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class CurseProjectTest {
 
 		final CurseAttachment attachment = Iterables.getFirst(project.attachments(), null);
 
-		assertThat(attachment).isNotEqualTo(null);
+		assertThat(attachment).isNotNull().isNotEqualTo(null);
 		assertThat(attachment.toString()).isNotEmpty();
 		assertThat(attachment.id()).isGreaterThanOrEqualTo(CurseAPI.MIN_ATTACHMENT_ID);
 		assertThat(project.attachment(attachment.id())).isEqualTo(attachment);
@@ -217,9 +217,9 @@ class CurseProjectTest {
 		final Optional<CurseCategorySection> optionalCategorySection2 = category.section();
 		assertThat(optionalCategorySection2).isPresent();
 
-		assertThat(categorySection).isNotEqualTo(null);
-		assertThat(categorySection).isNotEqualTo(optionalCategorySection2.get());
-		assertThat(categorySection).isEqualTo(categorySection);
+		assertThat(categorySection).isNotEqualTo(null).
+				isNotEqualTo(optionalCategorySection2.get()).
+				isEqualTo(categorySection);
 		assertThat(categorySection.toString()).isNotEmpty();
 		assertThat(categorySection.game()).isNotNull().isEqualTo(categorySection.refreshGame());
 		assertThat(categorySection.categories()).

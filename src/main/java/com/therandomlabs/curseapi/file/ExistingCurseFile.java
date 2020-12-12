@@ -26,8 +26,6 @@ package com.therandomlabs.curseapi.file;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Preconditions;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
@@ -35,6 +33,7 @@ import com.therandomlabs.curseapi.project.CurseProject;
 import com.therandomlabs.curseapi.util.JsoupUtils;
 import com.therandomlabs.curseapi.util.OkHttpUtils;
 import okhttp3.HttpUrl;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
 
@@ -70,7 +69,7 @@ public interface ExistingCurseFile {
 		/**
 		 * {@inheritDoc}
 		 */
-		@Nonnull
+		@NonNull
 		@Override
 		public CurseProject project() throws CurseException {
 			final CurseProject project = super.project();
@@ -85,7 +84,6 @@ public interface ExistingCurseFile {
 		/**
 		 * {@inheritDoc}
 		 */
-		@Nonnull
 		@Override
 		public HttpUrl url() throws CurseException {
 			return project().fileURL(id());

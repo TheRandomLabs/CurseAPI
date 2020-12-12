@@ -36,7 +36,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.checkerframework.framework.qual.TypeUseLocation;
 
 //NullAway does not yet support DefaultQualifier, so we have to use SuppressWarning.
-@SuppressWarnings("NullAway")
+@SuppressWarnings({"ConstantConditions", "NullAway"})
 @DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
 final class ForgeSvcCategory extends CurseCategory {
 	private int gameId;

@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.therandomlabs.curseapi.CurseException;
+import com.therandomlabs.curseapi.project.CurseProject;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Iterables;
 
@@ -38,6 +39,9 @@ class CurseFilesComparisonTest {
 
 		final BasicCurseFile enderCoreOld =
 				new BasicCurseFile.Immutable(231868, 2578528).toCurseFile();
+
+		assertThat(enderCoreOld).isNotNull();
+
 		final BasicCurseFile enderCoreNew = new BasicCurseFile.Immutable(231868, 2822401);
 
 		final BasicCurseFile nonexistentFileNew =
@@ -86,9 +90,10 @@ class CurseFilesComparisonTest {
 		assertThat(comparison.added()).containsOnly(eu2);
 
 		//We also test CurseFileChange.
-		assertThat(update).isEqualTo(update);
-		assertThat(update).isNotEqualTo(downgrade);
-		assertThat(update).isNotEqualTo(null);
+		assertThat(update).
+				isEqualTo(update).
+				isNotEqualTo(downgrade).
+				isNotEqualTo(null);
 
 		assertThat(update.toString()).isNotEmpty();
 
@@ -99,19 +104,21 @@ class CurseFilesComparisonTest {
 		assertThat(update.project()).isEqualTo(enderCoreOld.project());
 
 		//Since enderCoreOld is already a CurseFile, the same reference should be returned.
-		assertThat(update.oldCurseFile()).isSameAs(enderCoreOld);
-
-		assertThat(update.oldCurseFile().id()).isEqualTo(enderCoreOld.id());
+		final CurseFile oldCurseFile = update.oldCurseFile();
+		assertThat(oldCurseFile).isNotNull().isSameAs(enderCoreOld);
+		assertThat(oldCurseFile.id()).isEqualTo(enderCoreOld.id());
 		assertThat(update.olderCurseFile()).isEqualTo(update.oldCurseFile());
 
-		assertThat(update.newCurseFile().id()).isEqualTo(enderCoreNew.id());
+		final CurseFile newCurseFile = update.newCurseFile();
+		assertThat(newCurseFile).isNotNull();
+		assertThat(newCurseFile.id()).isEqualTo(enderCoreNew.id());
 		assertThat(update.newerCurseFile()).isEqualTo(update.newCurseFile());
 
 		//This cast is necessary; for some reason, type ambiguity occurs otherwise.
-		assertThat((String) update.get(file -> file.project().name())).
-				isEqualTo(update.project().name());
+		final CurseProject project = update.project();
+		assertThat(project).isNotNull();
+		assertThat((String) update.get(file -> file.project().name())).isEqualTo(project.name());
 
-		//CHECKSTYLE IGNORE Indentation FOR NEXT 5 LINES
 		assertThatThrownBy(() -> downgrade.get(file -> file.project().name())).
 				isInstanceOf(CurseException.class).
 				hasMessageContaining(
