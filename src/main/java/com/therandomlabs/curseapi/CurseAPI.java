@@ -191,9 +191,7 @@ public final class CurseAPI {
 			throws CurseException {
 		CursePreconditions.checkProjectID(id, "id");
 		Preconditions.checkArgument(maxLineLength > 0, "maxLineLength should be greater than 0");
-		//https://github.com/checkstyle/checkstyle/issues/3182
 		return projectDescription(id).map(
-				//CHECKSTYLE IGNORE Indentation FOR NEXT 1 LINES
 				description -> JsoupUtils.getPlainText(description, maxLineLength).trim()
 		);
 	}
@@ -538,8 +536,6 @@ public final class CurseAPI {
 	public static <V extends CurseGameVersion<?>> Set<CurseGameVersionGroup<V>> gameVersionGroups(
 			Collection<? extends V> versions
 	) {
-		//https://github.com/checkstyle/checkstyle/issues/3182
-		//CHECKSTYLE IGNORE Indentation FOR NEXT 3 LINES
 		return versions.stream().
 				map(version -> (CurseGameVersionGroup<V>) version.versionGroup()).
 				filter(group -> !group.isNone()).
