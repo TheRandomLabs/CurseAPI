@@ -64,7 +64,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 */
 	public static final ForgeSvcProvider instance = new ForgeSvcProvider();
 
-	private static final ForgeSvc forgeSVC =
+	private static final ForgeSvc forgeSvc =
 			RetrofitUtils.get("https://addons-ecs.forgesvc.net/").create(ForgeSvc.class);
 
 	private ForgeSvcProvider() {}
@@ -75,7 +75,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public CurseProject project(int id) throws CurseException {
-		return RetrofitUtils.execute(forgeSVC.getProject(id));
+		return RetrofitUtils.execute(forgeSvc.getProject(id));
 	}
 
 	/**
@@ -84,7 +84,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public Element projectDescription(int id) throws CurseException {
-		final Element element = RetrofitUtils.getElement(forgeSVC.getDescription(id));
+		final Element element = RetrofitUtils.getElement(forgeSvc.getDescription(id));
 		//If the description is empty, we assume that the project does not exist.
 		return JsoupUtils.isEmpty(element) ? null : element;
 	}
@@ -94,7 +94,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public List<CurseProject> searchProjects(CurseSearchQuery query) throws CurseException {
-		final List<ForgeSvcProject> projects = RetrofitUtils.execute(forgeSVC.searchProjects(
+		final List<ForgeSvcProject> projects = RetrofitUtils.execute(forgeSvc.searchProjects(
 				query.gameID(), query.categorySectionID(), query.categoryID(),
 				query.gameVersionString(), query.pageIndex(), query.pageSize(),
 				query.searchFilter(), query.sortingMethod().id()
@@ -113,7 +113,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public CurseFiles<CurseFile> files(int projectID) throws CurseException {
-		final Set<ForgeSvcFile> files = RetrofitUtils.execute(forgeSVC.getFiles(projectID));
+		final Set<ForgeSvcFile> files = RetrofitUtils.execute(forgeSvc.getFiles(projectID));
 
 		if (files == null) {
 			return null;
@@ -132,7 +132,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public CurseFile file(int projectID, int fileID) throws CurseException {
-		final ForgeSvcFile file = RetrofitUtils.execute(forgeSVC.getFile(projectID, fileID));
+		final ForgeSvcFile file = RetrofitUtils.execute(forgeSvc.getFile(projectID, fileID));
 
 		if (file == null) {
 			return null;
@@ -150,7 +150,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public Element fileChangelog(int projectID, int fileID) throws CurseException {
-		return RetrofitUtils.getElement(forgeSVC.getChangelog(projectID, fileID));
+		return RetrofitUtils.getElement(forgeSvc.getChangelog(projectID, fileID));
 	}
 
 	/**
@@ -161,7 +161,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public HttpUrl fileDownloadURL(int projectID, int fileID) throws CurseException {
-		final String url = RetrofitUtils.getString(forgeSVC.getFileDownloadURL(projectID, fileID));
+		final String url = RetrofitUtils.getString(forgeSvc.getFileDownloadURL(projectID, fileID));
 		return url == null ? null : HttpUrl.get(url);
 	}
 
@@ -170,7 +170,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Set<CurseGame> games() throws CurseException {
-		final Set<ForgeSvcGame> games = RetrofitUtils.execute(forgeSVC.getGames(false));
+		final Set<ForgeSvcGame> games = RetrofitUtils.execute(forgeSvc.getGames(false));
 
 		if (games == null) {
 			throw new CurseException("Failed to retrieve games");
@@ -185,7 +185,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public CurseGame game(int id) throws CurseException {
-		return RetrofitUtils.execute(forgeSVC.getGame(id));
+		return RetrofitUtils.execute(forgeSvc.getGame(id));
 	}
 
 	/**
@@ -193,7 +193,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	 */
 	@Override
 	public Set<CurseCategory> categories() throws CurseException {
-		final Set<ForgeSvcCategory> categories = RetrofitUtils.execute(forgeSVC.getCategories());
+		final Set<ForgeSvcCategory> categories = RetrofitUtils.execute(forgeSvc.getCategories());
 
 		if (categories == null) {
 			throw new CurseException("Failed to retrieve categories");
@@ -209,7 +209,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Override
 	public Set<CurseCategory> categories(int sectionID) throws CurseException {
 		final Set<ForgeSvcCategory> categories =
-				RetrofitUtils.execute(forgeSVC.getCategories(sectionID));
+				RetrofitUtils.execute(forgeSvc.getCategories(sectionID));
 		return categories == null ? null : new TreeSet<>(categories);
 	}
 
@@ -219,6 +219,6 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public CurseCategory category(int id) throws CurseException {
-		return RetrofitUtils.execute(forgeSVC.getCategory(id));
+		return RetrofitUtils.execute(forgeSvc.getCategory(id));
 	}
 }
