@@ -25,6 +25,7 @@ package com.therandomlabs.curseapi.forgesvc;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -243,7 +244,9 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 
 	private static String decode(String encoded) {
 		try {
-			return URLDecoder.decode(encoded.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
+			return URLDecoder.decode(
+					encoded.replace("+", "%2B"), StandardCharsets.UTF_8.name()
+			).replace("%2B", "+");
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex);
 		}

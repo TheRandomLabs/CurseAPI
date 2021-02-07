@@ -45,9 +45,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CurseFilesTest {
 	@Mock(lenient = true)
-	private static CurseGameVersionGroup mockVersionGroup;
+	private CurseGameVersionGroup mockVersionGroup;
 	@Mock(lenient = true)
-	private static CurseGameVersion mockVersion;
+	private CurseGameVersion mockVersion;
 
 	private static CurseFiles<CurseFile> files;
 
