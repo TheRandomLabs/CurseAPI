@@ -84,6 +84,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("NullAway")
 	@Nullable
 	@Override
 	public Element projectDescription(int id) throws CurseException {
