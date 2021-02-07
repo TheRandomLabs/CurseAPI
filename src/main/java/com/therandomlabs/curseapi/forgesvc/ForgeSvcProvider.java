@@ -23,6 +23,8 @@
 
 package com.therandomlabs.curseapi.forgesvc;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +43,7 @@ import com.therandomlabs.curseapi.util.RetrofitUtils;
 import okhttp3.HttpUrl;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * A {@link CurseAPIProvider} that uses the API at
@@ -86,7 +89,7 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	public Element projectDescription(int id) throws CurseException {
 		final Element element = RetrofitUtils.getElement(forgeSvc.getDescription(id));
 		//If the description is empty, we assume that the project does not exist.
-		return JsoupUtils.isEmpty(element) ? null : element;
+		return JsoupUtils.isEmpty(element) ? null : replaceLinkouts(element);
 	}
 
 	/**
@@ -150,7 +153,9 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Nullable
 	@Override
 	public Element fileChangelog(int projectID, int fileID) throws CurseException {
-		return RetrofitUtils.getElement(forgeSvc.getChangelog(projectID, fileID));
+		final Element changelog =
+				RetrofitUtils.getElement(forgeSvc.getChangelog(projectID, fileID));
+		return changelog == null ? null : replaceLinkouts(changelog);
 	}
 
 	/**
@@ -220,5 +225,26 @@ public final class ForgeSvcProvider implements CurseAPIProvider {
 	@Override
 	public CurseCategory category(int id) throws CurseException {
 		return RetrofitUtils.execute(forgeSvc.getCategory(id));
+	}
+
+	private static Element replaceLinkouts(Element element) {
+		final Elements links = element.getElementsByTag("a");
+
+		for (Element link : links) {
+			if (link.attr("href").startsWith("/linkout?remoteUrl=")) {
+				final String encoded = link.attr("href").substring("/linkout?remoteUrl=".length());
+				link.attr("href", decode(decode(encoded)));
+			}
+		}
+
+		return element;
+	}
+
+	private static String decode(String encoded) {
+		try {
+			return URLDecoder.decode(encoded.replace("+", "%2B"), "UTF-8").replace("%2B", "+");
+		} catch (UnsupportedEncodingException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 }

@@ -74,6 +74,8 @@ final class FormattingVisitor implements NodeVisitor {
 		} else if ("p".equals(name) || "h1".equals(name) || "h2".equals(name) ||
 				"h3".equals(name) || "h4".equals(name) || "h5".equals(name) || "tr".equals(name)) {
 			append("\n");
+		} else if ("img".equals(name)) {
+			append("![");
 		}
 	}
 
@@ -87,6 +89,8 @@ final class FormattingVisitor implements NodeVisitor {
 			append("\n");
 		} else if ("a".equals(name)) {
 			append(String.format("](%s)", node.absUrl("href")));
+		} else if ("img".equals(name)) {
+			append(String.format("%s](%s)", node.attr("alt"), node.absUrl("src")));
 		} else if ("pre".equals(name)) {
 			shouldGetWholeText = false;
 		}
